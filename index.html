@@ -1099,7 +1099,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
     }
     #martur-operations-dashboard .mod-main-chart {
       width: 100%;
@@ -1468,8 +1470,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-view-select {
         display: block;
-        order: 1;
-        flex-basis: 100%;
+        grid-column: 1 / -1;
+        grid-row: 1;
         width: 100%;
         max-width: none;
         text-align: center;
@@ -1479,17 +1481,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         display: none;
       }
       #martur-operations-dashboard .mod-header-nav {
-        gap: 10px 6px;
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr) 36px 36px;
+        gap: 10px 8px;
+        align-items: center;
+        width: 100%;
       }
       #martur-operations-dashboard #mod-period-prev {
-        order: 2;
-        margin-left: 0;
+        grid-column: 1;
+        grid-row: 2;
+        width: 100%;
+        margin: 0;
       }
       #martur-operations-dashboard .mod-header-picker {
-        order: 3;
-        flex: 1 1 0%;
+        grid-column: 2;
+        grid-row: 2;
         min-width: 0;
-        margin-left: 0;
+        margin: 0;
       }
       #martur-operations-dashboard .mod-header-picker .mod-period-picker {
         width: 100%;
@@ -1508,12 +1516,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         margin: 0 auto;
       }
       #martur-operations-dashboard #mod-period-next {
-        order: 4;
-        margin-left: 0;
+        grid-column: 3;
+        grid-row: 2;
+        width: 100%;
+        margin: 0;
       }
       #martur-operations-dashboard #mod-entry-view-btn {
-        order: 5;
-        margin-left: 0;
+        grid-column: 4;
+        grid-row: 2;
+        width: 100%;
+        margin: 0;
       }
       #martur-operations-dashboard .mod-actions {
         width: 100%;
@@ -1700,9 +1712,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-main-chart {
         height: 340px;
+        width: 100% !important;
       }
       #martur-operations-dashboard .mod-rate-chart {
         height: 240px;
+        width: 100% !important;
+      }
+      #martur-operations-dashboard .mod-chart-wrap {
+        overflow: hidden;
       }
       #martur-operations-dashboard .mod-two-col {
         gap: 24px;
@@ -3331,10 +3348,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderMainChart(periods) {
         const margin = { top: 16, right: 12, bottom: 40, left: 52 };
         const wrapWidth = Math.max(300, Math.round(el.mainChartWrap.getBoundingClientRect().width || 640));
-        const isNarrow = window.matchMedia('(max-width: 720px)').matches;
-        const width = isNarrow
-          ? Math.max(wrapWidth, margin.left + margin.right + periods.length * 96)
-          : wrapWidth;
+        const width = Math.max(wrapWidth, margin.left + margin.right + periods.length * 96);
         el.mainChart.style.width = width > wrapWidth ? width + 'px' : '';
         const height = 285;
         const innerWidth = width - margin.left - margin.right;
@@ -3387,7 +3401,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           });
         });
 
-        const tickCount = isNarrow ? periods.length : Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
+        const tickCount = Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
         const tickIndexes = new Set();
         for (let i = 0; i < tickCount; i++) {
           tickIndexes.add(Math.round(i * (periods.length - 1) / Math.max(1, tickCount - 1)));
@@ -3414,10 +3428,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderPercentageChart(periods, config) {
         const margin = { top: 14, right: 12, bottom: 35, left: 52 };
         const wrapWidth = Math.max(300, Math.round(config.wrap.getBoundingClientRect().width || 640));
-        const isNarrow = window.matchMedia('(max-width: 720px)').matches;
-        const width = isNarrow
-          ? Math.max(wrapWidth, margin.left + margin.right + periods.length * 92)
-          : wrapWidth;
+        const width = Math.max(wrapWidth, margin.left + margin.right + periods.length * 92);
         config.chart.style.width = width > wrapWidth ? width + 'px' : '';
         const height = 205;
         const innerWidth = width - margin.left - margin.right;
@@ -3452,7 +3463,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           });
         }
 
-        const tickCount = isNarrow ? periods.length : Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
+        const tickCount = Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
         const tickIndexes = new Set();
         for (let i = 0; i < tickCount; i++) {
           tickIndexes.add(Math.round(i * (periods.length - 1) / Math.max(1, tickCount - 1)));
