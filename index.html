@@ -4,16 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Martur Italy Operations Dashboard</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Martur">
+<meta name="theme-color" content="#ffffff">
 <script>
 (() => {
   try {
     var saved = window.localStorage.getItem('martur-dashboard-theme');
-    if (saved === 'light' || saved === 'dark') {
-      document.documentElement.setAttribute('data-theme', saved);
-    }
-  } catch (e) {}
+    document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
 })();
 </script>
 <style>:root {
@@ -815,7 +820,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-brand-logo {
       display: block;
-      height: 48px;
+      height: 64px;
       width: auto;
       mix-blend-mode: multiply;
       filter: none;
@@ -1310,6 +1315,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: grid;
       gap: 12px;
     }
+    #martur-operations-dashboard #mod-admin-dialog {
+      width: min(92vw, 400px);
+      max-width: 400px;
+      max-height: none;
+    }
+    #martur-operations-dashboard #mod-admin-dialog .mod-dialog-shell {
+      max-height: none;
+      grid-template-rows: auto auto;
+    }
     #martur-operations-dashboard .mod-dialog-head {
       align-items: flex-start;
     }
@@ -1464,17 +1478,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-view-btn:not(.mod-pill-icon) {
         display: none;
       }
-      #martur-operations-dashboard #mod-period-prev {
-        order: 2;
-        margin-left: 0;
+      #martur-operations-dashboard .mod-header-nav {
+        gap: 10px 14px;
       }
       #martur-operations-dashboard .mod-header-picker {
-        order: 3;
-        flex: 1 1 auto;
+        order: 2;
+        flex-basis: 100%;
+        width: 100%;
         margin-left: 0;
       }
       #martur-operations-dashboard .mod-header-picker .mod-period-picker {
         width: 100%;
+      }
+      #martur-operations-dashboard .mod-header-picker .form-control {
+        font-size: 16px;
+        text-align: center;
+      }
+      #martur-operations-dashboard #mod-period-prev {
+        order: 3;
+        margin-left: 0;
       }
       #martur-operations-dashboard #mod-period-next {
         order: 4;
@@ -1486,10 +1508,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-actions {
         width: 100%;
-        justify-content: space-evenly;
+        justify-content: center;
+        gap: 6px;
       }
       #martur-operations-dashboard .mod-actions .mod-action-divider {
         display: none;
+      }
+      #martur-operations-dashboard .mod-actions .mod-theme[data-theme-choice="light"] {
+        order: 1;
+      }
+      #martur-operations-dashboard .mod-actions .mod-theme[data-theme-choice="dark"] {
+        order: 2;
+      }
+      #martur-operations-dashboard .mod-actions #mod-export-pdf {
+        order: 3;
+        margin-inline: 20px;
+      }
+      #martur-operations-dashboard .mod-actions .mod-lang-select {
+        order: 4;
+      }
+      #martur-operations-dashboard #mod-admin-password {
+        font-size: 16px;
       }
       #martur-operations-dashboard .mod-chart-wrap {
         overflow-x: auto;
@@ -2651,7 +2690,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         lang: 'it',
         isAdmin: false,
         view: 'daily',
-        themeChoice: savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : null,
+        themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
         selectedDate: null,
         selectedMonth: null,
         editingDate: null,
@@ -3274,7 +3313,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const wrapWidth = Math.max(300, Math.round(el.mainChartWrap.getBoundingClientRect().width || 640));
         const isNarrow = window.matchMedia('(max-width: 720px)').matches;
         const width = isNarrow
-          ? Math.max(wrapWidth, margin.left + margin.right + periods.length * 72)
+          ? Math.max(wrapWidth, margin.left + margin.right + periods.length * 96)
           : wrapWidth;
         el.mainChart.style.width = width > wrapWidth ? width + 'px' : '';
         const height = 285;
@@ -3328,7 +3367,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           });
         });
 
-        const tickCount = Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
+        const tickCount = isNarrow ? periods.length : Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
         const tickIndexes = new Set();
         for (let i = 0; i < tickCount; i++) {
           tickIndexes.add(Math.round(i * (periods.length - 1) / Math.max(1, tickCount - 1)));
@@ -3357,7 +3396,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const wrapWidth = Math.max(300, Math.round(config.wrap.getBoundingClientRect().width || 640));
         const isNarrow = window.matchMedia('(max-width: 720px)').matches;
         const width = isNarrow
-          ? Math.max(wrapWidth, margin.left + margin.right + periods.length * 68)
+          ? Math.max(wrapWidth, margin.left + margin.right + periods.length * 92)
           : wrapWidth;
         config.chart.style.width = width > wrapWidth ? width + 'px' : '';
         const height = 205;
@@ -3393,7 +3432,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           });
         }
 
-        const tickCount = Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
+        const tickCount = isNarrow ? periods.length : Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
         const tickIndexes = new Set();
         for (let i = 0; i < tickCount; i++) {
           tickIndexes.add(Math.round(i * (periods.length - 1) / Math.max(1, tickCount - 1)));
