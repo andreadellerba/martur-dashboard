@@ -1481,22 +1481,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-header-nav {
         gap: 10px 14px;
       }
-      #martur-operations-dashboard .mod-header-picker {
+      #martur-operations-dashboard #mod-period-prev {
         order: 2;
-        flex-basis: 100%;
-        width: 100%;
+        margin-left: 0;
+      }
+      #martur-operations-dashboard .mod-header-picker {
+        order: 3;
+        flex: 1 1 auto;
+        min-width: 0;
         margin-left: 0;
       }
       #martur-operations-dashboard .mod-header-picker .mod-period-picker {
         width: 100%;
       }
       #martur-operations-dashboard .mod-header-picker .form-control {
-        font-size: 16px;
+        min-height: 32px;
+        height: 32px;
         text-align: center;
-      }
-      #martur-operations-dashboard #mod-period-prev {
-        order: 3;
-        margin-left: 0;
       }
       #martur-operations-dashboard #mod-period-next {
         order: 4;
