@@ -1599,9 +1599,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         max-width: 100vw;
       }
       #martur-operations-dashboard .mod-report-title {
-        font-size: clamp(8px, 2.2vw, 16px);
         letter-spacing: 0;
         white-space: nowrap;
+        overflow: hidden;
       }
       #martur-operations-dashboard .mod-shift-card-name,
       #martur-operations-dashboard .mod-shift-summary-text {
@@ -3324,6 +3324,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return formatDate(state.selectedDate);
       }
 
+      function fitReportTitle() {
+        const node = el.reportTitle;
+        if (!window.matchMedia('(max-width: 720px)').matches) {
+          node.style.fontSize = '';
+          return;
+        }
+        node.style.fontSize = '20px';
+        const available = node.clientWidth;
+        const needed = node.scrollWidth;
+        if (needed > 0 && available > 0) {
+          const size = Math.min(19, Math.max(8, Math.floor(20 * available / needed) - 1));
+          node.style.fontSize = size + 'px';
+        }
+      }
+
       function periodReportTitle() {
         if (state.view === 'weekly') {
           const start = mondayOf(parseDate(state.selectedDate));
@@ -3704,6 +3719,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
 
         el.reportTitle.textContent = periodReportTitle();
+        fitReportTitle();
         el.mainSubtitle.textContent = subtitle;
         el.reworkSubtitle.textContent = subtitle + ' · ' + t('reworkFormula');
         el.absSubtitle.textContent = subtitle + ' · ' + t('absenteeismFormula');
