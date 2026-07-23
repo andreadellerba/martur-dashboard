@@ -843,6 +843,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       color: var(--primary);
       background: var(--accent);
     }
+    #martur-operations-dashboard .mod-shift-edit {
+      min-height: 22px;
+      padding: 0 5px;
+      margin-left: 4px;
+      color: var(--primary);
+      vertical-align: middle;
+    }
+    #martur-operations-dashboard .mod-shift-edit svg {
+      width: 14px;
+      height: 14px;
+    }
     #martur-operations-dashboard .mod-lang-btn {
       font-size: 18px;
       line-height: 1;
@@ -3582,9 +3593,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const summaryText = hasData
             ? formatOptionalNumber(completeSets) + ' ' + t('completeSets') + ' - ' + t('efficiency') + ' ' + (isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—')
             : t('noShiftData');
+          const editButton = state.isAdmin
+            ? '<button type="button" class="btn btn-ghost mod-shift-edit" data-date="' + row.date + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>'
+            : '';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
-              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + t(shiftKey) + '</span>' +
+              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + t(shiftKey) + editButton + '</span>' +
               '<span class="mod-shift-summary-text">' + escapeHtml(summaryText) + '</span>' +
             '</div>' +
             '<div class="mod-shift-metric-grid">' +
@@ -3603,15 +3617,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '</div>' +
           '</article>';
         }).join('');
+        el.dailyShiftGrid.querySelectorAll('.mod-shift-edit').forEach((button) => {
+          button.addEventListener('click', () => openShiftEditor(button.dataset.date));
+        });
       }
 
       function renderShiftTables(overall, subtitle) {
         el.shiftPeriod.textContent = subtitle;
         el.shiftQualityPeriod.textContent = subtitle;
+        const shiftEditButton = state.isAdmin
+          ? ' <button type="button" class="btn btn-ghost mod-shift-edit" data-date="' + state.selectedDate + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>'
+          : '';
         el.shiftProductionBody.innerHTML = ['shift1', 'shift2'].map((name, index) => {
           const shift = overall[name];
           const delta = isNumber(shift.rear) && isNumber(shift.stellantisCars) ? shift.rear - shift.stellantisCars : null;
-          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + '</td><td>' + formatNumber(shift.front) + '</td><td>' + formatNumber(shift.rear) + '</td><td>' + formatNumber(shift.stellantisCars) + '</td><td class="' + (isNumber(delta) && delta < 0 ? 'mod-negative' : '') + '">' + formatSigned(delta) + '</td></tr>';
+          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + shiftEditButton + '</td><td>' + formatNumber(shift.front) + '</td><td>' + formatNumber(shift.rear) + '</td><td>' + formatNumber(shift.stellantisCars) + '</td><td class="' + (isNumber(delta) && delta < 0 ? 'mod-negative' : '') + '">' + formatSigned(delta) + '</td></tr>';
         }).join('');
         el.shiftQualityBody.innerHTML = ['shift1', 'shift2'].map((name, index) => {
           const shift = overall[name];
@@ -3619,8 +3639,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const reworkRate = shift.front ? shift.rework / shift.front : null;
           const reworkText = formatNumber(shift.rework) + (isNumber(reworkRate) ? ' · ' + formatPercent(reworkRate) : '');
           const absentText = formatNumber(shift.absent) + (isNumber(absRate) ? ' · ' + formatPercent(absRate) : '');
-          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + '</td><td>' + formatNumber(shift.presence) + '</td><td>' + absentText + '</td><td>' + reworkText + '</td><td>' + formatPercent(shift.overtimePct) + '</td></tr>';
+          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + shiftEditButton + '</td><td>' + formatNumber(shift.presence) + '</td><td>' + absentText + '</td><td>' + reworkText + '</td><td>' + formatPercent(shift.overtimePct) + '</td></tr>';
         }).join('');
+        [el.shiftProductionBody, el.shiftQualityBody].forEach((body) => {
+          body.querySelectorAll('.mod-shift-edit').forEach((button) => {
+            button.addEventListener('click', () => openShiftEditor(button.dataset.date));
+          });
+        });
       }
 
       function renderDashboard() {
@@ -3909,6 +3934,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         resetEntry(isoDate(new Date()));
       }
 
+      function openShiftEditor(date) {
+        if (!state.isAdmin) return;
+        state.view = 'entry';
+        renderAll();
+        const stored = state.manual.find((item) => item.date === date);
+        if (stored) {
+          loadEntry(date);
+        } else {
+          const row = getDailyRows().find((item) => item.date === date);
+          resetEntry(date);
+          if (row) {
+            fillShift('shift1', row.shift1);
+            fillShift('shift2', row.shift2);
+            setSelectedAbsentOperators(row.absentOperators || []);
+            setSelectedReworkReasons(row.topReworks || []);
+            el.entryNote.value = row.note || '';
+            updateLiveSummary();
+          }
+        }
+        el.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
       function renderManualEntries() {
         const rows = state.manual.slice().sort((a, b) => b.date.localeCompare(a.date)).map(deriveRow);
         el.manualCount.textContent = formatNumber(rows.length) + ' ' + t('manualEntries');
@@ -3979,10 +4026,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (state.isAdmin) {
           state.isAdmin = false;
           updateAdminUI();
-          if (state.view === 'entry') {
-            state.view = 'daily';
-            renderAll();
-          }
+          if (state.view === 'entry') state.view = 'daily';
+          renderAll();
           return;
         }
         el.adminError.hidden = true;
@@ -3997,6 +4042,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.adminError.hidden = true;
           el.adminDialog.close();
           updateAdminUI();
+          renderAll();
         } else {
           el.adminError.hidden = false;
         }
