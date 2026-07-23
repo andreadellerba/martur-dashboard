@@ -2941,10 +2941,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         month: 'short',
         year: 'numeric'
       }).format(parseDate(value));
-      const formatMonth = (value, short = false) => new Intl.DateTimeFormat(locale(), {
-        month: short ? 'short' : 'long',
-        year: 'numeric'
-      }).format(parseDate(value));
+      const formatMonth = (value, short = false) => {
+        const text = new Intl.DateTimeFormat(locale(), {
+          month: short ? 'short' : 'long',
+          year: 'numeric'
+        }).format(parseDate(value));
+        return text.charAt(0).toUpperCase() + text.slice(1);
+      };
       const formatDateNumeric = (value) => new Intl.DateTimeFormat(locale(), {
         day: '2-digit',
         month: '2-digit',
@@ -3692,7 +3695,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.periodShiftSection.hidden = state.view === 'daily';
 
         el.kpiSets.textContent = formatNumber(summary.completeKits) + ' ' + t('pieces');
-        el.kpiSetsContext.innerHTML = escapeHtml(t('frontLabel')) + ': ' + escapeHtml(formatNumber(summary.totalFront)) + '<br>' + escapeHtml(t('rearLabel')) + ': ' + escapeHtml(formatNumber(summary.totalRear));
+        el.kpiSetsContext.textContent = t('frontLabel') + ': ' + formatNumber(summary.totalFront) + ' · ' + t('rearLabel') + ': ' + formatNumber(summary.totalRear);
         el.kpiCars.textContent = formatNumber(summary.stellantisCars) + ' ' + t('pieces');
         el.kpiCarsContext.textContent = subtitle;
         el.kpiEfficiency.textContent = formatPercent(summary.efficiency);
