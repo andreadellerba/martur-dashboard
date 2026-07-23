@@ -869,6 +869,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding: 0 24px 0 8px;
       font-size: var(--font-size-small);
     }
+    #martur-operations-dashboard .mod-view-select {
+      display: none;
+      width: auto;
+      min-height: 32px;
+      padding: 0 28px 0 12px;
+    }
     #martur-operations-dashboard .mod-brand-copy,
     #martur-operations-dashboard .mod-section,
     #martur-operations-dashboard .mod-attendance-screen,
@@ -1421,6 +1427,73 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
     }
     @media (max-width: 720px) {
+      #martur-operations-dashboard .mod-topbar {
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 10px;
+      }
+      #martur-operations-dashboard .mod-brand-name {
+        display: none;
+      }
+      #martur-operations-dashboard .mod-brand-link {
+        margin-inline: auto;
+      }
+      #martur-operations-dashboard #mod-admin-lock {
+        position: absolute;
+        top: 14px;
+        right: 8px;
+        margin: 0;
+      }
+      #martur-operations-dashboard .mod-header-nav {
+        width: 100%;
+        justify-content: center;
+      }
+      #martur-operations-dashboard .mod-view-select {
+        display: block;
+        flex: 0 1 auto;
+        margin-inline: auto;
+        order: 1;
+        flex-basis: 100%;
+        max-width: 200px;
+        text-align: center;
+      }
+      #martur-operations-dashboard .mod-view-btn:not(.mod-pill-icon) {
+        display: none;
+      }
+      #martur-operations-dashboard #mod-period-prev {
+        order: 2;
+        margin-left: auto;
+      }
+      #martur-operations-dashboard .mod-header-picker {
+        order: 3;
+        margin-left: 0;
+      }
+      #martur-operations-dashboard #mod-period-next {
+        order: 4;
+        margin-left: 0;
+      }
+      #martur-operations-dashboard #mod-entry-view-btn {
+        order: 5;
+        margin-left: auto;
+      }
+      #martur-operations-dashboard .mod-header-picker .mod-period-picker {
+        width: 190px;
+      }
+      #martur-operations-dashboard .mod-actions {
+        width: 100%;
+        justify-content: center;
+      }
+      #martur-operations-dashboard .mod-chart-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      #martur-operations-dashboard .mod-main-chart {
+        min-width: 640px;
+      }
+      #martur-operations-dashboard .mod-rate-chart {
+        min-width: 480px;
+      }
       #martur-operations-dashboard .mod-shift-metric-grid,
       #martur-operations-dashboard .mod-shift-support-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1472,7 +1545,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
     }
     @media (max-width: 460px) {
-      #martur-operations-dashboard .mod-topbar,
       #martur-operations-dashboard .mod-section-head,
       #martur-operations-dashboard .mod-entry-head,
       #martur-operations-dashboard .mod-selection-head,
@@ -1582,6 +1654,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </button>
     <nav class="mod-header-nav" aria-label="Dashboard views">
+      <select id="mod-view-select" class="form-select mod-view-select" aria-label="Vista">
+        <option value="daily" data-i18n="daily">Giornaliero</option>
+        <option value="weekly" data-i18n="weekly">Settimanale</option>
+        <option value="monthly" data-i18n="monthly">Mensile</option>
+      </select>
       <button type="button" class="btn mod-pill mod-view-btn" data-view="daily" aria-pressed="true" data-i18n="daily">Giornaliero</button>
       <button type="button" class="btn mod-pill mod-view-btn" data-view="weekly" aria-pressed="false" data-i18n="weekly">Settimanale</button>
       <button type="button" class="btn mod-pill mod-view-btn" data-view="monthly" aria-pressed="false" data-i18n="monthly">Mensile</button>
@@ -2589,6 +2666,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         periodPrev: root.querySelector('#mod-period-prev'),
         periodNext: root.querySelector('#mod-period-next'),
         entryViewBtn: root.querySelector('#mod-entry-view-btn'),
+        viewSelect: root.querySelector('#mod-view-select'),
         adminLock: root.querySelector('#mod-admin-lock'),
         adminLockIcon: root.querySelector('#mod-admin-lock-icon'),
         adminDialog: root.querySelector('#mod-admin-dialog'),
@@ -3791,6 +3869,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.periodPrev.hidden = isEntry || isAttendance;
         el.periodNext.hidden = isEntry || isAttendance;
         el.exportPdf.hidden = isEntry || isAttendance;
+        if (['daily', 'weekly', 'monthly'].includes(state.view) && el.viewSelect.value !== state.view) {
+          el.viewSelect.value = state.view;
+        }
         if (isEntry) renderManualEntries();
       }
 
@@ -3847,6 +3928,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       el.closeAdminDialog.addEventListener('click', () => el.adminDialog.close());
       el.cancelAdminDialog.addEventListener('click', () => el.adminDialog.close());
+      el.viewSelect.addEventListener('change', () => {
+        state.view = el.viewSelect.value;
+        renderAll();
+      });
       root.querySelectorAll('.mod-view-btn').forEach((button) => {
         button.addEventListener('click', () => {
           if (button.dataset.view === 'entry' && !state.isAdmin) return;
