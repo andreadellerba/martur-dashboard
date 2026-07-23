@@ -1416,13 +1416,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         transition: none;
       }
     }
-    @media (max-width: 720px) {
+    @media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
       :root {
         --font-size-base: 12.5px;
       }
       #martur-operations-dashboard .mod-topbar {
-        position: relative;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        grid-template-areas: "flag brand lock" "nav nav nav";
         align-items: center;
         row-gap: 10px;
       }
@@ -1430,13 +1431,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         display: none;
       }
       #martur-operations-dashboard .mod-brand-link {
-        margin-inline: auto;
+        grid-area: brand;
+        justify-self: center;
+        margin: 0;
       }
       #martur-operations-dashboard #mod-admin-lock {
-        position: absolute;
-        top: 14px;
-        right: 8px;
+        grid-area: lock;
+        justify-self: center;
+        align-self: center;
         margin: 0;
+      }
+      #martur-operations-dashboard .mod-header-nav {
+        grid-area: nav;
       }
       #martur-operations-dashboard .mod-header-nav {
         width: 100%;
@@ -1512,9 +1518,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         display: none;
       }
       #martur-operations-dashboard .mod-lang-btn {
-        position: absolute;
-        top: 14px;
-        left: 8px;
+        grid-area: flag;
+        justify-self: center;
+        align-self: center;
         margin: 0;
       }
       #martur-operations-dashboard #mod-admin-password {
@@ -3265,7 +3271,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function fitReportTitle() {
         const node = el.reportTitle;
-        if (!window.matchMedia('(max-width: 720px)').matches) {
+        if (!window.matchMedia('(max-width: 720px), (max-width: 950px) and (pointer: coarse)').matches) {
           node.style.fontSize = '';
           return;
         }
