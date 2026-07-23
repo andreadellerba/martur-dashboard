@@ -1207,6 +1207,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-table-wrap {
       min-width: 0;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
     }
     #martur-operations-dashboard table {
       width: 100%;
@@ -1555,6 +1557,34 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard #mod-admin-password {
         font-size: 16px;
+      }
+      #martur-operations-dashboard th {
+        white-space: nowrap;
+      }
+      #martur-operations-dashboard .mod-entry-head .form-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        margin: 0;
+      }
+      #martur-operations-dashboard .mod-entry-head .form-label .form-control {
+        -webkit-appearance: none;
+        appearance: none;
+        width: auto;
+        flex: 0 0 auto;
+        min-width: 150px;
+        min-height: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      #martur-operations-dashboard .mod-entry-head .form-label .form-control::-webkit-date-and-time-value {
+        text-align: center;
+        margin: 0 auto;
       }
       #martur-operations-dashboard .mod-chart-wrap {
         overflow-x: auto;
