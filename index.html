@@ -1499,9 +1499,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         min-height: 32px;
         height: 32px;
         text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       #martur-operations-dashboard .mod-header-picker .form-control::-webkit-date-and-time-value {
         text-align: center;
+        margin: 0 auto;
       }
       #martur-operations-dashboard #mod-period-next {
         order: 4;
@@ -1538,18 +1542,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-chart-wrap {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
       }
       html, body {
         overflow-x: hidden;
         max-width: 100vw;
       }
+      #martur-operations-dashboard {
+        overflow-x: clip;
+        max-width: 100vw;
+      }
       #martur-operations-dashboard .mod-report-title {
-        font-size: clamp(9px, 2.6vw, 16px);
+        font-size: clamp(8px, 2.2vw, 16px);
+        letter-spacing: 0;
         white-space: nowrap;
       }
       #martur-operations-dashboard .mod-shift-card-name,
       #martur-operations-dashboard .mod-shift-summary-text {
-        font-size: clamp(11px, 3.3vw, 15px);
+        font-size: clamp(10px, 3vw, 15px);
         white-space: nowrap;
       }
       #martur-operations-dashboard .mod-shift-card-head {
