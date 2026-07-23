@@ -1105,11 +1105,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-main-chart {
       width: 100%;
+      max-width: none;
       height: 285px;
       min-height: 0;
     }
     #martur-operations-dashboard .mod-rate-chart {
       width: 100%;
+      max-width: none;
       height: 205px;
       min-height: 0;
     }
@@ -1503,7 +1505,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         width: 100%;
       }
       #martur-operations-dashboard .mod-header-picker .form-control {
+        -webkit-appearance: none;
+        appearance: none;
         width: 100%;
+        min-width: 100%;
         min-height: 32px;
         height: 32px;
         text-align: center;
