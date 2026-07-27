@@ -877,6 +877,38 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-view-pills {
       display: contents;
     }
+    @keyframes mod-live-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    #martur-operations-dashboard .mod-live-pill {
+      position: relative;
+      color: #fff;
+      background: #e11d1d;
+      border-color: #e11d1d;
+      padding-left: 26px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    #martur-operations-dashboard .mod-live-pill::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fff;
+      animation: mod-live-blink 1s ease-in-out infinite;
+    }
+    #martur-operations-dashboard .mod-live-pill[aria-pressed="true"] {
+      background: #b91515;
+      border-color: #b91515;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #martur-operations-dashboard .mod-live-pill::before { animation: none; }
+    }
     #martur-operations-dashboard .mod-brand-copy,
     #martur-operations-dashboard .mod-section,
     #martur-operations-dashboard .mod-attendance-screen,
@@ -1875,7 +1907,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="btn mod-pill mod-view-btn" data-view="daily" aria-pressed="true" data-i18n="daily">Giornaliero</button>
         <button type="button" class="btn mod-pill mod-view-btn" data-view="weekly" aria-pressed="false" data-i18n="weekly">Settimanale</button>
         <button type="button" class="btn mod-pill mod-view-btn" data-view="monthly" aria-pressed="false" data-i18n="monthly">Mensile</button>
-        <button type="button" class="btn mod-pill mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">SCADA</button>
+        <button type="button" class="btn mod-pill mod-view-btn mod-live-pill" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">LIVE</button>
       </div>
       <button type="button" class="btn mod-pill mod-pill-icon mod-view-btn" id="mod-entry-view-btn" data-view="entry" aria-pressed="false" title="Inserimento dati" data-i18n-title="dataEntry" disabled>
         <i data-lucide="plus" aria-hidden="true"></i>
@@ -2044,6 +2076,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           </table>
         </div>
       </div>
+    </section>
+
+    <section class="mod-section">
+      <div class="mod-section-head">
+        <div>
+          <div class="mod-section-label" data-i18n="downtimeTitle">Fermi</div>
+          <div id="mod-downtime-subtitle" class="text-small text-muted"></div>
+        </div>
+      </div>
+      <div id="mod-downtime-wrap" class="mod-table-wrap"></div>
     </section>
   </main>
 
@@ -2234,8 +2276,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   </section>
 
   <section id="mod-stoppages-screen" class="mod-stoppages-screen" hidden>
-    <div class="mod-report-title" data-i18n="stoppagesTitle">SCADA</div>
-    <div class="text-small text-muted mod-stoppages-hint" data-i18n="stoppagesHint">Clicca una operazione per registrare un fermo.</div>
     <div id="mod-stoppages-schema" class="mod-stoppages-schema"></div>
     <section class="mod-section">
       <div class="mod-section-head">
@@ -2254,6 +2294,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               <th data-i18n="stoppageCause">Causa del fermo</th>
               <th data-i18n="duration">Durata</th>
               <th data-i18n="reporter">Chi segnala</th>
+              <th data-i18n="note">Note</th>
             </tr>
           </thead>
           <tbody id="mod-stoppages-body"></tbody>
@@ -2295,6 +2336,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <label class="form-label">
           <span data-i18n="reporter">Chi segnala</span>
           <select id="mod-stoppage-reporter" class="form-select" required></select>
+        </label>
+        <label class="form-label">
+          <span data-i18n="note">Note</span>
+          <textarea id="mod-stoppage-note" class="form-control" rows="2"></textarea>
         </label>
         <div id="mod-stoppage-error" class="text-small mod-negative" hidden data-i18n="stoppageInvalid">Compila causa, durata e chi segnala.</div>
         <div class="mod-dialog-actions">
@@ -2427,7 +2472,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Password',
           wrongPassword: 'Password errata.',
           enter: 'Entra',
-          stoppages: 'SCADA',
+          stoppages: 'LIVE',
           stoppagesTitle: 'SCADA',
           stoppagesHint: 'Clicca una operazione per registrare un fermo.',
           newStoppage: 'Nuovo fermo',
@@ -2446,6 +2491,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           stoppageSaved: 'Fermo registrato.',
           stoppageInvalid: 'Compila causa, durata e chi segnala.',
           confirmDeleteStoppage: 'Eliminare questo fermo?',
+          note: 'Note',
+          downtimeTitle: 'Fermi',
+          count: 'Numero',
+          noStoppagesPeriod: 'Nessun fermo nel periodo.',
           dailyShiftIndicators: 'Indicatori giornalieri per turno',
           reportTitleDay: 'Report di produzione del {value}',
           reportTitleWeek: 'Report di produzione della settimana {week} - {value}',
@@ -2610,7 +2659,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Password',
           wrongPassword: 'Wrong password.',
           enter: 'Enter',
-          stoppages: 'SCADA',
+          stoppages: 'LIVE',
           stoppagesTitle: 'SCADA',
           stoppagesHint: 'Click an operation to log a stoppage.',
           newStoppage: 'New stoppage',
@@ -2629,6 +2678,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           stoppageSaved: 'Stoppage recorded.',
           stoppageInvalid: 'Fill in cause, duration and reporter.',
           confirmDeleteStoppage: 'Delete this stoppage?',
+          note: 'Note',
+          downtimeTitle: 'Stoppages',
+          count: 'Count',
+          noStoppagesPeriod: 'No stoppages in this period.',
           dailyShiftIndicators: 'Daily indicators by shift',
           reportTitleDay: 'Production report for {value}',
           reportTitleWeek: 'Production report for week {week} - {value}',
@@ -2793,7 +2846,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Şifre',
           wrongPassword: 'Yanlış şifre.',
           enter: 'Giriş',
-          stoppages: 'SCADA',
+          stoppages: 'LIVE',
           stoppagesTitle: 'SCADA',
           stoppagesHint: 'Duruş kaydetmek için bir operasyona tıklayın.',
           newStoppage: 'Yeni duruş',
@@ -2812,6 +2865,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           stoppageSaved: 'Duruş kaydedildi.',
           stoppageInvalid: 'Neden, süre ve bildiren alanlarını doldurun.',
           confirmDeleteStoppage: 'Bu duruş silinsin mi?',
+          note: 'Not',
+          downtimeTitle: 'Duruşlar',
+          count: 'Adet',
+          noStoppagesPeriod: 'Bu dönemde duruş yok.',
           dailyShiftIndicators: 'Vardiyaya göre günlük göstergeler',
           reportTitleDay: '{value} üretim raporu',
           reportTitleWeek: '{week}. hafta üretim raporu - {value}',
@@ -3009,6 +3066,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppageDuration: root.querySelector('#mod-stoppage-duration'),
         stoppageUnit: root.querySelector('#mod-stoppage-unit'),
         stoppageReporter: root.querySelector('#mod-stoppage-reporter'),
+        stoppageNote: root.querySelector('#mod-stoppage-note'),
         stoppageError: root.querySelector('#mod-stoppage-error'),
         closeStoppageDialog: root.querySelector('#mod-close-stoppage-dialog'),
         cancelStoppageDialog: root.querySelector('#mod-cancel-stoppage-dialog'),
@@ -3039,6 +3097,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         dailyReworkSection: root.querySelector('#mod-daily-rework-section'),
         dailyReworkList: root.querySelector('#mod-daily-rework-list'),
         periodShiftSection: root.querySelector('#mod-period-shift-section'),
+        downtimeSubtitle: root.querySelector('#mod-downtime-subtitle'),
+        downtimeWrap: root.querySelector('#mod-downtime-wrap'),
         kpiSets: root.querySelector('#mod-kpi-sets'),
         kpiSetsContext: root.querySelector('#mod-kpi-sets-context'),
         kpiCars: root.querySelector('#mod-kpi-cars'),
@@ -4006,6 +4066,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         renderDailyShiftCards(dailySummary);
         renderDailyTopReworks(dailySummary);
         renderShiftTables(overall, subtitle);
+        renderDowntime();
       }
 
       function readInput(id, percent) {
@@ -4331,6 +4392,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function openStoppageDialog(lineId, op) {
+        if (!state.isAdmin) {
+          promptAdminLogin();
+          return;
+        }
         state.stoppageTarget = { lineId, op };
         el.stoppageTargetLabel.textContent = stoppageLineName(lineId) + ' · ' + op;
         const placeholder = '<option value="" disabled selected>' + escapeHtml(t('selectPlaceholder')) + '</option>';
@@ -4340,12 +4405,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>').join('');
         el.stoppageDuration.value = '';
         el.stoppageUnit.value = 'min';
+        el.stoppageNote.value = '';
         el.stoppageError.hidden = true;
         el.stoppageDialog.showModal();
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
       function submitStoppage() {
+        if (!state.isAdmin) { el.stoppageDialog.close(); return; }
         const cause = el.stoppageCause.value;
         const durationRaw = Number(el.stoppageDuration.value);
         const reporter = el.stoppageReporter.value;
@@ -4362,11 +4429,72 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           cause,
           durationMin,
           reporter,
+          note: el.stoppageNote.value.trim(),
           timestamp: new Date().toISOString()
         });
         state.stoppageTarget = null;
         el.stoppageDialog.close();
         renderStoppages();
+      }
+
+      function getPeriodStoppages() {
+        if (state.view === 'weekly') {
+          const start = isoDate(mondayOf(parseDate(state.selectedDate)));
+          const end = isoDate(addDays(parseDate(start), 6));
+          return state.stoppages.filter((s) => {
+            const d = String(s.timestamp).slice(0, 10);
+            return d >= start && d <= end;
+          });
+        }
+        if (state.view === 'monthly') {
+          return state.stoppages.filter((s) => String(s.timestamp).slice(0, 7) === state.selectedMonth);
+        }
+        return state.stoppages.filter((s) => String(s.timestamp).slice(0, 10) === state.selectedDate);
+      }
+
+      function renderDowntime() {
+        const items = getPeriodStoppages();
+        const totalMin = items.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
+        el.downtimeSubtitle.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin) + ' · ' + formatNumber(items.length);
+        if (!items.length) {
+          el.downtimeWrap.innerHTML = '<table><tbody><tr><td class="mod-empty">' + t('noStoppagesPeriod') + '</td></tr></tbody></table>';
+          return;
+        }
+        if (state.view === 'daily') {
+          const sorted = items.slice().sort((a, b) => (b.durationMin || 0) - (a.durationMin || 0));
+          el.downtimeWrap.innerHTML = '<table><thead><tr>' +
+            '<th>' + t('line') + '</th><th>' + t('operation') + '</th><th>' + t('stoppageCause') + '</th><th>' + t('duration') + '</th><th>' + t('reporter') + '</th><th>' + t('note') + '</th>' +
+            '</tr></thead><tbody>' +
+            sorted.map((s) => '<tr>' +
+              '<td>' + escapeHtml(s.line || stoppageLineName(s.lineId)) + '</td>' +
+              '<td>' + escapeHtml(s.op) + '</td>' +
+              '<td>' + escapeHtml(s.cause) + '</td>' +
+              '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
+              '<td>' + escapeHtml(s.reporter) + '</td>' +
+              '<td>' + escapeHtml(s.note || '') + '</td>' +
+            '</tr>').join('') +
+            '</tbody></table>';
+          return;
+        }
+        const map = new Map();
+        items.forEach((s) => {
+          const key = s.lineId + '|' + s.op;
+          if (!map.has(key)) map.set(key, { line: s.line || stoppageLineName(s.lineId), op: s.op, count: 0, total: 0 });
+          const g = map.get(key);
+          g.count += 1;
+          g.total += isNumber(s.durationMin) ? s.durationMin : 0;
+        });
+        const rows = Array.from(map.values()).sort((a, b) => b.total - a.total);
+        el.downtimeWrap.innerHTML = '<table><thead><tr>' +
+          '<th>' + t('line') + '</th><th>' + t('operation') + '</th><th>' + t('count') + '</th><th>' + t('duration') + '</th>' +
+          '</tr></thead><tbody>' +
+          rows.map((g) => '<tr>' +
+            '<td>' + escapeHtml(g.line) + '</td>' +
+            '<td>' + escapeHtml(g.op) + '</td>' +
+            '<td>' + formatNumber(g.count) + '</td>' +
+            '<td>' + escapeHtml(stoppageDurationText(g.total)) + '</td>' +
+          '</tr>').join('') +
+          '</tbody></table>';
       }
 
       function renderStoppages() {
@@ -4402,7 +4530,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.stoppagesTotal.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin);
 
         if (!sorted.length) {
-          el.stoppagesBody.innerHTML = '<tr><td colspan="6" class="mod-empty">' + t('noStoppages') + '</td></tr>';
+          el.stoppagesBody.innerHTML = '<tr><td colspan="7" class="mod-empty">' + t('noStoppages') + '</td></tr>';
           return;
         }
         const groups = [];
@@ -4419,7 +4547,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (isNumber(s.durationMin)) group.total += s.durationMin;
         });
         el.stoppagesBody.innerHTML = groups.map((group) =>
-          '<tr class="mod-stoppage-day"><td colspan="6">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
+          '<tr class="mod-stoppage-day"><td colspan="7">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
             ' · ' + escapeHtml(stoppageDurationText(group.total)) + '</td></tr>' +
           group.items.map((s) =>
             '<tr>' +
@@ -4429,6 +4557,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<td>' + escapeHtml(s.cause) + '</td>' +
               '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(s.reporter) + '</td>' +
+              '<td>' + escapeHtml(s.note || '') + '</td>' +
             '</tr>'
           ).join('')
         ).join('');
@@ -4447,6 +4576,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.periodPrev.hidden = !isDashboard;
         el.periodNext.hidden = !isDashboard;
         el.exportPdf.hidden = !isDashboard;
+        el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
         if (isEntry) renderManualEntries();
       }
 
@@ -4471,6 +4601,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.lang = order[(order.indexOf(state.lang) + 1) % order.length];
         renderAll();
       });
+      function promptAdminLogin() {
+        el.adminError.hidden = true;
+        el.adminPassword.value = '';
+        el.adminDialog.showModal();
+        el.adminPassword.focus();
+      }
       el.adminLock.addEventListener('click', () => {
         if (state.isAdmin) {
           state.isAdmin = false;
@@ -4479,10 +4615,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           renderAll();
           return;
         }
-        el.adminError.hidden = true;
-        el.adminPassword.value = '';
-        el.adminDialog.showModal();
-        el.adminPassword.focus();
+        promptAdminLogin();
       });
       el.adminForm.addEventListener('submit', (event) => {
         event.preventDefault();
