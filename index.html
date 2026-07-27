@@ -104,6 +104,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 html > body {
   margin: 0;
   padding: 5px;
@@ -1331,23 +1335,58 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 14px;
     }
     #martur-operations-dashboard .mod-stoppage-line {
-      display: grid;
-      gap: 10px;
       align-content: start;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--card);
     }
     #martur-operations-dashboard .mod-stoppage-line-name {
+      position: relative;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       text-align: center;
-      padding-bottom: 6px;
+      padding: 11px 30px;
+      background: var(--muted);
+    }
+    #martur-operations-dashboard .mod-stoppage-line-name::-webkit-details-marker {
+      display: none;
+    }
+    #martur-operations-dashboard .mod-stoppage-line-name::after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: translateY(-70%) rotate(45deg);
+      transition: transform 0.15s ease;
+    }
+    #martur-operations-dashboard .mod-stoppage-line[open] .mod-stoppage-line-name {
       border-bottom: 2px solid var(--primary);
+    }
+    #martur-operations-dashboard .mod-stoppage-line[open] .mod-stoppage-line-name::after {
+      transform: translateY(-30%) rotate(225deg);
     }
     #martur-operations-dashboard .mod-stoppage-ops {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
+      padding: 12px;
+    }
+    #martur-operations-dashboard .mod-stoppage-day td {
+      background: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: var(--font-size-small);
     }
     #martur-operations-dashboard .mod-stoppage-op {
       min-width: 70px;
@@ -1827,7 +1866,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="btn mod-pill mod-view-btn" data-view="daily" aria-pressed="true" data-i18n="daily">Giornaliero</button>
         <button type="button" class="btn mod-pill mod-view-btn" data-view="weekly" aria-pressed="false" data-i18n="weekly">Settimanale</button>
         <button type="button" class="btn mod-pill mod-view-btn" data-view="monthly" aria-pressed="false" data-i18n="monthly">Mensile</button>
-        <button type="button" class="btn mod-pill mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">Fermi</button>
+        <button type="button" class="btn mod-pill mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">SCADA</button>
       </div>
       <button type="button" class="btn mod-pill mod-pill-icon mod-view-btn" id="mod-entry-view-btn" data-view="entry" aria-pressed="false" title="Inserimento dati" data-i18n-title="dataEntry" disabled>
         <i data-lucide="plus" aria-hidden="true"></i>
@@ -2186,7 +2225,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   </section>
 
   <section id="mod-stoppages-screen" class="mod-stoppages-screen" hidden>
-    <div class="mod-report-title" data-i18n="stoppagesTitle">Fermi linea</div>
+    <div class="mod-report-title" data-i18n="stoppagesTitle">SCADA</div>
     <div class="text-small text-muted mod-stoppages-hint" data-i18n="stoppagesHint">Clicca una operazione per registrare un fermo.</div>
     <div id="mod-stoppages-schema" class="mod-stoppages-schema"></div>
     <section class="mod-section">
@@ -2206,7 +2245,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               <th data-i18n="stoppageCause">Causa del fermo</th>
               <th data-i18n="duration">Durata</th>
               <th data-i18n="reporter">Chi segnala</th>
-              <th class="mod-stoppage-actions-col" data-i18n="actions">Azioni</th>
             </tr>
           </thead>
           <tbody id="mod-stoppages-body"></tbody>
@@ -2380,8 +2418,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Password',
           wrongPassword: 'Password errata.',
           enter: 'Entra',
-          stoppages: 'Fermi',
-          stoppagesTitle: 'Fermi linea',
+          stoppages: 'SCADA',
+          stoppagesTitle: 'SCADA',
           stoppagesHint: 'Clicca una operazione per registrare un fermo.',
           newStoppage: 'Nuovo fermo',
           line: 'Linea',
@@ -2563,8 +2601,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Password',
           wrongPassword: 'Wrong password.',
           enter: 'Enter',
-          stoppages: 'Stoppages',
-          stoppagesTitle: 'Line stoppages',
+          stoppages: 'SCADA',
+          stoppagesTitle: 'SCADA',
           stoppagesHint: 'Click an operation to log a stoppage.',
           newStoppage: 'New stoppage',
           line: 'Line',
@@ -2746,8 +2784,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Şifre',
           wrongPassword: 'Yanlış şifre.',
           enter: 'Giriş',
-          stoppages: 'Duruşlar',
-          stoppagesTitle: 'Hat duruşları',
+          stoppages: 'SCADA',
+          stoppagesTitle: 'SCADA',
           stoppagesHint: 'Duruş kaydetmek için bir operasyona tıklayın.',
           newStoppage: 'Yeni duruş',
           line: 'Hat',
@@ -2941,6 +2979,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         manual: [],
         stoppages: [],
         stoppageTarget: null,
+        stoppageOpenLines: new Set(),
         storageAvailable: true,
         chartRendered: false,
         mainChartSeries: { front: true, rear: true, stellantis: true }
@@ -4264,10 +4303,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return formatNumber(min) + ' ' + t('minutes').toLowerCase();
       }
 
-      function formatStoppageTime(iso) {
+      function formatStoppageClock(iso) {
+        try {
+          return new Intl.DateTimeFormat(locale(), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+        } catch (error) {
+          return iso;
+        }
+      }
+
+      function formatStoppageDay(iso) {
         try {
           return new Intl.DateTimeFormat(locale(), {
-            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+            weekday: 'short', day: '2-digit', month: 'long', year: 'numeric'
           }).format(new Date(iso));
         } catch (error) {
           return iso;
@@ -4322,15 +4369,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           }
         });
         el.stoppagesSchema.innerHTML = STOPPAGE_LINES.map((line) =>
-          '<div class="mod-stoppage-line">' +
-            '<div class="mod-stoppage-line-name">' + escapeHtml(line.name) + '</div>' +
+          '<details class="mod-stoppage-line"' + (state.stoppageOpenLines.has(line.id) ? ' open' : '') + ' data-line="' + escapeHtml(line.id) + '">' +
+            '<summary class="mod-stoppage-line-name">' + escapeHtml(line.name) + '</summary>' +
             '<div class="mod-stoppage-ops">' +
               line.ops.map((op) =>
                 '<button type="button" class="btn mod-stoppage-op" data-line="' + escapeHtml(line.id) + '" data-op="' + escapeHtml(op) + '" data-recent="' + (recentByKey.has(line.id + '|' + op) ? 'true' : 'false') + '">' + escapeHtml(op) + '</button>'
               ).join('') +
             '</div>' +
-          '</div>'
+          '</details>'
         ).join('');
+        el.stoppagesSchema.querySelectorAll('.mod-stoppage-line').forEach((details) => {
+          details.addEventListener('toggle', () => {
+            if (details.open) state.stoppageOpenLines.add(details.dataset.line);
+            else state.stoppageOpenLines.delete(details.dataset.line);
+          });
+        });
         el.stoppagesSchema.querySelectorAll('.mod-stoppage-op').forEach((button) => {
           button.addEventListener('click', () => openStoppageDialog(button.dataset.line, button.dataset.op));
         });
@@ -4338,28 +4391,38 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const sorted = state.stoppages.slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp));
         const totalMin = state.stoppages.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
         el.stoppagesTotal.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin);
-        el.stoppagesBody.innerHTML = sorted.length
-          ? sorted.map((s) =>
-              '<tr>' +
-                '<td>' + escapeHtml(formatStoppageTime(s.timestamp)) + '</td>' +
-                '<td>' + escapeHtml(s.line || stoppageLineName(s.lineId)) + '</td>' +
-                '<td>' + escapeHtml(s.op) + '</td>' +
-                '<td>' + escapeHtml(s.cause) + '</td>' +
-                '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
-                '<td>' + escapeHtml(s.reporter) + '</td>' +
-                '<td class="mod-stoppage-actions-col">' + (state.isAdmin
-                  ? '<button type="button" class="btn btn-ghost mod-delete-stoppage" data-id="' + escapeHtml(s.id) + '">' + escapeHtml(t('delete')) + '</button>'
-                  : '') + '</td>' +
-              '</tr>'
-            ).join('')
-          : '<tr><td colspan="7" class="mod-empty">' + t('noStoppages') + '</td></tr>';
-        el.stoppagesBody.querySelectorAll('.mod-delete-stoppage').forEach((button) => {
-          button.addEventListener('click', () => {
-            if (!window.confirm(t('confirmDeleteStoppage'))) return;
-            deleteStoppage(button.dataset.id);
-            renderStoppages();
-          });
+
+        if (!sorted.length) {
+          el.stoppagesBody.innerHTML = '<tr><td colspan="6" class="mod-empty">' + t('noStoppages') + '</td></tr>';
+          return;
+        }
+        const groups = [];
+        const byDay = new Map();
+        sorted.forEach((s) => {
+          const day = s.timestamp.slice(0, 10);
+          if (!byDay.has(day)) {
+            const group = { day, items: [], total: 0 };
+            byDay.set(day, group);
+            groups.push(group);
+          }
+          const group = byDay.get(day);
+          group.items.push(s);
+          if (isNumber(s.durationMin)) group.total += s.durationMin;
         });
+        el.stoppagesBody.innerHTML = groups.map((group) =>
+          '<tr class="mod-stoppage-day"><td colspan="6">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
+            ' · ' + escapeHtml(stoppageDurationText(group.total)) + '</td></tr>' +
+          group.items.map((s) =>
+            '<tr>' +
+              '<td>' + escapeHtml(formatStoppageClock(s.timestamp)) + '</td>' +
+              '<td>' + escapeHtml(s.line || stoppageLineName(s.lineId)) + '</td>' +
+              '<td>' + escapeHtml(s.op) + '</td>' +
+              '<td>' + escapeHtml(s.cause) + '</td>' +
+              '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
+              '<td>' + escapeHtml(s.reporter) + '</td>' +
+            '</tr>'
+          ).join('')
+        ).join('');
       }
 
       function renderScreens() {
