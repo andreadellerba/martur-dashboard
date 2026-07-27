@@ -1365,6 +1365,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       grid-template-columns: 1fr auto;
       gap: 10px;
     }
+    #martur-operations-dashboard .mod-stoppage-causes {
+      display: grid;
+      gap: 6px;
+      margin-top: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
     #martur-operations-dashboard .mod-stoppages-screen {
       display: grid;
       gap: 14px;
@@ -1497,7 +1504,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: flex;
       justify-content: flex-end;
     }
-    #martur-operations-dashboard:not(.mod-admin-on) .mod-live-toolbar {
+    #martur-operations-dashboard:not(.mod-config-on) .mod-live-toolbar {
       display: none;
     }
     #martur-operations-dashboard #mod-stoppage-settings-dialog {
@@ -2498,10 +2505,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </button>
       </div>
       <form id="mod-stoppage-form">
-        <label class="form-label">
+        <div class="form-label">
           <span data-i18n="stoppageCause">Causa del fermo</span>
-          <select id="mod-stoppage-cause" class="form-select" required></select>
-        </label>
+          <div id="mod-stoppage-causes" class="mod-stoppage-causes"></div>
+        </div>
         <div class="mod-stoppage-duration">
           <label class="form-label">
             <span data-i18n="duration">Durata</span>
@@ -3219,6 +3226,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       };
       const LANG_FLAGS = { it: '🇮🇹', en: '🇬🇧', tr: '🇹🇷' };
       const ADMIN_PASSWORD = 'MarturDashboard2026**';
+      const CONFIG_PASSWORD = 'MarturAdmin';
 
       // Configurazione microfermate (modificabile) — linee, operazioni e cause.
       const STOPPAGE_LINES = [
@@ -3239,6 +3247,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const state = {
         lang: 'it',
         isAdmin: false,
+        isConfigAdmin: false,
         view: 'daily',
         selectedDate: null,
         selectedMonth: null,
@@ -3275,7 +3284,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppageDialog: root.querySelector('#mod-stoppage-dialog'),
         stoppageForm: root.querySelector('#mod-stoppage-form'),
         stoppageTargetLabel: root.querySelector('#mod-stoppage-target'),
-        stoppageCause: root.querySelector('#mod-stoppage-cause'),
+        stoppageCauses: root.querySelector('#mod-stoppage-causes'),
         stoppageDuration: root.querySelector('#mod-stoppage-duration'),
         stoppageUnit: root.querySelector('#mod-stoppage-unit'),
         stoppageReporter: root.querySelector('#mod-stoppage-reporter'),
@@ -4604,6 +4613,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function updateAdminUI() {
         el.entryViewBtn.disabled = !state.isAdmin;
         root.classList.toggle('mod-admin-on', state.isAdmin);
+        root.classList.toggle('mod-config-on', state.isConfigAdmin);
         el.adminLock.setAttribute('aria-pressed', String(state.isAdmin));
         el.adminLock.classList.toggle('mod-admin-active', state.isAdmin);
         el.adminLockIcon.setAttribute('data-lucide', state.isAdmin ? 'lock-open' : 'lock');
@@ -4643,12 +4653,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
       }
 
-      function fillStoppageSelects(selectedCause, selectedReporter) {
-        const placeholder = '<option value="" disabled' + (selectedCause ? '' : ' selected') + '>' + escapeHtml(t('selectPlaceholder')) + '</option>';
+      function stoppageCauseList(s) {
+        return Array.isArray(s.causes) ? s.causes : (s.cause ? [s.cause] : []);
+      }
+
+      function stoppageCauseText(s) {
+        return stoppageCauseList(s).join(', ');
+      }
+
+      function fillStoppageSelects(selectedCauses, selectedReporter) {
+        const sel = selectedCauses || [];
         const causes = state.stoppageConfig.causes.slice();
-        if (selectedCause && !causes.includes(selectedCause)) causes.push(selectedCause);
-        el.stoppageCause.innerHTML = placeholder + causes.map((cause) =>
-          '<option value="' + escapeHtml(cause) + '"' + (cause === selectedCause ? ' selected' : '') + '>' + escapeHtml(cause) + '</option>').join('');
+        sel.forEach((c) => { if (!causes.includes(c)) causes.push(c); });
+        el.stoppageCauses.innerHTML = causes.map((cause, i) => {
+          const id = 'mod-cause-chk-' + i;
+          return '<label class="form-check" for="' + id + '"><input id="' + id + '" class="form-check-input mod-cause-check" type="checkbox" value="' + escapeHtml(cause) + '"' + (sel.includes(cause) ? ' checked' : '') + '><span class="form-check-label">' + escapeHtml(cause) + '</span></label>';
+        }).join('');
+        const placeholder = '<option value="" disabled' + (selectedReporter ? '' : ' selected') + '>' + escapeHtml(t('selectPlaceholder')) + '</option>';
         const reporters = STOPPAGE_REPORTERS.slice();
         if (selectedReporter && !reporters.includes(selectedReporter)) reporters.push(selectedReporter);
         el.stoppageReporter.innerHTML = placeholder + reporters.map((name) =>
@@ -4663,7 +4684,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.stoppageTarget = { lineId, op };
         state.stoppageEditingId = null;
         el.stoppageTargetLabel.textContent = stoppageLineName(lineId) + ' · ' + op;
-        fillStoppageSelects('', '');
+        fillStoppageSelects([], '');
         el.stoppageDuration.value = '';
         el.stoppageUnit.value = 'min';
         el.stoppageNote.value = '';
@@ -4679,7 +4700,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.stoppageTarget = { lineId: rec.lineId, op: rec.op };
         state.stoppageEditingId = id;
         el.stoppageTargetLabel.textContent = (rec.line || stoppageLineName(rec.lineId)) + ' · ' + rec.op;
-        fillStoppageSelects(rec.cause, rec.reporter);
+        fillStoppageSelects(stoppageCauseList(rec), rec.reporter);
         el.stoppageDuration.value = rec.durationMin;
         el.stoppageUnit.value = 'min';
         el.stoppageNote.value = rec.note || '';
@@ -4690,10 +4711,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function submitStoppage() {
         if (!state.isAdmin) { el.stoppageDialog.close(); return; }
-        const cause = el.stoppageCause.value;
+        const causes = Array.from(el.stoppageCauses.querySelectorAll('.mod-cause-check:checked')).map((input) => input.value);
         const durationRaw = Number(el.stoppageDuration.value);
         const reporter = el.stoppageReporter.value;
-        if (!cause || !reporter || !Number.isFinite(durationRaw) || durationRaw <= 0 || !state.stoppageTarget) {
+        if (!causes.length || !reporter || !Number.isFinite(durationRaw) || durationRaw <= 0 || !state.stoppageTarget) {
           el.stoppageError.hidden = false;
           return;
         }
@@ -4701,7 +4722,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const note = el.stoppageNote.value.trim();
         if (state.stoppageEditingId) {
           const rec = state.stoppages.find((s) => s.id === state.stoppageEditingId);
-          if (rec) { rec.cause = cause; rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; }
+          if (rec) { rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; }
           persistStoppages();
         } else {
           addStoppage({
@@ -4709,7 +4730,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             lineId: state.stoppageTarget.lineId,
             line: stoppageLineName(state.stoppageTarget.lineId),
             op: state.stoppageTarget.op,
-            cause,
+            causes,
+            cause: causes.join(', '),
             durationMin,
             reporter,
             note,
@@ -4774,7 +4796,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             sorted.map((s) => '<tr>' +
               '<td>' + escapeHtml(s.line || stoppageLineName(s.lineId)) + '</td>' +
               '<td>' + escapeHtml(s.op) + '</td>' +
-              '<td>' + escapeHtml(s.cause) + '</td>' +
+              '<td>' + escapeHtml(stoppageCauseText(s)) + '</td>' +
               '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(s.reporter) + '</td>' +
               '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
@@ -4815,7 +4837,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return state.stoppages.filter((s) =>
           (!f.date || String(s.timestamp).slice(0, 10) === f.date) &&
           (!f.line || s.lineId === f.line) &&
-          (!f.cause || s.cause === f.cause) &&
+          (!f.cause || stoppageCauseList(s).includes(f.cause)) &&
           (!f.reporter || s.reporter === f.reporter)
         );
       }
@@ -4832,7 +4854,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderStoppageAdmin() {
-        if (!state.isAdmin) { el.stoppageAdmin.innerHTML = ''; return; }
+        if (!state.isConfigAdmin) { el.stoppageAdmin.innerHTML = ''; return; }
         const opsHtml = STOPPAGE_LINES.map((line) =>
           '<div class="mod-cfg-line"><span class="mod-cfg-line-name">' + escapeHtml(line.name) + '</span>' +
             '<div class="mod-cfg-chips">' +
@@ -4894,7 +4916,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           String(s.timestamp).slice(0, 10),
           formatStoppageClock(s.timestamp),
           s.line || stoppageLineName(s.lineId),
-          s.op, s.cause, s.durationMin, s.reporter, s.note || ''
+          s.op, stoppageCauseText(s), s.durationMin, s.reporter, s.note || ''
         ].map(esc).join(';'));
         return [header.map(esc).join(';')].concat(lines).join('\r\n');
       }
@@ -4980,7 +5002,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<td>' + escapeHtml(formatStoppageClock(s.timestamp)) + '</td>' +
               '<td>' + escapeHtml(s.line || stoppageLineName(s.lineId)) + '</td>' +
               '<td>' + escapeHtml(s.op) + '</td>' +
-              '<td>' + escapeHtml(s.cause) + '</td>' +
+              '<td>' + escapeHtml(stoppageCauseText(s)) + '</td>' +
               '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(s.reporter) + '</td>' +
               '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
@@ -5049,6 +5071,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.adminLock.addEventListener('click', () => {
         if (state.isAdmin) {
           state.isAdmin = false;
+          state.isConfigAdmin = false;
           updateAdminUI();
           if (state.view === 'entry') state.view = 'daily';
           renderAll();
@@ -5058,15 +5081,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       el.adminForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        if (el.adminPassword.value === ADMIN_PASSWORD) {
+        const value = el.adminPassword.value;
+        if (value === CONFIG_PASSWORD) {
           state.isAdmin = true;
-          el.adminError.hidden = true;
-          el.adminDialog.close();
-          updateAdminUI();
-          renderAll();
+          state.isConfigAdmin = true;
+        } else if (value === ADMIN_PASSWORD) {
+          state.isAdmin = true;
+          state.isConfigAdmin = false;
         } else {
           el.adminError.hidden = false;
+          return;
         }
+        el.adminError.hidden = true;
+        el.adminDialog.close();
+        updateAdminUI();
+        renderAll();
       });
       el.closeAdminDialog.addEventListener('click', () => el.adminDialog.close());
       el.cancelAdminDialog.addEventListener('click', () => el.adminDialog.close());
@@ -5081,7 +5110,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.filterCause.addEventListener('change', () => { state.stoppageFilters.cause = el.filterCause.value; renderStoppages(); });
       el.filterReporter.addEventListener('change', () => { state.stoppageFilters.reporter = el.filterReporter.value; renderStoppages(); });
       el.exportStoppages.addEventListener('click', exportStoppagesCsv);
-      el.stoppageSettingsBtn.addEventListener('click', () => { if (state.isAdmin) el.stoppageSettingsDialog.showModal(); });
+      el.stoppageSettingsBtn.addEventListener('click', () => { if (state.isConfigAdmin) el.stoppageSettingsDialog.showModal(); });
       el.closeStoppageSettings.addEventListener('click', () => el.stoppageSettingsDialog.close());
       root.querySelectorAll('.mod-view-btn').forEach((button) => {
         button.addEventListener('click', () => {
