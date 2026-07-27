@@ -1492,9 +1492,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-stoppage-admin {
       display: grid;
       gap: 8px;
-      padding: 12px;
-      border: 1px dashed var(--border);
-      border-radius: var(--radius-lg);
+    }
+    #martur-operations-dashboard .mod-live-toolbar {
+      display: flex;
+      justify-content: flex-end;
+    }
+    #martur-operations-dashboard:not(.mod-admin-on) .mod-live-toolbar {
+      display: none;
+    }
+    #martur-operations-dashboard #mod-stoppage-settings-dialog {
+      width: min(94vw, 560px);
+      max-width: 560px;
+    }
+    #martur-operations-dashboard #mod-stoppage-settings-dialog .mod-dialog-shell {
+      grid-template-rows: auto minmax(0, 1fr);
     }
     #martur-operations-dashboard .mod-cfg-section {
       margin-top: 8px;
@@ -1541,6 +1552,34 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-cfg-input {
       width: 90px;
       min-height: 30px;
+    }
+    #martur-operations-dashboard #mod-stoppages-body td,
+    #martur-operations-dashboard #mod-downtime-wrap td {
+      vertical-align: top;
+    }
+    #martur-operations-dashboard #mod-stoppages-body td.mod-note-col,
+    #martur-operations-dashboard #mod-downtime-wrap td.mod-note-col {
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-width: 260px;
+      min-width: 130px;
+    }
+    #martur-operations-dashboard .mod-stoppage-act {
+      min-height: 26px;
+      padding: 0 6px;
+      color: var(--primary);
+    }
+    #martur-operations-dashboard .mod-stoppage-act svg {
+      width: 15px;
+      height: 15px;
+    }
+    #martur-operations-dashboard:not(.mod-admin-on) .mod-stoppage-act-col {
+      display: none;
+    }
+    #martur-operations-dashboard .mod-daily-admin-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
     }
     #martur-operations-dashboard .mod-stoppage-op {
       min-width: 70px;
@@ -2057,6 +2096,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <main id="mod-dashboard-screen">
     <div id="mod-report-title" class="mod-report-title"></div>
     <section id="mod-daily-shift-section" class="mod-section">
+      <div id="mod-daily-admin-actions" class="mod-daily-admin-actions" hidden></div>
       <div id="mod-daily-shift-grid" class="mod-daily-shift-grid"></div>
     </section>
 
@@ -2386,8 +2426,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   </section>
 
   <section id="mod-stoppages-screen" class="mod-stoppages-screen" hidden>
+    <div class="mod-live-toolbar">
+      <button type="button" id="mod-stoppage-settings-btn" class="btn btn-ghost">
+        <i data-lucide="settings" aria-hidden="true"></i><span data-i18n="settings">Impostazioni</span>
+      </button>
+    </div>
     <div id="mod-stoppages-schema" class="mod-stoppages-schema"></div>
-    <div id="mod-stoppage-admin" class="mod-stoppage-admin" hidden></div>
     <section class="mod-section">
       <div class="mod-section-head">
         <div>
@@ -2399,6 +2443,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </button>
       </div>
       <div class="mod-stoppage-filters">
+        <input id="mod-filter-date" class="form-control" type="date" aria-label="Giorno">
         <select id="mod-filter-line" class="form-select" aria-label="Linea"></select>
         <select id="mod-filter-cause" class="form-select" aria-label="Causa"></select>
         <select id="mod-filter-reporter" class="form-select" aria-label="Chi segnala"></select>
@@ -2414,6 +2459,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               <th data-i18n="duration">Durata</th>
               <th data-i18n="reporter">Chi segnala</th>
               <th data-i18n="note">Note</th>
+              <th class="mod-stoppage-act-col" data-i18n="actions">Azioni</th>
             </tr>
           </thead>
           <tbody id="mod-stoppages-body"></tbody>
@@ -2421,6 +2467,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </section>
   </section>
+
+  <dialog id="mod-stoppage-settings-dialog" class="card mod-selection-dialog" aria-labelledby="mod-stoppage-settings-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-stoppage-settings-title" class="mod-dialog-title" data-i18n="settings">Impostazioni</h2>
+        </div>
+        <button id="mod-close-stoppage-settings" type="button" class="btn btn-ghost">
+          <i data-lucide="x" aria-hidden="true"></i>
+          <span data-i18n="close">Chiudi</span>
+        </button>
+      </div>
+      <div class="mod-dialog-scroll">
+        <div id="mod-stoppage-admin" class="mod-stoppage-admin"></div>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="mod-stoppage-dialog" class="card mod-selection-dialog" aria-labelledby="mod-stoppage-dialog-title">
     <div class="mod-dialog-shell">
@@ -2619,6 +2682,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           addCause: 'Aggiungi causa',
           manageOps: 'Operazioni per linea',
           manageCauses: 'Cause disponibili',
+          settings: 'Impostazioni',
           dailyShiftIndicators: 'Indicatori giornalieri per turno',
           reportTitleDay: 'Report di produzione del {value}',
           reportTitleWeek: 'Report di produzione della settimana {week} - {value}',
@@ -2811,6 +2875,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           addCause: 'Add cause',
           manageOps: 'Operations per line',
           manageCauses: 'Available causes',
+          settings: 'Settings',
           dailyShiftIndicators: 'Daily indicators by shift',
           reportTitleDay: 'Production report for {value}',
           reportTitleWeek: 'Production report for week {week} - {value}',
@@ -3003,6 +3068,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           addCause: 'Neden ekle',
           manageOps: 'Hat başına operasyonlar',
           manageCauses: 'Mevcut nedenler',
+          settings: 'Ayarlar',
           dailyShiftIndicators: 'Vardiyaya göre günlük göstergeler',
           reportTitleDay: '{value} üretim raporu',
           reportTitleWeek: '{week}. hafta üretim raporu - {value}',
@@ -3165,7 +3231,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const STOPPAGE_REPORTERS = [
         'Mustafa KAYAN', 'Lucian NEAMTU', 'Saverio PERNA', 'Massimiliano LAMPIS',
         'Paolo ZOTTA', 'Mattia COLVERDE', 'Alessandro LIOTINO', 'Davide CRISTIANO',
-        'Alp ERGUR', 'Diego BECCARI'
+        'Alp ERGUR', 'Diego BECCARI', 'Monica D\'URSO'
       ];
       const STOPPAGE_STORAGE_KEY = 'martur-stoppages-v1';
       const STOPPAGE_CONFIG_KEY = 'martur-stoppage-config-v1';
@@ -3180,9 +3246,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         manual: [],
         stoppages: [],
         stoppageTarget: null,
+        stoppageEditingId: null,
         stoppageOpenLines: new Set(),
         stoppageConfig: { ops: {}, causes: [] },
-        stoppageFilters: { line: '', cause: '', reporter: '' },
+        stoppageFilters: { date: '', line: '', cause: '', reporter: '' },
         storageAvailable: true,
         chartRendered: false,
         mainChartSeries: { front: true, rear: true, stellantis: true }
@@ -3195,7 +3262,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppagesScreen: root.querySelector('#mod-stoppages-screen'),
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
         stoppageAdmin: root.querySelector('#mod-stoppage-admin'),
+        stoppageSettingsBtn: root.querySelector('#mod-stoppage-settings-btn'),
+        stoppageSettingsDialog: root.querySelector('#mod-stoppage-settings-dialog'),
+        closeStoppageSettings: root.querySelector('#mod-close-stoppage-settings'),
         exportStoppages: root.querySelector('#mod-export-stoppages'),
+        filterDate: root.querySelector('#mod-filter-date'),
         filterLine: root.querySelector('#mod-filter-line'),
         filterCause: root.querySelector('#mod-filter-cause'),
         filterReporter: root.querySelector('#mod-filter-reporter'),
@@ -3235,6 +3306,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         periodMonth: root.querySelector('#mod-period-month'),
         reportTitle: root.querySelector('#mod-report-title'),
         dailyShiftSection: root.querySelector('#mod-daily-shift-section'),
+        dailyAdminActions: root.querySelector('#mod-daily-admin-actions'),
         dailyShiftGrid: root.querySelector('#mod-daily-shift-grid'),
         dailyReworkSection: root.querySelector('#mod-daily-rework-section'),
         dailyReworkList: root.querySelector('#mod-daily-rework-list'),
@@ -3732,7 +3804,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ? productionRows[productionRows.length - 1]
           : activeRows.length ? activeRows[activeRows.length - 1] : rows[rows.length - 1];
         const firstDate = rows.length ? rows[0].date : DATA.latestDate;
-        const lastDate = rows.length ? rows[rows.length - 1].date : DATA.latestDate;
+        const dataLastDate = rows.length ? rows[rows.length - 1].date : DATA.latestDate;
+        const todayIso = isoDate(new Date());
+        const lastDate = todayIso > dataLastDate ? todayIso : dataLastDate;
 
         if (!state.selectedDate || state.selectedDate < firstDate || state.selectedDate > lastDate) {
           state.selectedDate = defaultRow ? defaultRow.date : DATA.latestDate;
@@ -4155,13 +4229,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderShiftTables(overall, subtitle) {
         el.shiftPeriod.textContent = subtitle;
         el.shiftQualityPeriod.textContent = subtitle;
-        const shiftEditButton = state.isAdmin
-          ? ' <button type="button" class="btn btn-ghost mod-shift-edit" data-date="' + state.selectedDate + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>'
-          : '';
         el.shiftProductionBody.innerHTML = ['shift1', 'shift2'].map((name, index) => {
           const shift = overall[name];
           const delta = isNumber(shift.rear) && isNumber(shift.stellantisCars) ? shift.rear - shift.stellantisCars : null;
-          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + shiftEditButton + '</td><td>' + formatNumber(shift.front) + '</td><td>' + formatNumber(shift.rear) + '</td><td>' + formatNumber(shift.stellantisCars) + '</td><td class="' + (isNumber(delta) && delta < 0 ? 'mod-negative' : '') + '">' + formatSigned(delta) + '</td></tr>';
+          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + '</td><td>' + formatNumber(shift.front) + '</td><td>' + formatNumber(shift.rear) + '</td><td>' + formatNumber(shift.stellantisCars) + '</td><td class="' + (isNumber(delta) && delta < 0 ? 'mod-negative' : '') + '">' + formatSigned(delta) + '</td></tr>';
         }).join('');
         el.shiftQualityBody.innerHTML = ['shift1', 'shift2'].map((name, index) => {
           const shift = overall[name];
@@ -4169,13 +4240,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const reworkRate = shift.front ? shift.rework / shift.front : null;
           const reworkText = formatNumber(shift.rework) + (isNumber(reworkRate) ? ' · ' + formatPercent(reworkRate) : '');
           const absentText = formatNumber(shift.absent) + (isNumber(absRate) ? ' · ' + formatPercent(absRate) : '');
-          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + shiftEditButton + '</td><td>' + formatNumber(shift.presence) + '</td><td>' + absentText + '</td><td>' + reworkText + '</td><td>' + formatPercent(shift.overtimePct) + '</td></tr>';
+          return '<tr><td>' + t(index === 0 ? 'shift1' : 'shift2') + '</td><td>' + formatNumber(shift.presence) + '</td><td>' + absentText + '</td><td>' + reworkText + '</td><td>' + formatPercent(shift.overtimePct) + '</td></tr>';
         }).join('');
-        [el.shiftProductionBody, el.shiftQualityBody].forEach((body) => {
-          body.querySelectorAll('.mod-shift-edit').forEach((button) => {
-            button.addEventListener('click', () => openShiftEditor(button.dataset.date));
-          });
-        });
       }
 
       function renderDashboard() {
@@ -4226,6 +4292,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
         el.mainDetail.innerHTML = '<span>' + t('selectedRange') + ': <strong>' + subtitle + '</strong></span><span>' + t('supplyGap') + ': <strong class="' + (overall.supplyGap < 0 ? 'mod-negative' : '') + '">' + formatSigned(overall.supplyGap) + ' ' + t('pieces') + '</strong></span>';
         renderDailyShiftCards(dailySummary);
+        renderDailyAdminActions();
         renderDailyTopReworks(dailySummary);
         renderShiftTables(overall, subtitle);
         renderDowntime();
@@ -4465,6 +4532,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         resetEntry(isoDate(new Date()));
       }
 
+      function renderDailyAdminActions() {
+        const canEdit = state.isAdmin && state.view === 'daily';
+        el.dailyAdminActions.hidden = !canEdit;
+        if (!canEdit) { el.dailyAdminActions.innerHTML = ''; return; }
+        const hasManual = state.manual.some((row) => row.date === state.selectedDate);
+        el.dailyAdminActions.innerHTML =
+          '<button type="button" class="btn btn-ghost mod-daily-edit-btn"><i data-lucide="pencil" aria-hidden="true"></i><span>' + escapeHtml(t('edit')) + '</span></button>' +
+          (hasManual ? '<button type="button" class="btn btn-ghost mod-daily-delete-btn"><i data-lucide="trash-2" aria-hidden="true"></i><span>' + escapeHtml(t('delete')) + '</span></button>' : '');
+        el.dailyAdminActions.querySelector('.mod-daily-edit-btn').addEventListener('click', () => openShiftEditor(state.selectedDate));
+        const delBtn = el.dailyAdminActions.querySelector('.mod-daily-delete-btn');
+        if (delBtn) delBtn.addEventListener('click', () => deleteManualDay(state.selectedDate));
+      }
+
+      function deleteManualDay(date) {
+        if (!state.isAdmin) return;
+        if (!window.confirm(t('confirmDelete'))) return;
+        state.manual = state.manual.filter((row) => row.date !== date);
+        if (state.editingDate === date) resetEntry(date);
+        persistManual();
+        renderAll();
+      }
+
       function openShiftEditor(date) {
         if (!state.isAdmin) return;
         state.view = 'entry';
@@ -4514,6 +4603,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function updateAdminUI() {
         el.entryViewBtn.disabled = !state.isAdmin;
+        root.classList.toggle('mod-admin-on', state.isAdmin);
         el.adminLock.setAttribute('aria-pressed', String(state.isAdmin));
         el.adminLock.classList.toggle('mod-admin-active', state.isAdmin);
         el.adminLockIcon.setAttribute('data-lucide', state.isAdmin ? 'lock-open' : 'lock');
@@ -4553,21 +4643,46 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
       }
 
+      function fillStoppageSelects(selectedCause, selectedReporter) {
+        const placeholder = '<option value="" disabled' + (selectedCause ? '' : ' selected') + '>' + escapeHtml(t('selectPlaceholder')) + '</option>';
+        const causes = state.stoppageConfig.causes.slice();
+        if (selectedCause && !causes.includes(selectedCause)) causes.push(selectedCause);
+        el.stoppageCause.innerHTML = placeholder + causes.map((cause) =>
+          '<option value="' + escapeHtml(cause) + '"' + (cause === selectedCause ? ' selected' : '') + '>' + escapeHtml(cause) + '</option>').join('');
+        const reporters = STOPPAGE_REPORTERS.slice();
+        if (selectedReporter && !reporters.includes(selectedReporter)) reporters.push(selectedReporter);
+        el.stoppageReporter.innerHTML = placeholder + reporters.map((name) =>
+          '<option value="' + escapeHtml(name) + '"' + (name === selectedReporter ? ' selected' : '') + '>' + escapeHtml(name) + '</option>').join('');
+      }
+
       function openStoppageDialog(lineId, op) {
         if (!state.isAdmin) {
           promptAdminLogin();
           return;
         }
         state.stoppageTarget = { lineId, op };
+        state.stoppageEditingId = null;
         el.stoppageTargetLabel.textContent = stoppageLineName(lineId) + ' · ' + op;
-        const placeholder = '<option value="" disabled selected>' + escapeHtml(t('selectPlaceholder')) + '</option>';
-        el.stoppageCause.innerHTML = placeholder + state.stoppageConfig.causes.map((cause) =>
-          '<option value="' + escapeHtml(cause) + '">' + escapeHtml(cause) + '</option>').join('');
-        el.stoppageReporter.innerHTML = placeholder + STOPPAGE_REPORTERS.map((name) =>
-          '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>').join('');
+        fillStoppageSelects('', '');
         el.stoppageDuration.value = '';
         el.stoppageUnit.value = 'min';
         el.stoppageNote.value = '';
+        el.stoppageError.hidden = true;
+        el.stoppageDialog.showModal();
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+      }
+
+      function openStoppageEdit(id) {
+        if (!state.isAdmin) return;
+        const rec = state.stoppages.find((s) => s.id === id);
+        if (!rec) return;
+        state.stoppageTarget = { lineId: rec.lineId, op: rec.op };
+        state.stoppageEditingId = id;
+        el.stoppageTargetLabel.textContent = (rec.line || stoppageLineName(rec.lineId)) + ' · ' + rec.op;
+        fillStoppageSelects(rec.cause, rec.reporter);
+        el.stoppageDuration.value = rec.durationMin;
+        el.stoppageUnit.value = 'min';
+        el.stoppageNote.value = rec.note || '';
         el.stoppageError.hidden = true;
         el.stoppageDialog.showModal();
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
@@ -4583,18 +4698,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           return;
         }
         const durationMin = el.stoppageUnit.value === 'hours' ? durationRaw * 60 : durationRaw;
-        addStoppage({
-          id: (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
-          lineId: state.stoppageTarget.lineId,
-          line: stoppageLineName(state.stoppageTarget.lineId),
-          op: state.stoppageTarget.op,
-          cause,
-          durationMin,
-          reporter,
-          note: el.stoppageNote.value.trim(),
-          timestamp: new Date().toISOString()
-        });
+        const note = el.stoppageNote.value.trim();
+        if (state.stoppageEditingId) {
+          const rec = state.stoppages.find((s) => s.id === state.stoppageEditingId);
+          if (rec) { rec.cause = cause; rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; }
+          persistStoppages();
+        } else {
+          addStoppage({
+            id: (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+            lineId: state.stoppageTarget.lineId,
+            line: stoppageLineName(state.stoppageTarget.lineId),
+            op: state.stoppageTarget.op,
+            cause,
+            durationMin,
+            reporter,
+            note,
+            timestamp: new Date().toISOString()
+          });
+        }
         state.stoppageTarget = null;
+        state.stoppageEditingId = null;
         el.stoppageDialog.close();
         renderStoppages();
       }
@@ -4654,7 +4777,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<td>' + escapeHtml(s.cause) + '</td>' +
               '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(s.reporter) + '</td>' +
-              '<td>' + escapeHtml(s.note || '') + '</td>' +
+              '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
             '</tr>').join('') +
             '</tbody></table>';
         } else {
@@ -4690,6 +4813,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function getFilteredStoppages() {
         const f = state.stoppageFilters;
         return state.stoppages.filter((s) =>
+          (!f.date || String(s.timestamp).slice(0, 10) === f.date) &&
           (!f.line || s.lineId === f.line) &&
           (!f.cause || s.cause === f.cause) &&
           (!f.reporter || s.reporter === f.reporter)
@@ -4697,6 +4821,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderStoppageFilters() {
+        el.filterDate.value = state.stoppageFilters.date || '';
         const opt = (value, label, selected) => '<option value="' + escapeHtml(value) + '"' + (selected ? ' selected' : '') + '>' + escapeHtml(label) + '</option>';
         el.filterLine.innerHTML = opt('', t('filterAll') + ' · ' + t('line'), !state.stoppageFilters.line) +
           STOPPAGE_LINES.map((l) => opt(l.id, l.name, state.stoppageFilters.line === l.id)).join('');
@@ -4707,8 +4832,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderStoppageAdmin() {
-        if (!state.isAdmin) { el.stoppageAdmin.hidden = true; el.stoppageAdmin.innerHTML = ''; return; }
-        el.stoppageAdmin.hidden = false;
+        if (!state.isAdmin) { el.stoppageAdmin.innerHTML = ''; return; }
         const opsHtml = STOPPAGE_LINES.map((line) =>
           '<div class="mod-cfg-line"><span class="mod-cfg-line-name">' + escapeHtml(line.name) + '</span>' +
             '<div class="mod-cfg-chips">' +
@@ -4832,7 +4956,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.stoppagesTotal.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin);
 
         if (!sorted.length) {
-          el.stoppagesBody.innerHTML = '<tr><td colspan="7" class="mod-empty">' + t('noStoppages') + '</td></tr>';
+          el.stoppagesBody.innerHTML = '<tr><td colspan="8" class="mod-empty">' + t('noStoppages') + '</td></tr>';
           return;
         }
         const groups = [];
@@ -4849,7 +4973,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (isNumber(s.durationMin)) group.total += s.durationMin;
         });
         el.stoppagesBody.innerHTML = groups.map((group) =>
-          '<tr class="mod-stoppage-day"><td colspan="7">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
+          '<tr class="mod-stoppage-day"><td colspan="8">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
             ' · ' + escapeHtml(stoppageDurationText(group.total)) + '</td></tr>' +
           group.items.map((s) =>
             '<tr>' +
@@ -4859,10 +4983,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<td>' + escapeHtml(s.cause) + '</td>' +
               '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(s.reporter) + '</td>' +
-              '<td>' + escapeHtml(s.note || '') + '</td>' +
+              '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
+              '<td class="mod-stoppage-act-col"><button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-edit" data-id="' + escapeHtml(s.id) + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' +
+                '<button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-del" data-id="' + escapeHtml(s.id) + '" title="' + escapeHtml(t('delete')) + '"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>' +
             '</tr>'
           ).join('')
         ).join('');
+        el.stoppagesBody.querySelectorAll('.mod-stoppage-edit').forEach((button) => {
+          button.addEventListener('click', () => openStoppageEdit(button.dataset.id));
+        });
+        el.stoppagesBody.querySelectorAll('.mod-stoppage-del').forEach((button) => {
+          button.addEventListener('click', () => {
+            if (!window.confirm(t('confirmDeleteStoppage'))) return;
+            deleteStoppage(button.dataset.id);
+            renderStoppages();
+          });
+        });
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
       function renderScreens() {
@@ -4939,10 +5076,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       el.closeStoppageDialog.addEventListener('click', () => el.stoppageDialog.close());
       el.cancelStoppageDialog.addEventListener('click', () => el.stoppageDialog.close());
+      el.filterDate.addEventListener('change', () => { state.stoppageFilters.date = el.filterDate.value; renderStoppages(); });
       el.filterLine.addEventListener('change', () => { state.stoppageFilters.line = el.filterLine.value; renderStoppages(); });
       el.filterCause.addEventListener('change', () => { state.stoppageFilters.cause = el.filterCause.value; renderStoppages(); });
       el.filterReporter.addEventListener('change', () => { state.stoppageFilters.reporter = el.filterReporter.value; renderStoppages(); });
       el.exportStoppages.addEventListener('click', exportStoppagesCsv);
+      el.stoppageSettingsBtn.addEventListener('click', () => { if (state.isAdmin) el.stoppageSettingsDialog.showModal(); });
+      el.closeStoppageSettings.addEventListener('click', () => el.stoppageSettingsDialog.close());
       root.querySelectorAll('.mod-view-btn').forEach((button) => {
         button.addEventListener('click', () => {
           if (button.dataset.view === 'entry' && !state.isAdmin) return;
