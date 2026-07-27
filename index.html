@@ -1432,6 +1432,116 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       letter-spacing: 0.03em;
       font-size: var(--font-size-small);
     }
+    #martur-operations-dashboard .mod-line-status {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+      background: #9ca3af;
+    }
+    #martur-operations-dashboard .mod-line-status[data-status="green"] { background: #16a34a; }
+    #martur-operations-dashboard .mod-line-status[data-status="yellow"] { background: #eab308; }
+    #martur-operations-dashboard .mod-line-status[data-status="red"] { background: #e11d1d; }
+    #martur-operations-dashboard .mod-downtime-pareto {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+    #martur-operations-dashboard .mod-pareto-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 30%) 1fr auto;
+      align-items: center;
+      gap: 10px;
+    }
+    #martur-operations-dashboard .mod-pareto-label {
+      font-size: var(--font-size-small);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-pareto-track {
+      background: var(--muted);
+      border-radius: var(--radius-full);
+      height: 14px;
+      overflow: hidden;
+    }
+    #martur-operations-dashboard .mod-pareto-bar {
+      display: block;
+      height: 100%;
+      background: #e11d1d;
+      border-radius: var(--radius-full);
+    }
+    #martur-operations-dashboard .mod-pareto-value {
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-stoppage-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    #martur-operations-dashboard .mod-stoppage-filters .form-select {
+      width: auto;
+      min-width: 140px;
+      flex: 1 1 140px;
+    }
+    #martur-operations-dashboard .mod-stoppage-admin {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+    }
+    #martur-operations-dashboard .mod-cfg-section {
+      margin-top: 8px;
+    }
+    #martur-operations-dashboard .mod-cfg-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    #martur-operations-dashboard .mod-cfg-line-name {
+      font-weight: 600;
+      min-width: 96px;
+    }
+    #martur-operations-dashboard .mod-cfg-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    #martur-operations-dashboard .mod-cfg-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--muted);
+      font-size: var(--font-size-small);
+    }
+    #martur-operations-dashboard .mod-cfg-remove {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      color: var(--destructive);
+      font-size: 15px;
+      line-height: 1;
+      padding: 0 2px;
+    }
+    #martur-operations-dashboard .mod-cfg-add {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+    #martur-operations-dashboard .mod-cfg-input {
+      width: 90px;
+      min-height: 30px;
+    }
     #martur-operations-dashboard .mod-stoppage-op {
       min-width: 70px;
       min-height: 44px;
@@ -2277,12 +2387,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
   <section id="mod-stoppages-screen" class="mod-stoppages-screen" hidden>
     <div id="mod-stoppages-schema" class="mod-stoppages-schema"></div>
+    <div id="mod-stoppage-admin" class="mod-stoppage-admin" hidden></div>
     <section class="mod-section">
       <div class="mod-section-head">
         <div>
           <div class="mod-section-label" data-i18n="recordedStoppages">Fermi registrati</div>
           <div id="mod-stoppages-total" class="text-small text-muted"></div>
         </div>
+        <button id="mod-export-stoppages" type="button" class="btn btn-ghost" title="Export CSV">
+          <i data-lucide="download" aria-hidden="true"></i><span>CSV</span>
+        </button>
+      </div>
+      <div class="mod-stoppage-filters">
+        <select id="mod-filter-line" class="form-select" aria-label="Linea"></select>
+        <select id="mod-filter-cause" class="form-select" aria-label="Causa"></select>
+        <select id="mod-filter-reporter" class="form-select" aria-label="Chi segnala"></select>
       </div>
       <div class="mod-table-wrap">
         <table>
@@ -2495,6 +2614,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           downtimeTitle: 'Fermi',
           count: 'Numero',
           noStoppagesPeriod: 'Nessun fermo nel periodo.',
+          filterAll: 'Tutti',
+          addOp: 'Aggiungi OP',
+          addCause: 'Aggiungi causa',
+          manageOps: 'Operazioni per linea',
+          manageCauses: 'Cause disponibili',
           dailyShiftIndicators: 'Indicatori giornalieri per turno',
           reportTitleDay: 'Report di produzione del {value}',
           reportTitleWeek: 'Report di produzione della settimana {week} - {value}',
@@ -2682,6 +2806,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           downtimeTitle: 'Stoppages',
           count: 'Count',
           noStoppagesPeriod: 'No stoppages in this period.',
+          filterAll: 'All',
+          addOp: 'Add OP',
+          addCause: 'Add cause',
+          manageOps: 'Operations per line',
+          manageCauses: 'Available causes',
           dailyShiftIndicators: 'Daily indicators by shift',
           reportTitleDay: 'Production report for {value}',
           reportTitleWeek: 'Production report for week {week} - {value}',
@@ -2869,6 +2998,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           downtimeTitle: 'Duruşlar',
           count: 'Adet',
           noStoppagesPeriod: 'Bu dönemde duruş yok.',
+          filterAll: 'Tümü',
+          addOp: 'OP ekle',
+          addCause: 'Neden ekle',
+          manageOps: 'Hat başına operasyonlar',
+          manageCauses: 'Mevcut nedenler',
           dailyShiftIndicators: 'Vardiyaya göre günlük göstergeler',
           reportTitleDay: '{value} üretim raporu',
           reportTitleWeek: '{week}. hafta üretim raporu - {value}',
@@ -3034,6 +3168,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'Alp ERGUR', 'Diego BECCARI'
       ];
       const STOPPAGE_STORAGE_KEY = 'martur-stoppages-v1';
+      const STOPPAGE_CONFIG_KEY = 'martur-stoppage-config-v1';
 
       const state = {
         lang: 'it',
@@ -3046,6 +3181,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppages: [],
         stoppageTarget: null,
         stoppageOpenLines: new Set(),
+        stoppageConfig: { ops: {}, causes: [] },
+        stoppageFilters: { line: '', cause: '', reporter: '' },
         storageAvailable: true,
         chartRendered: false,
         mainChartSeries: { front: true, rear: true, stellantis: true }
@@ -3057,6 +3194,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         entryScreen: root.querySelector('#mod-entry-screen'),
         stoppagesScreen: root.querySelector('#mod-stoppages-screen'),
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
+        stoppageAdmin: root.querySelector('#mod-stoppage-admin'),
+        exportStoppages: root.querySelector('#mod-export-stoppages'),
+        filterLine: root.querySelector('#mod-filter-line'),
+        filterCause: root.querySelector('#mod-filter-cause'),
+        filterReporter: root.querySelector('#mod-filter-reporter'),
         stoppagesBody: root.querySelector('#mod-stoppages-body'),
         stoppagesTotal: root.querySelector('#mod-stoppages-total'),
         stoppageDialog: root.querySelector('#mod-stoppage-dialog'),
@@ -3441,6 +3583,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function deleteStoppage(id) {
         state.stoppages = state.stoppages.filter((item) => item.id !== id);
         persistStoppages();
+      }
+
+      function loadStoppageConfig() {
+        let stored = null;
+        try { stored = JSON.parse(window.localStorage.getItem(STOPPAGE_CONFIG_KEY)); } catch (error) {}
+        const ops = {};
+        STOPPAGE_LINES.forEach((line) => {
+          const saved = stored && stored.ops && Array.isArray(stored.ops[line.id]) ? stored.ops[line.id] : null;
+          ops[line.id] = saved ? saved.slice() : line.ops.slice();
+        });
+        const causes = stored && Array.isArray(stored.causes) ? stored.causes.slice() : STOPPAGE_CAUSES.slice();
+        state.stoppageConfig = { ops, causes };
+      }
+
+      function persistStoppageConfig() {
+        try { window.localStorage.setItem(STOPPAGE_CONFIG_KEY, JSON.stringify(state.stoppageConfig)); } catch (error) {}
+      }
+
+      function lineOps(lineId) {
+        return (state.stoppageConfig.ops && state.stoppageConfig.ops[lineId]) || [];
       }
 
       function getDailyRows() {
@@ -4399,7 +4561,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.stoppageTarget = { lineId, op };
         el.stoppageTargetLabel.textContent = stoppageLineName(lineId) + ' · ' + op;
         const placeholder = '<option value="" disabled selected>' + escapeHtml(t('selectPlaceholder')) + '</option>';
-        el.stoppageCause.innerHTML = placeholder + STOPPAGE_CAUSES.map((cause) =>
+        el.stoppageCause.innerHTML = placeholder + state.stoppageConfig.causes.map((cause) =>
           '<option value="' + escapeHtml(cause) + '">' + escapeHtml(cause) + '</option>').join('');
         el.stoppageReporter.innerHTML = placeholder + STOPPAGE_REPORTERS.map((name) =>
           '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>').join('');
@@ -4452,6 +4614,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return state.stoppages.filter((s) => String(s.timestamp).slice(0, 10) === state.selectedDate);
       }
 
+      function downtimeParetoHtml(items) {
+        const map = new Map();
+        items.forEach((s) => {
+          const key = s.lineId + '|' + s.op;
+          if (!map.has(key)) map.set(key, { label: (s.line || stoppageLineName(s.lineId)) + ' · ' + s.op, total: 0 });
+          map.get(key).total += isNumber(s.durationMin) ? s.durationMin : 0;
+        });
+        const rows = Array.from(map.values()).filter((r) => r.total > 0).sort((a, b) => b.total - a.total);
+        if (!rows.length) return '';
+        const max = rows[0].total;
+        return '<div class="mod-downtime-pareto">' + rows.map((r) =>
+          '<div class="mod-pareto-row">' +
+            '<span class="mod-pareto-label">' + escapeHtml(r.label) + '</span>' +
+            '<span class="mod-pareto-track"><span class="mod-pareto-bar" style="width:' + Math.max(4, Math.round(r.total / max * 100)) + '%"></span></span>' +
+            '<span class="mod-pareto-value">' + escapeHtml(stoppageDurationText(r.total)) + '</span>' +
+          '</div>'
+        ).join('') + '</div>';
+      }
+
       function renderDowntime() {
         const items = getPeriodStoppages();
         const totalMin = items.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
@@ -4460,9 +4641,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.downtimeWrap.innerHTML = '<table><tbody><tr><td class="mod-empty">' + t('noStoppagesPeriod') + '</td></tr></tbody></table>';
           return;
         }
+        const pareto = downtimeParetoHtml(items);
+        let table;
         if (state.view === 'daily') {
           const sorted = items.slice().sort((a, b) => (b.durationMin || 0) - (a.durationMin || 0));
-          el.downtimeWrap.innerHTML = '<table><thead><tr>' +
+          table = '<table><thead><tr>' +
             '<th>' + t('line') + '</th><th>' + t('operation') + '</th><th>' + t('stoppageCause') + '</th><th>' + t('duration') + '</th><th>' + t('reporter') + '</th><th>' + t('note') + '</th>' +
             '</tr></thead><tbody>' +
             sorted.map((s) => '<tr>' +
@@ -4474,47 +4657,162 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<td>' + escapeHtml(s.note || '') + '</td>' +
             '</tr>').join('') +
             '</tbody></table>';
-          return;
+        } else {
+          const map = new Map();
+          items.forEach((s) => {
+            const key = s.lineId + '|' + s.op;
+            if (!map.has(key)) map.set(key, { line: s.line || stoppageLineName(s.lineId), op: s.op, count: 0, total: 0 });
+            const g = map.get(key);
+            g.count += 1;
+            g.total += isNumber(s.durationMin) ? s.durationMin : 0;
+          });
+          const rows = Array.from(map.values()).sort((a, b) => b.total - a.total);
+          table = '<table><thead><tr>' +
+            '<th>' + t('line') + '</th><th>' + t('operation') + '</th><th>' + t('count') + '</th><th>' + t('duration') + '</th>' +
+            '</tr></thead><tbody>' +
+            rows.map((g) => '<tr>' +
+              '<td>' + escapeHtml(g.line) + '</td>' +
+              '<td>' + escapeHtml(g.op) + '</td>' +
+              '<td>' + formatNumber(g.count) + '</td>' +
+              '<td>' + escapeHtml(stoppageDurationText(g.total)) + '</td>' +
+            '</tr>').join('') +
+            '</tbody></table>';
         }
-        const map = new Map();
-        items.forEach((s) => {
-          const key = s.lineId + '|' + s.op;
-          if (!map.has(key)) map.set(key, { line: s.line || stoppageLineName(s.lineId), op: s.op, count: 0, total: 0 });
-          const g = map.get(key);
-          g.count += 1;
-          g.total += isNumber(s.durationMin) ? s.durationMin : 0;
+        el.downtimeWrap.innerHTML = pareto + table;
+      }
+
+      function lineStatus(totalMin) {
+        if (!totalMin) return 'green';
+        if (totalMin <= 60) return 'yellow';
+        return 'red';
+      }
+
+      function getFilteredStoppages() {
+        const f = state.stoppageFilters;
+        return state.stoppages.filter((s) =>
+          (!f.line || s.lineId === f.line) &&
+          (!f.cause || s.cause === f.cause) &&
+          (!f.reporter || s.reporter === f.reporter)
+        );
+      }
+
+      function renderStoppageFilters() {
+        const opt = (value, label, selected) => '<option value="' + escapeHtml(value) + '"' + (selected ? ' selected' : '') + '>' + escapeHtml(label) + '</option>';
+        el.filterLine.innerHTML = opt('', t('filterAll') + ' · ' + t('line'), !state.stoppageFilters.line) +
+          STOPPAGE_LINES.map((l) => opt(l.id, l.name, state.stoppageFilters.line === l.id)).join('');
+        el.filterCause.innerHTML = opt('', t('filterAll') + ' · ' + t('stoppageCause'), !state.stoppageFilters.cause) +
+          state.stoppageConfig.causes.map((c) => opt(c, c, state.stoppageFilters.cause === c)).join('');
+        el.filterReporter.innerHTML = opt('', t('filterAll') + ' · ' + t('reporter'), !state.stoppageFilters.reporter) +
+          STOPPAGE_REPORTERS.map((r) => opt(r, r, state.stoppageFilters.reporter === r)).join('');
+      }
+
+      function renderStoppageAdmin() {
+        if (!state.isAdmin) { el.stoppageAdmin.hidden = true; el.stoppageAdmin.innerHTML = ''; return; }
+        el.stoppageAdmin.hidden = false;
+        const opsHtml = STOPPAGE_LINES.map((line) =>
+          '<div class="mod-cfg-line"><span class="mod-cfg-line-name">' + escapeHtml(line.name) + '</span>' +
+            '<div class="mod-cfg-chips">' +
+              lineOps(line.id).map((op) =>
+                '<span class="mod-cfg-chip">' + escapeHtml(op) + '<button type="button" class="mod-cfg-remove" data-kind="op" data-line="' + escapeHtml(line.id) + '" data-value="' + escapeHtml(op) + '" aria-label="x">×</button></span>'
+              ).join('') +
+              '<span class="mod-cfg-add"><input type="text" class="form-control mod-cfg-input" data-line="' + escapeHtml(line.id) + '" placeholder="OP.."><button type="button" class="btn btn-ghost mod-cfg-add-op" data-line="' + escapeHtml(line.id) + '">' + escapeHtml(t('addOp')) + '</button></span>' +
+            '</div>' +
+          '</div>'
+        ).join('');
+        const causesHtml =
+          '<div class="mod-cfg-chips">' +
+            state.stoppageConfig.causes.map((c) =>
+              '<span class="mod-cfg-chip">' + escapeHtml(c) + '<button type="button" class="mod-cfg-remove" data-kind="cause" data-value="' + escapeHtml(c) + '" aria-label="x">×</button></span>'
+            ).join('') +
+            '<span class="mod-cfg-add"><input type="text" class="form-control mod-cfg-input" id="mod-cfg-cause-input" placeholder="..."><button type="button" class="btn btn-ghost mod-cfg-add-cause">' + escapeHtml(t('addCause')) + '</button></span>' +
+          '</div>';
+        el.stoppageAdmin.innerHTML =
+          '<div class="mod-section-label" data-i18n="manageOps">' + escapeHtml(t('manageOps')) + '</div>' + opsHtml +
+          '<div class="mod-section-label mod-cfg-section" data-i18n="manageCauses">' + escapeHtml(t('manageCauses')) + '</div>' + causesHtml;
+
+        el.stoppageAdmin.querySelectorAll('.mod-cfg-add-op').forEach((button) => {
+          button.addEventListener('click', () => {
+            const input = el.stoppageAdmin.querySelector('.mod-cfg-input[data-line="' + button.dataset.line + '"]');
+            const value = (input.value || '').trim();
+            if (value && !lineOps(button.dataset.line).includes(value)) {
+              state.stoppageConfig.ops[button.dataset.line].push(value);
+              persistStoppageConfig();
+              renderStoppages();
+            }
+          });
         });
-        const rows = Array.from(map.values()).sort((a, b) => b.total - a.total);
-        el.downtimeWrap.innerHTML = '<table><thead><tr>' +
-          '<th>' + t('line') + '</th><th>' + t('operation') + '</th><th>' + t('count') + '</th><th>' + t('duration') + '</th>' +
-          '</tr></thead><tbody>' +
-          rows.map((g) => '<tr>' +
-            '<td>' + escapeHtml(g.line) + '</td>' +
-            '<td>' + escapeHtml(g.op) + '</td>' +
-            '<td>' + formatNumber(g.count) + '</td>' +
-            '<td>' + escapeHtml(stoppageDurationText(g.total)) + '</td>' +
-          '</tr>').join('') +
-          '</tbody></table>';
+        const causeInput = el.stoppageAdmin.querySelector('#mod-cfg-cause-input');
+        el.stoppageAdmin.querySelector('.mod-cfg-add-cause').addEventListener('click', () => {
+          const value = (causeInput.value || '').trim();
+          if (value && !state.stoppageConfig.causes.includes(value)) {
+            state.stoppageConfig.causes.push(value);
+            persistStoppageConfig();
+            renderStoppages();
+          }
+        });
+        el.stoppageAdmin.querySelectorAll('.mod-cfg-remove').forEach((button) => {
+          button.addEventListener('click', () => {
+            if (button.dataset.kind === 'op') {
+              state.stoppageConfig.ops[button.dataset.line] = lineOps(button.dataset.line).filter((op) => op !== button.dataset.value);
+            } else {
+              state.stoppageConfig.causes = state.stoppageConfig.causes.filter((c) => c !== button.dataset.value);
+            }
+            persistStoppageConfig();
+            renderStoppages();
+          });
+        });
+      }
+
+      function stoppagesToCsv(list) {
+        const header = ['Data', 'Ora', t('line'), t('operation'), t('stoppageCause'), 'Minuti', t('reporter'), t('note')];
+        const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+        const lines = list.map((s) => [
+          String(s.timestamp).slice(0, 10),
+          formatStoppageClock(s.timestamp),
+          s.line || stoppageLineName(s.lineId),
+          s.op, s.cause, s.durationMin, s.reporter, s.note || ''
+        ].map(esc).join(';'));
+        return [header.map(esc).join(';')].concat(lines).join('\r\n');
+      }
+
+      function exportStoppagesCsv() {
+        const list = getFilteredStoppages().slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+        const csv = '﻿' + stoppagesToCsv(list);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'fermi-martur-' + isoDate(new Date()) + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
       function renderStoppages() {
         const now = Date.now();
+        const todayIso = isoDate(new Date());
         const recentByKey = new Set();
+        const todayByLine = {};
         state.stoppages.forEach((s) => {
           if (now - new Date(s.timestamp).getTime() < 2 * 60 * 60 * 1000) {
             recentByKey.add(s.lineId + '|' + s.op);
           }
+          if (String(s.timestamp).slice(0, 10) === todayIso) {
+            todayByLine[s.lineId] = (todayByLine[s.lineId] || 0) + (isNumber(s.durationMin) ? s.durationMin : 0);
+          }
         });
-        el.stoppagesSchema.innerHTML = STOPPAGE_LINES.map((line) =>
-          '<details class="mod-stoppage-line"' + (state.stoppageOpenLines.has(line.id) ? ' open' : '') + ' data-line="' + escapeHtml(line.id) + '">' +
-            '<summary class="mod-stoppage-line-name">' + escapeHtml(line.name) + '</summary>' +
+        el.stoppagesSchema.innerHTML = STOPPAGE_LINES.map((line) => {
+          const status = lineStatus(todayByLine[line.id] || 0);
+          return '<details class="mod-stoppage-line"' + (state.stoppageOpenLines.has(line.id) ? ' open' : '') + ' data-line="' + escapeHtml(line.id) + '">' +
+            '<summary class="mod-stoppage-line-name"><span class="mod-line-status" data-status="' + status + '"></span>' + escapeHtml(line.name) + '</summary>' +
             '<div class="mod-stoppage-ops">' +
-              line.ops.map((op) =>
+              lineOps(line.id).map((op) =>
                 '<button type="button" class="btn mod-stoppage-op" data-line="' + escapeHtml(line.id) + '" data-op="' + escapeHtml(op) + '" data-recent="' + (recentByKey.has(line.id + '|' + op) ? 'true' : 'false') + '">' + escapeHtml(op) + '</button>'
               ).join('') +
             '</div>' +
-          '</details>'
-        ).join('');
+          '</details>';
+        }).join('');
         el.stoppagesSchema.querySelectorAll('.mod-stoppage-line').forEach((details) => {
           details.addEventListener('toggle', () => {
             if (details.open) state.stoppageOpenLines.add(details.dataset.line);
@@ -4525,8 +4823,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           button.addEventListener('click', () => openStoppageDialog(button.dataset.line, button.dataset.op));
         });
 
-        const sorted = state.stoppages.slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-        const totalMin = state.stoppages.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
+        renderStoppageAdmin();
+        renderStoppageFilters();
+
+        const filtered = getFilteredStoppages();
+        const sorted = filtered.slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+        const totalMin = filtered.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
         el.stoppagesTotal.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin);
 
         if (!sorted.length) {
@@ -4637,6 +4939,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       el.closeStoppageDialog.addEventListener('click', () => el.stoppageDialog.close());
       el.cancelStoppageDialog.addEventListener('click', () => el.stoppageDialog.close());
+      el.filterLine.addEventListener('change', () => { state.stoppageFilters.line = el.filterLine.value; renderStoppages(); });
+      el.filterCause.addEventListener('change', () => { state.stoppageFilters.cause = el.filterCause.value; renderStoppages(); });
+      el.filterReporter.addEventListener('change', () => { state.stoppageFilters.reporter = el.filterReporter.value; renderStoppages(); });
+      el.exportStoppages.addEventListener('click', exportStoppagesCsv);
       root.querySelectorAll('.mod-view-btn').forEach((button) => {
         button.addEventListener('click', () => {
           if (button.dataset.view === 'entry' && !state.isAdmin) return;
@@ -4778,6 +5084,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       renderReworkOptions();
       loadManual();
       loadStoppages();
+      loadStoppageConfig();
       clearForm();
       renderAll();
     })();
