@@ -1230,6 +1230,40 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-kpi-tile-2 { --kpi-accent: var(--viz-series-3); }
     #martur-operations-dashboard .mod-kpi-tile-3 { --kpi-accent: var(--viz-series-5); }
     #martur-operations-dashboard .mod-kpi-tile-4 { --kpi-accent: var(--viz-series-2); }
+    #martur-operations-dashboard .mod-kpi-value-row {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    #martur-operations-dashboard .mod-kpi-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-kpi-trend.mod-trend-up {
+      color: light-dark(rgb(31 143 62), rgb(116 213 139));
+    }
+    #martur-operations-dashboard .mod-kpi-trend.mod-trend-down {
+      color: light-dark(rgb(211 47 47), rgb(255 99 99));
+    }
+    #martur-operations-dashboard .mod-kpi-trend.mod-trend-flat {
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-kpi-spark {
+      width: 100%;
+      margin-top: 8px;
+      line-height: 0;
+    }
+    #martur-operations-dashboard .mod-kpi-spark svg {
+      width: 100%;
+      height: 28px;
+      display: block;
+    }
     #martur-operations-dashboard .mod-oee-layout {
       display: grid;
       grid-template-columns: minmax(150px, 220px) 1fr;
@@ -2595,26 +2629,30 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <div class="card viz-stat mod-kpi-tile mod-kpi-tile-1">
         <i class="mod-kpi-icon" data-lucide="package" aria-hidden="true"></i>
         <span class="text-muted" data-i18n="marturSets">Produzione Martur</span>
-        <span id="mod-kpi-sets" class="viz-stat-value">—</span>
+        <span class="mod-kpi-value-row"><span id="mod-kpi-sets" class="viz-stat-value">—</span><span id="mod-kpi-sets-trend" class="mod-kpi-trend"></span></span>
         <span id="mod-kpi-sets-context" class="text-small text-muted"></span>
+        <div id="mod-kpi-sets-spark" class="mod-kpi-spark" aria-hidden="true"></div>
       </div>
       <div class="card viz-stat mod-kpi-tile mod-kpi-tile-2">
         <i class="mod-kpi-icon" data-lucide="car" aria-hidden="true"></i>
         <span class="text-muted" data-i18n="stellantisProduction">Produzione Stellantis</span>
-        <span id="mod-kpi-cars" class="viz-stat-value">—</span>
+        <span class="mod-kpi-value-row"><span id="mod-kpi-cars" class="viz-stat-value">—</span><span id="mod-kpi-cars-trend" class="mod-kpi-trend"></span></span>
         <span id="mod-kpi-cars-context" class="text-small text-muted"></span>
+        <div id="mod-kpi-cars-spark" class="mod-kpi-spark" aria-hidden="true"></div>
       </div>
       <div class="card viz-stat mod-kpi-tile mod-kpi-tile-4">
         <i class="mod-kpi-icon" data-lucide="arrow-left-right" aria-hidden="true"></i>
         <span class="text-muted" data-i18n="supplyGap">Delta Martur / Stellantis</span>
-        <span id="mod-kpi-gap" class="viz-stat-value">—</span>
+        <span class="mod-kpi-value-row"><span id="mod-kpi-gap" class="viz-stat-value">—</span><span id="mod-kpi-gap-trend" class="mod-kpi-trend"></span></span>
         <span id="mod-kpi-gap-context" class="text-small text-muted"></span>
+        <div id="mod-kpi-gap-spark" class="mod-kpi-spark" aria-hidden="true"></div>
       </div>
       <div class="card viz-stat mod-kpi-tile mod-kpi-tile-3">
         <i class="mod-kpi-icon" data-lucide="gauge" aria-hidden="true"></i>
         <span class="text-muted" data-i18n="efficiency">Efficienza</span>
-        <span id="mod-kpi-efficiency" class="viz-stat-value">—</span>
+        <span class="mod-kpi-value-row"><span id="mod-kpi-efficiency" class="viz-stat-value">—</span><span id="mod-kpi-efficiency-trend" class="mod-kpi-trend"></span></span>
         <span id="mod-kpi-efficiency-context" class="text-small text-muted"></span>
+        <div id="mod-kpi-efficiency-spark" class="mod-kpi-spark" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -3246,6 +3284,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           oeeNoData: 'Dati insufficienti per calcolare l\'OEE.',
           paretoVitalFew: 'Regola 80/20: le prime {n} postazioni causano circa l\'80% dei fermi.',
           paretoTopN: 'I {n} fermi più impattanti · {pct} del tempo totale di fermo.',
+          vsPrevDay: 'rispetto al giorno produttivo precedente',
           plannedShort: 'Pianificato',
           targetShort: 'Target',
           oeeSettings: 'OEE — parametri',
@@ -3481,6 +3520,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           oeeNoData: 'Not enough data to compute OEE.',
           paretoVitalFew: '80/20 rule: the top {n} stations cause about 80% of downtime.',
           paretoTopN: 'Top {n} stoppages · {pct} of total downtime.',
+          vsPrevDay: 'vs previous production day',
           plannedShort: 'Planned',
           targetShort: 'Target',
           oeeSettings: 'OEE — parameters',
@@ -3716,6 +3756,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           oeeNoData: 'OEE hesaplamak için yeterli veri yok.',
           paretoVitalFew: '80/20 kuralı: ilk {n} istasyon duruşların yaklaşık %80\'ine neden olur.',
           paretoTopN: 'En etkili {n} duruş · toplam duruşun {pct}\'i.',
+          vsPrevDay: 'önceki üretim gününe göre',
           plannedShort: 'Planlanan',
           targetShort: 'Hedef',
           oeeSettings: 'OEE — parametreler',
@@ -4042,12 +4083,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         downtimeWrap: root.querySelector('#mod-downtime-wrap'),
         kpiSets: root.querySelector('#mod-kpi-sets'),
         kpiSetsContext: root.querySelector('#mod-kpi-sets-context'),
+        kpiSetsTrend: root.querySelector('#mod-kpi-sets-trend'),
+        kpiSetsSpark: root.querySelector('#mod-kpi-sets-spark'),
         kpiCars: root.querySelector('#mod-kpi-cars'),
         kpiCarsContext: root.querySelector('#mod-kpi-cars-context'),
+        kpiCarsTrend: root.querySelector('#mod-kpi-cars-trend'),
+        kpiCarsSpark: root.querySelector('#mod-kpi-cars-spark'),
         kpiEfficiency: root.querySelector('#mod-kpi-efficiency'),
         kpiEfficiencyContext: root.querySelector('#mod-kpi-efficiency-context'),
+        kpiEfficiencyTrend: root.querySelector('#mod-kpi-efficiency-trend'),
+        kpiEfficiencySpark: root.querySelector('#mod-kpi-efficiency-spark'),
         kpiGap: root.querySelector('#mod-kpi-gap'),
         kpiGapContext: root.querySelector('#mod-kpi-gap-context'),
+        kpiGapTrend: root.querySelector('#mod-kpi-gap-trend'),
+        kpiGapSpark: root.querySelector('#mod-kpi-gap-spark'),
         mainSubtitle: root.querySelector('#mod-main-subtitle'),
         mainChartWrap: root.querySelector('#mod-main-chart-wrap'),
         mainChart: root.querySelector('#mod-main-chart'),
@@ -5115,6 +5164,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.chartRendered = true;
 
         el.mainDetail.innerHTML = '<span>' + t('selectedRange') + ': <strong>' + subtitle + '</strong></span><span>' + t('supplyGap') + ': <strong class="' + (overall.supplyGap < 0 ? 'mod-negative' : '') + '">' + formatSigned(overall.supplyGap) + ' ' + t('pieces') + '</strong></span>';
+        renderKpiTrends();
         renderDailyShiftCards(dailySummary);
         renderDailyAdminActions();
         renderDailyTopReworks(dailySummary);
@@ -5780,6 +5830,67 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '<span class="mod-oee-track"><span class="mod-oee-bar" style="width:' + Math.round(row.value * 100) + '%;background:' + oeeZoneColor(row.value) + '"></span></span>' +
           '<span class="mod-oee-row-value">' + formatPercent(row.value) + '</span></div>'
         ).join('');
+      }
+
+      function sparklineSvg(values) {
+        const nums = values.map((v) => (isNumber(v) ? v : null));
+        const valid = nums.filter((v) => v != null);
+        if (valid.length < 2) return '';
+        const w = 100, h = 28, pad = 3;
+        const min = Math.min(...valid), max = Math.max(...valid);
+        const range = max - min || 1;
+        const n = nums.length;
+        const xAt = (i) => pad + (n === 1 ? 0 : (i / (n - 1)) * (w - 2 * pad));
+        const yAt = (v) => h - pad - ((v - min) / range) * (h - 2 * pad);
+        const pts = [];
+        let lastIdx = -1;
+        nums.forEach((v, i) => { if (v != null) { pts.push(xAt(i).toFixed(1) + ',' + yAt(v).toFixed(1)); lastIdx = i; } });
+        const stroke = 'var(--kpi-accent, var(--primary))';
+        return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+          '<polyline fill="none" stroke="' + stroke + '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="' + pts.join(' ') + '"></polyline>' +
+          (lastIdx >= 0 ? '<circle cx="' + xAt(lastIdx).toFixed(1) + '" cy="' + yAt(nums[lastIdx]).toFixed(1) + '" r="2.4" fill="' + stroke + '" vector-effect="non-scaling-stroke"></circle>' : '') +
+          '</svg>';
+      }
+
+      function renderTrendBadge(node, cur, prev, kind, better) {
+        if (!isNumber(cur) || !isNumber(prev)) { node.textContent = ''; node.className = 'mod-kpi-trend'; node.title = ''; return; }
+        const delta = cur - prev;
+        const threshold = kind === 'pct' ? 0.0005 : 0.5;
+        const dir = Math.abs(delta) < threshold ? 'flat' : (delta > 0 ? 'up' : 'down');
+        let cls = 'mod-kpi-trend ';
+        if (dir === 'flat' || better === 'neutral') cls += 'mod-trend-flat';
+        else cls += ((dir === 'up') === (better === 'up')) ? 'mod-trend-up' : 'mod-trend-down';
+        const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '▬';
+        let mag;
+        if (kind === 'pct') mag = (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta * 1000) / 10)) + ' pt';
+        else mag = (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta)));
+        node.className = cls;
+        node.textContent = dir === 'flat' ? arrow : arrow + ' ' + mag;
+        node.title = t('vsPrevDay');
+      }
+
+      function renderKpiTrends() {
+        const metrics = [
+          { trend: el.kpiSetsTrend, spark: el.kpiSetsSpark, get: (r) => r.completeKits, kind: 'int', better: 'up' },
+          { trend: el.kpiCarsTrend, spark: el.kpiCarsSpark, get: (r) => r.stellantisCars, kind: 'int', better: 'neutral' },
+          { trend: el.kpiGapTrend, spark: el.kpiGapSpark, get: (r) => r.supplyGap, kind: 'int', better: 'up' },
+          { trend: el.kpiEfficiencyTrend, spark: el.kpiEfficiencySpark, get: (r) => r.efficiency, kind: 'pct', better: 'up' }
+        ];
+        if (state.view !== 'daily') {
+          metrics.forEach((m) => { m.trend.textContent = ''; m.trend.className = 'mod-kpi-trend'; m.spark.innerHTML = ''; });
+          return;
+        }
+        const prod = getDailyRows().filter((r) => hasOperationalData(r) && r.date <= state.selectedDate);
+        const series = prod.slice(-8);
+        metrics.forEach((m) => {
+          m.spark.innerHTML = sparklineSvg(series.map(m.get));
+          if (series.length >= 2) {
+            renderTrendBadge(m.trend, m.get(series[series.length - 1]), m.get(series[series.length - 2]), m.kind, m.better);
+          } else {
+            m.trend.textContent = '';
+            m.trend.className = 'mod-kpi-trend';
+          }
+        });
       }
 
       function renderDowntime() {
