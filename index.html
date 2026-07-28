@@ -1388,6 +1388,62 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-chat-tab {
       padding-left: 24px;
     }
+    #martur-operations-dashboard .mod-waterfall-bar {
+      display: flex;
+      height: 26px;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      background: var(--muted);
+    }
+    #martur-operations-dashboard .mod-waterfall-seg {
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+    #martur-operations-dashboard .mod-waterfall-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      margin-top: 12px;
+      font-size: var(--font-size-small);
+    }
+    #martur-operations-dashboard .mod-wf-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-wf-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    #martur-operations-dashboard .mod-heatmap {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
+      gap: 5px;
+    }
+    #martur-operations-dashboard .mod-heat-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      min-height: 44px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--muted);
+    }
+    #martur-operations-dashboard .mod-heat-hour {
+      font-size: 10px;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-heat-on .mod-heat-hour {
+      color: var(--foreground);
+    }
+    #martur-operations-dashboard .mod-heat-val {
+      font-size: var(--font-size-small);
+      font-weight: 700;
+    }
     #martur-operations-dashboard .mod-chat-badge {
       display: inline-flex;
       align-items: center;
@@ -2871,6 +2927,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </section>
     </div>
 
+    <div class="mod-two-col mod-loss-row">
+      <section class="mod-section">
+        <div class="mod-section-head">
+          <div>
+            <div class="mod-section-label" data-i18n="lossWaterfall">Cascata delle perdite</div>
+            <div id="mod-waterfall-subtitle" class="text-small text-muted"></div>
+          </div>
+        </div>
+        <div id="mod-waterfall-wrap"></div>
+      </section>
+
+      <section class="mod-section">
+        <div class="mod-section-head">
+          <div>
+            <div class="mod-section-label" data-i18n="downtimeByHour">Fermi per ora</div>
+            <div id="mod-heatmap-subtitle" class="text-small text-muted"></div>
+          </div>
+        </div>
+        <div id="mod-heatmap-wrap"></div>
+      </section>
+    </div>
+
     <section id="mod-daily-rework-section" class="mod-section" aria-labelledby="mod-daily-rework-title">
       <div class="mod-section-head">
         <div>
@@ -3503,6 +3581,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           targetShort: 'Target',
           oeeSettings: 'OEE — parametri',
           oeeEffectiveHint: 'La modifica vale dalla data odierna in poi; i giorni precedenti mantengono i valori precedenti.',
+          lossWaterfall: 'Cascata delle perdite',
+          theoretical: 'Teorico',
+          goodPieces: 'Buoni',
+          missedProduction: 'Mancata produzione',
+          downtimeByHour: 'Fermi per ora',
           plannedMinPerShiftLabel: 'Minuti pianificati / turno',
           targetKitPerShiftLabel: 'Target Kit / turno',
           roleAdmin: 'Operatore',
@@ -3749,6 +3832,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           targetShort: 'Target',
           oeeSettings: 'OEE — parameters',
           oeeEffectiveHint: 'Changes apply from today onward; previous days keep their earlier values.',
+          lossWaterfall: 'Loss waterfall',
+          theoretical: 'Theoretical',
+          goodPieces: 'Good',
+          missedProduction: 'Missed output',
+          downtimeByHour: 'Downtime by hour',
           plannedMinPerShiftLabel: 'Planned minutes / shift',
           targetKitPerShiftLabel: 'Target Kit / shift',
           roleAdmin: 'Operator',
@@ -3995,6 +4083,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           targetShort: 'Hedef',
           oeeSettings: 'OEE — parametreler',
           oeeEffectiveHint: 'Değişiklik bugünden itibaren geçerlidir; önceki günler eski değerleri korur.',
+          lossWaterfall: 'Kayıp şelalesi',
+          theoretical: 'Teorik',
+          goodPieces: 'İyi',
+          missedProduction: 'Eksik üretim',
+          downtimeByHour: 'Saate göre duruşlar',
           plannedMinPerShiftLabel: 'Vardiya başına planlanan dakika',
           targetKitPerShiftLabel: 'Vardiya başına hedef Kit',
           roleAdmin: 'Operatör',
@@ -4328,6 +4421,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         oeeSubtitle: root.querySelector('#mod-oee-subtitle'),
         oeeGauge: root.querySelector('#mod-oee-gauge'),
         oeeBreakdown: root.querySelector('#mod-oee-breakdown'),
+        waterfallWrap: root.querySelector('#mod-waterfall-wrap'),
+        waterfallSubtitle: root.querySelector('#mod-waterfall-subtitle'),
+        heatmapWrap: root.querySelector('#mod-heatmap-wrap'),
+        heatmapSubtitle: root.querySelector('#mod-heatmap-subtitle'),
         periodShiftSection: root.querySelector('#mod-period-shift-section'),
         downtimeSubtitle: root.querySelector('#mod-downtime-subtitle'),
         downtimeWrap: root.querySelector('#mod-downtime-wrap'),
@@ -5459,6 +5556,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           });
         }
         renderOee(summary, oeeDowntimeMin, oeePlanned, oeeTarget, subtitle);
+        renderWaterfall(summary, oeeTarget, subtitle);
+        renderHeatmap(getPeriodStoppages(), subtitle);
         renderDowntime();
       }
 
@@ -6366,6 +6465,64 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             m.trend.className = 'mod-kpi-trend';
           }
         });
+      }
+
+      function renderWaterfall(summary, target, subtitle) {
+        const produced = isNumber(summary.completeKits) ? summary.completeKits : 0;
+        const rework = valueOrZero(summary.rework);
+        const tgt = target > 0 ? target : 0;
+        if (produced <= 0 && tgt <= 0) {
+          el.waterfallSubtitle.textContent = '';
+          el.waterfallWrap.innerHTML = '<div class="mod-empty">' + t('oeeNoData') + '</div>';
+          return;
+        }
+        const good = Math.max(0, produced - rework);
+        const missed = Math.max(0, tgt - produced);
+        const total = Math.max(tgt, produced, 1);
+        const pct = (v) => Math.max(0, v / total * 100);
+        const segs = [
+          { label: t('goodPieces'), value: good, col: 'light-dark(rgb(31 143 62), rgb(116 213 139))' },
+          { label: t('rework'), value: rework, col: 'light-dark(rgb(207 143 15), rgb(240 189 96))' },
+          { label: t('missedProduction'), value: missed, col: 'light-dark(rgb(211 47 47), rgb(255 99 99))' }
+        ].filter((s) => s.value > 0);
+        const bar = '<div class="mod-waterfall-bar">' + segs.map((s) =>
+          '<span class="mod-waterfall-seg" style="width:' + pct(s.value).toFixed(1) + '%;background:' + s.col + '" title="' + escapeHtml(s.label + ': ' + formatNumber(s.value)) + '"></span>'
+        ).join('') + '</div>';
+        const legend = '<div class="mod-waterfall-legend">' +
+          '<span class="mod-wf-key"><span class="mod-wf-dot" style="background:var(--muted-foreground)"></span>' + t('theoretical') + ': <strong>' + formatNumber(tgt) + '</strong></span>' +
+          segs.map((s) => '<span class="mod-wf-key"><span class="mod-wf-dot" style="background:' + s.col + '"></span>' + escapeHtml(s.label) + ': <strong>' + formatNumber(s.value) + '</strong></span>').join('') +
+          '</div>';
+        el.waterfallSubtitle.textContent = subtitle || '';
+        el.waterfallWrap.innerHTML = bar + legend;
+      }
+
+      function renderHeatmap(items, subtitle) {
+        const startH = 6, endH = 22;
+        const buckets = {};
+        for (let h = startH; h <= endH; h++) buckets[h] = 0;
+        items.forEach((s) => {
+          let h = new Date(s.timestamp).getHours();
+          if (h < startH) h = startH;
+          if (h > endH) h = endH;
+          buckets[h] += isNumber(s.durationMin) ? s.durationMin : 0;
+        });
+        const max = Math.max.apply(null, Object.keys(buckets).map((h) => buckets[h]).concat(0));
+        el.heatmapSubtitle.textContent = subtitle || '';
+        if (max <= 0) {
+          el.heatmapWrap.innerHTML = '<div class="mod-empty">' + t('noStoppagesPeriod') + '</div>';
+          return;
+        }
+        let cells = '';
+        for (let h = startH; h <= endH; h++) {
+          const v = buckets[h];
+          const alpha = v > 0 ? (0.15 + (v / max) * 0.85).toFixed(2) : 0;
+          const style = v > 0 ? 'background: rgb(220 38 38 / ' + alpha + ')' : '';
+          cells += '<div class="mod-heat-cell' + (v > 0 ? ' mod-heat-on' : '') + '" style="' + style + '" title="' + h + ':00 · ' + escapeHtml(stoppageDurationText(v)) + '">' +
+            '<span class="mod-heat-hour">' + h + '</span>' +
+            '<span class="mod-heat-val">' + (v > 0 ? formatNumber(v) : '') + '</span>' +
+          '</div>';
+        }
+        el.heatmapWrap.innerHTML = '<div class="mod-heatmap">' + cells + '</div>';
       }
 
       function renderDowntime() {
