@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Martur Italy Operations Dashboard</title>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -1762,6 +1762,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-cfg-section {
       margin-top: 8px;
     }
+    #martur-operations-dashboard .mod-cfg-section-first {
+      padding-bottom: 12px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-user-list {
+      display: grid;
+      gap: 6px;
+    }
+    #martur-operations-dashboard .mod-user-row {
+      justify-content: space-between;
+    }
+    #martur-operations-dashboard .mod-user-add {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    #martur-operations-dashboard .mod-user-add .form-control {
+      flex: 1 1 130px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-user-add .mod-user-new-role {
+      flex: 0 1 140px;
+    }
     #martur-operations-dashboard .mod-cfg-line {
       display: flex;
       flex-wrap: wrap;
@@ -2782,6 +2808,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </button>
       </div>
       <div class="mod-dialog-scroll">
+        <div id="mod-user-admin" class="mod-stoppage-admin mod-cfg-section-first"></div>
         <div id="mod-stoppage-admin" class="mod-stoppage-admin"></div>
       </div>
     </div>
@@ -2853,11 +2880,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </button>
       </div>
       <form id="mod-admin-form">
+        <label class="form-label" for="mod-admin-username">
+          <span data-i18n="username">Nome utente</span>
+          <input id="mod-admin-username" class="form-control" type="text" autocomplete="username" autocapitalize="off" spellcheck="false">
+        </label>
         <label class="form-label" for="mod-admin-password">
           <span data-i18n="password">Password</span>
-          <input id="mod-admin-password" class="form-control" type="password" autocomplete="off">
+          <input id="mod-admin-password" class="form-control" type="password" autocomplete="current-password">
         </label>
-        <div id="mod-admin-error" class="text-small mod-negative" hidden data-i18n="wrongPassword">Password errata.</div>
+        <div id="mod-admin-error" class="text-small mod-negative" hidden data-i18n="wrongPassword">Nome utente o password errati.</div>
         <div class="mod-dialog-actions">
           <button id="mod-cancel-admin-dialog" type="button" class="btn" data-i18n="cancel">Annulla</button>
           <button type="submit" class="btn btn-primary" data-i18n="enter">Entra</button>
@@ -2916,6 +2947,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </dialog>
 
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <script>
     (() => {
       'use strict';
@@ -2949,9 +2983,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           previousPeriod: 'Periodo precedente',
           nextPeriod: 'Periodo successivo',
           adminAccess: 'Accesso amministratore',
-          adminAccessHint: 'Inserisci la password per abilitare l\'inserimento e la modifica dei dati.',
+          adminAccessHint: 'Accedi con nome utente e password per abilitare l\'inserimento e la modifica dei dati.',
+          username: 'Nome utente',
           password: 'Password',
-          wrongPassword: 'Password errata.',
+          wrongPassword: 'Nome utente o password errati.',
           enter: 'Entra',
           stoppages: 'LIVE',
           abarth: 'Abarth',
@@ -2985,6 +3020,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           addCause: 'Aggiungi causa',
           manageOps: 'Operazioni per linea',
           manageCauses: 'Cause disponibili',
+          manageUsers: 'Utenti',
+          roleAdmin: 'Operatore',
+          roleConfigAdmin: 'Amministratore',
+          addUser: 'Crea utente',
+          revokeAccess: 'Revoca accesso',
+          noUsers: 'Nessun utente creato.',
+          loadingUsers: 'Caricamento utenti…',
+          userListError: 'Impossibile caricare gli utenti.',
+          userFormInvalid: 'Nome utente obbligatorio, password di almeno 6 caratteri.',
+          userAlreadyExists: 'Questo nome utente esiste già.',
+          userCreateError: 'Impossibile creare l\'utente. Riprova.',
+          confirmRevokeUser: 'Revocare l\'accesso a',
           settings: 'Impostazioni',
           dailyShiftIndicators: 'Indicatori giornalieri per turno',
           reportTitleDay: 'Report di produzione del {value}',
@@ -3155,9 +3202,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           previousPeriod: 'Previous period',
           nextPeriod: 'Next period',
           adminAccess: 'Admin access',
-          adminAccessHint: 'Enter the password to enable adding and editing data.',
+          adminAccessHint: 'Sign in with username and password to enable adding and editing data.',
+          username: 'Username',
           password: 'Password',
-          wrongPassword: 'Wrong password.',
+          wrongPassword: 'Wrong username or password.',
           enter: 'Enter',
           stoppages: 'LIVE',
           abarth: 'Abarth',
@@ -3191,6 +3239,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           addCause: 'Add cause',
           manageOps: 'Operations per line',
           manageCauses: 'Available causes',
+          manageUsers: 'Users',
+          roleAdmin: 'Operator',
+          roleConfigAdmin: 'Administrator',
+          addUser: 'Create user',
+          revokeAccess: 'Revoke access',
+          noUsers: 'No users yet.',
+          loadingUsers: 'Loading users…',
+          userListError: 'Could not load users.',
+          userFormInvalid: 'Username is required, password must be at least 6 characters.',
+          userAlreadyExists: 'This username already exists.',
+          userCreateError: 'Could not create the user. Try again.',
+          confirmRevokeUser: 'Revoke access for',
           settings: 'Settings',
           dailyShiftIndicators: 'Daily indicators by shift',
           reportTitleDay: 'Production report for {value}',
@@ -3361,9 +3421,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           previousPeriod: 'Önceki dönem',
           nextPeriod: 'Sonraki dönem',
           adminAccess: 'Yönetici girişi',
-          adminAccessHint: 'Veri ekleme ve düzenlemeyi etkinleştirmek için şifreyi girin.',
+          adminAccessHint: 'Veri ekleme ve düzenlemeyi etkinleştirmek için kullanıcı adı ve şifre ile giriş yapın.',
+          username: 'Kullanıcı adı',
           password: 'Şifre',
-          wrongPassword: 'Yanlış şifre.',
+          wrongPassword: 'Kullanıcı adı veya şifre yanlış.',
           enter: 'Giriş',
           stoppages: 'LIVE',
           abarth: 'Abarth',
@@ -3397,6 +3458,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           addCause: 'Neden ekle',
           manageOps: 'Hat başına operasyonlar',
           manageCauses: 'Mevcut nedenler',
+          manageUsers: 'Kullanıcılar',
+          roleAdmin: 'Operatör',
+          roleConfigAdmin: 'Yönetici',
+          addUser: 'Kullanıcı oluştur',
+          revokeAccess: 'Erişimi iptal et',
+          noUsers: 'Henüz kullanıcı yok.',
+          loadingUsers: 'Kullanıcılar yükleniyor…',
+          userListError: 'Kullanıcılar yüklenemedi.',
+          userFormInvalid: 'Kullanıcı adı gerekli, şifre en az 6 karakter olmalı.',
+          userAlreadyExists: 'Bu kullanıcı adı zaten mevcut.',
+          userCreateError: 'Kullanıcı oluşturulamadı. Tekrar deneyin.',
+          confirmRevokeUser: 'Erişimi iptal et:',
           settings: 'Ayarlar',
           dailyShiftIndicators: 'Vardiyaya göre günlük göstergeler',
           reportTitleDay: '{value} üretim raporu',
@@ -3556,8 +3629,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         tr: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
       };
       const LANG_FLAGS = { it: '🇮🇹', en: '🇬🇧', tr: '🇹🇷' };
-      const ADMIN_PASSWORD = 'MarturLine';
-      const CONFIG_PASSWORD = 'MarturAdmin';
+
+      const FIREBASE_CONFIG = {
+        apiKey: 'AIzaSyDsStEiIby8i_1RAc_rcHYHMqUpYo4LXw4',
+        authDomain: 'marturdashboard.firebaseapp.com',
+        projectId: 'marturdashboard',
+        storageBucket: 'marturdashboard.firebasestorage.app',
+        messagingSenderId: '772723221837',
+        appId: '1:772723221837:web:66559dde77e4e793c20304'
+      };
+      const AUTH_EMAIL_DOMAIN = '@marturapp-users.local';
+      const firebaseApp = globalThis.firebase ? firebase.initializeApp(FIREBASE_CONFIG) : null;
+      const auth = firebaseApp ? firebase.auth() : null;
+      const db = firebaseApp ? firebase.firestore() : null;
+
+      function usernameToEmail(username) {
+        return String(username || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '') + AUTH_EMAIL_DOMAIN;
+      }
 
       // Configurazione microfermate (modificabile) — linee, operazioni e cause.
       const STOPPAGE_LINES = [
@@ -3584,6 +3672,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         lang: 'it',
         isAdmin: false,
         isConfigAdmin: false,
+        authUser: null,
+        authRole: null,
         themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
         view: 'daily',
         selectedDate: null,
@@ -3623,6 +3713,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         viewSelect: root.querySelector('#mod-view-select'),
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
         stoppageAdmin: root.querySelector('#mod-stoppage-admin'),
+        userAdmin: root.querySelector('#mod-user-admin'),
         stoppageSettingsBtn: root.querySelector('#mod-stoppage-settings-btn'),
         stoppageSettingsDialog: root.querySelector('#mod-stoppage-settings-dialog'),
         closeStoppageSettings: root.querySelector('#mod-close-stoppage-settings'),
@@ -3657,6 +3748,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         adminLockIcon: root.querySelector('#mod-admin-lock-icon'),
         adminDialog: root.querySelector('#mod-admin-dialog'),
         adminForm: root.querySelector('#mod-admin-form'),
+        adminUsername: root.querySelector('#mod-admin-username'),
         adminPassword: root.querySelector('#mod-admin-password'),
         adminError: root.querySelector('#mod-admin-error'),
         closeAdminDialog: root.querySelector('#mod-close-admin-dialog'),
@@ -5042,6 +5134,36 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
+      function applyAuthRole(role) {
+        state.authRole = role;
+        state.isAdmin = role === 'admin' || role === 'configAdmin';
+        state.isConfigAdmin = role === 'configAdmin';
+      }
+
+      function initAuth() {
+        if (!auth || !db) return;
+        auth.onAuthStateChanged((user) => {
+          state.authUser = user;
+          if (!user) {
+            applyAuthRole(null);
+            if (state.view === 'entry') state.view = 'daily';
+            updateAdminUI();
+            renderAll();
+            return;
+          }
+          db.collection('users').doc(user.uid).get().then((doc) => {
+            applyAuthRole(doc.exists ? doc.data().role : null);
+            if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
+            updateAdminUI();
+            renderAll();
+          }).catch(() => {
+            applyAuthRole(null);
+            updateAdminUI();
+            renderAll();
+          });
+        });
+      }
+
       function stoppageLineName(lineId) {
         const line = STOPPAGE_LINES.find((item) => item.id === lineId);
         return line ? line.name : lineId;
@@ -5261,6 +5383,87 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           STOPPAGE_REPORTERS.map((r) => opt(r, r, state.stoppageFilters.reporter === r)).join('');
       }
 
+      function renderUserAdmin() {
+        if (!state.isConfigAdmin || !db) { el.userAdmin.innerHTML = ''; return; }
+        el.userAdmin.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div><div class="text-small text-muted">' + escapeHtml(t('loadingUsers')) + '</div>';
+        db.collection('users').orderBy('username').get().then((snap) => {
+          const rows = [];
+          snap.forEach((doc) => rows.push({ id: doc.id, username: doc.data().username, role: doc.data().role }));
+          renderUserAdminList(rows);
+        }).catch(() => {
+          el.userAdmin.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div><div class="text-small mod-negative">' + escapeHtml(t('userListError')) + '</div>';
+        });
+      }
+
+      function renderUserAdminList(rows) {
+        const roleLabel = (role) => role === 'configAdmin' ? t('roleConfigAdmin') : t('roleAdmin');
+        const listHtml = rows.length
+          ? rows.map((row) =>
+              '<div class="mod-cfg-line mod-user-row">' +
+                '<span class="mod-cfg-line-name">' + escapeHtml(row.username) + '<span class="text-small text-muted"> · ' + escapeHtml(roleLabel(row.role)) + '</span></span>' +
+                '<button type="button" class="btn btn-ghost mod-cfg-remove-user" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '">' + escapeHtml(t('revokeAccess')) + '</button>' +
+              '</div>'
+            ).join('')
+          : '<div class="text-small text-muted">' + escapeHtml(t('noUsers')) + '</div>';
+        el.userAdmin.innerHTML =
+          '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div>' +
+          '<div class="mod-user-list">' + listHtml + '</div>' +
+          '<div class="mod-user-add">' +
+            '<input type="text" class="form-control mod-user-new-username" placeholder="' + escapeHtml(t('username')) + '" autocomplete="off">' +
+            '<input type="password" class="form-control mod-user-new-password" placeholder="' + escapeHtml(t('password')) + '" autocomplete="new-password">' +
+            '<select class="form-control mod-user-new-role">' +
+              '<option value="admin">' + escapeHtml(t('roleAdmin')) + '</option>' +
+              '<option value="configAdmin">' + escapeHtml(t('roleConfigAdmin')) + '</option>' +
+            '</select>' +
+            '<button type="button" class="btn btn-primary" id="mod-user-add-btn">' + escapeHtml(t('addUser')) + '</button>' +
+          '</div>' +
+          '<div id="mod-user-add-error" class="text-small mod-negative" hidden></div>';
+
+        el.userAdmin.querySelectorAll('.mod-cfg-remove-user').forEach((button) => {
+          button.addEventListener('click', () => revokeUserAccess(button.dataset.uid, button.dataset.username));
+        });
+        el.userAdmin.querySelector('#mod-user-add-btn').addEventListener('click', createUserAccount);
+      }
+
+      function createUserAccount() {
+        const usernameInput = el.userAdmin.querySelector('.mod-user-new-username');
+        const passwordInput = el.userAdmin.querySelector('.mod-user-new-password');
+        const roleSelect = el.userAdmin.querySelector('.mod-user-new-role');
+        const errorBox = el.userAdmin.querySelector('#mod-user-add-error');
+        const addBtn = el.userAdmin.querySelector('#mod-user-add-btn');
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        const role = roleSelect.value;
+        errorBox.hidden = true;
+        if (!username || password.length < 6) {
+          errorBox.textContent = t('userFormInvalid');
+          errorBox.hidden = false;
+          return;
+        }
+        addBtn.disabled = true;
+        const secondaryApp = firebase.initializeApp(FIREBASE_CONFIG, 'secondary-' + Date.now());
+        const secondaryAuth = secondaryApp.auth();
+        secondaryAuth.createUserWithEmailAndPassword(usernameToEmail(username), password)
+          .then((cred) => db.collection('users').doc(cred.user.uid).set({ username, role }))
+          .then(() => secondaryAuth.signOut())
+          .then(() => secondaryApp.delete())
+          .then(() => { renderUserAdmin(); })
+          .catch((error) => {
+            errorBox.textContent = error && error.code === 'auth/email-already-in-use' ? t('userAlreadyExists') : t('userCreateError');
+            errorBox.hidden = false;
+            addBtn.disabled = false;
+            secondaryApp.delete().catch(() => {});
+          });
+      }
+
+      function revokeUserAccess(uid, username) {
+        if (!window.confirm(t('confirmRevokeUser') + ' "' + username + '"?')) return;
+        db.collection('users').doc(uid).delete().then(() => {
+          renderUserAdmin();
+          if (state.authUser && state.authUser.uid === uid) auth.signOut();
+        });
+      }
+
       function renderStoppageAdmin() {
         if (!state.isConfigAdmin) { el.stoppageAdmin.innerHTML = ''; return; }
         const opsHtml = STOPPAGE_LINES.map((line) =>
@@ -5478,7 +5681,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dmcScreen.hidden = !isDmc;
         el.contextBar.hidden = !isDashboard;
         el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
-        el.stoppageSettingsBtn.hidden = !(isStoppages && state.isConfigAdmin);
+        el.stoppageSettingsBtn.hidden = !state.isConfigAdmin;
         if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'stoppages'].includes(state.view)) {
           el.viewSelect.value = state.view;
         }
@@ -5514,38 +5717,36 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       function promptAdminLogin() {
         el.adminError.hidden = true;
+        el.adminUsername.value = '';
         el.adminPassword.value = '';
         el.adminDialog.showModal();
-        el.adminPassword.focus();
+        el.adminUsername.focus();
       }
       el.adminLock.addEventListener('click', () => {
         if (state.isAdmin) {
-          state.isAdmin = false;
-          state.isConfigAdmin = false;
-          updateAdminUI();
-          if (state.view === 'entry') state.view = 'daily';
-          renderAll();
+          if (auth) auth.signOut();
           return;
         }
         promptAdminLogin();
       });
       el.adminForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        const value = el.adminPassword.value;
-        if (value === CONFIG_PASSWORD) {
-          state.isAdmin = true;
-          state.isConfigAdmin = true;
-        } else if (value === ADMIN_PASSWORD) {
-          state.isAdmin = true;
-          state.isConfigAdmin = false;
-        } else {
-          el.adminError.hidden = false;
-          return;
-        }
+        if (!auth) { el.adminError.hidden = false; return; }
+        const username = el.adminUsername.value.trim();
+        const password = el.adminPassword.value;
+        if (!username || !password) { el.adminError.hidden = false; return; }
+        const submitBtn = el.adminForm.querySelector('button[type="submit"]');
         el.adminError.hidden = true;
-        el.adminDialog.close();
-        updateAdminUI();
-        renderAll();
+        submitBtn.disabled = true;
+        auth.signInWithEmailAndPassword(usernameToEmail(username), password)
+          .then(() => {
+            el.adminPassword.value = '';
+            el.adminDialog.close();
+          })
+          .catch(() => {
+            el.adminError.hidden = false;
+          })
+          .finally(() => { submitBtn.disabled = false; });
       });
       el.closeAdminDialog.addEventListener('click', () => el.adminDialog.close());
       el.cancelAdminDialog.addEventListener('click', () => el.adminDialog.close());
@@ -5560,7 +5761,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.filterCause.addEventListener('change', () => { state.stoppageFilters.cause = el.filterCause.value; renderStoppages(); });
       el.filterReporter.addEventListener('change', () => { state.stoppageFilters.reporter = el.filterReporter.value; renderStoppages(); });
       el.exportStoppages.addEventListener('click', exportStoppagesCsv);
-      el.stoppageSettingsBtn.addEventListener('click', () => { if (state.isConfigAdmin) el.stoppageSettingsDialog.showModal(); });
+      el.stoppageSettingsBtn.addEventListener('click', () => {
+        if (!state.isConfigAdmin) return;
+        renderUserAdmin();
+        el.stoppageSettingsDialog.showModal();
+      });
       el.closeStoppageSettings.addEventListener('click', () => el.stoppageSettingsDialog.close());
       root.querySelectorAll('.mod-view-btn').forEach((button) => {
         button.addEventListener('click', () => {
@@ -5723,6 +5928,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       loadStoppageConfig();
       clearForm();
       renderAll();
+      initAuth();
     })();
   </script>
 </div>
