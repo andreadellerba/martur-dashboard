@@ -1025,6 +1025,54 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     @media (prefers-reduced-motion: reduce) {
       #martur-operations-dashboard .mod-live-tab::before { animation: none; }
     }
+    @keyframes mod-fade-in-up {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes mod-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    #martur-operations-dashboard .mod-kpi-grid > .mod-kpi-tile {
+      animation: mod-fade-in-up 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    #martur-operations-dashboard .mod-kpi-grid > .mod-kpi-tile:nth-child(2) { animation-delay: 40ms; }
+    #martur-operations-dashboard .mod-kpi-grid > .mod-kpi-tile:nth-child(3) { animation-delay: 80ms; }
+    #martur-operations-dashboard .mod-kpi-grid > .mod-kpi-tile:nth-child(4) { animation-delay: 120ms; }
+    #martur-operations-dashboard .mod-daily-shift-grid > .mod-daily-shift-card {
+      animation: mod-fade-in-up 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    #martur-operations-dashboard .mod-daily-shift-grid > .mod-daily-shift-card:nth-child(2) { animation-delay: 60ms; }
+    #martur-operations-dashboard .mod-rework-ranking li {
+      animation: mod-fade-in-up 340ms ease both;
+    }
+    #martur-operations-dashboard .mod-pareto-row {
+      animation: mod-fade-in-up 320ms ease both;
+    }
+    #martur-operations-dashboard .mod-rate-chart polyline {
+      animation: mod-fade-in 420ms ease both;
+    }
+    #martur-operations-dashboard .mod-rate-chart circle {
+      animation: mod-fade-in 420ms ease both;
+    }
+    #martur-operations-dashboard .mod-value-pop {
+      animation: mod-fade-in-up 260ms ease both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #martur-operations-dashboard .mod-kpi-grid > .mod-kpi-tile,
+      #martur-operations-dashboard .mod-daily-shift-grid > .mod-daily-shift-card,
+      #martur-operations-dashboard .mod-rework-ranking li,
+      #martur-operations-dashboard .mod-pareto-row,
+      #martur-operations-dashboard .mod-rate-chart polyline,
+      #martur-operations-dashboard .mod-rate-chart circle,
+      #martur-operations-dashboard .mod-value-pop {
+        animation: none;
+      }
+      #martur-operations-dashboard .mod-kpi-tile,
+      #martur-operations-dashboard .mod-kpi-tile:hover {
+        transition: none;
+      }
+    }
     #martur-operations-dashboard .mod-brand-copy,
     #martur-operations-dashboard .mod-section,
     #martur-operations-dashboard .mod-attendance-screen,
@@ -1108,11 +1156,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-kpi-tile {
       position: relative;
-      padding-top: 16px;
+      padding: 18px 14px 16px;
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 6px 20px -10px rgb(0 0 0 / 18%), 0 1px 2px rgb(0 0 0 / 5%);
       align-items: center;
       text-align: center;
+      transition: box-shadow 200ms ease, transform 200ms ease;
+    }
+    #martur-operations-dashboard .mod-kpi-tile:hover {
+      box-shadow: 0 10px 26px -10px rgb(0 0 0 / 22%), 0 2px 4px rgb(0 0 0 / 6%);
+      transform: translateY(-2px);
+    }
+    :root[data-theme="dark"] #martur-operations-dashboard .mod-kpi-tile {
+      box-shadow: 0 6px 20px -10px rgb(0 0 0 / 45%), 0 1px 2px rgb(0 0 0 / 25%);
+    }
+    :root[data-theme="dark"] #martur-operations-dashboard .mod-kpi-tile:hover {
+      box-shadow: 0 10px 26px -10px rgb(0 0 0 / 55%), 0 2px 4px rgb(0 0 0 / 30%);
     }
     #martur-operations-dashboard .mod-kpi-tile::before {
       content: "";
@@ -4597,6 +4656,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }).join('');
       }
 
+      function setKpiText(target, text) {
+        target.textContent = text;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        target.classList.remove('mod-value-pop');
+        void target.offsetWidth;
+        target.classList.add('mod-value-pop');
+      }
+
       function renderDashboard() {
         const rows = getDailyRows();
         ensurePeriodSelection(rows);
@@ -4619,13 +4686,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dailyReworkSection.hidden = state.view !== 'daily';
         el.periodShiftSection.hidden = state.view === 'daily';
 
-        el.kpiSets.textContent = formatNumber(summary.completeKits) + ' ' + t('pieces');
+        setKpiText(el.kpiSets, formatNumber(summary.completeKits) + ' ' + t('pieces'));
         el.kpiSetsContext.textContent = t('frontLabel') + ': ' + formatNumber(summary.totalFront) + ' · ' + t('rearLabel') + ': ' + formatNumber(summary.totalRear);
-        el.kpiCars.textContent = formatNumber(summary.stellantisCars) + ' ' + t('pieces');
+        setKpiText(el.kpiCars, formatNumber(summary.stellantisCars) + ' ' + t('pieces'));
         el.kpiCarsContext.textContent = subtitle;
-        el.kpiEfficiency.textContent = formatPercent(summary.efficiency);
+        setKpiText(el.kpiEfficiency, formatPercent(summary.efficiency));
         el.kpiEfficiencyContext.textContent = t(state.view === 'weekly' ? 'efficiencyFormulaWeekly' : state.view === 'monthly' ? 'efficiencyFormulaMonthly' : 'efficiencyFormula');
-        el.kpiGap.textContent = formatSigned(summary.supplyGap) + ' ' + t('pieces');
+        setKpiText(el.kpiGap, formatSigned(summary.supplyGap) + ' ' + t('pieces'));
         el.kpiGap.classList.toggle('text-destructive', isNumber(summary.supplyGap) && summary.supplyGap < 0);
         if (state.view === 'daily') {
           el.kpiGapContext.textContent = subtitle;
