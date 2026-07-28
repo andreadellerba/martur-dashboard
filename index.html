@@ -1388,6 +1388,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-chat-tab {
       padding-left: 24px;
     }
+    #martur-operations-dashboard .mod-chat-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 17px;
+      height: 17px;
+      margin-left: 5px;
+      padding: 0 5px;
+      border-radius: var(--radius-full);
+      background: light-dark(rgb(211 47 47), rgb(255 99 99));
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+      vertical-align: middle;
+    }
     #martur-operations-dashboard .mod-chat-screen {
       display: flex;
       flex-direction: column;
@@ -2766,7 +2782,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="monthly" aria-pressed="false" data-i18n="monthly">Mensile</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" aria-pressed="false" data-i18n="abarth">Abarth</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="dmc" aria-pressed="false" data-i18n="dmcSection">DMC</button>
-        <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false" data-i18n="chat">Chat</button>
+        <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false"><span data-i18n="chat">Chat</span><span id="mod-chat-badge" class="mod-chat-badge" hidden></span></button>
         <button type="button" class="mod-nav-tab mod-view-btn mod-live-tab" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">LIVE</button>
       </nav>
       <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
@@ -4181,6 +4197,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const STOPPAGE_STORAGE_KEY = 'martur-stoppages-v1';
       const STOPPAGE_CONFIG_KEY = 'martur-stoppage-config-v1';
       const OEE_CONFIG_KEY = 'martur-oee-config-v1';
+      const CHAT_SEEN_KEY = 'martur-chat-seen-v1';
       const OEE_DEFAULTS = { plannedMinPerShift: 450, targetKitPerShift: 170 };
       const THEME_STORAGE_KEY = 'martur-dashboard-theme';
       let savedTheme = null;
@@ -4199,6 +4216,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         chatUsers: [],
         chatUnsub: null,
         chatUsersLoaded: false,
+        chatSeenTs: 0,
         themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
         view: 'daily',
         viewHistory: [],
@@ -4244,6 +4262,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         chatSend: root.querySelector('#mod-chat-send'),
         chatSuggest: root.querySelector('#mod-chat-suggest'),
         chatHint: root.querySelector('#mod-chat-hint'),
+        chatBadge: root.querySelector('#mod-chat-badge'),
         viewSelect: root.querySelector('#mod-view-select'),
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
         stoppageAdmin: root.querySelector('#mod-stoppage-admin'),
@@ -5808,6 +5827,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (!user) {
             applyAuthRole(null);
             state.authUsername = null;
+            unsubscribeChat();
             if (state.view === 'entry') state.view = 'daily';
             updateAdminUI();
             renderAll();
@@ -5818,6 +5838,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             state.authUsername = doc.exists ? doc.data().username : null;
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
+            loadChatUsers();
+            subscribeChat();
             renderAll();
           }).catch(() => {
             applyAuthRole(null);
@@ -5852,12 +5874,40 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             });
           });
           state.chatMessages = msgs;
-          if (state.view === 'chat') renderChatMessages();
+          if (state.view === 'chat') {
+            markChatSeen();
+            renderChatMessages();
+          } else {
+            updateChatBadge();
+          }
         }, () => {});
       }
 
       function unsubscribeChat() {
         if (state.chatUnsub) { state.chatUnsub(); state.chatUnsub = null; }
+      }
+
+      function chatUnreadCount() {
+        const me = (state.authUsername || '').toLowerCase();
+        return state.chatMessages.filter((m) => m.createdAt.getTime() > state.chatSeenTs && m.username.toLowerCase() !== me).length;
+      }
+
+      function updateChatBadge() {
+        const count = state.view === 'chat' ? 0 : chatUnreadCount();
+        if (count > 0) {
+          el.chatBadge.textContent = count > 99 ? '99+' : String(count);
+          el.chatBadge.hidden = false;
+        } else {
+          el.chatBadge.textContent = '';
+          el.chatBadge.hidden = true;
+        }
+      }
+
+      function markChatSeen() {
+        const newest = state.chatMessages.length ? state.chatMessages[state.chatMessages.length - 1].createdAt.getTime() : Date.now();
+        state.chatSeenTs = Math.max(state.chatSeenTs, newest);
+        try { window.localStorage.setItem(CHAT_SEEN_KEY, String(state.chatSeenTs)); } catch (e) {}
+        updateChatBadge();
       }
 
       function chatDayLabel(date) {
@@ -5913,6 +5963,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderChat() {
         subscribeChat();
         loadChatUsers();
+        markChatSeen();
         renderChatMessages();
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
@@ -6657,7 +6708,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.contextBar.hidden = !isDashboard;
         el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
         el.stoppageSettingsBtn.hidden = !state.isConfigAdmin;
-        if (!isChat) unsubscribeChat();
+        if (!isChat) updateChatBadge();
         if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'chat', 'stoppages'].includes(state.view)) {
           el.viewSelect.value = state.view;
         }
@@ -6966,6 +7017,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       loadStoppages();
       loadStoppageConfig();
       loadOeeConfig();
+      try { state.chatSeenTs = Number(window.localStorage.getItem(CHAT_SEEN_KEY)) || 0; } catch (e) {}
       clearForm();
       renderAll();
       initAuth();
