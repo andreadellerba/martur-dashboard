@@ -1140,6 +1140,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       width: 215px;
       margin-bottom: 0;
     }
+    #martur-operations-dashboard .mod-header-picker #mod-date-picker {
+      width: 255px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #martur-operations-dashboard .mod-date-weekday {
+      flex: 0 0 auto;
+      font-weight: 700;
+      font-size: var(--font-size-small);
+      color: var(--primary);
+      background: var(--accent);
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      text-transform: capitalize;
+    }
+    #martur-operations-dashboard #mod-date-picker .form-control {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
     #martur-operations-dashboard .mod-header-picker .mod-period-picker .form-control {
       margin-top: 0;
     }
@@ -1531,6 +1551,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
+      align-items: start;
     }
     #martur-operations-dashboard .mod-daily-shift-card {
       position: relative;
@@ -1556,7 +1577,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 7px;
     }
     #martur-operations-dashboard .mod-shift-time {
-      font-size: var(--font-size-small);
       font-weight: 500;
       color: var(--muted-foreground);
     }
@@ -2723,6 +2743,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <div id="mod-header-picker" class="mod-header-picker">
           <label id="mod-date-picker" class="form-label mod-period-picker">
             <span class="sr-only" data-i18n="selectDate">Seleziona data</span>
+            <span id="mod-date-weekday" class="mod-date-weekday" aria-hidden="true"></span>
             <input id="mod-period-date" class="form-control" type="date">
           </label>
           <label id="mod-week-picker" class="form-label mod-period-picker" hidden>
@@ -3227,6 +3248,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             </label>
             <button id="mod-oee-save" type="button" class="btn btn-primary" data-i18n="save">Salva</button>
           </div>
+          <div class="text-small text-muted" data-i18n="oeeEffectiveHint">La modifica vale dalla data odierna in poi; i giorni precedenti mantengono i valori precedenti.</div>
         </div>
         <div id="mod-stoppage-admin" class="mod-stoppage-admin"></div>
       </div>
@@ -3460,9 +3482,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           paretoVitalFew: 'Regola 80/20: le prime {n} postazioni causano circa l\'80% dei fermi.',
           paretoTopN: 'I {n} fermi più impattanti · {pct} del tempo totale di fermo.',
           vsPrevDay: 'rispetto al giorno produttivo precedente',
+          vsPrev: 'rispetto al periodo precedente',
           plannedShort: 'Pianificato',
           targetShort: 'Target',
           oeeSettings: 'OEE — parametri',
+          oeeEffectiveHint: 'La modifica vale dalla data odierna in poi; i giorni precedenti mantengono i valori precedenti.',
           plannedMinPerShiftLabel: 'Minuti pianificati / turno',
           targetKitPerShiftLabel: 'Target Kit / turno',
           roleAdmin: 'Operatore',
@@ -3704,9 +3728,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           paretoVitalFew: '80/20 rule: the top {n} stations cause about 80% of downtime.',
           paretoTopN: 'Top {n} stoppages · {pct} of total downtime.',
           vsPrevDay: 'vs previous production day',
+          vsPrev: 'vs previous period',
           plannedShort: 'Planned',
           targetShort: 'Target',
           oeeSettings: 'OEE — parameters',
+          oeeEffectiveHint: 'Changes apply from today onward; previous days keep their earlier values.',
           plannedMinPerShiftLabel: 'Planned minutes / shift',
           targetKitPerShiftLabel: 'Target Kit / shift',
           roleAdmin: 'Operator',
@@ -3948,9 +3974,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           paretoVitalFew: '80/20 kuralı: ilk {n} istasyon duruşların yaklaşık %80\'ine neden olur.',
           paretoTopN: 'En etkili {n} duruş · toplam duruşun {pct}\'i.',
           vsPrevDay: 'önceki üretim gününe göre',
+          vsPrev: 'önceki döneme göre',
           plannedShort: 'Planlanan',
           targetShort: 'Hedef',
           oeeSettings: 'OEE — parametreler',
+          oeeEffectiveHint: 'Değişiklik bugünden itibaren geçerlidir; önceki günler eski değerleri korur.',
           plannedMinPerShiftLabel: 'Vardiya başına planlanan dakika',
           targetKitPerShiftLabel: 'Vardiya başına hedef Kit',
           roleAdmin: 'Operatör',
@@ -4175,6 +4203,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         view: 'daily',
         viewHistory: [],
         oeeConfig: Object.assign({}, OEE_DEFAULTS),
+        oeeConfigHistory: [],
         selectedDate: null,
         selectedMonth: null,
         editingDate: null,
@@ -4264,6 +4293,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         closeAdminDialog: root.querySelector('#mod-close-admin-dialog'),
         cancelAdminDialog: root.querySelector('#mod-cancel-admin-dialog'),
         datePicker: root.querySelector('#mod-date-picker'),
+        dateWeekday: root.querySelector('#mod-date-weekday'),
         weekPicker: root.querySelector('#mod-week-picker'),
         monthPicker: root.querySelector('#mod-month-picker'),
         exportPdf: root.querySelector('#mod-export-pdf'),
@@ -4689,29 +4719,43 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function loadOeeConfig() {
         let stored = null;
         try { stored = JSON.parse(window.localStorage.getItem(OEE_CONFIG_KEY)); } catch (error) {}
-        const planned = stored && isNumber(stored.plannedMinPerShift) && stored.plannedMinPerShift > 0 ? stored.plannedMinPerShift : OEE_DEFAULTS.plannedMinPerShift;
-        const target = stored && isNumber(stored.targetKitPerShift) && stored.targetKitPerShift > 0 ? stored.targetKitPerShift : OEE_DEFAULTS.targetKitPerShift;
-        state.oeeConfig = { plannedMinPerShift: planned, targetKitPerShift: target };
+        let history = [];
+        if (Array.isArray(stored)) {
+          history = stored.filter((e) => e && isNumber(e.plannedMinPerShift) && e.plannedMinPerShift > 0 && isNumber(e.targetKitPerShift) && e.targetKitPerShift > 0 && e.effectiveFrom);
+        } else if (stored && isNumber(stored.plannedMinPerShift)) {
+          history = [{ effectiveFrom: '2000-01-01', plannedMinPerShift: stored.plannedMinPerShift, targetKitPerShift: stored.targetKitPerShift }];
+        }
+        if (!history.length) {
+          history = [{ effectiveFrom: '2000-01-01', plannedMinPerShift: OEE_DEFAULTS.plannedMinPerShift, targetKitPerShift: OEE_DEFAULTS.targetKitPerShift }];
+        }
+        history.sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+        state.oeeConfigHistory = history;
+        state.oeeConfig = history[history.length - 1];
       }
 
       function persistOeeConfig() {
-        try { window.localStorage.setItem(OEE_CONFIG_KEY, JSON.stringify(state.oeeConfig)); } catch (error) {}
+        try { window.localStorage.setItem(OEE_CONFIG_KEY, JSON.stringify(state.oeeConfigHistory)); } catch (error) {}
+      }
+
+      function oeeConfigFor(date) {
+        const history = state.oeeConfigHistory || [];
+        let chosen = history[0] || state.oeeConfig;
+        for (let i = 0; i < history.length; i++) {
+          if (history[i].effectiveFrom <= date) chosen = history[i]; else break;
+        }
+        return chosen;
       }
 
       function clamp01(value) {
         return Math.min(1, Math.max(0, value));
       }
 
-      function computeOee(completeKits, rework, downtimeMin, shiftsWorked) {
-        if (!shiftsWorked || !isNumber(completeKits) || completeKits <= 0) return null;
-        const cfg = state.oeeConfig;
-        const planned = cfg.plannedMinPerShift * shiftsWorked;
-        const target = cfg.targetKitPerShift * shiftsWorked;
+      function computeOee(completeKits, rework, downtimeMin, planned, target) {
+        if (!isNumber(completeKits) || completeKits <= 0 || !(planned > 0) || !(target > 0)) return null;
         const dt = isNumber(downtimeMin) ? downtimeMin : 0;
-        const availability = planned > 0 ? clamp01((planned - dt) / planned) : null;
-        const performance = target > 0 ? clamp01(completeKits / target) : null;
+        const availability = clamp01((planned - dt) / planned);
+        const performance = clamp01(completeKits / target);
         const quality = clamp01((completeKits - valueOrZero(rework)) / completeKits);
-        if (availability == null || performance == null) return null;
         return { availability, performance, quality, oee: availability * performance * quality };
       }
 
@@ -4884,6 +4928,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.periodDate.min = firstDate;
         el.periodDate.max = lastDate;
         el.periodDate.value = state.selectedDate;
+        if (el.dateWeekday) {
+          const wd = parseDate(state.selectedDate).getDay();
+          const idx = (wd + 6) % 7;
+          el.dateWeekday.textContent = (WEEKDAY_SHORT[state.lang] || WEEKDAY_SHORT.it)[idx];
+        }
         el.periodWeek.value = isoWeekStringOf(mondayOf(parseDate(state.selectedDate)));
         el.periodMonth.min = firstMonth;
         el.periodMonth.max = lastMonth;
@@ -5285,7 +5334,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('coda') + '</span><strong>' + formatOptionalNumber(shift.coda) + '</strong></div>' +
               '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('overtime') + '</span><strong>' + formatPercent(shift.overtimePct) + '</strong></div>' +
             '</div>' +
-            (noteText ? '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span> ' + escapeHtml(noteText) + '</div>' : '') +
+            '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span>' + (noteText ? ' ' + escapeHtml(noteText) : '') + '</div>' +
           '</article>';
         }).join('');
         el.dailyShiftGrid.querySelectorAll('.mod-shift-edit').forEach((button) => {
@@ -5371,14 +5420,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         renderDailyTopReworks(dailySummary);
         renderShiftTables(overall, subtitle);
         const oeeDowntimeMin = getPeriodStoppages().reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
-        let shiftsWorked;
+        const shiftsWorkedFor = (shiftRow) => {
+          const s = (valueOrZero(shiftRow.shift1 && shiftRow.shift1.front) > 0 ? 1 : 0) + (valueOrZero(shiftRow.shift2 && shiftRow.shift2.front) > 0 ? 1 : 0);
+          return s || (shiftRow.completeKits > 0 ? 2 : 0);
+        };
+        let oeePlanned = 0;
+        let oeeTarget = 0;
         if (state.view === 'daily') {
-          shiftsWorked = (valueOrZero(summary.shift1 && summary.shift1.front) > 0 ? 1 : 0) + (valueOrZero(summary.shift2 && summary.shift2.front) > 0 ? 1 : 0);
-          if (!shiftsWorked && summary.completeKits > 0) shiftsWorked = 2;
+          const sw = shiftsWorkedFor(summary);
+          const cfg = oeeConfigFor(state.selectedDate);
+          oeePlanned = cfg.plannedMinPerShift * sw;
+          oeeTarget = cfg.targetKitPerShift * sw;
         } else {
-          shiftsWorked = (summary.productionDays || 0) * 2;
+          periods.filter((p) => p.totalFront > 0 || p.totalRear > 0).forEach((p) => {
+            const sw = shiftsWorkedFor(p);
+            const cfg = oeeConfigFor(p.date || p.key);
+            oeePlanned += cfg.plannedMinPerShift * sw;
+            oeeTarget += cfg.targetKitPerShift * sw;
+          });
         }
-        renderOee(summary, oeeDowntimeMin, shiftsWorked, subtitle);
+        renderOee(summary, oeeDowntimeMin, oeePlanned, oeeTarget, subtitle);
         renderDowntime();
       }
 
@@ -6134,8 +6195,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return 'M ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' A ' + r + ' ' + r + ' 0 ' + large + ' ' + sweep + ' ' + x2.toFixed(2) + ' ' + y2.toFixed(2);
       }
 
-      function renderOee(summary, downtimeMin, shiftsWorked, subtitle) {
-        const oee = computeOee(summary.completeKits, summary.rework, downtimeMin, shiftsWorked);
+      function renderOee(summary, downtimeMin, planned, target, subtitle) {
+        const oee = computeOee(summary.completeKits, summary.rework, downtimeMin, planned, target);
         if (!oee) {
           el.oeeSubtitle.textContent = subtitle || '';
           el.oeeGauge.innerHTML = '';
@@ -6159,8 +6220,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '<text class="mod-oee-gauge-value" x="100" y="96" text-anchor="middle" fill="' + color + '">' + Math.round(oee.oee * 100) + '%</text>' +
           '<text class="mod-oee-gauge-label" x="100" y="116" text-anchor="middle">OEE</text>' +
           '</svg>';
-        const planned = state.oeeConfig.plannedMinPerShift * shiftsWorked;
-        const target = state.oeeConfig.targetKitPerShift * shiftsWorked;
         el.oeeSubtitle.textContent = (subtitle ? subtitle + ' · ' : '') +
           t('plannedShort') + ': ' + formatNumber(planned) + ' min · ' + t('targetShort') + ': ' + formatNumber(target) + ' Kit';
         const rows = [
@@ -6195,40 +6254,62 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '</svg>';
       }
 
-      function renderTrendBadge(node, cur, prev, kind, better) {
+      function renderTrendBadge(node, cur, prev, kind) {
         if (!isNumber(cur) || !isNumber(prev)) { node.textContent = ''; node.className = 'mod-kpi-trend'; node.title = ''; return; }
         const delta = cur - prev;
         const threshold = kind === 'pct' ? 0.0005 : 0.5;
         const dir = Math.abs(delta) < threshold ? 'flat' : (delta > 0 ? 'up' : 'down');
         let cls = 'mod-kpi-trend ';
-        if (dir === 'flat' || better === 'neutral') cls += 'mod-trend-flat';
-        else cls += ((dir === 'up') === (better === 'up')) ? 'mod-trend-up' : 'mod-trend-down';
+        if (dir === 'flat') cls += 'mod-trend-flat';
+        else cls += dir === 'up' ? 'mod-trend-up' : 'mod-trend-down';
         const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '▬';
         let mag;
         if (kind === 'pct') mag = (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta * 1000) / 10)) + ' pt';
         else mag = (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta)));
         node.className = cls;
         node.textContent = dir === 'flat' ? arrow : arrow + ' ' + mag;
-        node.title = t('vsPrevDay');
+        node.title = t('vsPrev');
+      }
+
+      function kpiTrendSeries() {
+        const rows = getDailyRows();
+        if (state.view === 'weekly') {
+          const currentMonday = mondayOf(parseDate(state.selectedDate));
+          const series = [];
+          for (let i = 9; i >= 0; i--) {
+            const wkStart = addDays(currentMonday, -7 * i);
+            const start = isoDate(wkStart), end = isoDate(addDays(wkStart, 6));
+            const wkRows = rows.filter((r) => r.date >= start && r.date <= end && hasOperationalData(r));
+            if (wkRows.length) series.push(aggregatePeriods(wkRows));
+          }
+          return series;
+        }
+        if (state.view === 'monthly') {
+          const [y, m] = state.selectedMonth.split('-').map(Number);
+          const series = [];
+          for (let i = 11; i >= 0; i--) {
+            const d = new Date(y, (m - 1) - i, 1);
+            const monthStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+            const mRows = rows.filter((r) => r.date.slice(0, 7) === monthStr && hasOperationalData(r));
+            if (mRows.length) series.push(aggregatePeriods(mRows));
+          }
+          return series;
+        }
+        return rows.filter((r) => hasOperationalData(r) && r.date <= state.selectedDate).slice(-8);
       }
 
       function renderKpiTrends() {
         const metrics = [
-          { trend: el.kpiSetsTrend, spark: el.kpiSetsSpark, get: (r) => r.completeKits, kind: 'int', better: 'up' },
-          { trend: el.kpiCarsTrend, spark: el.kpiCarsSpark, get: (r) => r.stellantisCars, kind: 'int', better: 'neutral' },
-          { trend: el.kpiGapTrend, spark: el.kpiGapSpark, get: (r) => r.supplyGap, kind: 'int', better: 'up' },
-          { trend: el.kpiEfficiencyTrend, spark: el.kpiEfficiencySpark, get: (r) => r.efficiency, kind: 'pct', better: 'up' }
+          { trend: el.kpiSetsTrend, spark: el.kpiSetsSpark, get: (r) => r.completeKits, kind: 'int' },
+          { trend: el.kpiCarsTrend, spark: el.kpiCarsSpark, get: (r) => r.stellantisCars, kind: 'int' },
+          { trend: el.kpiGapTrend, spark: el.kpiGapSpark, get: (r) => r.supplyGap, kind: 'int' },
+          { trend: el.kpiEfficiencyTrend, spark: el.kpiEfficiencySpark, get: (r) => r.efficiency, kind: 'pct' }
         ];
-        if (state.view !== 'daily') {
-          metrics.forEach((m) => { m.trend.textContent = ''; m.trend.className = 'mod-kpi-trend'; m.spark.innerHTML = ''; });
-          return;
-        }
-        const prod = getDailyRows().filter((r) => hasOperationalData(r) && r.date <= state.selectedDate);
-        const series = prod.slice(-8);
+        const series = kpiTrendSeries();
         metrics.forEach((m) => {
           m.spark.innerHTML = sparklineSvg(series.map(m.get));
           if (series.length >= 2) {
-            renderTrendBadge(m.trend, m.get(series[series.length - 1]), m.get(series[series.length - 2]), m.kind, m.better);
+            renderTrendBadge(m.trend, m.get(series[series.length - 1]), m.get(series[series.length - 2]), m.kind);
           } else {
             m.trend.textContent = '';
             m.trend.className = 'mod-kpi-trend';
@@ -6668,12 +6749,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.oeeSave.addEventListener('click', () => {
         const planned = Number(el.oeePlanned.value);
         const target = Number(el.oeeTarget.value);
-        if (Number.isFinite(planned) && planned > 0) state.oeeConfig.plannedMinPerShift = Math.round(planned);
-        if (Number.isFinite(target) && target > 0) state.oeeConfig.targetKitPerShift = Math.round(target);
+        if (!Number.isFinite(planned) || planned <= 0 || !Number.isFinite(target) || target <= 0) return;
+        const today = isoDate(new Date());
+        const latest = state.oeeConfigHistory[state.oeeConfigHistory.length - 1];
+        if (latest && latest.effectiveFrom === today) {
+          latest.plannedMinPerShift = Math.round(planned);
+          latest.targetKitPerShift = Math.round(target);
+        } else {
+          state.oeeConfigHistory.push({ effectiveFrom: today, plannedMinPerShift: Math.round(planned), targetKitPerShift: Math.round(target) });
+          state.oeeConfigHistory.sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+        }
+        state.oeeConfig = state.oeeConfigHistory[state.oeeConfigHistory.length - 1];
         persistOeeConfig();
         el.oeeSave.textContent = t('saved');
         setTimeout(() => { el.oeeSave.textContent = t('save'); }, 1500);
-        if (state.view !== 'entry' && state.view !== 'attendance' && state.view !== 'stoppages') renderDashboard();
+        if (state.view !== 'entry' && state.view !== 'attendance' && state.view !== 'stoppages' && state.view !== 'chat') renderDashboard();
       });
       el.closeStoppageSettings.addEventListener('click', () => el.stoppageSettingsDialog.close());
       function navigateTo(view) {
