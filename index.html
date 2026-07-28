@@ -937,12 +937,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding: 9px 16px;
       font: inherit;
       font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
       color: var(--muted-foreground);
       cursor: pointer;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    #martur-operations-dashboard .mod-nav-tab-icon {
+      text-transform: none;
+    }
+    #martur-operations-dashboard .mod-view-select {
+      text-transform: uppercase;
     }
     #martur-operations-dashboard .mod-nav-tab::after {
       content: "";
@@ -986,6 +994,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding: 0 9px;
     }
     #martur-operations-dashboard .mod-admin-active {
+      color: var(--primary);
+      background: var(--accent);
+    }
+    #martur-operations-dashboard .mod-greeting-btn {
+      border-radius: var(--radius-full);
+      padding: 0 12px;
+      min-height: 28px;
+      font-weight: 600;
+      white-space: nowrap;
       color: var(--primary);
       background: var(--accent);
     }
@@ -2800,12 +2817,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <table>
           <thead>
             <tr>
-              <th data-i18n="when">Quando</th>
-              <th class="mod-stoppage-line-col" data-i18n="line">Linea</th>
-              <th data-i18n="operation">Operazione</th>
-              <th data-i18n="stoppageCause">Causa del fermo</th>
               <th data-i18n="duration">Durata</th>
-              <th data-i18n="reporter">Chi segnala</th>
+              <th data-i18n="startTime">Ora inizio</th>
+              <th data-i18n="endTime">Ora fine</th>
+              <th class="mod-stoppage-line-col" data-i18n="line">Linea</th>
+              <th data-i18n="operation">Postazione</th>
+              <th data-i18n="stoppageCause">Causa</th>
+              <th data-i18n="reporter">Segnalatore</th>
               <th data-i18n="note">Note</th>
               <th class="mod-stoppage-act-col" data-i18n="actions">Azioni</th>
             </tr>
@@ -3011,6 +3029,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           selectWeek: 'Seleziona settimana',
           selectMonth: 'Seleziona mese',
           back: 'Indietro',
+          greeting: 'Buongiorno',
+          logout: 'Esci',
           previousPeriod: 'Periodo precedente',
           nextPeriod: 'Periodo successivo',
           adminAccess: 'Accesso amministratore',
@@ -3027,12 +3047,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           stoppagesHint: 'Clicca una operazione per registrare un fermo.',
           newStoppage: 'Nuovo fermo',
           line: 'Linea',
-          operation: 'Operazione',
-          stoppageCause: 'Causa del fermo',
+          operation: 'Postazione',
+          stoppageCause: 'Causa',
+          startTime: 'Ora inizio',
+          endTime: 'Ora fine',
           duration: 'Durata',
           minutes: 'Minuti',
           hours: 'Ore',
-          reporter: 'Chi segnala',
+          reporter: 'Segnalatore',
           recordedStoppages: 'Fermi registrati',
           noStoppages: 'Nessun fermo registrato.',
           totalDowntime: 'Tempo totale di fermo',
@@ -3231,6 +3253,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           selectWeek: 'Select week',
           selectMonth: 'Select month',
           back: 'Back',
+          greeting: 'Hello',
+          logout: 'Log out',
           previousPeriod: 'Previous period',
           nextPeriod: 'Next period',
           adminAccess: 'Admin access',
@@ -3247,12 +3271,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           stoppagesHint: 'Click an operation to log a stoppage.',
           newStoppage: 'New stoppage',
           line: 'Line',
-          operation: 'Operation',
-          stoppageCause: 'Stoppage cause',
+          operation: 'Station',
+          stoppageCause: 'Cause',
+          startTime: 'Start time',
+          endTime: 'End time',
           duration: 'Duration',
           minutes: 'Minutes',
           hours: 'Hours',
-          reporter: 'Reported by',
+          reporter: 'Reporter',
           recordedStoppages: 'Recorded stoppages',
           noStoppages: 'No stoppages recorded.',
           totalDowntime: 'Total downtime',
@@ -3451,6 +3477,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           selectWeek: 'Hafta seç',
           selectMonth: 'Ay seç',
           back: 'Geri',
+          greeting: 'Günaydın',
+          logout: 'Çıkış',
           previousPeriod: 'Önceki dönem',
           nextPeriod: 'Sonraki dönem',
           adminAccess: 'Yönetici girişi',
@@ -3467,8 +3495,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           stoppagesHint: 'Duruş kaydetmek için bir operasyona tıklayın.',
           newStoppage: 'Yeni duruş',
           line: 'Hat',
-          operation: 'Operasyon',
-          stoppageCause: 'Duruş nedeni',
+          operation: 'İstasyon',
+          stoppageCause: 'Neden',
+          startTime: 'Başlangıç',
+          endTime: 'Bitiş',
           duration: 'Süre',
           minutes: 'Dakika',
           hours: 'Saat',
@@ -5167,13 +5197,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       }
 
+      function firstNameFromUsername(username) {
+        if (!username) return '';
+        const first = String(username).split(/[._\-\s]/)[0];
+        return first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
+      }
+
       function updateAdminUI() {
         el.entryViewBtn.disabled = !state.isAdmin;
         root.classList.toggle('mod-admin-on', state.isAdmin);
         root.classList.toggle('mod-config-on', state.isConfigAdmin);
         el.adminLock.setAttribute('aria-pressed', String(state.isAdmin));
         el.adminLock.classList.toggle('mod-admin-active', state.isAdmin);
-        el.adminLockIcon.setAttribute('data-lucide', state.isAdmin ? 'lock-open' : 'lock');
+        el.adminLock.classList.toggle('mod-greeting-btn', state.isAdmin);
+        el.adminLock.classList.toggle('mod-pill-icon', !state.isAdmin);
+        if (state.isAdmin) {
+          const name = firstNameFromUsername(state.authUsername);
+          el.adminLock.innerHTML = '<span>' + escapeHtml(t('greeting') + (name ? ', ' + name : '') + '!') + '</span>';
+          el.adminLock.title = t('logout');
+        } else {
+          el.adminLock.innerHTML = '<i id="mod-admin-lock-icon" data-lucide="lock" aria-hidden="true"></i>';
+          el.adminLock.title = t('adminAccess');
+          el.adminLockIcon = el.adminLock.querySelector('#mod-admin-lock-icon');
+        }
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
@@ -5230,6 +5276,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           return new Intl.DateTimeFormat(locale(), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
         } catch (error) {
           return iso;
+        }
+      }
+
+      function formatStoppageEndClock(iso, durationMin) {
+        try {
+          const end = new Date(new Date(iso).getTime() + (isNumber(durationMin) ? durationMin : 0) * 60000);
+          return new Intl.DateTimeFormat(locale(), { hour: '2-digit', minute: '2-digit' }).format(end);
+        } catch (error) {
+          return '';
         }
       }
 
@@ -5568,13 +5623,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function stoppagesToCsv(list) {
-        const header = ['Data', 'Ora', t('line'), t('operation'), t('stoppageCause'), 'Minuti', t('reporter'), t('note')];
+        const header = ['Data', 'Minuti', t('startTime'), t('endTime'), t('line'), t('operation'), t('stoppageCause'), t('reporter'), t('note')];
         const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
         const lines = list.map((s) => [
           String(s.timestamp).slice(0, 10),
+          s.durationMin,
           formatStoppageClock(s.timestamp),
+          formatStoppageEndClock(s.timestamp, s.durationMin),
           s.line || stoppageLineName(s.lineId),
-          s.op, stoppageCauseText(s), s.durationMin, s.reporter, s.note || ''
+          s.op, stoppageCauseText(s), s.reporter, s.note || ''
         ].map(esc).join(';'));
         return [header.map(esc).join(';')].concat(lines).join('\r\n');
       }
@@ -5678,15 +5735,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           });
         };
         el.stoppagesBody.innerHTML = groups.map((group) =>
-          '<tr class="mod-stoppage-day"><td colspan="8">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
+          '<tr class="mod-stoppage-day"><td colspan="9">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
             ' · ' + escapeHtml(stoppageDurationText(group.total)) + '</td></tr>' +
           mergeRecords(group.items).map((s) =>
             '<tr>' +
+              '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(formatStoppageClock(s.timestamp)) + '</td>' +
+              '<td>' + escapeHtml(formatStoppageEndClock(s.timestamp, s.durationMin)) + '</td>' +
               '<td class="mod-stoppage-line-col">' + escapeHtml(s.line) + '</td>' +
               '<td>' + escapeHtml(s.op) + '</td>' +
               '<td>' + escapeHtml(stoppageCauseText(s)) + '</td>' +
-              '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(s.reporter) + '</td>' +
               '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
               '<td class="mod-stoppage-act-col"><button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-edit" data-ids="' + escapeHtml(s.ids.join(',')) + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' +
