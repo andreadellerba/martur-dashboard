@@ -324,7 +324,8 @@ small,
   margin-bottom: 0;
 }
 
-.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select),
+.viz-controls > .form-label > .mod-overtime-field {
   grid-column: 1 / -1;
 }
 
@@ -875,10 +876,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
     }
     #martur-operations-dashboard .mod-nav-row {
-      display: flex;
-      align-items: stretch;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
       width: 100%;
+      gap: 10px;
       border-bottom: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-nav-side {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-nav-left {
+      grid-column: 1;
+      justify-self: start;
+    }
+    #martur-operations-dashboard .mod-nav-right {
+      grid-column: 3;
+      justify-self: end;
+    }
+    #martur-operations-dashboard .mod-main-nav,
+    #martur-operations-dashboard .mod-view-select {
+      grid-column: 2;
+      justify-self: center;
     }
     #martur-operations-dashboard .mod-main-nav {
       display: flex;
@@ -886,7 +908,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       align-items: stretch;
       gap: 2px;
       flex-wrap: wrap;
-      flex: 1 1 auto;
       min-width: 0;
     }
     #martur-operations-dashboard .mod-view-select {
@@ -942,14 +963,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-context-bar {
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-    #martur-operations-dashboard .mod-context-bar #mod-export-pdf {
-      margin-left: 6px;
+      flex-wrap: nowrap;
     }
     #martur-operations-dashboard .mod-pill-icon {
       border-radius: var(--radius-full);
@@ -1356,6 +1373,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard td:last-child {
       padding-right: 0;
     }
+    #martur-operations-dashboard .mod-stoppage-line-col {
+      text-align: center;
+    }
     #martur-operations-dashboard .mod-negative {
       color: var(--destructive);
     }
@@ -1389,12 +1409,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-wide-field {
       flex-basis: 100% !important;
     }
-    #martur-operations-dashboard .mod-overtime-field-label {
-      flex-basis: 42% !important;
-    }
     #martur-operations-dashboard .mod-overtime-field {
       display: flex;
       gap: 4px;
+      align-items: center;
     }
     #martur-operations-dashboard .mod-overtime-field .form-control {
       min-width: 0;
@@ -1613,37 +1631,52 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-line-status[data-status="red"] { background: #e11d1d; }
     #martur-operations-dashboard .mod-downtime-pareto {
       display: grid;
-      gap: 7px;
-      margin-bottom: 14px;
+      gap: 10px;
     }
     #martur-operations-dashboard .mod-pareto-row {
       display: grid;
-      grid-template-columns: minmax(120px, 30%) 1fr auto;
+      grid-template-columns: auto minmax(100px, 26%) 1fr auto;
       align-items: center;
       gap: 10px;
     }
+    #martur-operations-dashboard .mod-pareto-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 700;
+    }
     #martur-operations-dashboard .mod-pareto-label {
       font-size: var(--font-size-small);
+      font-weight: 500;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     #martur-operations-dashboard .mod-pareto-track {
+      position: relative;
       background: var(--muted);
       border-radius: var(--radius-full);
-      height: 14px;
+      height: 10px;
       overflow: hidden;
     }
     #martur-operations-dashboard .mod-pareto-bar {
       display: block;
       height: 100%;
-      background: #e11d1d;
       border-radius: var(--radius-full);
+      background: linear-gradient(90deg, light-dark(rgb(255 150 110), rgb(255 150 110)), light-dark(rgb(211 47 47), rgb(255 99 99)));
+      transition: width 0.4s ease;
     }
     #martur-operations-dashboard .mod-pareto-value {
       font-size: var(--font-size-small);
-      font-weight: 600;
+      font-weight: 700;
       white-space: nowrap;
+      color: light-dark(rgb(211 47 47), rgb(255 99 99));
     }
     #martur-operations-dashboard .mod-stoppage-filters {
       display: flex;
@@ -1659,13 +1692,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-stoppage-admin {
       display: grid;
       gap: 8px;
-    }
-    #martur-operations-dashboard .mod-live-toolbar {
-      display: flex;
-      justify-content: flex-end;
-    }
-    #martur-operations-dashboard:not(.mod-config-on) .mod-live-toolbar {
-      display: none;
     }
     #martur-operations-dashboard #mod-stoppage-settings-dialog {
       width: min(94vw, 560px);
@@ -1916,16 +1942,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-brand-logo {
         height: 46px;
       }
+      #martur-operations-dashboard .mod-nav-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+      }
       #martur-operations-dashboard .mod-main-nav {
         display: none;
       }
       #martur-operations-dashboard .mod-view-select {
         display: block;
+        order: 1;
         flex: 1 1 auto;
         min-width: 0;
         text-align: center;
         text-align-last: center;
         min-height: 34px;
+      }
+      #martur-operations-dashboard .mod-nav-left {
+        order: 2;
+        flex: 1 1 100%;
+      }
+      #martur-operations-dashboard .mod-nav-right {
+        order: 3;
+        flex: 1 1 100%;
+        justify-content: flex-end;
       }
       #martur-operations-dashboard .mod-nav-tab:not(.mod-nav-tab-icon) {
         flex: 1 1 0;
@@ -1982,7 +2023,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         width: 100%;
         margin: 0;
       }
-      #martur-operations-dashboard .mod-context-bar #mod-export-pdf {
+      #martur-operations-dashboard .mod-nav-right #mod-export-pdf {
         display: none;
       }
       #martur-operations-dashboard #mod-admin-password {
@@ -2222,6 +2263,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
 
     <div class="mod-nav-row">
+      <div id="mod-context-bar" class="mod-nav-side mod-nav-left">
+        <button type="button" class="btn btn-ghost mod-pill-icon mod-period-nav" id="mod-period-prev" title="Precedente" data-i18n-title="previousPeriod">
+          <i data-lucide="chevron-left" aria-hidden="true"></i>
+        </button>
+        <div id="mod-header-picker" class="mod-header-picker">
+          <label id="mod-date-picker" class="form-label mod-period-picker">
+            <span class="sr-only" data-i18n="selectDate">Seleziona data</span>
+            <input id="mod-period-date" class="form-control" type="date">
+          </label>
+          <label id="mod-week-picker" class="form-label mod-period-picker" hidden>
+            <span class="sr-only" data-i18n="selectWeek">Seleziona settimana</span>
+            <input id="mod-period-week" class="form-control" type="week">
+          </label>
+          <label id="mod-month-picker" class="form-label mod-period-picker" hidden>
+            <span class="sr-only" data-i18n="selectMonth">Seleziona mese</span>
+            <input id="mod-period-month" class="form-control" type="month">
+          </label>
+        </div>
+        <button type="button" class="btn btn-ghost mod-pill-icon mod-period-nav" id="mod-period-next" title="Successivo" data-i18n-title="nextPeriod">
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+
       <nav class="mod-main-nav" aria-label="Dashboard views">
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="daily" aria-pressed="true" data-i18n="daily">Giornaliero</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="weekly" aria-pressed="false" data-i18n="weekly">Settimanale</button>
@@ -2238,41 +2302,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <option value="dmc" data-i18n="dmcSection">DMC</option>
         <option value="stoppages" data-i18n="stoppages">LIVE</option>
       </select>
-      <button type="button" class="mod-nav-tab mod-nav-tab-icon mod-view-btn" id="mod-entry-view-btn" data-view="entry" aria-pressed="false" title="Inserimento dati" data-i18n-title="dataEntry" disabled>
-        <i data-lucide="plus" aria-hidden="true"></i>
-      </button>
-    </div>
 
-    <div id="mod-context-bar" class="mod-context-bar">
-      <button type="button" class="btn btn-ghost mod-pill-icon mod-period-nav" id="mod-period-prev" title="Precedente" data-i18n-title="previousPeriod">
-        <i data-lucide="chevron-left" aria-hidden="true"></i>
-      </button>
-      <div id="mod-header-picker" class="mod-header-picker">
-        <label id="mod-date-picker" class="form-label mod-period-picker">
-          <span class="sr-only" data-i18n="selectDate">Seleziona data</span>
-          <input id="mod-period-date" class="form-control" type="date">
-        </label>
-        <label id="mod-week-picker" class="form-label mod-period-picker" hidden>
-          <span class="sr-only" data-i18n="selectWeek">Seleziona settimana</span>
-          <input id="mod-period-week" class="form-control" type="week">
-        </label>
-        <label id="mod-month-picker" class="form-label mod-period-picker" hidden>
-          <span class="sr-only" data-i18n="selectMonth">Seleziona mese</span>
-          <input id="mod-period-month" class="form-control" type="month">
-        </label>
+      <div class="mod-nav-side mod-nav-right">
+        <button type="button" class="btn btn-ghost mod-pill-icon" id="mod-export-pdf" title="Esporta PDF" data-i18n-title="exportPdf">
+          <i data-lucide="file-down" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-ghost mod-pill-icon" id="mod-stoppage-settings-btn" title="Impostazioni" data-i18n-title="settings">
+          <i data-lucide="settings" aria-hidden="true"></i>
+        </button>
+        <div id="mod-daily-admin-actions" class="mod-daily-admin-actions"></div>
+        <button type="button" class="mod-nav-tab mod-nav-tab-icon mod-view-btn" id="mod-entry-view-btn" data-view="entry" aria-pressed="false" title="Inserimento dati" data-i18n-title="dataEntry" disabled>
+          <i data-lucide="plus" aria-hidden="true"></i>
+        </button>
       </div>
-      <button type="button" class="btn btn-ghost mod-pill-icon mod-period-nav" id="mod-period-next" title="Successivo" data-i18n-title="nextPeriod">
-        <i data-lucide="chevron-right" aria-hidden="true"></i>
-      </button>
-      <button type="button" class="btn btn-ghost" id="mod-export-pdf" title="Esporta PDF" data-i18n-title="exportPdf">
-        <i data-lucide="file-down" aria-hidden="true"></i>
-      </button>
     </div>
   </header>
 
   <main id="mod-dashboard-screen">
     <section id="mod-daily-shift-section" class="mod-section">
-      <div id="mod-daily-admin-actions" class="mod-daily-admin-actions" hidden></div>
       <div id="mod-daily-shift-grid" class="mod-daily-shift-grid"></div>
     </section>
 
@@ -2617,11 +2664,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   </section>
 
   <section id="mod-stoppages-screen" class="mod-stoppages-screen" hidden>
-    <div class="mod-live-toolbar">
-      <button type="button" id="mod-stoppage-settings-btn" class="btn btn-ghost">
-        <i data-lucide="settings" aria-hidden="true"></i><span data-i18n="settings">Impostazioni</span>
-      </button>
-    </div>
     <div id="mod-stoppages-schema" class="mod-stoppages-schema"></div>
     <section class="mod-section">
       <div class="mod-section-head">
@@ -2644,7 +2686,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <thead>
             <tr>
               <th data-i18n="when">Quando</th>
-              <th data-i18n="line">Linea</th>
+              <th class="mod-stoppage-line-col" data-i18n="line">Linea</th>
               <th data-i18n="operation">Operazione</th>
               <th data-i18n="stoppageCause">Causa del fermo</th>
               <th data-i18n="duration">Durata</th>
@@ -3495,7 +3537,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         manual: [],
         stoppages: [],
         stoppageTarget: null,
-        stoppageEditingId: null,
+        stoppageEditingIds: null,
         stoppageOpenLines: new Set(),
         stoppageConfig: { ops: {}, causes: [] },
         stoppageFilters: { date: '', line: '', cause: '', reporter: '' },
@@ -3953,11 +3995,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         let stored = null;
         try { stored = JSON.parse(window.localStorage.getItem(STOPPAGE_CONFIG_KEY)); } catch (error) {}
         const ops = {};
+        const causes = {};
         STOPPAGE_LINES.forEach((line) => {
-          const saved = stored && stored.ops && Array.isArray(stored.ops[line.id]) ? stored.ops[line.id] : null;
-          ops[line.id] = saved ? saved.slice() : line.ops.slice();
+          const savedOps = stored && stored.ops && Array.isArray(stored.ops[line.id]) ? stored.ops[line.id] : null;
+          ops[line.id] = savedOps ? savedOps.slice() : line.ops.slice();
+          let savedCauses = null;
+          if (stored && stored.causes) {
+            if (Array.isArray(stored.causes)) savedCauses = stored.causes;
+            else if (Array.isArray(stored.causes[line.id])) savedCauses = stored.causes[line.id];
+          }
+          causes[line.id] = savedCauses ? savedCauses.slice() : STOPPAGE_CAUSES.slice();
         });
-        const causes = stored && Array.isArray(stored.causes) ? stored.causes.slice() : STOPPAGE_CAUSES.slice();
         state.stoppageConfig = { ops, causes };
       }
 
@@ -3967,6 +4015,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function lineOps(lineId) {
         return (state.stoppageConfig.ops && state.stoppageConfig.ops[lineId]) || [];
+      }
+
+      function lineCauses(lineId) {
+        return (state.stoppageConfig.causes && state.stoppageConfig.causes[lineId]) || [];
+      }
+
+      function allConfiguredCauses() {
+        const set = new Set();
+        STOPPAGE_LINES.forEach((line) => lineCauses(line.id).forEach((cause) => set.add(cause)));
+        return Array.from(set);
       }
 
       function getDailyRows() {
@@ -4966,9 +5024,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }).join('');
       }
 
-      function fillStoppageSelects(selectedCauses, selectedReporter) {
+      function fillStoppageSelects(lineId, selectedCauses, selectedReporter) {
         const sel = selectedCauses || [];
-        const causes = state.stoppageConfig.causes.slice();
+        const causes = lineCauses(lineId).slice();
         sel.forEach((c) => { if (!causes.includes(c)) causes.push(c); });
         el.stoppageCauses.innerHTML = causes.map((cause, i) => {
           const id = 'mod-cause-chk-' + i;
@@ -4987,11 +5045,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           return;
         }
         state.stoppageTarget = { lineId, op };
-        state.stoppageEditingId = null;
+        state.stoppageEditingIds = null;
         el.stoppageTargetLabel.textContent = stoppageLineName(lineId) + ' · ' + op;
         el.stoppageLinesGroup.hidden = false;
         fillStoppageLines(lineId);
-        fillStoppageSelects([], '');
+        fillStoppageSelects(lineId, [], '');
         el.stoppageDuration.value = '';
         el.stoppageUnit.value = 'min';
         el.stoppageNote.value = '';
@@ -5000,16 +5058,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
-      function openStoppageEdit(id) {
+      function openStoppageEdit(ids) {
         if (!state.isAdmin) return;
-        const rec = state.stoppages.find((s) => s.id === id);
+        const idList = Array.isArray(ids) ? ids : [ids];
+        const rec = state.stoppages.find((s) => s.id === idList[0]);
         if (!rec) return;
         state.stoppageTarget = { lineId: rec.lineId, op: rec.op };
-        state.stoppageEditingId = id;
-        el.stoppageTargetLabel.textContent = (rec.line || stoppageLineName(rec.lineId)) + ' · ' + rec.op;
+        state.stoppageEditingIds = idList;
+        const lineNames = idList.map((id) => {
+          const r = state.stoppages.find((s) => s.id === id);
+          return r ? (r.line || stoppageLineName(r.lineId)) : null;
+        }).filter(Boolean).join(', ');
+        el.stoppageTargetLabel.textContent = lineNames + ' · ' + rec.op;
         el.stoppageLinesGroup.hidden = true;
         el.stoppageLines.innerHTML = '';
-        fillStoppageSelects(stoppageCauseList(rec), rec.reporter);
+        fillStoppageSelects(rec.lineId, stoppageCauseList(rec), rec.reporter);
         el.stoppageDuration.value = rec.durationMin;
         el.stoppageUnit.value = 'min';
         el.stoppageNote.value = rec.note || '';
@@ -5029,9 +5092,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         const durationMin = el.stoppageUnit.value === 'hours' ? durationRaw * 60 : durationRaw;
         const note = el.stoppageNote.value.trim();
-        if (state.stoppageEditingId) {
-          const rec = state.stoppages.find((s) => s.id === state.stoppageEditingId);
-          if (rec) { rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; }
+        if (state.stoppageEditingIds) {
+          state.stoppageEditingIds.forEach((id) => {
+            const rec = state.stoppages.find((s) => s.id === id);
+            if (rec) { rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; }
+          });
           persistStoppages();
         } else {
           const selectedLines = Array.from(el.stoppageLines.querySelectorAll('.mod-stoppage-line-check:checked')).map((input) => input.value);
@@ -5053,7 +5118,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           });
         }
         state.stoppageTarget = null;
-        state.stoppageEditingId = null;
+        state.stoppageEditingIds = null;
         el.stoppageDialog.close();
         renderStoppages();
       }
@@ -5083,8 +5148,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const rows = Array.from(map.values()).filter((r) => r.total > 0).sort((a, b) => b.total - a.total);
         if (!rows.length) return '';
         const max = rows[0].total;
-        return '<div class="mod-downtime-pareto">' + rows.map((r) =>
+        return '<div class="mod-downtime-pareto">' + rows.map((r, index) =>
           '<div class="mod-pareto-row">' +
+            '<span class="mod-pareto-rank">' + (index + 1) + '</span>' +
             '<span class="mod-pareto-label">' + escapeHtml(r.label) + '</span>' +
             '<span class="mod-pareto-track"><span class="mod-pareto-bar" style="width:' + Math.max(4, Math.round(r.total / max * 100)) + '%"></span></span>' +
             '<span class="mod-pareto-value">' + escapeHtml(stoppageDurationText(r.total)) + '</span>' +
@@ -5096,48 +5162,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const items = getPeriodStoppages();
         const totalMin = items.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
         el.downtimeSubtitle.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin) + ' · ' + formatNumber(items.length);
-        if (!items.length) {
-          el.downtimeWrap.innerHTML = '<table><tbody><tr><td class="mod-empty">' + t('noStoppagesPeriod') + '</td></tr></tbody></table>';
-          return;
-        }
-        const pareto = downtimeParetoHtml(items);
-        let table;
-        if (state.view === 'daily') {
-          const sorted = items.slice().sort((a, b) => (b.durationMin || 0) - (a.durationMin || 0));
-          table = '<table><thead><tr>' +
-            '<th>' + t('line') + '</th><th>' + t('operation') + '</th><th>' + t('stoppageCause') + '</th><th>' + t('duration') + '</th><th>' + t('reporter') + '</th><th>' + t('note') + '</th>' +
-            '</tr></thead><tbody>' +
-            sorted.map((s) => '<tr>' +
-              '<td>' + escapeHtml(s.line || stoppageLineName(s.lineId)) + '</td>' +
-              '<td>' + escapeHtml(s.op) + '</td>' +
-              '<td>' + escapeHtml(stoppageCauseText(s)) + '</td>' +
-              '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
-              '<td>' + escapeHtml(s.reporter) + '</td>' +
-              '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
-            '</tr>').join('') +
-            '</tbody></table>';
-        } else {
-          const map = new Map();
-          items.forEach((s) => {
-            const key = s.lineId + '|' + s.op;
-            if (!map.has(key)) map.set(key, { line: s.line || stoppageLineName(s.lineId), op: s.op, count: 0, total: 0 });
-            const g = map.get(key);
-            g.count += 1;
-            g.total += isNumber(s.durationMin) ? s.durationMin : 0;
-          });
-          const rows = Array.from(map.values()).sort((a, b) => b.total - a.total);
-          table = '<table><thead><tr>' +
-            '<th>' + t('line') + '</th><th>' + t('operation') + '</th><th>' + t('count') + '</th><th>' + t('duration') + '</th>' +
-            '</tr></thead><tbody>' +
-            rows.map((g) => '<tr>' +
-              '<td>' + escapeHtml(g.line) + '</td>' +
-              '<td>' + escapeHtml(g.op) + '</td>' +
-              '<td>' + formatNumber(g.count) + '</td>' +
-              '<td>' + escapeHtml(stoppageDurationText(g.total)) + '</td>' +
-            '</tr>').join('') +
-            '</tbody></table>';
-        }
-        el.downtimeWrap.innerHTML = pareto + table;
+        el.downtimeWrap.innerHTML = items.length
+          ? downtimeParetoHtml(items)
+          : '<div class="mod-empty">' + t('noStoppagesPeriod') + '</div>';
       }
 
       function lineStatus(totalMin) {
@@ -5162,7 +5189,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.filterLine.innerHTML = opt('', t('filterAll') + ' · ' + t('line'), !state.stoppageFilters.line) +
           STOPPAGE_LINES.map((l) => opt(l.id, l.name, state.stoppageFilters.line === l.id)).join('');
         el.filterCause.innerHTML = opt('', t('filterAll') + ' · ' + t('stoppageCause'), !state.stoppageFilters.cause) +
-          state.stoppageConfig.causes.map((c) => opt(c, c, state.stoppageFilters.cause === c)).join('');
+          allConfiguredCauses().map((c) => opt(c, c, state.stoppageFilters.cause === c)).join('');
         el.filterReporter.innerHTML = opt('', t('filterAll') + ' · ' + t('reporter'), !state.stoppageFilters.reporter) +
           STOPPAGE_REPORTERS.map((r) => opt(r, r, state.stoppageFilters.reporter === r)).join('');
       }
@@ -5179,13 +5206,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '</div>' +
           '</div>'
         ).join('');
-        const causesHtml =
-          '<div class="mod-cfg-chips">' +
-            state.stoppageConfig.causes.map((c) =>
-              '<span class="mod-cfg-chip">' + escapeHtml(c) + '<button type="button" class="mod-cfg-remove" data-kind="cause" data-value="' + escapeHtml(c) + '" aria-label="x">×</button></span>'
-            ).join('') +
-            '<span class="mod-cfg-add"><input type="text" class="form-control mod-cfg-input" id="mod-cfg-cause-input" placeholder="..."><button type="button" class="btn btn-ghost mod-cfg-add-cause">' + escapeHtml(t('addCause')) + '</button></span>' +
-          '</div>';
+        const causesHtml = STOPPAGE_LINES.map((line) =>
+          '<div class="mod-cfg-line"><span class="mod-cfg-line-name">' + escapeHtml(line.name) + '</span>' +
+            '<div class="mod-cfg-chips">' +
+              lineCauses(line.id).map((c) =>
+                '<span class="mod-cfg-chip">' + escapeHtml(c) + '<button type="button" class="mod-cfg-remove" data-kind="cause" data-line="' + escapeHtml(line.id) + '" data-value="' + escapeHtml(c) + '" aria-label="x">×</button></span>'
+              ).join('') +
+              '<span class="mod-cfg-add"><input type="text" class="form-control mod-cfg-input mod-cfg-cause-input" data-line="' + escapeHtml(line.id) + '" placeholder="..."><button type="button" class="btn btn-ghost mod-cfg-add-cause" data-line="' + escapeHtml(line.id) + '">' + escapeHtml(t('addCause')) + '</button></span>' +
+            '</div>' +
+          '</div>'
+        ).join('');
         el.stoppageAdmin.innerHTML =
           '<div class="mod-section-label" data-i18n="manageOps">' + escapeHtml(t('manageOps')) + '</div>' + opsHtml +
           '<div class="mod-section-label mod-cfg-section" data-i18n="manageCauses">' + escapeHtml(t('manageCauses')) + '</div>' + causesHtml;
@@ -5201,21 +5231,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             }
           });
         });
-        const causeInput = el.stoppageAdmin.querySelector('#mod-cfg-cause-input');
-        el.stoppageAdmin.querySelector('.mod-cfg-add-cause').addEventListener('click', () => {
-          const value = (causeInput.value || '').trim();
-          if (value && !state.stoppageConfig.causes.includes(value)) {
-            state.stoppageConfig.causes.push(value);
-            persistStoppageConfig();
-            renderStoppages();
-          }
+        el.stoppageAdmin.querySelectorAll('.mod-cfg-add-cause').forEach((button) => {
+          button.addEventListener('click', () => {
+            const input = el.stoppageAdmin.querySelector('.mod-cfg-cause-input[data-line="' + button.dataset.line + '"]');
+            const value = (input.value || '').trim();
+            if (value && !lineCauses(button.dataset.line).includes(value)) {
+              state.stoppageConfig.causes[button.dataset.line].push(value);
+              persistStoppageConfig();
+              renderStoppages();
+            }
+          });
         });
         el.stoppageAdmin.querySelectorAll('.mod-cfg-remove').forEach((button) => {
           button.addEventListener('click', () => {
             if (button.dataset.kind === 'op') {
               state.stoppageConfig.ops[button.dataset.line] = lineOps(button.dataset.line).filter((op) => op !== button.dataset.value);
             } else {
-              state.stoppageConfig.causes = state.stoppageConfig.causes.filter((c) => c !== button.dataset.value);
+              state.stoppageConfig.causes[button.dataset.line] = lineCauses(button.dataset.line).filter((c) => c !== button.dataset.value);
             }
             persistStoppageConfig();
             renderStoppages();
@@ -5308,30 +5340,55 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           group.items.push(s);
           if (isNumber(s.durationMin)) group.total += s.durationMin;
         });
+        const lineOrder = (lineId) => {
+          const i = STOPPAGE_LINES.findIndex((line) => line.id === lineId);
+          return i === -1 ? 999 : i;
+        };
+        const mergeRecords = (items) => {
+          const byKey = new Map();
+          const order = [];
+          items.forEach((s) => {
+            const key = [s.timestamp, s.op, stoppageCauseText(s), s.durationMin, s.reporter, s.note || ''].join('|');
+            if (!byKey.has(key)) {
+              byKey.set(key, { records: [], ids: [] });
+              order.push(key);
+            }
+            const entry = byKey.get(key);
+            entry.records.push(s);
+            entry.ids.push(s.id);
+          });
+          return order.map((key) => {
+            const entry = byKey.get(key);
+            const first = entry.records[0];
+            const lines = entry.records.slice().sort((a, b) => lineOrder(a.lineId) - lineOrder(b.lineId))
+              .map((s) => s.line || stoppageLineName(s.lineId)).join(', ');
+            return Object.assign({}, first, { line: lines, ids: entry.ids });
+          });
+        };
         el.stoppagesBody.innerHTML = groups.map((group) =>
           '<tr class="mod-stoppage-day"><td colspan="8">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
             ' · ' + escapeHtml(stoppageDurationText(group.total)) + '</td></tr>' +
-          group.items.map((s) =>
+          mergeRecords(group.items).map((s) =>
             '<tr>' +
               '<td>' + escapeHtml(formatStoppageClock(s.timestamp)) + '</td>' +
-              '<td>' + escapeHtml(s.line || stoppageLineName(s.lineId)) + '</td>' +
+              '<td class="mod-stoppage-line-col">' + escapeHtml(s.line) + '</td>' +
               '<td>' + escapeHtml(s.op) + '</td>' +
               '<td>' + escapeHtml(stoppageCauseText(s)) + '</td>' +
               '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
               '<td>' + escapeHtml(s.reporter) + '</td>' +
               '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
-              '<td class="mod-stoppage-act-col"><button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-edit" data-id="' + escapeHtml(s.id) + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' +
-                '<button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-del" data-id="' + escapeHtml(s.id) + '" title="' + escapeHtml(t('delete')) + '"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>' +
+              '<td class="mod-stoppage-act-col"><button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-edit" data-ids="' + escapeHtml(s.ids.join(',')) + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' +
+                '<button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-del" data-ids="' + escapeHtml(s.ids.join(',')) + '" title="' + escapeHtml(t('delete')) + '"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>' +
             '</tr>'
           ).join('')
         ).join('');
         el.stoppagesBody.querySelectorAll('.mod-stoppage-edit').forEach((button) => {
-          button.addEventListener('click', () => openStoppageEdit(button.dataset.id));
+          button.addEventListener('click', () => openStoppageEdit(button.dataset.ids.split(',')));
         });
         el.stoppagesBody.querySelectorAll('.mod-stoppage-del').forEach((button) => {
           button.addEventListener('click', () => {
             if (!window.confirm(t('confirmDeleteStoppage'))) return;
-            deleteStoppage(button.dataset.id);
+            button.dataset.ids.split(',').forEach((id) => deleteStoppage(id));
             renderStoppages();
           });
         });
@@ -5354,6 +5411,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dmcScreen.hidden = !isDmc;
         el.contextBar.hidden = !isDashboard;
         el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
+        el.stoppageSettingsBtn.hidden = !(isStoppages && state.isConfigAdmin);
         if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'stoppages'].includes(state.view)) {
           el.viewSelect.value = state.view;
         }
