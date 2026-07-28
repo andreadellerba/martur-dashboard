@@ -2851,7 +2851,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           </div>
           <label class="form-label">
             <span data-i18n="reporter">Chi segnala</span>
-            <select id="mod-stoppage-reporter" class="form-select" required></select>
+            <input id="mod-stoppage-reporter" class="form-control" type="text" readonly>
           </label>
           <label class="form-label">
             <span data-i18n="note">Note</span>
@@ -3655,11 +3655,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         { id: 'logistica', name: 'LOGISTICA', ops: ['OP10'] }
       ];
       const STOPPAGE_CAUSES = ['Guasto meccanico'];
-      const STOPPAGE_REPORTERS = [
-        'Mustafa KAYAN', 'Lucian NEAMTU', 'Saverio PERNA', 'Massimiliano LAMPIS',
-        'Paolo ZOTTA', 'Mattia COLVERDE', 'Alessandro LIOTINO', 'Davide CRISTIANO',
-        'Alp ERGUR', 'Diego BECCARI', 'Monica D\'URSO'
-      ];
       const STOPPAGE_STORAGE_KEY = 'martur-stoppages-v1';
       const STOPPAGE_CONFIG_KEY = 'martur-stoppage-config-v1';
       const THEME_STORAGE_KEY = 'martur-dashboard-theme';
@@ -3674,6 +3669,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         isConfigAdmin: false,
         authUser: null,
         authRole: null,
+        authUsername: null,
         themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
         view: 'daily',
         selectedDate: null,
@@ -4176,6 +4172,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const set = new Set();
         STOPPAGE_LINES.forEach((line) => lineCauses(line.id).forEach((cause) => set.add(cause)));
         return Array.from(set);
+      }
+
+      function allReporterNames() {
+        const set = new Set();
+        state.stoppages.forEach((s) => { if (s.reporter) set.add(s.reporter); });
+        return Array.from(set).sort((a, b) => a.localeCompare(b));
       }
 
       function getDailyRows() {
@@ -5146,6 +5148,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           state.authUser = user;
           if (!user) {
             applyAuthRole(null);
+            state.authUsername = null;
             if (state.view === 'entry') state.view = 'daily';
             updateAdminUI();
             renderAll();
@@ -5153,11 +5156,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           }
           db.collection('users').doc(user.uid).get().then((doc) => {
             applyAuthRole(doc.exists ? doc.data().role : null);
+            state.authUsername = doc.exists ? doc.data().username : null;
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
             renderAll();
           }).catch(() => {
             applyAuthRole(null);
+            state.authUsername = null;
             updateAdminUI();
             renderAll();
           });
@@ -5221,11 +5226,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const id = 'mod-cause-chk-' + i;
           return '<label class="form-check" for="' + id + '"><input id="' + id + '" class="form-check-input mod-cause-check" type="checkbox" value="' + escapeHtml(cause) + '"' + (sel.includes(cause) ? ' checked' : '') + '><span class="form-check-label">' + escapeHtml(cause) + '</span></label>';
         }).join('');
-        const placeholder = '<option value="" disabled' + (selectedReporter ? '' : ' selected') + '>' + escapeHtml(t('selectPlaceholder')) + '</option>';
-        const reporters = STOPPAGE_REPORTERS.slice();
-        if (selectedReporter && !reporters.includes(selectedReporter)) reporters.push(selectedReporter);
-        el.stoppageReporter.innerHTML = placeholder + reporters.map((name) =>
-          '<option value="' + escapeHtml(name) + '"' + (name === selectedReporter ? ' selected' : '') + '>' + escapeHtml(name) + '</option>').join('');
+        el.stoppageReporter.value = selectedReporter || state.authUsername || '';
       }
 
       function openStoppageDialog(lineId, op) {
@@ -5380,7 +5381,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.filterCause.innerHTML = opt('', t('filterAll') + ' · ' + t('stoppageCause'), !state.stoppageFilters.cause) +
           allConfiguredCauses().map((c) => opt(c, c, state.stoppageFilters.cause === c)).join('');
         el.filterReporter.innerHTML = opt('', t('filterAll') + ' · ' + t('reporter'), !state.stoppageFilters.reporter) +
-          STOPPAGE_REPORTERS.map((r) => opt(r, r, state.stoppageFilters.reporter === r)).join('');
+          allReporterNames().map((r) => opt(r, r, state.stoppageFilters.reporter === r)).join('');
       }
 
       function renderUserAdmin() {
