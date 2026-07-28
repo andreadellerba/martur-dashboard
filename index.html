@@ -1820,9 +1820,34 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-pareto-row {
       display: grid;
-      grid-template-columns: auto minmax(100px, 26%) 1fr auto;
+      grid-template-columns: auto minmax(90px, 24%) 1fr auto auto;
       align-items: center;
       gap: 10px;
+    }
+    #martur-operations-dashboard .mod-pareto-row:not(.mod-pareto-vital) {
+      opacity: 0.5;
+    }
+    #martur-operations-dashboard .mod-pareto-vital .mod-pareto-rank {
+      background: light-dark(rgb(211 47 47), rgb(255 99 99));
+      color: #fff;
+    }
+    #martur-operations-dashboard .mod-pareto-cum {
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      white-space: nowrap;
+      color: var(--muted-foreground);
+      min-width: 34px;
+      text-align: right;
+    }
+    #martur-operations-dashboard .mod-pareto-caption {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      font-size: var(--font-size-small);
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-pareto-caption strong {
+      color: light-dark(rgb(211 47 47), rgb(255 99 99));
     }
     #martur-operations-dashboard .mod-pareto-rank {
       display: inline-flex;
@@ -3187,6 +3212,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           performance: 'Performance',
           quality: 'Qualità',
           oeeNoData: 'Dati insufficienti per calcolare l\'OEE.',
+          paretoVitalFew: 'Regola 80/20: le prime {n} postazioni causano circa l\'80% dei fermi.',
           plannedShort: 'Pianificato',
           targetShort: 'Target',
           oeeSettings: 'OEE — parametri',
@@ -3420,6 +3446,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           performance: 'Performance',
           quality: 'Quality',
           oeeNoData: 'Not enough data to compute OEE.',
+          paretoVitalFew: '80/20 rule: the top {n} stations cause about 80% of downtime.',
           plannedShort: 'Planned',
           targetShort: 'Target',
           oeeSettings: 'OEE — parameters',
@@ -3653,6 +3680,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           performance: 'Performans',
           quality: 'Kalite',
           oeeNoData: 'OEE hesaplamak için yeterli veri yok.',
+          paretoVitalFew: '80/20 kuralı: ilk {n} istasyon duruşların yaklaşık %80\'ine neden olur.',
           plannedShort: 'Planlanan',
           targetShort: 'Hedef',
           oeeSettings: 'OEE — parametreler',
@@ -5624,14 +5652,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const rows = Array.from(map.values()).filter((r) => r.total > 0).sort((a, b) => b.total - a.total);
         if (!rows.length) return '';
         const max = rows[0].total;
-        return '<div class="mod-downtime-pareto">' + rows.map((r, index) =>
-          '<div class="mod-pareto-row">' +
+        const grand = rows.reduce((sum, r) => sum + r.total, 0);
+        let cum = 0;
+        let reached = false;
+        let vitalCount = 0;
+        const rowsHtml = rows.map((r, index) => {
+          const isVital = !reached;
+          if (isVital) vitalCount = index + 1;
+          cum += r.total;
+          const cumPct = grand ? cum / grand : 0;
+          if (cumPct >= 0.8) reached = true;
+          return '<div class="mod-pareto-row' + (isVital ? ' mod-pareto-vital' : '') + '">' +
             '<span class="mod-pareto-rank">' + (index + 1) + '</span>' +
             '<span class="mod-pareto-label">' + escapeHtml(r.label) + '</span>' +
             '<span class="mod-pareto-track"><span class="mod-pareto-bar" style="width:' + Math.max(4, Math.round(r.total / max * 100)) + '%"></span></span>' +
             '<span class="mod-pareto-value">' + escapeHtml(stoppageDurationText(r.total)) + '</span>' +
-          '</div>'
-        ).join('') + '</div>';
+            '<span class="mod-pareto-cum">' + Math.round(cumPct * 100) + '%</span>' +
+          '</div>';
+        }).join('');
+        const caption = rows.length > 1
+          ? '<div class="mod-pareto-caption">' + t('paretoVitalFew').replace('{n}', '<strong>' + vitalCount + '</strong>') + '</div>'
+          : '';
+        return '<div class="mod-downtime-pareto">' + rowsHtml + '</div>' + caption;
       }
 
       function gaugeArcPath(cx, cy, r, startDeg, endDeg) {
