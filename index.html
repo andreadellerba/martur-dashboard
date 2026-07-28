@@ -1018,7 +1018,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: 14px;
     }
     #martur-operations-dashboard .mod-lang-btn {
-      font-size: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      font-size: 16px;
       line-height: 1;
     }
     @keyframes mod-live-blink {
@@ -1228,7 +1232,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-kpi-tile-4 { --kpi-accent: var(--viz-series-2); }
     #martur-operations-dashboard .mod-oee-layout {
       display: grid;
-      grid-template-columns: minmax(180px, 260px) 1fr;
+      grid-template-columns: minmax(150px, 220px) 1fr;
       gap: 20px;
       align-items: center;
     }
@@ -1238,8 +1242,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-oee-gauge svg {
       width: 100%;
-      max-width: 260px;
+      max-width: 220px;
       height: auto;
+    }
+    #martur-operations-dashboard .mod-oee-fermi-row {
+      align-items: stretch;
+    }
+    @media (max-width: 900px) {
+      #martur-operations-dashboard .mod-oee-fermi-row {
+        grid-template-columns: 1fr;
+      }
     }
     #martur-operations-dashboard .mod-oee-gauge-value {
       font-size: calc(var(--font-size-normal) * 2.6);
@@ -1357,6 +1369,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: inline-flex;
       align-items: center;
       gap: 7px;
+    }
+    #martur-operations-dashboard .mod-shift-time {
+      font-size: var(--font-size-small);
+      font-weight: 500;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-shift-note {
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: var(--font-size-small);
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+    #martur-operations-dashboard .mod-shift-note span {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 4px;
     }
     #martur-operations-dashboard .mod-shift-metric-grid,
     #martur-operations-dashboard .mod-shift-support-grid {
@@ -2589,18 +2618,30 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </section>
 
-    <section id="mod-oee-section" class="mod-section">
-      <div class="mod-section-head">
-        <div>
-          <div class="mod-section-label">OEE</div>
-          <div id="mod-oee-subtitle" class="text-small text-muted"></div>
+    <div class="mod-two-col mod-oee-fermi-row">
+      <section id="mod-oee-section" class="mod-section">
+        <div class="mod-section-head">
+          <div>
+            <div class="mod-section-label">OEE</div>
+            <div id="mod-oee-subtitle" class="text-small text-muted"></div>
+          </div>
         </div>
-      </div>
-      <div class="mod-oee-layout">
-        <div id="mod-oee-gauge" class="mod-oee-gauge"></div>
-        <div id="mod-oee-breakdown" class="mod-oee-breakdown"></div>
-      </div>
-    </section>
+        <div class="mod-oee-layout">
+          <div id="mod-oee-gauge" class="mod-oee-gauge"></div>
+          <div id="mod-oee-breakdown" class="mod-oee-breakdown"></div>
+        </div>
+      </section>
+
+      <section class="mod-section">
+        <div class="mod-section-head">
+          <div>
+            <div class="mod-section-label" data-i18n="downtimeTitle">Fermi</div>
+            <div id="mod-downtime-subtitle" class="text-small text-muted"></div>
+          </div>
+        </div>
+        <div id="mod-downtime-wrap" class="mod-table-wrap"></div>
+      </section>
+    </div>
 
     <section id="mod-daily-rework-section" class="mod-section" aria-labelledby="mod-daily-rework-title">
       <div class="mod-section-head">
@@ -2703,15 +2744,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </section>
 
-    <section class="mod-section">
-      <div class="mod-section-head">
-        <div>
-          <div class="mod-section-label" data-i18n="downtimeTitle">Fermi</div>
-          <div id="mod-downtime-subtitle" class="text-small text-muted"></div>
-        </div>
-      </div>
-      <div id="mod-downtime-wrap" class="mod-table-wrap"></div>
-    </section>
   </main>
 
   <section id="mod-attendance-screen" class="mod-attendance-screen" hidden>
@@ -3213,6 +3245,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           quality: 'Qualità',
           oeeNoData: 'Dati insufficienti per calcolare l\'OEE.',
           paretoVitalFew: 'Regola 80/20: le prime {n} postazioni causano circa l\'80% dei fermi.',
+          paretoTopN: 'I {n} fermi più impattanti · {pct} del tempo totale di fermo.',
           plannedShort: 'Pianificato',
           targetShort: 'Target',
           oeeSettings: 'OEE — parametri',
@@ -3447,6 +3480,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           quality: 'Quality',
           oeeNoData: 'Not enough data to compute OEE.',
           paretoVitalFew: '80/20 rule: the top {n} stations cause about 80% of downtime.',
+          paretoTopN: 'Top {n} stoppages · {pct} of total downtime.',
           plannedShort: 'Planned',
           targetShort: 'Target',
           oeeSettings: 'OEE — parameters',
@@ -3681,6 +3715,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           quality: 'Kalite',
           oeeNoData: 'OEE hesaplamak için yeterli veri yok.',
           paretoVitalFew: '80/20 kuralı: ilk {n} istasyon duruşların yaklaşık %80\'ine neden olur.',
+          paretoTopN: 'En etkili {n} duruş · toplam duruşun {pct}\'i.',
           plannedShort: 'Planlanan',
           targetShort: 'Hedef',
           oeeSettings: 'OEE — parametreler',
@@ -3856,6 +3891,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         tr: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
       };
       const LANG_FLAGS = { it: '🇮🇹', en: '🇬🇧', tr: '🇹🇷' };
+      const SHIFT_TIMES = { shift1: '06:00 - 14:00', shift2: '14:00 - 22:00' };
 
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyDsStEiIby8i_1RAc_rcHYHMqUpYo4LXw4',
@@ -4258,7 +4294,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         shift2.efficiency = isNumber(shift2.efficiency) ? shift2.efficiency : calculateShiftEfficiency(shift2);
         const totalFront = valueOrZero(shift1.front) + valueOrZero(shift2.front);
         const totalRear = valueOrZero(shift1.rear) + valueOrZero(shift2.rear);
-        const completeKits = Math.min(totalFront, totalRear);
+        const completeKits = totalFront;
         const presence = valueOrZero(shift1.presence) + valueOrZero(shift2.presence);
         const absent = valueOrZero(shift1.absent) + valueOrZero(shift2.absent);
         const rework = valueOrZero(shift1.rework) + valueOrZero(shift2.rework);
@@ -4959,9 +4995,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dailyShiftGrid.innerHTML = ['shift1', 'shift2'].map((name, index) => {
           const shift = row[name] || emptyShift();
           const hasData = Object.keys(emptyShift()).some((key) => isNumber(shift[key]));
-          const completeSets = isNumber(shift.front) && isNumber(shift.rear)
-            ? Math.min(shift.front, shift.rear)
-            : null;
+          const completeSets = isNumber(shift.front) ? shift.front : null;
           const gap = isNumber(completeSets) && isNumber(shift.stellantisCars) && shift.stellantisCars > 0
             ? completeSets - shift.stellantisCars
             : null;
@@ -4981,9 +5015,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const editButton = state.isAdmin
             ? '<button type="button" class="btn btn-ghost mod-shift-edit" data-date="' + row.date + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>'
             : '';
+          const noteText = (shift.note || '').trim();
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
-              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + t(shiftKey) + editButton + '</span>' +
+              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + t(shiftKey) + ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>' + editButton + '</span>' +
               '<span class="mod-shift-summary-text">' + escapeHtml(summaryText) + '</span>' +
             '</div>' +
             '<div class="mod-shift-metric-grid">' +
@@ -5000,6 +5035,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('coda') + '</span><strong>' + formatOptionalNumber(shift.coda) + '</strong></div>' +
               '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('overtime') + '</span><strong>' + formatPercent(shift.overtimePct) + '</strong></div>' +
             '</div>' +
+            (noteText ? '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span> ' + escapeHtml(noteText) + '</div>' : '') +
           '</article>';
         }).join('');
         el.dailyShiftGrid.querySelectorAll('.mod-shift-edit').forEach((button) => {
@@ -5318,11 +5354,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function loadEntry(date) {
         const stored = state.manual.find((item) => item.date === date);
-        if (!stored) {
+        let row = null;
+        if (stored) {
+          row = deriveRow(Object.assign({}, stored, { manual: true }));
+        } else {
+          const baseRow = getDailyRows().find((item) => item.date === date);
+          if (baseRow && hasOperationalData(baseRow)) row = baseRow;
+        }
+        if (!row) {
           resetEntry(date);
           return;
         }
-        const row = deriveRow(Object.assign({}, stored, { manual: true }));
         setEntryMode(date);
         el.entryDate.value = date;
         fillShift('shift1', row.shift1);
@@ -5642,7 +5684,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return state.stoppages.filter((s) => String(s.timestamp).slice(0, 10) === state.selectedDate);
       }
 
-      function downtimeParetoHtml(items) {
+      function downtimeParetoHtml(items, limit) {
         const map = new Map();
         items.forEach((s) => {
           const key = s.lineId + '|' + s.op;
@@ -5653,27 +5695,38 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!rows.length) return '';
         const max = rows[0].total;
         const grand = rows.reduce((sum, r) => sum + r.total, 0);
+        const capped = isNumber(limit) && limit < rows.length;
+        const shownCount = capped ? limit : rows.length;
         let cum = 0;
         let reached = false;
         let vitalCount = 0;
-        const rowsHtml = rows.map((r, index) => {
+        let cumAtShown = 1;
+        const parts = [];
+        rows.forEach((r, index) => {
           const isVital = !reached;
           if (isVital) vitalCount = index + 1;
           cum += r.total;
           const cumPct = grand ? cum / grand : 0;
+          if (index + 1 === shownCount) cumAtShown = cumPct;
           if (cumPct >= 0.8) reached = true;
-          return '<div class="mod-pareto-row' + (isVital ? ' mod-pareto-vital' : '') + '">' +
+          if (index >= shownCount) return;
+          parts.push('<div class="mod-pareto-row' + (isVital ? ' mod-pareto-vital' : '') + '">' +
             '<span class="mod-pareto-rank">' + (index + 1) + '</span>' +
             '<span class="mod-pareto-label">' + escapeHtml(r.label) + '</span>' +
             '<span class="mod-pareto-track"><span class="mod-pareto-bar" style="width:' + Math.max(4, Math.round(r.total / max * 100)) + '%"></span></span>' +
             '<span class="mod-pareto-value">' + escapeHtml(stoppageDurationText(r.total)) + '</span>' +
             '<span class="mod-pareto-cum">' + Math.round(cumPct * 100) + '%</span>' +
-          '</div>';
-        }).join('');
-        const caption = rows.length > 1
-          ? '<div class="mod-pareto-caption">' + t('paretoVitalFew').replace('{n}', '<strong>' + vitalCount + '</strong>') + '</div>'
-          : '';
-        return '<div class="mod-downtime-pareto">' + rowsHtml + '</div>' + caption;
+          '</div>');
+        });
+        let caption = '';
+        if (capped) {
+          caption = '<div class="mod-pareto-caption">' + t('paretoTopN')
+            .replace('{n}', '<strong>' + shownCount + '</strong>')
+            .replace('{pct}', '<strong>' + Math.round(cumAtShown * 100) + '%</strong>') + '</div>';
+        } else if (rows.length > 1) {
+          caption = '<div class="mod-pareto-caption">' + t('paretoVitalFew').replace('{n}', '<strong>' + vitalCount + '</strong>') + '</div>';
+        }
+        return '<div class="mod-downtime-pareto">' + parts.join('') + '</div>' + caption;
       }
 
       function gaugeArcPath(cx, cy, r, startDeg, endDeg) {
@@ -5734,7 +5787,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const totalMin = items.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
         el.downtimeSubtitle.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin) + ' · ' + formatNumber(items.length);
         el.downtimeWrap.innerHTML = items.length
-          ? downtimeParetoHtml(items)
+          ? downtimeParetoHtml(items, 3)
           : '<div class="mod-empty">' + t('noStoppagesPeriod') + '</div>';
       }
 
@@ -6183,7 +6236,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       root.querySelectorAll('.mod-view-btn').forEach((button) => {
         button.addEventListener('click', () => {
-          if (button.dataset.view === 'entry' && !state.isAdmin) return;
+          if (button.dataset.view === 'entry') {
+            if (!state.isAdmin) return;
+            if (state.view !== 'entry') loadEntry(state.selectedDate);
+          }
           navigateTo(button.dataset.view);
         });
       });
