@@ -9,8 +9,23 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read: if isSignedIn() && (request.auth.uid == uid || myRole() == 'configAdmin');
+      // Ogni utente autenticato puo' leggere gli username (servono per le menzioni in chat).
+      allow read: if isSignedIn();
+      // Solo un amministratore puo' creare/modificare/eliminare utenti e ruoli.
       allow write: if isSignedIn() && myRole() == 'configAdmin';
+    }
+
+    match /messages/{msgId} {
+      allow read: if isSignedIn();
+      // Chiunque sia autenticato puo' inviare un messaggio a proprio nome.
+      allow create: if isSignedIn()
+        && request.resource.data.username is string
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 600;
+      // I messaggi non si modificano; solo un amministratore puo' eliminarli.
+      allow update: if false;
+      allow delete: if isSignedIn() && myRole() == 'configAdmin';
     }
   }
 }

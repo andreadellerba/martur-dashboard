@@ -1354,6 +1354,157 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-oee-cfg .form-control {
       width: 120px;
     }
+    #martur-operations-dashboard .mod-chat-tab::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    #martur-operations-dashboard .mod-chat-tab {
+      padding-left: 24px;
+    }
+    #martur-operations-dashboard .mod-chat-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-chat-messages {
+      height: 58vh;
+      min-height: 320px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 6px 4px;
+    }
+    #martur-operations-dashboard .mod-chat-empty {
+      margin: auto;
+      color: var(--muted-foreground);
+      font-size: var(--font-size-small);
+    }
+    #martur-operations-dashboard .mod-chat-day {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 0 2px;
+    }
+    #martur-operations-dashboard .mod-chat-day span {
+      padding: 2px 12px;
+      border-radius: var(--radius-full);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    #martur-operations-dashboard .mod-chat-msg {
+      display: grid;
+      justify-items: start;
+      max-width: min(78%, 560px);
+      margin-right: auto;
+    }
+    #martur-operations-dashboard .mod-chat-own {
+      justify-items: end;
+      margin-right: 0;
+      margin-left: auto;
+    }
+    #martur-operations-dashboard .mod-chat-author {
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0 8px 1px;
+    }
+    #martur-operations-dashboard .mod-chat-bubble {
+      padding: 7px 11px;
+      border-radius: 14px;
+      background: var(--muted);
+      color: var(--foreground);
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+    #martur-operations-dashboard .mod-chat-own .mod-chat-bubble {
+      background: var(--primary);
+      color: var(--primary-foreground);
+      border-bottom-right-radius: 4px;
+    }
+    #martur-operations-dashboard .mod-chat-msg:not(.mod-chat-own) .mod-chat-bubble {
+      border-bottom-left-radius: 4px;
+    }
+    #martur-operations-dashboard .mod-chat-mentioned .mod-chat-bubble {
+      box-shadow: 0 0 0 2px light-dark(rgb(207 143 15), rgb(240 189 96));
+    }
+    #martur-operations-dashboard .mod-chat-mention {
+      color: light-dark(rgb(23 121 227), rgb(131 195 255));
+      font-weight: 700;
+    }
+    #martur-operations-dashboard .mod-chat-own .mod-chat-mention {
+      color: light-dark(rgb(255 236 190), rgb(255 236 190));
+    }
+    #martur-operations-dashboard .mod-chat-time {
+      font-size: 10px;
+      color: var(--muted-foreground);
+      margin: 1px 8px 0;
+    }
+    #martur-operations-dashboard .mod-chat-composer {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    #martur-operations-dashboard .mod-chat-composer-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    #martur-operations-dashboard .mod-chat-input {
+      flex: 1 1 auto;
+      resize: none;
+      max-height: 120px;
+      overflow-y: auto;
+      min-height: 38px;
+    }
+    #martur-operations-dashboard .mod-chat-send {
+      flex: 0 0 auto;
+      min-height: 38px;
+      padding: 0 14px;
+    }
+    #martur-operations-dashboard .mod-chat-suggest {
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 4px);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+      max-height: 200px;
+      overflow-y: auto;
+      background: var(--popover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 8px 24px -12px rgb(0 0 0 / 35%);
+      padding: 4px;
+    }
+    #martur-operations-dashboard .mod-chat-suggest-item {
+      border: 0;
+      background: none;
+      text-align: left;
+      padding: 7px 10px;
+      border-radius: var(--radius-md);
+      color: var(--foreground);
+      cursor: pointer;
+      font: inherit;
+    }
+    #martur-operations-dashboard .mod-chat-suggest-item:hover {
+      background: var(--muted);
+    }
     #martur-operations-dashboard .mod-report-title {
       font-size: calc(var(--font-size-normal) * 1.15);
       font-weight: 700;
@@ -2594,6 +2745,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="monthly" aria-pressed="false" data-i18n="monthly">Mensile</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" aria-pressed="false" data-i18n="abarth">Abarth</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="dmc" aria-pressed="false" data-i18n="dmcSection">DMC</button>
+        <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false" data-i18n="chat">Chat</button>
         <button type="button" class="mod-nav-tab mod-view-btn mod-live-tab" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">LIVE</button>
       </nav>
       <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
@@ -2602,6 +2754,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <option value="monthly" data-i18n="monthly">Mensile</option>
         <option value="abarth" data-i18n="abarth">Abarth</option>
         <option value="dmc" data-i18n="dmcSection">DMC</option>
+        <option value="chat" data-i18n="chat">Chat</option>
         <option value="stoppages" data-i18n="stoppages">LIVE</option>
       </select>
 
@@ -3034,6 +3187,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     <div class="text-small text-muted" data-i18n="sectionComingSoon">Sezione in preparazione.</div>
   </section>
 
+  <section id="mod-chat-screen" class="mod-chat-screen" hidden>
+    <div id="mod-chat-messages" class="mod-chat-messages"></div>
+    <div class="mod-chat-composer">
+      <div id="mod-chat-suggest" class="mod-chat-suggest" hidden></div>
+      <div id="mod-chat-composer-row" class="mod-chat-composer-row">
+        <textarea id="mod-chat-input" class="form-control mod-chat-input" rows="1" maxlength="600" data-i18n-placeholder="chatPlaceholder" placeholder="Scrivi un messaggio… usa @ per citare"></textarea>
+        <button id="mod-chat-send" type="button" class="btn btn-primary mod-chat-send" title="Invia" data-i18n-title="chatSend">
+          <i data-lucide="send" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div id="mod-chat-hint" class="text-small text-muted mod-chat-hint"></div>
+    </div>
+  </section>
+
   <dialog id="mod-stoppage-settings-dialog" class="card mod-selection-dialog" aria-labelledby="mod-stoppage-settings-title">
     <div class="mod-dialog-shell">
       <div class="mod-dialog-head">
@@ -3235,6 +3402,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           back: 'Indietro',
           greeting: 'Buongiorno',
           logout: 'Esci',
+          chat: 'Chat',
+          chatPlaceholder: 'Scrivi un messaggio… usa @ per citare',
+          chatSend: 'Invia',
+          chatEmpty: 'Nessun messaggio. Scrivi il primo!',
+          chatLoginRequired: 'Accedi per scrivere in chat.',
+          chatUnavailable: 'Chat non disponibile (connessione assente).',
+          today: 'Oggi',
+          yesterday: 'Ieri',
           previousPeriod: 'Periodo precedente',
           nextPeriod: 'Periodo successivo',
           adminAccess: 'Accesso amministratore',
@@ -3471,6 +3646,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           back: 'Back',
           greeting: 'Hello',
           logout: 'Log out',
+          chat: 'Chat',
+          chatPlaceholder: 'Write a message… use @ to mention',
+          chatSend: 'Send',
+          chatEmpty: 'No messages yet. Write the first one!',
+          chatLoginRequired: 'Sign in to write in the chat.',
+          chatUnavailable: 'Chat unavailable (no connection).',
+          today: 'Today',
+          yesterday: 'Yesterday',
           previousPeriod: 'Previous period',
           nextPeriod: 'Next period',
           adminAccess: 'Admin access',
@@ -3707,6 +3890,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           back: 'Geri',
           greeting: 'Günaydın',
           logout: 'Çıkış',
+          chat: 'Sohbet',
+          chatPlaceholder: 'Mesaj yaz… bahsetmek için @ kullan',
+          chatSend: 'Gönder',
+          chatEmpty: 'Henüz mesaj yok. İlkini sen yaz!',
+          chatLoginRequired: 'Sohbete yazmak için giriş yap.',
+          chatUnavailable: 'Sohbet kullanılamıyor (bağlantı yok).',
+          today: 'Bugün',
+          yesterday: 'Dün',
           previousPeriod: 'Önceki dönem',
           nextPeriod: 'Sonraki dönem',
           adminAccess: 'Yönetici girişi',
@@ -3976,6 +4167,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         authUser: null,
         authRole: null,
         authUsername: null,
+        chatMessages: [],
+        chatUsers: [],
+        chatUnsub: null,
+        chatUsersLoaded: false,
         themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
         view: 'daily',
         viewHistory: [],
@@ -4014,6 +4209,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppagesScreen: root.querySelector('#mod-stoppages-screen'),
         abarthScreen: root.querySelector('#mod-abarth-screen'),
         dmcScreen: root.querySelector('#mod-dmc-screen'),
+        chatScreen: root.querySelector('#mod-chat-screen'),
+        chatMessages: root.querySelector('#mod-chat-messages'),
+        chatInput: root.querySelector('#mod-chat-input'),
+        chatSend: root.querySelector('#mod-chat-send'),
+        chatSuggest: root.querySelector('#mod-chat-suggest'),
+        chatHint: root.querySelector('#mod-chat-hint'),
         viewSelect: root.querySelector('#mod-view-select'),
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
         stoppageAdmin: root.querySelector('#mod-stoppage-admin'),
@@ -5566,6 +5767,148 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       }
 
+      function loadChatUsers() {
+        if (!db || state.chatUsersLoaded) return;
+        db.collection('users').get().then((snap) => {
+          const names = [];
+          snap.forEach((doc) => { const u = doc.data().username; if (u) names.push(u); });
+          state.chatUsers = names.sort((a, b) => a.localeCompare(b));
+          state.chatUsersLoaded = true;
+        }).catch(() => {});
+      }
+
+      function subscribeChat() {
+        if (!db || state.chatUnsub) return;
+        state.chatUnsub = db.collection('messages').orderBy('createdAt', 'asc').limit(300).onSnapshot((snap) => {
+          const msgs = [];
+          snap.forEach((doc) => {
+            const d = doc.data();
+            msgs.push({
+              id: doc.id,
+              username: d.username || '?',
+              text: d.text || '',
+              createdAt: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : new Date()
+            });
+          });
+          state.chatMessages = msgs;
+          if (state.view === 'chat') renderChatMessages();
+        }, () => {});
+      }
+
+      function unsubscribeChat() {
+        if (state.chatUnsub) { state.chatUnsub(); state.chatUnsub = null; }
+      }
+
+      function chatDayLabel(date) {
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const d = new Date(date); d.setHours(0, 0, 0, 0);
+        const diff = Math.round((today - d) / 86400000);
+        if (diff === 0) return t('today');
+        if (diff === 1) return t('yesterday');
+        try { return new Intl.DateTimeFormat(locale(), { weekday: 'long', day: '2-digit', month: 'long' }).format(date); } catch (e) { return ''; }
+      }
+
+      function chatTimeLabel(date) {
+        try { return new Intl.DateTimeFormat(locale(), { hour: '2-digit', minute: '2-digit' }).format(date); } catch (e) { return ''; }
+      }
+
+      function renderChatText(text) {
+        const userSet = new Set(state.chatUsers.map((u) => u.toLowerCase()));
+        return escapeHtml(text).replace(/@([a-z0-9._-]+)/gi, (match, name) =>
+          userSet.has(name.toLowerCase()) ? '<span class="mod-chat-mention">@' + escapeHtml(name) + '</span>' : match
+        );
+      }
+
+      function renderChatMessages() {
+        const me = state.authUsername;
+        if (!state.chatMessages.length) {
+          el.chatMessages.innerHTML = '<div class="mod-chat-empty">' + escapeHtml(db ? t('chatEmpty') : t('chatUnavailable')) + '</div>';
+        } else {
+          let html = '';
+          let lastDay = '';
+          state.chatMessages.forEach((msg) => {
+            const dayKey = msg.createdAt.toISOString().slice(0, 10);
+            if (dayKey !== lastDay) {
+              html += '<div class="mod-chat-day"><span>' + escapeHtml(chatDayLabel(msg.createdAt)) + '</span></div>';
+              lastDay = dayKey;
+            }
+            const own = me && msg.username.toLowerCase() === me.toLowerCase();
+            const mentionsMe = me && new RegExp('@' + me.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![a-z0-9._-])', 'i').test(msg.text);
+            html += '<div class="mod-chat-msg' + (own ? ' mod-chat-own' : '') + (mentionsMe ? ' mod-chat-mentioned' : '') + '">' +
+              (own ? '' : '<span class="mod-chat-author">' + escapeHtml(msg.username) + '</span>') +
+              '<span class="mod-chat-bubble">' + renderChatText(msg.text) + '</span>' +
+              '<span class="mod-chat-time">' + escapeHtml(chatTimeLabel(msg.createdAt)) + '</span>' +
+            '</div>';
+          });
+          el.chatMessages.innerHTML = html;
+        }
+        el.chatMessages.scrollTop = el.chatMessages.scrollHeight;
+        const canWrite = Boolean(state.authUsername && db);
+        el.chatInput.disabled = !canWrite;
+        el.chatSend.disabled = !canWrite;
+        el.chatHint.textContent = !db ? t('chatUnavailable') : (!state.authUsername ? t('chatLoginRequired') : '');
+      }
+
+      function renderChat() {
+        subscribeChat();
+        loadChatUsers();
+        renderChatMessages();
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+      }
+
+      function sendChatMessage() {
+        const text = el.chatInput.value.trim();
+        if (!text || !state.authUsername || !db) return;
+        el.chatInput.value = '';
+        autoGrow(el.chatInput);
+        hideChatSuggest();
+        db.collection('messages').add({
+          username: state.authUsername,
+          text: text,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+      }
+
+      function currentMentionPrefix() {
+        const val = el.chatInput.value;
+        const caret = el.chatInput.selectionStart == null ? val.length : el.chatInput.selectionStart;
+        const before = val.slice(0, caret);
+        const match = before.match(/@([a-z0-9._-]*)$/i);
+        return match ? { prefix: match[1], start: caret - match[1].length - 1, caret } : null;
+      }
+
+      function updateChatSuggest() {
+        const info = currentMentionPrefix();
+        if (!info) { hideChatSuggest(); return; }
+        const prefix = info.prefix.toLowerCase();
+        const matches = state.chatUsers.filter((u) => u.toLowerCase().startsWith(prefix)).slice(0, 6);
+        if (!matches.length) { hideChatSuggest(); return; }
+        el.chatSuggest.innerHTML = matches.map((u) => '<button type="button" class="mod-chat-suggest-item" data-user="' + escapeHtml(u) + '">@' + escapeHtml(u) + '</button>').join('');
+        el.chatSuggest.hidden = false;
+        el.chatSuggest.querySelectorAll('.mod-chat-suggest-item').forEach((btn) => {
+          btn.addEventListener('mousedown', (event) => { event.preventDefault(); insertMention(btn.dataset.user); });
+        });
+      }
+
+      function insertMention(username) {
+        const info = currentMentionPrefix();
+        if (!info) return;
+        const val = el.chatInput.value;
+        const before = val.slice(0, info.start);
+        const after = val.slice(info.caret);
+        const inserted = before + '@' + username + ' ';
+        el.chatInput.value = inserted + after;
+        el.chatInput.setSelectionRange(inserted.length, inserted.length);
+        el.chatInput.focus();
+        hideChatSuggest();
+        autoGrow(el.chatInput);
+      }
+
+      function hideChatSuggest() {
+        el.chatSuggest.hidden = true;
+        el.chatSuggest.innerHTML = '';
+      }
+
       function stoppageLineName(lineId) {
         const line = STOPPAGE_LINES.find((item) => item.id === lineId);
         return line ? line.name : lineId;
@@ -6220,18 +6563,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const isStoppages = state.view === 'stoppages';
         const isAbarth = state.view === 'abarth';
         const isDmc = state.view === 'dmc';
+        const isChat = state.view === 'chat';
         const isPlaceholder = isAbarth || isDmc;
-        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder;
+        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat;
         el.dashboardScreen.hidden = !isDashboard;
         el.attendanceScreen.hidden = !isAttendance;
         el.entryScreen.hidden = !isEntry;
         el.stoppagesScreen.hidden = !isStoppages;
         el.abarthScreen.hidden = !isAbarth;
         el.dmcScreen.hidden = !isDmc;
+        el.chatScreen.hidden = !isChat;
         el.contextBar.hidden = !isDashboard;
         el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
         el.stoppageSettingsBtn.hidden = !state.isConfigAdmin;
-        if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'stoppages'].includes(state.view)) {
+        if (!isChat) unsubscribeChat();
+        if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'chat', 'stoppages'].includes(state.view)) {
           el.viewSelect.value = state.view;
         }
         updateBackButton();
@@ -6247,6 +6593,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           updateReworkSelectionState();
         } else if (state.view === 'attendance') renderAttendanceScreen(rows);
         else if (state.view === 'stoppages') renderStoppages();
+        else if (state.view === 'chat') renderChat();
         else if (state.view === 'abarth' || state.view === 'dmc') { /* placeholder, nothing to render */ }
         else renderDashboard();
         if (globalThis.lucide) {
@@ -6364,6 +6711,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.exportPdf.addEventListener('click', () => {
         window.print();
       });
+      el.chatSend.addEventListener('click', sendChatMessage);
+      el.chatInput.addEventListener('input', () => { autoGrow(el.chatInput); updateChatSuggest(); });
+      el.chatInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }
+        else if (event.key === 'Escape') hideChatSuggest();
+      });
+      el.chatInput.addEventListener('blur', () => { window.setTimeout(hideChatSuggest, 150); });
       root.querySelectorAll('.mod-legend-toggle').forEach((button) => {
         button.addEventListener('click', () => {
           const series = button.dataset.series;
