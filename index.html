@@ -1753,6 +1753,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-support-grid {
       grid-template-columns: repeat(6, minmax(0, 1fr));
     }
+    #martur-operations-dashboard .mod-shift-seq-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 11px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
     #martur-operations-dashboard .mod-shift-metric,
     #martur-operations-dashboard .mod-shift-support-item {
       display: grid;
@@ -2910,9 +2918,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="monthly" aria-pressed="false" data-i18n="monthly">Mensile</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" aria-pressed="false" data-i18n="abarth">Abarth</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="dmc" aria-pressed="false" data-i18n="dmcSection">DMC</button>
-        <button type="button" class="mod-nav-tab mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">Fermi linea</button>
-        <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode">TV</button>
-        <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false"><span data-i18n="chat">Chat</span><span id="mod-chat-badge" class="mod-chat-badge" hidden></span></button>
+        <button type="button" class="mod-nav-tab mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages" hidden>Fermi linea</button>
+        <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode" hidden>TV</button>
+        <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false"><span data-i18n="chat">Comunicazioni</span><span id="mod-chat-badge" class="mod-chat-badge" hidden></span></button>
       </nav>
       <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
         <option value="daily" data-i18n="daily">Giornaliero</option>
@@ -2920,9 +2928,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <option value="monthly" data-i18n="monthly">Mensile</option>
         <option value="abarth" data-i18n="abarth">Abarth</option>
         <option value="dmc" data-i18n="dmcSection">DMC</option>
-        <option value="stoppages" data-i18n="stoppages">Fermi linea</option>
-        <option value="tv" data-i18n="tvMode">TV</option>
-        <option value="chat" data-i18n="chat">Chat</option>
+        <option value="stoppages" data-i18n="stoppages" hidden>Fermi linea</option>
+        <option value="tv" data-i18n="tvMode" hidden>TV</option>
+        <option value="chat" data-i18n="chat">Comunicazioni</option>
       </select>
 
       <div class="mod-nav-side mod-nav-right">
@@ -2980,7 +2988,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <section id="mod-oee-section" class="mod-section">
         <div class="mod-section-head">
           <div>
-            <div class="mod-section-label">OEE</div>
+            <div class="mod-section-label">OLE</div>
             <div id="mod-oee-subtitle" class="text-small text-muted"></div>
           </div>
         </div>
@@ -3216,6 +3224,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <label class="form-label"><span data-i18n="dummySeats">Sedili dummy</span><input id="mod-s1-dummy" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="coda">Coda</span><input id="mod-s1-coda" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="stellantisCars">KIT Stellantis</span><input id="mod-s1-cars" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="firstSeqMartur">Prima Sequenza Martur</span><input id="mod-s1-firstseqm" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="lastSeqMartur">Ultima Sequenza Martur</span><input id="mod-s1-lastseqm" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="firstSeqStellantis">Prima Sequenza Stellantis</span><input id="mod-s1-firstseqs" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="lastSeqStellantis">Ultima Sequenza Stellantis</span><input id="mod-s1-lastseqs" class="form-control" type="number" min="0" step="1"></label>
           </div>
           <section class="mod-selection-launcher" aria-labelledby="mod-rework-selection-title-1">
             <div class="mod-selection-head">
@@ -3254,6 +3266,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <label class="form-label"><span data-i18n="dummySeats">Sedili dummy</span><input id="mod-s2-dummy" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="coda">Coda</span><input id="mod-s2-coda" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="stellantisCars">KIT Stellantis</span><input id="mod-s2-cars" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="firstSeqMartur">Prima Sequenza Martur</span><input id="mod-s2-firstseqm" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="lastSeqMartur">Ultima Sequenza Martur</span><input id="mod-s2-lastseqm" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="firstSeqStellantis">Prima Sequenza Stellantis</span><input id="mod-s2-firstseqs" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="lastSeqStellantis">Ultima Sequenza Stellantis</span><input id="mod-s2-lastseqs" class="form-control" type="number" min="0" step="1"></label>
           </div>
           <section class="mod-selection-launcher" aria-labelledby="mod-rework-selection-title-2">
             <div class="mod-selection-head">
@@ -3605,7 +3621,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           back: 'Indietro',
           greeting: 'Buongiorno',
           logout: 'Esci',
-          chat: 'Chat',
+          chat: 'Comunicazioni',
           tvMode: 'TV',
           chatPlaceholder: 'Scrivi un messaggio… usa @ per citare',
           chatSend: 'Invia',
@@ -3660,14 +3676,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           availability: 'Efficienza',
           performance: 'Performance',
           quality: 'Qualità',
-          oeeNoData: 'Dati insufficienti per calcolare l\'OEE.',
+          oeeNoData: 'Dati insufficienti per calcolare l\'OLE.',
           paretoVitalFew: 'Regola 80/20: le prime {n} postazioni causano circa l\'80% dei fermi.',
           paretoTopN: 'I {n} fermi più impattanti · {pct} del tempo totale di fermo.',
           vsPrevDay: 'rispetto al giorno produttivo precedente',
           vsPrev: 'rispetto al periodo precedente',
           plannedShort: 'Pianificato',
           targetShort: 'Target',
-          oeeSettings: 'OEE — parametri',
+          oeeSettings: 'OLE — parametri',
           oeeEffectiveHint: 'La modifica vale dalla data odierna in poi; i giorni precedenti mantengono i valori precedenti.',
           manageReworks: 'Elenco rework',
           addRework: 'Aggiungi',
@@ -3774,6 +3790,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtimePct: 'Straordinario %',
           dummySeats: 'Dummy',
           coda: 'Coda',
+          firstSeqMartur: 'Prima Sequenza Martur',
+          lastSeqMartur: 'Ultima Sequenza Martur',
+          firstSeqStellantis: 'Prima Sequenza Stellantis',
+          lastSeqStellantis: 'Ultima Sequenza Stellantis',
+          seqMarturFirst: '1ª seq. Martur',
+          seqMarturLast: 'Ult. seq. Martur',
+          seqStellFirst: '1ª seq. Stellantis',
+          seqStellLast: 'Ult. seq. Stellantis',
           productionVsClient: 'Martur vs Stellantis',
           frontLine: 'Linea anteriore',
           rearLine: 'Linea posteriore',
@@ -3867,7 +3891,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           back: 'Back',
           greeting: 'Hello',
           logout: 'Log out',
-          chat: 'Chat',
+          chat: 'Communications',
           tvMode: 'TV',
           chatPlaceholder: 'Write a message… use @ to mention',
           chatSend: 'Send',
@@ -3922,14 +3946,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           availability: 'Efficiency',
           performance: 'Performance',
           quality: 'Quality',
-          oeeNoData: 'Not enough data to compute OEE.',
+          oeeNoData: 'Not enough data to compute OLE.',
           paretoVitalFew: '80/20 rule: the top {n} stations cause about 80% of downtime.',
           paretoTopN: 'Top {n} stoppages · {pct} of total downtime.',
           vsPrevDay: 'vs previous production day',
           vsPrev: 'vs previous period',
           plannedShort: 'Planned',
           targetShort: 'Target',
-          oeeSettings: 'OEE — parameters',
+          oeeSettings: 'OLE — parameters',
           oeeEffectiveHint: 'Changes apply from today onward; previous days keep their earlier values.',
           manageReworks: 'Rework list',
           addRework: 'Add',
@@ -4036,6 +4060,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtimePct: 'Overtime %',
           dummySeats: 'Dummy seats',
           coda: 'Queue',
+          firstSeqMartur: 'First Martur sequence',
+          lastSeqMartur: 'Last Martur sequence',
+          firstSeqStellantis: 'First Stellantis sequence',
+          lastSeqStellantis: 'Last Stellantis sequence',
+          seqMarturFirst: '1st seq. Martur',
+          seqMarturLast: 'Last seq. Martur',
+          seqStellFirst: '1st seq. Stellantis',
+          seqStellLast: 'Last seq. Stellantis',
           productionVsClient: 'Martur vs Stellantis',
           frontLine: 'Front line',
           rearLine: 'Rear line',
@@ -4129,7 +4161,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           back: 'Geri',
           greeting: 'Günaydın',
           logout: 'Çıkış',
-          chat: 'Sohbet',
+          chat: 'İletişim',
           tvMode: 'TV',
           chatPlaceholder: 'Mesaj yaz… bahsetmek için @ kullan',
           chatSend: 'Gönder',
@@ -4184,14 +4216,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           availability: 'Verimlilik',
           performance: 'Performans',
           quality: 'Kalite',
-          oeeNoData: 'OEE hesaplamak için yeterli veri yok.',
+          oeeNoData: 'OLE hesaplamak için yeterli veri yok.',
           paretoVitalFew: '80/20 kuralı: ilk {n} istasyon duruşların yaklaşık %80\'ine neden olur.',
           paretoTopN: 'En etkili {n} duruş · toplam duruşun {pct}\'i.',
           vsPrevDay: 'önceki üretim gününe göre',
           vsPrev: 'önceki döneme göre',
           plannedShort: 'Planlanan',
           targetShort: 'Hedef',
-          oeeSettings: 'OEE — parametreler',
+          oeeSettings: 'OLE — parametreler',
           oeeEffectiveHint: 'Değişiklik bugünden itibaren geçerlidir; önceki günler eski değerleri korur.',
           manageReworks: 'Rework listesi',
           addRework: 'Ekle',
@@ -4298,6 +4330,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtimePct: 'Fazla mesai %',
           dummySeats: 'Dummy koltuk',
           coda: 'Kuyruk',
+          firstSeqMartur: 'İlk Martur sırası',
+          lastSeqMartur: 'Son Martur sırası',
+          firstSeqStellantis: 'İlk Stellantis sırası',
+          lastSeqStellantis: 'Son Stellantis sırası',
+          seqMarturFirst: 'İlk seq. Martur',
+          seqMarturLast: 'Son seq. Martur',
+          seqStellFirst: 'İlk seq. Stellantis',
+          seqStellLast: 'Son seq. Stellantis',
           productionVsClient: 'Martur vs Stellantis',
           frontLine: 'Ön hat',
           rearLine: 'Arka hat',
@@ -4639,7 +4679,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtimePct: 'mod-s1-overtime',
           dummy: 'mod-s1-dummy',
           coda: 'mod-s1-coda',
-          stellantisCars: 'mod-s1-cars'
+          stellantisCars: 'mod-s1-cars',
+          firstSeqMartur: 'mod-s1-firstseqm',
+          lastSeqMartur: 'mod-s1-lastseqm',
+          firstSeqStellantis: 'mod-s1-firstseqs',
+          lastSeqStellantis: 'mod-s1-lastseqs'
         },
         shift2: {
           front: 'mod-s2-front',
@@ -4651,7 +4695,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtimePct: 'mod-s2-overtime',
           dummy: 'mod-s2-dummy',
           coda: 'mod-s2-coda',
-          stellantisCars: 'mod-s2-cars'
+          stellantisCars: 'mod-s2-cars',
+          firstSeqMartur: 'mod-s2-firstseqm',
+          lastSeqMartur: 'mod-s2-lastseqm',
+          firstSeqStellantis: 'mod-s2-firstseqs',
+          lastSeqStellantis: 'mod-s2-lastseqs'
         }
       };
 
@@ -4758,6 +4806,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           dummy: null,
           coda: null,
           stellantisCars: null,
+          firstSeqMartur: null,
+          lastSeqMartur: null,
+          firstSeqStellantis: null,
+          lastSeqStellantis: null,
           efficiency: null
         };
       }
@@ -5650,6 +5702,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('rearLine') + '</span><strong>' + formatOptionalNumber(shift.rear) + '</strong></div>' +
               '<div class="mod-shift-metric"><span class="text-small text-muted">Stellantis</span><strong>' + formatOptionalNumber(shift.stellantisCars) + '</strong></div>' +
               '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('gap') + '</span><strong class="' + (isNumber(gap) && gap < 0 ? 'mod-negative' : '') + '">' + formatSigned(gap) + '</strong></div>' +
+            '</div>' +
+            '<div class="mod-shift-seq-grid">' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturFirst') + '</span><strong>' + formatOptionalNumber(shift.firstSeqMartur) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturLast') + '</span><strong>' + formatOptionalNumber(shift.lastSeqMartur) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellFirst') + '</span><strong>' + formatOptionalNumber(shift.firstSeqStellantis) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellLast') + '</span><strong>' + formatOptionalNumber(shift.lastSeqStellantis) + '</strong></div>' +
             '</div>' +
             '<div class="mod-shift-support-grid">' +
               '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('presence') + '</span><strong>' + formatOptionalNumber(shift.presence) + '</strong></div>' +
@@ -6628,10 +6686,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '<path d="' + gaugeArcPath(cx, cy, r, angleFor(z.from), angleFor(z.to)) + '" fill="none" stroke="' + z.col + '" stroke-width="12" opacity="0.22"></path>'
         ).join('');
         const valueArc = '<path d="' + gaugeArcPath(cx, cy, r, 180, angleFor(oeeVal)) + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-linecap="round"></path>';
-        return '<svg viewBox="0 0 200 126" role="img" aria-label="OEE ' + Math.round(oeeVal * 100) + '%">' +
+        return '<svg viewBox="0 0 200 126" role="img" aria-label="OLE ' + Math.round(oeeVal * 100) + '%">' +
           zoneArcs + valueArc +
           '<text class="mod-oee-gauge-value" x="100" y="96" text-anchor="middle" fill="' + color + '">' + Math.round(oeeVal * 100) + '%</text>' +
-          '<text class="mod-oee-gauge-label" x="100" y="116" text-anchor="middle">OEE</text>' +
+          '<text class="mod-oee-gauge-label" x="100" y="116" text-anchor="middle">OLE</text>' +
           '</svg>';
       }
 
