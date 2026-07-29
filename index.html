@@ -1025,40 +1025,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-size: 16px;
       line-height: 1;
     }
-    @keyframes mod-live-blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-    #martur-operations-dashboard .mod-live-tab {
-      color: #e11d1d;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      padding-left: 28px;
-    }
-    #martur-operations-dashboard .mod-live-tab:hover {
-      color: #e11d1d;
-    }
-    #martur-operations-dashboard .mod-live-tab::before {
-      content: "";
-      position: absolute;
-      left: 13px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #e11d1d;
-      animation: mod-live-blink 1s ease-in-out infinite;
-    }
-    #martur-operations-dashboard .mod-live-tab[aria-pressed="true"] {
-      color: #e11d1d;
-    }
-    #martur-operations-dashboard .mod-live-tab[aria-pressed="true"]::after {
-      background: #e11d1d;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #martur-operations-dashboard .mod-live-tab::before { animation: none; }
-    }
     @keyframes mod-fade-in-up {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -1141,24 +1107,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       margin-bottom: 0;
     }
     #martur-operations-dashboard .mod-header-picker #mod-date-picker {
-      width: 255px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      position: relative;
+      width: 230px;
+      display: block;
     }
     #martur-operations-dashboard .mod-date-weekday {
-      flex: 0 0 auto;
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+      pointer-events: none;
       font-weight: 700;
       font-size: var(--font-size-small);
       color: var(--primary);
-      background: var(--accent);
-      padding: 3px 9px;
-      border-radius: var(--radius-full);
       text-transform: capitalize;
     }
     #martur-operations-dashboard #mod-date-picker .form-control {
-      flex: 1 1 auto;
-      min-width: 0;
+      width: 100%;
+      padding-left: 46px;
     }
     #martur-operations-dashboard .mod-header-picker .mod-period-picker .form-control {
       margin-top: 0;
@@ -1319,8 +1286,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-oee-breakdown {
       display: grid;
-      gap: 14px;
+      gap: 16px;
       min-width: 0;
+      min-height: 138px;
+      align-content: center;
     }
     #martur-operations-dashboard .mod-oee-row {
       display: grid;
@@ -1374,19 +1343,35 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-oee-cfg .form-control {
       width: 120px;
     }
-    #martur-operations-dashboard .mod-chat-tab::before {
-      content: "";
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--primary);
+    #martur-operations-dashboard .mod-rework-admin-list {
+      display: grid;
+      gap: 6px;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 2px;
     }
-    #martur-operations-dashboard .mod-chat-tab {
-      padding-left: 24px;
+    #martur-operations-dashboard .mod-rework-admin-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #martur-operations-dashboard .mod-rework-edit {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-rework-del {
+      flex: 0 0 auto;
+      color: var(--destructive);
+    }
+    #martur-operations-dashboard .mod-rework-admin-add {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    #martur-operations-dashboard .mod-rework-admin-add .form-control {
+      flex: 1 1 auto;
+      min-width: 0;
     }
     #martur-operations-dashboard .mod-compare-table {
       width: 100%;
@@ -1520,32 +1505,47 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: 10px;
       border-radius: 50%;
     }
-    #martur-operations-dashboard .mod-heatmap {
+    #martur-operations-dashboard .mod-hourbars {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
-      gap: 5px;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 4px;
+      height: 130px;
     }
-    #martur-operations-dashboard .mod-heat-cell {
+    #martur-operations-dashboard .mod-hourbar-col {
+      display: grid;
+      grid-template-rows: 14px 1fr 16px;
+      justify-items: center;
+      align-items: end;
+      gap: 3px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-hourbar-val {
+      font-size: 10px;
+      font-weight: 700;
+      color: light-dark(rgb(211 47 47), rgb(255 99 99));
+      line-height: 1;
+    }
+    #martur-operations-dashboard .mod-hourbar-track {
+      align-self: stretch;
+      width: min(70%, 22px);
+      justify-self: center;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1px;
-      min-height: 44px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
+      align-items: flex-end;
       background: var(--muted);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
     }
-    #martur-operations-dashboard .mod-heat-hour {
+    #martur-operations-dashboard .mod-hourbar-fill {
+      width: 100%;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background: linear-gradient(180deg, light-dark(rgb(255 99 99), rgb(255 130 130)), light-dark(rgb(211 47 47), rgb(255 99 99)));
+      transition: height 0.4s ease;
+    }
+    #martur-operations-dashboard .mod-hourbar-hour {
       font-size: 10px;
       color: var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-heat-on .mod-heat-hour {
-      color: var(--foreground);
-    }
-    #martur-operations-dashboard .mod-heat-val {
-      font-size: var(--font-size-small);
-      font-weight: 700;
+      line-height: 1;
     }
     #martur-operations-dashboard .mod-chat-badge {
       display: inline-flex;
@@ -2225,7 +2225,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-line-status[data-status="red"] { background: #e11d1d; }
     #martur-operations-dashboard .mod-downtime-pareto {
       display: grid;
-      gap: 10px;
+      gap: 16px;
+      min-height: 138px;
+      align-content: center;
     }
     #martur-operations-dashboard .mod-pareto-row {
       display: grid;
@@ -2411,7 +2413,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       width: 15px;
       height: 15px;
     }
-    #martur-operations-dashboard:not(.mod-admin-on) .mod-stoppage-act-col {
+    #martur-operations-dashboard:not(.mod-editor-on) .mod-stoppage-act-col {
       display: none;
     }
     #martur-operations-dashboard .mod-daily-admin-actions {
@@ -2621,12 +2623,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-nav-tab-icon {
         flex: 0 0 auto;
-      }
-      #martur-operations-dashboard .mod-live-tab {
-        padding-left: 22px;
-      }
-      #martur-operations-dashboard .mod-live-tab::before {
-        left: 8px;
       }
       #martur-operations-dashboard .mod-context-bar {
         display: grid;
@@ -2941,9 +2937,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="monthly" aria-pressed="false" data-i18n="monthly">Mensile</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" aria-pressed="false" data-i18n="abarth">Abarth</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="dmc" aria-pressed="false" data-i18n="dmcSection">DMC</button>
-        <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false"><span data-i18n="chat">Chat</span><span id="mod-chat-badge" class="mod-chat-badge" hidden></span></button>
+        <button type="button" class="mod-nav-tab mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">Fermi linea</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode">TV</button>
-        <button type="button" class="mod-nav-tab mod-view-btn mod-live-tab" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">LIVE</button>
+        <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false"><span data-i18n="chat">Chat</span><span id="mod-chat-badge" class="mod-chat-badge" hidden></span></button>
       </nav>
       <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
         <option value="daily" data-i18n="daily">Giornaliero</option>
@@ -2951,9 +2947,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <option value="monthly" data-i18n="monthly">Mensile</option>
         <option value="abarth" data-i18n="abarth">Abarth</option>
         <option value="dmc" data-i18n="dmcSection">DMC</option>
-        <option value="chat" data-i18n="chat">Chat</option>
+        <option value="stoppages" data-i18n="stoppages">Fermi linea</option>
         <option value="tv" data-i18n="tvMode">TV</option>
-        <option value="stoppages" data-i18n="stoppages">LIVE</option>
+        <option value="chat" data-i18n="chat">Chat</option>
       </select>
 
       <div class="mod-nav-side mod-nav-right">
@@ -3053,16 +3049,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <div id="mod-heatmap-wrap"></div>
       </section>
     </div>
-
-    <section id="mod-compare-section" class="mod-section">
-      <div class="mod-section-head">
-        <div>
-          <div class="mod-section-label" data-i18n="periodComparison">Confronto con periodo precedente</div>
-          <div id="mod-compare-subtitle" class="text-small text-muted"></div>
-        </div>
-      </div>
-      <div id="mod-compare-wrap" class="mod-table-wrap"></div>
-    </section>
 
     <section id="mod-daily-rework-section" class="mod-section" aria-labelledby="mod-daily-rework-title">
       <div class="mod-section-head">
@@ -3462,6 +3448,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <div class="text-small text-muted" data-i18n="oeeEffectiveHint">La modifica vale dalla data odierna in poi; i giorni precedenti mantengono i valori precedenti.</div>
         </div>
         <div id="mod-stoppage-admin" class="mod-stoppage-admin"></div>
+        <div id="mod-rework-admin" class="mod-stoppage-admin mod-cfg-section-first"></div>
       </div>
     </div>
   </dialog>
@@ -3487,6 +3474,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <div class="form-label">
             <span data-i18n="stoppageCause">Causa del fermo</span>
             <div id="mod-stoppage-causes" class="mod-stoppage-causes"></div>
+          </div>
+          <div class="mod-stoppage-duration">
+            <label class="form-label">
+              <span data-i18n="date">Data</span>
+              <input id="mod-stoppage-date" class="form-control" type="date" required>
+            </label>
+            <label class="form-label">
+              <span data-i18n="startTime">Ora inizio</span>
+              <input id="mod-stoppage-time" class="form-control" type="time" required>
+            </label>
           </div>
           <div class="mod-stoppage-duration">
             <label class="form-label">
@@ -3611,7 +3608,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const DATA = {"workbookName":"Martur_Italy_Daily_Production_Follow-up With Client assembly line 2026 - NEW FORMAT.xlsx","sheetName":"2026","declaredYear":2026,"timelineYear":2025,"latestDate":"2025-07-16","excludedEmbeddedSummaryColumns":1,"daily":[{"date":"2025-01-01","shift1":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-02","shift1":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-03","shift1":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-04","shift1":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-05","shift1":{"front":7,"rear":0,"presence":null,"absent":2,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":7,"totalRear":0,"completeKits":0,"presence":null,"absent":2,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-06","shift1":{"front":0,"rear":0,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-07","shift1":{"front":185,"rear":193,"presence":null,"absent":10,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":158},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":185,"totalRear":193,"completeKits":185,"presence":null,"absent":10,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":158,"coverage":1.1708860759493671,"supplyGap":27},{"date":"2025-01-08","shift1":{"front":187,"rear":182,"presence":null,"absent":8,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":206},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":187,"totalRear":182,"completeKits":182,"presence":null,"absent":8,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":206,"coverage":0.883495145631068,"supplyGap":-24},{"date":"2025-01-09","shift1":{"front":196,"rear":194,"presence":null,"absent":12,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":203},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":196,"totalRear":194,"completeKits":194,"presence":null,"absent":12,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":203,"coverage":0.95566502463054193,"supplyGap":-9},{"date":"2025-01-10","shift1":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-11","shift1":{"front":null,"rear":null,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":null,"coverage":null,"supplyGap":null},{"date":"2025-01-12","shift1":{"front":205,"rear":205,"presence":null,"absent":4,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":194},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":205,"totalRear":205,"completeKits":205,"presence":null,"absent":4,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":194,"coverage":1.0567010309278351,"supplyGap":11},{"date":"2025-01-13","shift1":{"front":211,"rear":208,"presence":null,"absent":5,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":204},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":211,"totalRear":208,"completeKits":208,"presence":null,"absent":5,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":204,"coverage":1.0196078431372548,"supplyGap":4},{"date":"2025-01-14","shift1":{"front":215,"rear":209,"presence":null,"absent":5,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":206},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":215,"totalRear":209,"completeKits":209,"presence":null,"absent":5,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":206,"coverage":1.0145631067961165,"supplyGap":3},{"date":"2025-01-15","shift1":{"front":212,"rear":211,"presence":null,"absent":8,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":210},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":212,"totalRear":211,"completeKits":211,"presence":null,"absent":8,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":210,"coverage":1.0047619047619047,"supplyGap":1},{"date":"2025-01-16","shift1":{"front":192,"rear":200,"presence":null,"absent":8,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":212},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":192,"totalRear":200,"completeKits":192,"presence":null,"absent":8,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":212,"coverage":0.90566037735849059,"supplyGap":-20},{"date":"2025-01-19","shift1":{"front":203,"rear":197,"presence":null,"absent":7,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":204},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":203,"totalRear":197,"completeKits":197,"presence":null,"absent":7,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":204,"coverage":0.96568627450980393,"supplyGap":-7},{"date":"2025-01-20","shift1":{"front":157,"rear":164,"presence":null,"absent":8,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":157,"totalRear":164,"completeKits":157,"presence":null,"absent":8,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":215,"coverage":0.73023255813953492,"supplyGap":-58},{"date":"2025-01-21","shift1":{"front":194,"rear":196,"presence":null,"absent":11,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":200},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":194,"totalRear":196,"completeKits":194,"presence":null,"absent":11,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":200,"coverage":0.97,"supplyGap":-6},{"date":"2025-01-22","shift1":{"front":190,"rear":185,"presence":null,"absent":15,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":211},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":190,"totalRear":185,"completeKits":185,"presence":null,"absent":7,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":211,"coverage":0.87677725118483407,"supplyGap":-26},{"date":"2025-01-23","shift1":{"front":195,"rear":203,"presence":null,"absent":13,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":212},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":195,"totalRear":203,"completeKits":195,"presence":null,"absent":13,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":212,"coverage":0.91981132075471694,"supplyGap":-17},{"date":"2025-01-24","shift1":{"front":150,"rear":151,"presence":null,"absent":1,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":150,"totalRear":151,"completeKits":150,"presence":null,"absent":1,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-01-26","shift1":{"front":186,"rear":184,"presence":null,"absent":15,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":208},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":186,"totalRear":184,"completeKits":184,"presence":null,"absent":15,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":208,"coverage":0.88461538461538458,"supplyGap":-24},{"date":"2025-01-27","shift1":{"front":191,"rear":183,"presence":null,"absent":17,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":208},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":191,"totalRear":183,"completeKits":183,"presence":null,"absent":17,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":208,"coverage":0.87980769230769229,"supplyGap":-25},{"date":"2025-01-28","shift1":{"front":187,"rear":197,"presence":null,"absent":11,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":213},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":187,"totalRear":197,"completeKits":187,"presence":null,"absent":11,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":213,"coverage":0.8779342723004695,"supplyGap":-26},{"date":"2025-01-29","shift1":{"front":201,"rear":192,"presence":null,"absent":11,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":206},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":201,"totalRear":192,"completeKits":192,"presence":null,"absent":11,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":206,"coverage":0.93203883495145634,"supplyGap":-14},{"date":"2025-01-30","shift1":{"front":170,"rear":178,"presence":null,"absent":13,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":170,"totalRear":178,"completeKits":170,"presence":null,"absent":13,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":215,"coverage":0.79069767441860461,"supplyGap":-45},{"date":"2025-01-31","shift1":{"front":73,"rear":68,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":73,"totalRear":68,"completeKits":68,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-02-02","shift1":{"front":59,"rear":69,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":13},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":59,"totalRear":69,"completeKits":59,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":13,"coverage":4.5384615384615383,"supplyGap":46},{"date":"2025-02-03","shift1":{"front":163,"rear":167,"presence":null,"absent":4,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":31,"rear":22,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":194,"totalRear":189,"completeKits":189,"presence":null,"absent":4,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":215,"coverage":0.87906976744186049,"supplyGap":-26},{"date":"2025-02-04","shift1":{"front":188,"rear":196,"presence":null,"absent":7,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":208},"shift2":{"front":28,"rear":30,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":9},"totalFront":216,"totalRear":226,"completeKits":216,"presence":null,"absent":7,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":217,"coverage":0.99539170506912444,"supplyGap":-1},{"date":"2025-02-05","shift1":{"front":185,"rear":183,"presence":null,"absent":4,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":208},"shift2":{"front":35,"rear":29,"presence":null,"absent":1,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":9},"totalFront":220,"totalRear":212,"completeKits":212,"presence":null,"absent":5,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":217,"coverage":0.97695852534562211,"supplyGap":-5},{"date":"2025-02-06","shift1":{"front":149,"rear":156,"presence":null,"absent":3,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":210},"shift2":{"front":31,"rear":14,"presence":null,"absent":1,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":10},"totalFront":180,"totalRear":170,"completeKits":170,"presence":null,"absent":4,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":220,"coverage":0.77272727272727271,"supplyGap":-50},{"date":"2025-02-09","shift1":{"front":171,"rear":163,"presence":null,"absent":8,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":122},"shift2":{"front":31,"rear":46,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":9},"totalFront":202,"totalRear":209,"completeKits":202,"presence":null,"absent":8,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":131,"coverage":1.5419847328244274,"supplyGap":71},{"date":"2025-02-10","shift1":{"front":137,"rear":140,"presence":null,"absent":7,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":203},"shift2":{"front":40,"rear":38,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":13},"totalFront":177,"totalRear":178,"completeKits":177,"presence":null,"absent":7,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":216,"coverage":0.81944444444444442,"supplyGap":-39},{"date":"2025-02-11","shift1":{"front":189,"rear":180,"presence":null,"absent":11,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":201},"shift2":{"front":43,"rear":51,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":20},"totalFront":232,"totalRear":231,"completeKits":231,"presence":null,"absent":11,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":221,"coverage":1.0452488687782806,"supplyGap":10},{"date":"2025-02-12","shift1":{"front":178,"rear":181,"presence":null,"absent":11,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":207},"shift2":{"front":42,"rear":42,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":13},"totalFront":220,"totalRear":223,"completeKits":220,"presence":null,"absent":11,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":220,"coverage":1,"supplyGap":0},{"date":"2025-02-13","shift1":{"front":186,"rear":173,"presence":null,"absent":10,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":202},"shift2":{"front":26,"rear":35,"presence":null,"absent":1,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":19},"totalFront":212,"totalRear":208,"completeKits":208,"presence":null,"absent":11,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":221,"coverage":0.94117647058823528,"supplyGap":-13},{"date":"2025-02-16","shift1":{"front":142,"rear":145,"presence":null,"absent":4,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":123},"shift2":{"front":31,"rear":38,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":20},"totalFront":173,"totalRear":183,"completeKits":173,"presence":null,"absent":4,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":143,"coverage":1.2097902097902098,"supplyGap":30},{"date":"2025-02-17","shift1":{"front":164,"rear":160,"presence":null,"absent":8,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":197},"shift2":{"front":41,"rear":43,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":9},"totalFront":205,"totalRear":203,"completeKits":203,"presence":null,"absent":8,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":206,"coverage":0.9854368932038835,"supplyGap":-3},{"date":"2025-02-18","shift1":{"front":182,"rear":182,"presence":null,"absent":6,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":209},"shift2":{"front":33,"rear":33,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":215,"totalRear":215,"completeKits":215,"presence":null,"absent":6,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":209,"coverage":1.0287081339712918,"supplyGap":6},{"date":"2025-02-19","shift1":{"front":178,"rear":180,"presence":null,"absent":7,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":207},"shift2":{"front":40,"rear":39,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":218,"totalRear":219,"completeKits":218,"presence":null,"absent":7,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":207,"coverage":1.0531400966183575,"supplyGap":11},{"date":"2025-02-20","shift1":{"front":188,"rear":186,"presence":null,"absent":7,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":20,"rear":27,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":208,"totalRear":213,"completeKits":208,"presence":null,"absent":7,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":215,"coverage":0.96744186046511627,"supplyGap":-7},{"date":"2025-02-21","shift1":{"front":118,"rear":117,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":119},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":118,"totalRear":117,"completeKits":117,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":119,"coverage":0.98319327731092432,"supplyGap":-2},{"date":"2025-02-23","shift1":{"front":184,"rear":180,"presence":null,"absent":7,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":191},"shift2":{"front":21,"rear":27,"presence":null,"absent":2,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":205,"totalRear":207,"completeKits":205,"presence":null,"absent":9,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":191,"coverage":1.0732984293193717,"supplyGap":14},{"date":"2025-02-24","shift1":{"front":178,"rear":173,"presence":null,"absent":9,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":47,"rear":50,"presence":null,"absent":2,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":33},"totalFront":225,"totalRear":223,"completeKits":223,"presence":null,"absent":11,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":248,"coverage":0.89919354838709675,"supplyGap":-25},{"date":"2025-02-25","shift1":{"front":172,"rear":175,"presence":null,"absent":12,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":211},"shift2":{"front":61,"rear":55,"presence":null,"absent":3,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":30},"totalFront":233,"totalRear":230,"completeKits":230,"presence":null,"absent":15,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":241,"coverage":0.9543568464730291,"supplyGap":-11},{"date":"2025-02-26","shift1":{"front":175,"rear":181,"presence":null,"absent":15,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":213},"shift2":{"front":61,"rear":61,"presence":null,"absent":3,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":22},"totalFront":236,"totalRear":242,"completeKits":236,"presence":null,"absent":18,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":235,"coverage":1.0042553191489361,"supplyGap":1},{"date":"2025-02-27","shift1":{"front":172,"rear":176,"presence":null,"absent":11,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":184},"shift2":{"front":63,"rear":60,"presence":null,"absent":4,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":39},"totalFront":235,"totalRear":236,"completeKits":235,"presence":null,"absent":15,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":223,"coverage":1.053811659192825,"supplyGap":12},{"date":"2025-02-28","shift1":{"front":27,"rear":25,"presence":null,"absent":0,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":27,"totalRear":25,"completeKits":25,"presence":null,"absent":0,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-03-02","shift1":{"front":165,"rear":168,"presence":null,"absent":6,"rework":47,"overtimePct":null,"dummy":null,"stellantisCars":208},"shift2":{"front":62,"rear":65,"presence":null,"absent":1,"rework":13,"overtimePct":null,"dummy":null,"stellantisCars":40},"totalFront":227,"totalRear":233,"completeKits":227,"presence":null,"absent":7,"absenteeismPct":null,"rework":60,"reworkPct":0.26431718061674009,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":248,"coverage":0.91532258064516125,"supplyGap":-21},{"date":"2025-03-03","shift1":{"front":168,"rear":163,"presence":null,"absent":9,"rework":44,"overtimePct":null,"dummy":null,"stellantisCars":192},"shift2":{"front":73,"rear":66,"presence":null,"absent":2,"rework":21,"overtimePct":null,"dummy":null,"stellantisCars":38},"totalFront":241,"totalRear":229,"completeKits":229,"presence":null,"absent":11,"absenteeismPct":null,"rework":65,"reworkPct":0.26970954356846472,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":230,"coverage":0.9956521739130435,"supplyGap":-1},{"date":"2025-03-04","shift1":{"front":175,"rear":182,"presence":null,"absent":11,"rework":59,"overtimePct":null,"dummy":null,"stellantisCars":208},"shift2":{"front":71,"rear":68,"presence":null,"absent":2,"rework":21,"overtimePct":null,"dummy":null,"stellantisCars":46},"totalFront":246,"totalRear":250,"completeKits":246,"presence":null,"absent":13,"absenteeismPct":null,"rework":80,"reworkPct":0.32520325203252032,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":254,"coverage":0.968503937007874,"supplyGap":-8},{"date":"2025-03-05","shift1":{"front":133,"rear":135,"presence":null,"absent":11,"rework":44,"overtimePct":null,"dummy":null,"stellantisCars":203},"shift2":{"front":80,"rear":81,"presence":null,"absent":2,"rework":13,"overtimePct":null,"dummy":null,"stellantisCars":55},"totalFront":213,"totalRear":216,"completeKits":213,"presence":null,"absent":13,"absenteeismPct":null,"rework":57,"reworkPct":0.26760563380281688,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":258,"coverage":0.82558139534883723,"supplyGap":-45},{"date":"2025-03-06","shift1":{"front":171,"rear":170,"presence":null,"absent":10,"rework":48,"overtimePct":null,"dummy":null,"stellantisCars":206},"shift2":{"front":65,"rear":72,"presence":null,"absent":3,"rework":36,"overtimePct":null,"dummy":null,"stellantisCars":59},"totalFront":236,"totalRear":242,"completeKits":236,"presence":null,"absent":13,"absenteeismPct":null,"rework":84,"reworkPct":0.3559322033898305,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":265,"coverage":0.89056603773584908,"supplyGap":-29},{"date":"2025-03-07","shift1":{"front":55,"rear":53,"presence":null,"absent":0,"rework":18,"overtimePct":null,"dummy":null,"stellantisCars":null},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":55,"totalRear":53,"completeKits":53,"presence":null,"absent":0,"absenteeismPct":null,"rework":18,"reworkPct":0.32727272727272727,"overtimePct":null,"overtimeHours":4,"dummy":null,"stellantisCars":null,"coverage":null,"supplyGap":null},{"date":"2025-03-09","shift1":{"front":158,"rear":157,"presence":null,"absent":6,"rework":58,"overtimePct":null,"dummy":null,"stellantisCars":182},"shift2":{"front":94,"rear":91,"presence":null,"absent":6,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":60},"totalFront":252,"totalRear":248,"completeKits":248,"presence":null,"absent":12,"absenteeismPct":null,"rework":82,"reworkPct":0.32539682539682541,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":242,"coverage":1.024793388429752,"supplyGap":6},{"date":"2025-03-10","shift1":{"front":143,"rear":147,"presence":null,"absent":3,"rework":46,"overtimePct":null,"dummy":null,"stellantisCars":180},"shift2":{"front":100,"rear":91,"presence":null,"absent":6,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":80},"totalFront":243,"totalRear":238,"completeKits":238,"presence":null,"absent":9,"absenteeismPct":null,"rework":74,"reworkPct":0.30452674897119342,"overtimePct":null,"overtimeHours":2,"dummy":null,"stellantisCars":260,"coverage":0.91538461538461535,"supplyGap":-22},{"date":"2025-03-11","shift1":{"front":133,"rear":135,"presence":null,"absent":6,"rework":27,"overtimePct":null,"dummy":null,"stellantisCars":185},"shift2":{"front":96,"rear":85,"presence":null,"absent":8,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":97},"totalFront":229,"totalRear":220,"completeKits":220,"presence":null,"absent":14,"absenteeismPct":null,"rework":55,"reworkPct":0.24017467248908297,"overtimePct":null,"overtimeHours":6,"dummy":null,"stellantisCars":282,"coverage":0.78014184397163122,"supplyGap":-62},{"date":"2025-03-12","shift1":{"front":157,"rear":175,"presence":null,"absent":5,"rework":64,"overtimePct":null,"dummy":null,"stellantisCars":198},"shift2":{"front":106,"rear":96,"presence":null,"absent":10,"rework":20,"overtimePct":null,"dummy":null,"stellantisCars":83},"totalFront":263,"totalRear":271,"completeKits":263,"presence":null,"absent":15,"absenteeismPct":null,"rework":84,"reworkPct":0.3193916349809886,"overtimePct":null,"overtimeHours":13,"dummy":null,"stellantisCars":281,"coverage":0.93594306049822062,"supplyGap":-18},{"date":"2025-03-13","shift1":{"front":181,"rear":176,"presence":null,"absent":9,"rework":53,"overtimePct":null,"dummy":null,"stellantisCars":200},"shift2":{"front":95,"rear":96,"presence":null,"absent":10,"rework":16,"overtimePct":null,"dummy":null,"stellantisCars":85},"totalFront":276,"totalRear":272,"completeKits":272,"presence":null,"absent":19,"absenteeismPct":null,"rework":69,"reworkPct":0.25,"overtimePct":null,"overtimeHours":10,"dummy":null,"stellantisCars":285,"coverage":0.95438596491228067,"supplyGap":-13},{"date":"2025-03-14","shift1":{"front":121,"rear":130,"presence":null,"absent":1,"rework":34,"overtimePct":null,"dummy":null,"stellantisCars":null},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":121,"totalRear":130,"completeKits":121,"presence":null,"absent":1,"absenteeismPct":null,"rework":34,"reworkPct":0.28099173553719009,"overtimePct":null,"overtimeHours":270,"dummy":null,"stellantisCars":null,"coverage":null,"supplyGap":null},{"date":"2025-03-16","shift1":{"front":168,"rear":170,"presence":null,"absent":7,"rework":56,"overtimePct":null,"dummy":null,"stellantisCars":190},"shift2":{"front":143,"rear":136,"presence":null,"absent":5,"rework":54,"overtimePct":null,"dummy":null,"stellantisCars":201},"totalFront":311,"totalRear":306,"completeKits":306,"presence":null,"absent":12,"absenteeismPct":null,"rework":110,"reworkPct":0.3536977491961415,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":391,"coverage":0.782608695652174,"supplyGap":-85},{"date":"2025-03-17","shift1":{"front":168,"rear":173,"presence":null,"absent":10,"rework":41,"overtimePct":null,"dummy":null,"stellantisCars":175},"shift2":{"front":183,"rear":188,"presence":null,"absent":5,"rework":59,"overtimePct":0.240625,"dummy":null,"stellantisCars":199},"totalFront":351,"totalRear":361,"completeKits":351,"presence":null,"absent":15,"absenteeismPct":null,"rework":100,"reworkPct":0.28490028490028491,"overtimePct":0.240625,"overtimeHours":null,"dummy":null,"stellantisCars":374,"coverage":0.93850267379679142,"supplyGap":-23},{"date":"2025-03-18","shift1":{"front":154,"rear":150,"presence":null,"absent":10,"rework":50,"overtimePct":0.047222222222222221,"dummy":null,"stellantisCars":113},"shift2":{"front":140,"rear":148,"presence":null,"absent":4,"rework":50,"overtimePct":0.034375,"dummy":null,"stellantisCars":196},"totalFront":294,"totalRear":298,"completeKits":294,"presence":null,"absent":14,"absenteeismPct":null,"rework":100,"reworkPct":0.3401360544217687,"overtimePct":0.040798611111111112,"overtimeHours":null,"dummy":null,"stellantisCars":309,"coverage":0.95145631067961167,"supplyGap":-15},{"date":"2025-03-19","shift1":{"front":178,"rear":174,"presence":null,"absent":9,"rework":55,"overtimePct":0.033333333333333333,"dummy":null,"stellantisCars":207},"shift2":{"front":162,"rear":161,"presence":null,"absent":7,"rework":41,"overtimePct":0.069444444444444448,"dummy":null,"stellantisCars":167},"totalFront":340,"totalRear":335,"completeKits":335,"presence":null,"absent":16,"absenteeismPct":null,"rework":96,"reworkPct":0.28235294117647058,"overtimePct":0.051388888888888887,"overtimeHours":null,"dummy":null,"stellantisCars":374,"coverage":0.89572192513368987,"supplyGap":-39},{"date":"2025-03-20","shift1":{"front":173,"rear":171,"presence":null,"absent":7,"rework":67,"overtimePct":0.033333333333333333,"dummy":null,"stellantisCars":165},"shift2":{"front":135,"rear":138,"presence":null,"absent":8,"rework":45,"overtimePct":0.069444444444444448,"dummy":null,"stellantisCars":181},"totalFront":308,"totalRear":309,"completeKits":308,"presence":null,"absent":15,"absenteeismPct":null,"rework":112,"reworkPct":0.36363636363636365,"overtimePct":0.051388888888888887,"overtimeHours":null,"dummy":null,"stellantisCars":346,"coverage":0.89017341040462428,"supplyGap":-38},{"date":"2025-03-21","shift1":{"front":157,"rear":152,"presence":null,"absent":0,"rework":38,"overtimePct":null,"dummy":null,"stellantisCars":null},"shift2":{"front":107,"rear":105,"presence":null,"absent":0,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":264,"totalRear":257,"completeKits":257,"presence":null,"absent":0,"absenteeismPct":null,"rework":66,"reworkPct":0.25,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":null,"coverage":null,"supplyGap":null},{"date":"2025-03-23","shift1":{"front":156,"rear":176,"presence":null,"absent":6,"rework":46,"overtimePct":0,"dummy":null,"stellantisCars":202},"shift2":{"front":194,"rear":185,"presence":null,"absent":2,"rework":51,"overtimePct":null,"dummy":null,"stellantisCars":178},"totalFront":350,"totalRear":361,"completeKits":350,"presence":null,"absent":8,"absenteeismPct":null,"rework":97,"reworkPct":0.27714285714285714,"overtimePct":0,"overtimeHours":null,"dummy":null,"stellantisCars":380,"coverage":0.92105263157894735,"supplyGap":-30},{"date":"2025-03-24","shift1":{"front":166,"rear":170,"presence":null,"absent":6,"rework":39,"overtimePct":0,"dummy":null,"stellantisCars":198},"shift2":{"front":240,"rear":236,"presence":null,"absent":3,"rework":61,"overtimePct":0.20525775637483223,"dummy":null,"stellantisCars":211},"totalFront":406,"totalRear":406,"completeKits":406,"presence":null,"absent":9,"absenteeismPct":null,"rework":100,"reworkPct":0.24630541871921183,"overtimePct":0.10262887818741612,"overtimeHours":null,"dummy":null,"stellantisCars":409,"coverage":0.99266503667481665,"supplyGap":-3},{"date":"2025-03-25","shift1":{"front":184,"rear":187,"presence":null,"absent":5,"rework":45,"overtimePct":0,"dummy":null,"stellantisCars":215},"shift2":{"front":245,"rear":232,"presence":null,"absent":4,"rework":68,"overtimePct":0.214569252226156,"dummy":null,"stellantisCars":211},"totalFront":429,"totalRear":419,"completeKits":419,"presence":null,"absent":9,"absenteeismPct":null,"rework":113,"reworkPct":0.26340326340326342,"overtimePct":0.107284626113078,"overtimeHours":null,"dummy":null,"stellantisCars":426,"coverage":0.98356807511737088,"supplyGap":-7},{"date":"2025-03-26","shift1":{"front":180,"rear":190,"presence":null,"absent":5,"rework":49,"overtimePct":0,"dummy":null,"stellantisCars":198},"shift2":{"front":232,"rear":232,"presence":null,"absent":4,"rework":37,"overtimePct":0.2252977148374638,"dummy":null,"stellantisCars":207},"totalFront":412,"totalRear":422,"completeKits":412,"presence":null,"absent":9,"absenteeismPct":null,"rework":86,"reworkPct":0.20873786407766989,"overtimePct":0.1126488574187319,"overtimeHours":null,"dummy":null,"stellantisCars":405,"coverage":1.0172839506172839,"supplyGap":7},{"date":"2025-03-27","shift1":{"front":173,"rear":178,"presence":null,"absent":4,"rework":36,"overtimePct":0,"dummy":null,"stellantisCars":190},"shift2":{"front":191,"rear":165,"presence":null,"absent":5,"rework":39,"overtimePct":0,"dummy":null,"stellantisCars":205},"totalFront":364,"totalRear":343,"completeKits":343,"presence":null,"absent":9,"absenteeismPct":null,"rework":75,"reworkPct":0.20604395604395603,"overtimePct":0,"overtimeHours":null,"dummy":null,"stellantisCars":395,"coverage":0.8683544303797468,"supplyGap":-52},{"date":"2025-03-28","shift1":{"front":78,"rear":79,"presence":null,"absent":1,"rework":23,"overtimePct":null,"dummy":null,"stellantisCars":null},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":78,"totalRear":79,"completeKits":78,"presence":null,"absent":1,"absenteeismPct":null,"rework":23,"reworkPct":0.29487179487179488,"overtimePct":0,"overtimeHours":null,"dummy":null,"stellantisCars":null,"coverage":null,"supplyGap":null},{"date":"2025-03-30","shift1":{"front":200,"rear":190,"presence":49,"absent":5,"rework":43,"overtimePct":0,"dummy":null,"stellantisCars":204},"shift2":{"front":194,"rear":179,"presence":45,"absent":9,"rework":42,"overtimePct":0,"dummy":null,"stellantisCars":196},"totalFront":394,"totalRear":369,"completeKits":369,"presence":94,"absent":14,"absenteeismPct":0.12962962962962962,"rework":85,"reworkPct":0.21573604060913706,"overtimePct":0,"overtimeHours":null,"dummy":null,"stellantisCars":400,"coverage":0.9225,"supplyGap":-31},{"date":"2025-03-31","shift1":{"front":202,"rear":216,"presence":47,"absent":9,"rework":44,"overtimePct":null,"dummy":null,"stellantisCars":211},"shift2":{"front":194,"rear":193,"presence":45,"absent":9,"rework":38,"overtimePct":0.022222222222222223,"dummy":null,"stellantisCars":215},"totalFront":396,"totalRear":409,"completeKits":396,"presence":92,"absent":18,"absenteeismPct":0.16363636363636364,"rework":82,"reworkPct":0.20707070707070707,"overtimePct":0.011111111111111112,"overtimeHours":null,"dummy":null,"stellantisCars":426,"coverage":0.92957746478873238,"supplyGap":-30},{"date":"2025-04-01","shift1":{"front":212,"rear":207,"presence":45,"absent":9,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":213,"rear":218,"presence":47,"absent":7,"rework":61,"overtimePct":0.17629179331306993,"dummy":null,"stellantisCars":208},"totalFront":425,"totalRear":425,"completeKits":425,"presence":92,"absent":16,"absenteeismPct":0.14814814814814814,"rework":91,"reworkPct":0.21411764705882352,"overtimePct":0.088145896656534967,"overtimeHours":null,"dummy":null,"stellantisCars":423,"coverage":1.0047281323877069,"supplyGap":2},{"date":"2025-04-02","shift1":{"front":196,"rear":200,"presence":44,"absent":10,"rework":36,"overtimePct":null,"dummy":null,"stellantisCars":203},"shift2":{"front":230,"rear":231,"presence":47,"absent":7,"rework":51,"overtimePct":0.17629179331306993,"dummy":null,"stellantisCars":215},"totalFront":426,"totalRear":431,"completeKits":426,"presence":91,"absent":17,"absenteeismPct":0.15740740740740741,"rework":87,"reworkPct":0.20422535211267606,"overtimePct":0.088145896656534967,"overtimeHours":null,"dummy":null,"stellantisCars":418,"coverage":1.0191387559808613,"supplyGap":8},{"date":"2025-04-03","shift1":{"front":199,"rear":201,"presence":45,"absent":9,"rework":39,"overtimePct":null,"dummy":null,"stellantisCars":212},"shift2":{"front":197,"rear":192,"presence":42,"absent":12,"rework":39,"overtimePct":null,"dummy":null,"stellantisCars":210},"totalFront":396,"totalRear":393,"completeKits":393,"presence":87,"absent":21,"absenteeismPct":0.19444444444444445,"rework":78,"reworkPct":0.19696969696969696,"overtimePct":0,"overtimeHours":null,"dummy":null,"stellantisCars":422,"coverage":0.93127962085308058,"supplyGap":-29},{"date":"2025-04-07","shift1":{"front":194,"rear":196,"presence":42,"absent":11,"rework":48,"overtimePct":null,"dummy":null,"stellantisCars":200},"shift2":{"front":200,"rear":201,"presence":42,"absent":6,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":203},"totalFront":394,"totalRear":397,"completeKits":394,"presence":84,"absent":17,"absenteeismPct":0.16831683168316833,"rework":78,"reworkPct":0.19796954314720813,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":403,"coverage":0.97766749379652607,"supplyGap":-9},{"date":"2025-04-08","shift1":{"front":211,"rear":200,"presence":46,"absent":8,"rework":52,"overtimePct":null,"dummy":null,"stellantisCars":193},"shift2":{"front":212,"rear":205,"presence":42,"absent":6,"rework":38,"overtimePct":null,"dummy":null,"stellantisCars":203},"totalFront":423,"totalRear":405,"completeKits":405,"presence":88,"absent":14,"absenteeismPct":0.13725490196078433,"rework":90,"reworkPct":0.21276595744680851,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":396,"coverage":1.0227272727272727,"supplyGap":9},{"date":"2025-04-09","shift1":{"front":162,"rear":170,"presence":46,"absent":8,"rework":53,"overtimePct":null,"dummy":null,"stellantisCars":193},"shift2":{"front":206,"rear":195,"presence":41,"absent":7,"rework":45,"overtimePct":null,"dummy":null,"stellantisCars":205},"totalFront":368,"totalRear":365,"completeKits":365,"presence":87,"absent":15,"absenteeismPct":0.14705882352941177,"rework":98,"reworkPct":0.266304347826087,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":398,"coverage":0.91708542713567842,"supplyGap":-33},{"date":"2025-04-10","shift1":{"front":184,"rear":194,"presence":48,"absent":6,"rework":45,"overtimePct":null,"dummy":null,"stellantisCars":183},"shift2":{"front":206,"rear":204,"presence":42,"absent":6,"rework":45,"overtimePct":null,"dummy":null,"stellantisCars":207},"totalFront":390,"totalRear":398,"completeKits":390,"presence":90,"absent":12,"absenteeismPct":0.11764705882352941,"rework":90,"reworkPct":0.23076923076923078,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":390,"coverage":1,"supplyGap":0},{"date":"2025-04-13","shift1":{"front":191,"rear":194,"presence":50,"absent":4,"rework":40,"overtimePct":null,"dummy":null,"stellantisCars":190},"shift2":{"front":181,"rear":172,"presence":46,"absent":8,"rework":42,"overtimePct":null,"dummy":null,"stellantisCars":195},"totalFront":372,"totalRear":366,"completeKits":366,"presence":96,"absent":12,"absenteeismPct":0.1111111111111111,"rework":82,"reworkPct":0.22043010752688172,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":385,"coverage":0.95064935064935063,"supplyGap":-19},{"date":"2025-04-14","shift1":{"front":201,"rear":192,"presence":49,"absent":5,"rework":42,"overtimePct":null,"dummy":null,"stellantisCars":206},"shift2":{"front":184,"rear":192,"presence":45,"absent":9,"rework":47,"overtimePct":null,"dummy":null,"stellantisCars":206},"totalFront":385,"totalRear":384,"completeKits":384,"presence":94,"absent":14,"absenteeismPct":0.12962962962962962,"rework":89,"reworkPct":0.23116883116883116,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":412,"coverage":0.93203883495145634,"supplyGap":-28},{"date":"2025-04-15","shift1":{"front":180,"rear":172,"presence":47,"absent":7,"rework":33,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":161,"rear":166,"presence":44,"absent":10,"rework":33,"overtimePct":null,"dummy":null,"stellantisCars":206},"totalFront":341,"totalRear":338,"completeKits":338,"presence":91,"absent":17,"absenteeismPct":0.15740740740740741,"rework":66,"reworkPct":0.19354838709677419,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":421,"coverage":0.80285035629453683,"supplyGap":-83},{"date":"2025-04-16","shift1":{"front":208,"rear":203,"presence":49,"absent":5,"rework":52,"overtimePct":null,"dummy":null,"stellantisCars":205},"shift2":{"front":201,"rear":218,"presence":45,"absent":9,"rework":45,"overtimePct":null,"dummy":null,"stellantisCars":195},"totalFront":409,"totalRear":421,"completeKits":409,"presence":94,"absent":14,"absenteeismPct":0.12962962962962962,"rework":97,"reworkPct":0.23716381418092911,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":400,"coverage":1.0225,"supplyGap":9},{"date":"2025-04-17","shift1":{"front":206,"rear":206,"presence":47,"absent":7,"rework":40,"overtimePct":null,"dummy":null,"stellantisCars":198},"shift2":{"front":201,"rear":204,"presence":44,"absent":10,"rework":34,"overtimePct":null,"dummy":null,"stellantisCars":208},"totalFront":407,"totalRear":410,"completeKits":407,"presence":91,"absent":17,"absenteeismPct":0.15740740740740741,"rework":74,"reworkPct":0.18181818181818182,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":406,"coverage":1.0024630541871922,"supplyGap":1},{"date":"2025-04-20","shift1":{"front":188,"rear":188,"presence":45,"absent":9,"rework":32,"overtimePct":null,"dummy":null,"stellantisCars":203},"shift2":{"front":208,"rear":201,"presence":49,"absent":5,"rework":55,"overtimePct":null,"dummy":null,"stellantisCars":214},"totalFront":396,"totalRear":389,"completeKits":389,"presence":94,"absent":14,"absenteeismPct":0.12962962962962962,"rework":87,"reworkPct":0.2196969696969697,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":417,"coverage":0.93285371702637887,"supplyGap":-28},{"date":"2025-04-21","shift1":{"front":207,"rear":215,"presence":44,"absent":9,"rework":44,"overtimePct":null,"dummy":null,"stellantisCars":207},"shift2":{"front":202,"rear":202,"presence":50,"absent":4,"rework":33,"overtimePct":null,"dummy":null,"stellantisCars":215},"totalFront":409,"totalRear":417,"completeKits":409,"presence":94,"absent":13,"absenteeismPct":0.12149532710280374,"rework":77,"reworkPct":0.18826405867970661,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":422,"coverage":0.96919431279620849,"supplyGap":-13},{"date":"2025-04-22","shift1":{"front":199,"rear":202,"presence":47,"absent":6,"rework":41,"overtimePct":null,"dummy":null,"stellantisCars":189},"shift2":{"front":216,"rear":215,"presence":50,"absent":1,"rework":31,"overtimePct":null,"dummy":null,"stellantisCars":164},"totalFront":415,"totalRear":417,"completeKits":415,"presence":97,"absent":7,"absenteeismPct":0.0673076923076923,"rework":72,"reworkPct":0.17349397590361446,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":353,"coverage":1.1756373937677054,"supplyGap":62},{"date":"2025-04-23","shift1":{"front":169,"rear":170,"presence":49,"absent":4,"rework":37,"overtimePct":null,"dummy":null,"stellantisCars":195},"shift2":{"front":196,"rear":197,"presence":49,"absent":2,"rework":26,"overtimePct":null,"dummy":null,"stellantisCars":209},"totalFront":365,"totalRear":367,"completeKits":365,"presence":98,"absent":6,"absenteeismPct":0.057692307692307696,"rework":63,"reworkPct":0.17260273972602741,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":404,"coverage":0.90346534653465349,"supplyGap":-39},{"date":"2025-04-24","shift1":{"front":189,"rear":189,"presence":50,"absent":3,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":209},"shift2":{"front":196,"rear":198,"presence":51,"absent":2,"rework":26,"overtimePct":null,"dummy":null,"stellantisCars":211},"totalFront":385,"totalRear":387,"completeKits":385,"presence":101,"absent":5,"absenteeismPct":0.04716981132075472,"rework":56,"reworkPct":0.14545454545454545,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":420,"coverage":0.91666666666666663,"supplyGap":-35},{"date":"2025-04-27","shift1":{"front":215,"rear":215,"presence":51,"absent":2,"rework":48,"overtimePct":null,"dummy":null,"stellantisCars":200},"shift2":{"front":215,"rear":215,"presence":49,"absent":4,"rework":38,"overtimePct":null,"dummy":null,"stellantisCars":210},"totalFront":430,"totalRear":430,"completeKits":430,"presence":100,"absent":6,"absenteeismPct":0.056603773584905662,"rework":86,"reworkPct":0.2,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":410,"coverage":1.0487804878048781,"supplyGap":20},{"date":"2025-04-28","shift1":{"front":215,"rear":215,"presence":48,"absent":5,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":209},"shift2":{"front":215,"rear":215,"presence":50,"absent":3,"rework":45,"overtimePct":null,"dummy":null,"stellantisCars":198},"totalFront":430,"totalRear":430,"completeKits":430,"presence":98,"absent":8,"absenteeismPct":0.075471698113207544,"rework":73,"reworkPct":0.16976744186046511,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":407,"coverage":1.0565110565110565,"supplyGap":23},{"date":"2025-04-29","shift1":{"front":215,"rear":215,"presence":49,"absent":4,"rework":35,"overtimePct":null,"dummy":null,"stellantisCars":211},"shift2":{"front":203,"rear":208,"presence":50,"absent":3,"rework":41,"overtimePct":null,"dummy":null,"stellantisCars":208},"totalFront":418,"totalRear":423,"completeKits":418,"presence":99,"absent":7,"absenteeismPct":0.0660377358490566,"rework":76,"reworkPct":0.18181818181818182,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":419,"coverage":0.99761336515513122,"supplyGap":-1},{"date":"2025-04-30","shift1":{"front":215,"rear":210,"presence":46,"absent":7,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":215},"shift2":{"front":202,"rear":204,"presence":45,"absent":5,"rework":43,"overtimePct":null,"dummy":null,"stellantisCars":209},"totalFront":417,"totalRear":414,"completeKits":414,"presence":91,"absent":12,"absenteeismPct":0.11650485436893204,"rework":67,"reworkPct":0.16067146282973621,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":424,"coverage":0.97641509433962259,"supplyGap":-10},{"date":"2025-05-04","shift1":{"front":193,"rear":193,"presence":44,"absent":11,"rework":52,"overtimePct":null,"dummy":null,"stellantisCars":198},"shift2":{"front":215,"rear":215,"presence":52,"absent":2,"rework":29,"overtimePct":null,"dummy":null,"stellantisCars":211},"totalFront":408,"totalRear":408,"completeKits":408,"presence":96,"absent":13,"absenteeismPct":0.11926605504587157,"rework":81,"reworkPct":0.19852941176470587,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":409,"coverage":0.99755501222493892,"supplyGap":-1},{"date":"2025-05-05","shift1":{"front":208,"rear":206,"presence":51,"absent":7,"rework":29,"overtimePct":null,"dummy":null,"stellantisCars":210},"shift2":{"front":210,"rear":215,"presence":51,"absent":3,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":204},"totalFront":418,"totalRear":421,"completeKits":418,"presence":102,"absent":10,"absenteeismPct":0.089285714285714288,"rework":59,"reworkPct":0.14114832535885166,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":414,"coverage":1.0096618357487923,"supplyGap":4},{"date":"2025-05-06","shift1":{"front":208,"rear":206,"presence":52,"absent":6,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":178},"shift2":{"front":203,"rear":201,"presence":51,"absent":3,"rework":20,"overtimePct":null,"dummy":null,"stellantisCars":192},"totalFront":411,"totalRear":407,"completeKits":407,"presence":103,"absent":9,"absenteeismPct":0.080357142857142863,"rework":50,"reworkPct":0.12165450121654502,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":370,"coverage":1.1,"supplyGap":37},{"date":"2025-05-07","shift1":{"front":204,"rear":208,"presence":54,"absent":4,"rework":26,"overtimePct":null,"dummy":null,"stellantisCars":210},"shift2":{"front":205,"rear":205,"presence":51,"absent":3,"rework":12,"overtimePct":null,"dummy":null,"stellantisCars":203},"totalFront":409,"totalRear":413,"completeKits":409,"presence":105,"absent":7,"absenteeismPct":0.0625,"rework":38,"reworkPct":0.092909535452322736,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":413,"coverage":0.99031476997578693,"supplyGap":-4},{"date":"2025-05-08","shift1":{"front":173,"rear":165,"presence":51,"absent":7,"rework":36,"overtimePct":null,"dummy":null,"stellantisCars":205},"shift2":{"front":216,"rear":215,"presence":50,"absent":4,"rework":26,"overtimePct":null,"dummy":null,"stellantisCars":206},"totalFront":389,"totalRear":380,"completeKits":380,"presence":101,"absent":11,"absenteeismPct":0.098214285714285712,"rework":62,"reworkPct":0.15938303341902313,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":411,"coverage":0.92457420924574207,"supplyGap":-31},{"date":"2025-05-09","shift1":{"front":null,"rear":null,"presence":16,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":0.027,"dummy":null,"stellantisCars":null},"totalFront":null,"totalRear":null,"completeKits":null,"presence":16,"absent":null,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":0.027,"overtimeHours":null,"dummy":null,"stellantisCars":null,"coverage":null,"supplyGap":null},{"date":"2025-05-11","shift1":{"front":203,"rear":207,"presence":48,"absent":6,"rework":14,"overtimePct":null,"dummy":null,"stellantisCars":205},"shift2":{"front":198,"rear":200,"presence":53,"absent":5,"rework":51,"overtimePct":null,"dummy":null,"stellantisCars":210},"totalFront":401,"totalRear":407,"completeKits":401,"presence":101,"absent":11,"absenteeismPct":0.098214285714285712,"rework":65,"reworkPct":0.16209476309226933,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":415,"coverage":0.96626506024096381,"supplyGap":-14},{"date":"2025-05-12","shift1":{"front":212,"rear":212,"presence":48,"absent":5,"rework":20,"overtimePct":null,"dummy":null,"stellantisCars":206},"shift2":{"front":210,"rear":210,"presence":54,"absent":4,"rework":38,"overtimePct":null,"dummy":null,"stellantisCars":198},"totalFront":422,"totalRear":422,"completeKits":422,"presence":102,"absent":9,"absenteeismPct":0.081081081081081086,"rework":58,"reworkPct":0.13744075829383887,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":404,"coverage":1.0445544554455446,"supplyGap":18},{"date":"2025-05-13","shift1":{"front":200,"rear":198,"presence":48,"absent":5,"rework":19,"overtimePct":null,"dummy":null,"stellantisCars":205},"shift2":{"front":203,"rear":204,"presence":52,"absent":5,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":200},"totalFront":403,"totalRear":402,"completeKits":402,"presence":100,"absent":10,"absenteeismPct":0.090909090909090912,"rework":47,"reworkPct":0.11662531017369727,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":405,"coverage":0.99259259259259258,"supplyGap":-3},{"date":"2025-05-14","shift1":{"front":190,"rear":190,"presence":48,"absent":6,"rework":17,"overtimePct":null,"dummy":null,"stellantisCars":212},"shift2":{"front":206,"rear":205,"presence":52,"absent":5,"rework":37,"overtimePct":null,"dummy":null,"stellantisCars":207},"totalFront":396,"totalRear":395,"completeKits":395,"presence":100,"absent":11,"absenteeismPct":0.0990990990990991,"rework":54,"reworkPct":0.13636363636363635,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":419,"coverage":0.94272076372315039,"supplyGap":-24},{"date":"2025-05-15","shift1":{"front":215,"rear":202,"presence":48,"absent":6,"rework":21,"overtimePct":null,"dummy":null,"stellantisCars":204},"shift2":{"front":203,"rear":215,"presence":52,"absent":5,"rework":31,"overtimePct":null,"dummy":null,"stellantisCars":204},"totalFront":418,"totalRear":417,"completeKits":417,"presence":100,"absent":11,"absenteeismPct":0.0990990990990991,"rework":52,"reworkPct":0.12440191387559808,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":408,"coverage":1.0220588235294117,"supplyGap":9},{"date":"2025-05-18","shift1":{"front":192,"rear":200,"presence":50,"absent":7,"rework":43,"overtimePct":null,"dummy":null,"stellantisCars":202},"shift2":{"front":198,"rear":197,"presence":53,"absent":3,"rework":25,"overtimePct":null,"dummy":null,"stellantisCars":209},"totalFront":390,"totalRear":397,"completeKits":390,"presence":103,"absent":10,"absenteeismPct":0.088495575221238937,"rework":68,"reworkPct":0.17435897435897435,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":411,"coverage":0.948905109489051,"supplyGap":-21},{"date":"2025-05-19","shift1":{"front":200,"rear":200,"presence":52,"absent":3,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":213},"shift2":{"front":215,"rear":215,"presence":54,"absent":2,"rework":15,"overtimePct":null,"dummy":null,"stellantisCars":210},"totalFront":415,"totalRear":415,"completeKits":415,"presence":106,"absent":5,"absenteeismPct":0.045045045045045043,"rework":45,"reworkPct":0.10843373493975904,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":423,"coverage":0.98108747044917255,"supplyGap":-8},{"date":"2025-05-20","shift1":{"front":204,"rear":203,"presence":50,"absent":5,"rework":43,"overtimePct":null,"dummy":null,"stellantisCars":212},"shift2":{"front":215,"rear":215,"presence":51,"absent":5,"rework":22,"overtimePct":null,"dummy":null,"stellantisCars":214},"totalFront":419,"totalRear":418,"completeKits":418,"presence":101,"absent":10,"absenteeismPct":0.090090090090090086,"rework":65,"reworkPct":0.15513126491646778,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":426,"coverage":0.98122065727699526,"supplyGap":-8},{"date":"2025-05-21","shift1":{"front":206,"rear":200,"presence":48,"absent":7,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":198},"shift2":{"front":202,"rear":211,"presence":52,"absent":4,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":214},"totalFront":408,"totalRear":411,"completeKits":408,"presence":100,"absent":11,"absenteeismPct":0.0990990990990991,"rework":54,"reworkPct":0.13235294117647059,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":412,"coverage":0.99029126213592233,"supplyGap":-4},{"date":"2025-05-22","shift1":{"front":205,"rear":205,"presence":52,"absent":3,"rework":36,"overtimePct":null,"dummy":null,"stellantisCars":203},"shift2":{"front":215,"rear":215,"presence":53,"absent":3,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":213},"totalFront":420,"totalRear":420,"completeKits":420,"presence":105,"absent":6,"absenteeismPct":0.054054054054054057,"rework":60,"reworkPct":0.14285714285714285,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":416,"coverage":1.0096153846153846,"supplyGap":4},{"date":"2025-05-25","shift1":{"front":196,"rear":195,"presence":51,"absent":4,"rework":25,"overtimePct":null,"dummy":null,"stellantisCars":200},"shift2":{"front":154,"rear":155,"presence":53,"absent":3,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":125},"totalFront":350,"totalRear":350,"completeKits":350,"presence":104,"absent":7,"absenteeismPct":0.063063063063063057,"rework":49,"reworkPct":0.14,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":325,"coverage":1.0769230769230769,"supplyGap":25},{"date":"2025-05-26","shift1":{"front":125,"rear":110,"presence":47,"absent":8,"rework":13,"overtimePct":null,"dummy":null,"stellantisCars":154},"shift2":{"front":135,"rear":153,"presence":48,"absent":7,"rework":17,"overtimePct":null,"dummy":null,"stellantisCars":126},"totalFront":260,"totalRear":263,"completeKits":260,"presence":95,"absent":15,"absenteeismPct":0.13636363636363635,"rework":30,"reworkPct":0.11538461538461539,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":280,"coverage":0.9285714285714286,"supplyGap":-20},{"date":"2025-05-27","shift1":{"front":127,"rear":123,"presence":50,"absent":5,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":151},"shift2":{"front":193,"rear":193,"presence":48,"absent":7,"rework":15,"overtimePct":null,"dummy":null,"stellantisCars":192},"totalFront":320,"totalRear":316,"completeKits":316,"presence":98,"absent":12,"absenteeismPct":0.10909090909090909,"rework":45,"reworkPct":0.140625,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":343,"coverage":0.92128279883381925,"supplyGap":-27},{"date":"2025-05-28","shift1":{"front":0,"rear":0,"presence":0,"absent":0,"rework":0,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":157,"rear":156,"presence":51,"absent":4,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":172},"totalFront":157,"totalRear":156,"completeKits":156,"presence":51,"absent":4,"absenteeismPct":0.072727272727272724,"rework":24,"reworkPct":0.15286624203821655,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":172,"coverage":0.90697674418604646,"supplyGap":-16},{"date":"2025-05-29","shift1":{"front":188,"rear":189,"presence":46,"absent":9,"rework":32,"overtimePct":null,"dummy":null,"stellantisCars":206},"shift2":{"front":187,"rear":183,"presence":50,"absent":5,"rework":33,"overtimePct":null,"dummy":null,"stellantisCars":181},"totalFront":375,"totalRear":372,"completeKits":372,"presence":96,"absent":14,"absenteeismPct":0.12727272727272726,"rework":65,"reworkPct":0.17333333333333334,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":387,"coverage":0.96124031007751942,"supplyGap":-15},{"date":"2025-06-03","shift1":{"front":148,"rear":154,"presence":46,"absent":6,"rework":18,"overtimePct":null,"dummy":null,"stellantisCars":164},"shift2":{"front":192,"rear":190,"presence":51,"absent":3,"rework":38,"overtimePct":null,"dummy":null,"stellantisCars":143},"totalFront":340,"totalRear":344,"completeKits":340,"presence":97,"absent":9,"absenteeismPct":0.084905660377358486,"rework":56,"reworkPct":0.16470588235294117,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":307,"coverage":1.1074918566775245,"supplyGap":33},{"date":"2025-06-04","shift1":{"front":169,"rear":170,"presence":46,"absent":6,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":178},"shift2":{"front":184,"rear":183,"presence":50,"absent":4,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":180},"totalFront":353,"totalRear":353,"completeKits":353,"presence":96,"absent":10,"absenteeismPct":0.094339622641509441,"rework":54,"reworkPct":0.15297450424929179,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":358,"coverage":0.98603351955307261,"supplyGap":-5},{"date":"2025-06-05","shift1":{"front":155,"rear":155,"presence":46,"absent":6,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":175},"shift2":{"front":199,"rear":200,"presence":49,"absent":5,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":192},"totalFront":354,"totalRear":355,"completeKits":354,"presence":95,"absent":11,"absenteeismPct":0.10377358490566038,"rework":56,"reworkPct":0.15819209039548024,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":367,"coverage":0.96457765667574935,"supplyGap":-13},{"date":"2025-06-09","shift1":{"front":155,"rear":155,"presence":46,"absent":6,"rework":24,"overtimePct":null,"dummy":null,"stellantisCars":184},"shift2":{"front":158,"rear":154,"presence":46,"absent":6,"rework":60,"overtimePct":null,"dummy":null,"stellantisCars":186},"totalFront":313,"totalRear":309,"completeKits":309,"presence":92,"absent":12,"absenteeismPct":0.11538461538461539,"rework":84,"reworkPct":0.268370607028754,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":370,"coverage":0.83513513513513515,"supplyGap":-61},{"date":"2025-06-10","shift1":{"front":194,"rear":191,"presence":44,"absent":8,"rework":25,"overtimePct":null,"dummy":null,"stellantisCars":190},"shift2":{"front":181,"rear":191,"presence":46,"absent":7,"rework":60,"overtimePct":null,"dummy":null,"stellantisCars":183},"totalFront":375,"totalRear":382,"completeKits":375,"presence":90,"absent":15,"absenteeismPct":0.14285714285714285,"rework":85,"reworkPct":0.22666666666666666,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":373,"coverage":1.0053619302949062,"supplyGap":2},{"date":"2025-06-11","shift1":{"front":195,"rear":171,"presence":44,"absent":8,"rework":52,"overtimePct":null,"dummy":null,"stellantisCars":193},"shift2":{"front":161,"rear":182,"presence":47,"absent":6,"rework":37,"overtimePct":null,"dummy":null,"stellantisCars":184},"totalFront":356,"totalRear":353,"completeKits":353,"presence":91,"absent":14,"absenteeismPct":0.13333333333333333,"rework":89,"reworkPct":0.25,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":377,"coverage":0.93633952254641906,"supplyGap":-24},{"date":"2025-06-12","shift1":{"front":167,"rear":161,"presence":44,"absent":8,"rework":34,"overtimePct":null,"dummy":null,"stellantisCars":153},"shift2":{"front":154,"rear":160,"presence":48,"absent":4,"rework":29,"overtimePct":null,"dummy":null,"stellantisCars":153},"totalFront":321,"totalRear":321,"completeKits":321,"presence":92,"absent":12,"absenteeismPct":0.11538461538461539,"rework":63,"reworkPct":0.19626168224299065,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":306,"coverage":1.0490196078431373,"supplyGap":15},{"date":"2025-06-15","shift1":{"front":184,"rear":184,"presence":48,"absent":4,"rework":40,"overtimePct":null,"dummy":null,"stellantisCars":186},"shift2":{"front":198,"rear":200,"presence":51,"absent":3,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":190},"totalFront":382,"totalRear":384,"completeKits":382,"presence":99,"absent":7,"absenteeismPct":0.0660377358490566,"rework":68,"reworkPct":0.17801047120418848,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":376,"coverage":1.0159574468085106,"supplyGap":6},{"date":"2025-06-16","shift1":{"front":189,"rear":187,"presence":48,"absent":4,"rework":21,"overtimePct":null,"dummy":null,"stellantisCars":187},"shift2":{"front":200,"rear":200,"presence":48,"absent":6,"rework":29,"overtimePct":null,"dummy":null,"stellantisCars":190},"totalFront":389,"totalRear":387,"completeKits":387,"presence":96,"absent":10,"absenteeismPct":0.094339622641509441,"rework":50,"reworkPct":0.12853470437017994,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":377,"coverage":1.0265251989389921,"supplyGap":10},{"date":"2025-06-17","shift1":{"front":174,"rear":180,"presence":45,"absent":7,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":186},"shift2":{"front":200,"rear":199,"presence":49,"absent":5,"rework":40,"overtimePct":null,"dummy":null,"stellantisCars":195},"totalFront":374,"totalRear":379,"completeKits":374,"presence":94,"absent":12,"absenteeismPct":0.11320754716981132,"rework":68,"reworkPct":0.18181818181818182,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":381,"coverage":0.98162729658792647,"supplyGap":-7},{"date":"2025-06-18","shift1":{"front":171,"rear":170,"presence":44,"absent":8,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":185},"shift2":{"front":198,"rear":193,"presence":46,"absent":8,"rework":28,"overtimePct":null,"dummy":null,"stellantisCars":193},"totalFront":369,"totalRear":363,"completeKits":363,"presence":90,"absent":16,"absenteeismPct":0.15094339622641509,"rework":56,"reworkPct":0.15176151761517614,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":378,"coverage":0.96031746031746035,"supplyGap":-15},{"date":"2025-06-19","shift1":{"front":155,"rear":157,"presence":41,"absent":11,"rework":25,"overtimePct":null,"dummy":null,"stellantisCars":191},"shift2":{"front":197,"rear":185,"presence":43,"absent":9,"rework":39,"overtimePct":null,"dummy":null,"stellantisCars":191},"totalFront":352,"totalRear":342,"completeKits":342,"presence":84,"absent":20,"absenteeismPct":0.19230769230769232,"rework":64,"reworkPct":0.18181818181818182,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":382,"coverage":0.89528795811518325,"supplyGap":-40},{"date":"2025-06-29","shift1":{"front":74,"rear":74,"presence":41,"absent":8,"rework":29,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":74,"totalRear":74,"completeKits":74,"presence":41,"absent":8,"absenteeismPct":0.16326530612244897,"rework":29,"reworkPct":0.39189189189189189,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-06-30","shift1":{"front":152,"rear":149,"presence":38,"absent":8,"rework":31,"overtimePct":null,"dummy":null,"stellantisCars":162},"shift2":{"front":176,"rear":174,"presence":37,"absent":9,"rework":37,"overtimePct":null,"dummy":null,"stellantisCars":192},"totalFront":328,"totalRear":323,"completeKits":323,"presence":75,"absent":17,"absenteeismPct":0.18478260869565216,"rework":68,"reworkPct":0.2073170731707317,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":354,"coverage":0.91242937853107342,"supplyGap":-31},{"date":"2025-07-01","shift1":{"front":175,"rear":171,"presence":42,"absent":4,"rework":38,"overtimePct":null,"dummy":null,"stellantisCars":143},"shift2":{"front":179,"rear":182,"presence":39,"absent":7,"rework":30,"overtimePct":null,"dummy":null,"stellantisCars":164},"totalFront":354,"totalRear":353,"completeKits":353,"presence":81,"absent":11,"absenteeismPct":0.11956521739130435,"rework":68,"reworkPct":0.192090395480226,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":307,"coverage":1.1498371335504887,"supplyGap":46},{"date":"2025-07-02","shift1":{"front":155,"rear":159,"presence":38,"absent":8,"rework":39,"overtimePct":null,"dummy":null,"stellantisCars":197},"shift2":{"front":165,"rear":170,"presence":38,"absent":8,"rework":40,"overtimePct":null,"dummy":null,"stellantisCars":187},"totalFront":320,"totalRear":329,"completeKits":320,"presence":76,"absent":16,"absenteeismPct":0.17391304347826086,"rework":79,"reworkPct":0.246875,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":384,"coverage":0.83333333333333337,"supplyGap":-64},{"date":"2025-07-03","shift1":{"front":168,"rear":166,"presence":42,"absent":4,"rework":34,"overtimePct":null,"dummy":null,"stellantisCars":195},"shift2":{"front":170,"rear":170,"presence":36,"absent":10,"rework":56,"overtimePct":null,"dummy":null,"stellantisCars":197},"totalFront":338,"totalRear":336,"completeKits":336,"presence":78,"absent":14,"absenteeismPct":0.15217391304347827,"rework":90,"reworkPct":0.26627218934911245,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":392,"coverage":0.8571428571428571,"supplyGap":-56},{"date":"2025-07-06","shift1":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":0},"totalFront":null,"totalRear":null,"completeKits":null,"presence":null,"absent":null,"absenteeismPct":null,"rework":null,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":null,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-07-07","shift1":{"front":148,"rear":141,"presence":38,"absent":8,"rework":40,"overtimePct":null,"dummy":126,"stellantisCars":0},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":126,"stellantisCars":0},"totalFront":148,"totalRear":141,"completeKits":141,"presence":38,"absent":8,"absenteeismPct":0.17391304347826086,"rework":40,"reworkPct":0.27027027027027029,"overtimePct":null,"overtimeHours":null,"dummy":126,"stellantisCars":0,"coverage":null,"supplyGap":null},{"date":"2025-07-08","shift1":{"front":168,"rear":152,"presence":36,"absent":10,"rework":37,"overtimePct":null,"dummy":136,"stellantisCars":194},"shift2":{"front":153,"rear":169,"presence":43,"absent":4,"rework":38,"overtimePct":null,"dummy":129,"stellantisCars":172},"totalFront":321,"totalRear":321,"completeKits":321,"presence":79,"absent":14,"absenteeismPct":0.15053763440860216,"rework":75,"reworkPct":0.23364485981308411,"overtimePct":null,"overtimeHours":null,"dummy":129,"stellantisCars":366,"coverage":0.87704918032786883,"supplyGap":-45},{"date":"2025-07-09","shift1":{"front":164,"rear":161,"presence":39,"absent":7,"rework":36,"overtimePct":null,"dummy":94,"stellantisCars":185},"shift2":{"front":150,"rear":159,"presence":41,"absent":5,"rework":47,"overtimePct":null,"dummy":74,"stellantisCars":190},"totalFront":314,"totalRear":320,"completeKits":314,"presence":80,"absent":12,"absenteeismPct":0.13043478260869565,"rework":83,"reworkPct":0.2643312101910828,"overtimePct":null,"overtimeHours":null,"dummy":74,"stellantisCars":375,"coverage":0.83733333333333337,"supplyGap":-61},{"date":"2025-07-10","shift1":{"front":165,"rear":160,"presence":38,"absent":8,"rework":39,"overtimePct":null,"dummy":67,"stellantisCars":180},"shift2":{"front":153,"rear":160,"presence":40,"absent":7,"rework":39,"overtimePct":null,"dummy":61,"stellantisCars":186},"totalFront":318,"totalRear":320,"completeKits":318,"presence":78,"absent":15,"absenteeismPct":0.16129032258064516,"rework":78,"reworkPct":0.24528301886792453,"overtimePct":null,"overtimeHours":null,"dummy":61,"stellantisCars":366,"coverage":0.86885245901639341,"supplyGap":-48},{"date":"2025-07-13","shift1":{"front":146,"rear":149,"presence":39,"absent":7,"rework":57,"overtimePct":null,"dummy":142,"stellantisCars":null},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":146,"totalRear":149,"completeKits":146,"presence":39,"absent":7,"absenteeismPct":0.15217391304347827,"rework":57,"reworkPct":0.3904109589041096,"overtimePct":null,"overtimeHours":null,"dummy":142,"stellantisCars":null,"coverage":null,"supplyGap":null},{"date":"2025-07-14","shift1":{"front":148,"rear":151,"presence":39,"absent":7,"rework":34,"overtimePct":null,"dummy":122,"stellantisCars":179},"shift2":{"front":157,"rear":157,"presence":38,"absent":8,"rework":43,"overtimePct":null,"dummy":102,"stellantisCars":193},"totalFront":305,"totalRear":308,"completeKits":305,"presence":77,"absent":15,"absenteeismPct":0.16304347826086957,"rework":77,"reworkPct":0.25245901639344265,"overtimePct":null,"overtimeHours":null,"dummy":102,"stellantisCars":372,"coverage":0.81989247311827962,"supplyGap":-67},{"date":"2025-07-15","shift1":{"front":152,"rear":151,"presence":35,"absent":11,"rework":31,"overtimePct":null,"dummy":82,"stellantisCars":179},"shift2":{"front":161,"rear":157,"presence":39,"absent":8,"rework":39,"overtimePct":null,"dummy":62,"stellantisCars":166},"totalFront":313,"totalRear":308,"completeKits":308,"presence":74,"absent":19,"absenteeismPct":0.20430107526881722,"rework":70,"reworkPct":0.22364217252396165,"overtimePct":null,"overtimeHours":null,"dummy":62,"stellantisCars":345,"coverage":0.89275362318840579,"supplyGap":-37},{"date":"2025-07-16","shift1":{"front":null,"rear":null,"presence":39,"absent":7,"rework":null,"overtimePct":null,"dummy":42,"stellantisCars":null},"shift2":{"front":null,"rear":null,"presence":null,"absent":null,"rework":null,"overtimePct":null,"dummy":null,"stellantisCars":null},"totalFront":0,"totalRear":0,"completeKits":0,"presence":39,"absent":7,"absenteeismPct":0.15217391304347827,"rework":0,"reworkPct":null,"overtimePct":null,"overtimeHours":null,"dummy":42,"stellantisCars":0,"coverage":null,"supplyGap":null}]};
       const EXCEL_EFFICIENCY = {"2025-03-02":{"shift1":0.373214285714,"shift2":0.300510204082,"total":0.336862244898},"2025-03-03":{"shift1":0.4,"shift2":0.353826530612,"total":0.376913265306},"2025-03-04":{"shift1":0.439814814815,"shift2":0.356878306878,"total":0.398346560847},"2025-03-05":{"shift1":0.328181818182,"shift2":0.417582417582,"total":0.372882117882},"2025-03-06":{"shift1":0.421948051948,"shift2":0.36755952381,"total":0.394753787879},"2025-03-07":{"shift1":0.502403846154,"total":0.502403846154},"2025-03-09":{"shift1":0.38987012987,"shift2":0.354365079365,"total":0.372117604618},"2025-03-10":{"shift1":0.328934624697,"shift2":0.376984126984,"total":0.352959375841},"2025-03-11":{"shift1":0.322321428571,"shift2":0.361904761905,"total":0.342113095238},"2025-03-12":{"shift1":0.380484693878,"shift2":0.399603174603,"total":0.39004393424},"2025-03-13":{"shift1":0.438647959184,"shift2":0.358134920635,"total":0.398391439909},"2025-03-14":{"shift1":0.293239795918,"total":0.293239795918},"2025-03-16":{"shift1":0.506666666667,"shift2":0.485178571429,"total":0.495922619048},"2025-03-17":{"shift1":0.518181818182,"shift2":0.482916666667,"total":0.500549242424},"2025-03-18":{"shift1":0.464444444444,"shift2":0.369444444444,"total":0.416944444444},"2025-03-19":{"shift1":0.549025974026,"shift2":0.475,"total":0.512012987013},"2025-03-20":{"shift1":0.521746031746,"shift2":0.395833333333,"total":0.45878968254},"2025-03-21":{"shift1":0.484253246753,"shift2":0.352951388889,"total":0.418602317821},"2025-03-23":{"shift1":0.421825634019,"shift2":0.494313914816,"total":0.458069774418},"2025-03-24":{"shift1":0.467966408499,"shift2":0.599984210942,"total":0.53397530972},"2025-03-25":{"shift1":0.50790330079,"shift2":0.624262418195,"total":0.566082859493},"2025-03-26":{"shift1":0.496861924686,"shift2":0.591138289883,"total":0.544000107285},"2025-03-27":{"shift1":0.467793812086,"shift2":0.486669885205,"total":0.477231848645},"2025-03-28":{"shift1":0.215306834031,"total":0.215306834031},"2025-03-30":{"shift1":0.553935860058,"shift2":0.585079365079,"total":0.569507612569},"2025-03-31":{"shift1":0.583282674772,"shift2":0.585079365079,"total":0.584181019926},"2025-04-01":{"shift1":0.639365079365,"shift2":0.615045592705,"total":0.627205336035},"2025-04-02":{"shift1":0.591111111111,"shift2":0.664133738602,"total":0.627622424856},"2025-04-03":{"shift1":0.600158730159,"shift2":0.568844984802,"total":0.584501857481},"2025-04-07":{"shift1":0.626870748299,"shift2":0.646258503401,"total":0.63656462585},"2025-04-08":{"shift1":0.62251552795,"shift2":0.685034013605,"total":0.653774770778},"2025-04-09":{"shift1":0.477950310559,"shift2":0.681881533101,"total":0.57991592183},"2025-04-10":{"shift1":0.520238095238,"shift2":0.665646258503,"total":0.592942176871},"2025-04-13":{"shift1":0.604833333333,"shift2":0.53400621118,"total":0.569419772257},"2025-04-14":{"shift1":0.556705539359,"shift2":0.554920634921,"total":0.55581308714},"2025-04-15":{"shift1":0.519756838906,"shift2":0.496590909091,"total":0.508173873998},"2025-04-16":{"shift1":0.576093294461,"shift2":0.60619047619,"total":0.591141885326},"2025-04-17":{"shift1":0.594832826748,"shift2":0.619967532468,"total":0.607400179608},"2025-04-20":{"shift1":0.566984126984,"shift2":0.576093294461,"total":0.571538710722},"2025-04-21":{"shift1":0.638474025974,"shift2":0.548285714286,"total":0.59337987013},"2025-04-22":{"shift1":0.57462006079,"shift2":0.586285714286,"total":0.580452887538},"2025-04-23":{"shift1":0.468075801749,"shift2":0.542857142857,"total":0.505466472303},"2025-04-24":{"shift1":0.513,"shift2":0.521568627451,"total":0.517284313725},"2025-04-27":{"shift1":0.572128851541,"shift2":0.595481049563,"total":0.583804950552},"2025-04-28":{"shift1":0.607886904762,"shift2":0.583571428571,"total":0.595729166667},"2025-04-29":{"shift1":0.595481049563,"shift2":0.551,"total":0.573240524781},"2025-04-30":{"shift1":0.634316770186,"shift2":0.609206349206,"total":0.621761559696},"2025-05-04":{"shift1":0.595292207792,"shift2":0.561126373626,"total":0.578209290709},"2025-05-05":{"shift1":0.55350140056,"shift2":0.558823529412,"total":0.556162464986},"2025-05-06":{"shift1":0.542857142857,"shift2":0.540196078431,"total":0.541526610644},"2025-05-07":{"shift1":0.512698412698,"shift2":0.545518207283,"total":0.529108309991},"2025-05-08":{"shift1":0.460364145658,"shift2":0.586285714286,"total":0.523324929972},"2025-05-11":{"shift1":0.573958333333,"shift2":0.507008086253,"total":0.540483209793},"2025-05-12":{"shift1":0.599404761905,"shift2":0.527777777778,"total":0.563591269841},"2025-05-13":{"shift1":0.565476190476,"shift2":0.529807692308,"total":0.547641941392},"2025-05-14":{"shift1":0.537202380952,"shift2":0.537637362637,"total":0.537419871795},"2025-05-15":{"shift1":0.607886904762,"shift2":0.529807692308,"total":0.568847298535},"2025-05-18":{"shift1":0.521142857143,"shift2":0.507008086253,"total":0.514075471698},"2025-05-19":{"shift1":0.521978021978,"shift2":0.540343915344,"total":0.531160968661},"2025-05-20":{"shift1":0.553714285714,"shift2":0.572128851541,"total":0.562921568627},"2025-05-21":{"shift1":0.58244047619,"shift2":0.527197802198,"total":0.554819139194},"2025-05-22":{"shift1":0.535027472527,"shift2":0.550539083558,"total":0.542783278043},"2025-05-25":{"shift1":0.521568627451,"shift2":0.394339622642,"total":0.457954125046},"2025-05-26":{"shift1":0.36094224924,"shift2":0.381696428571,"total":0.371319338906},"2025-05-27":{"shift1":0.344714285714,"shift2":0.54568452381,"total":0.445199404762},"2025-05-28":{"shift2":0.417787114846,"total":0.417787114846},"2025-05-29":{"shift1":0.554658385093,"shift2":0.507571428571,"total":0.507571428571},"2025-06-03":{"shift1":0.436645962733,"shift2":0.510924369748,"total":0.510924369748},"2025-06-04":{"shift1":0.498602484472,"shift2":0.499428571429,"total":0.499428571429},"2025-06-05":{"shift1":0.457298136646,"shift2":0.551166180758,"total":0.551166180758},"2025-06-09":{"shift1":0.457298136646,"shift2":0.466149068323,"total":0.466149068323},"2025-06-10":{"shift1":0.598376623377,"shift2":0.53400621118,"total":0.53400621118},"2025-06-11":{"shift1":0.601461038961,"shift2":0.464893617021,"total":0.464893617021},"2025-06-12":{"shift1":0.515097402597,"shift2":0.435416666667,"total":0.435416666667},"2025-06-15":{"shift1":0.520238095238,"shift2":0.526890756303,"total":0.526890756303},"2025-06-16":{"shift1":0.534375,"shift2":0.565476190476,"total":0.565476190476},"2025-06-17":{"shift1":0.524761904762,"shift2":0.553935860058,"total":0.553935860058},"2025-06-18":{"shift1":0.527435064935,"shift2":0.584161490683,"total":0.584161490683},"2025-06-19":{"shift1":0.513066202091,"shift2":0.621760797342,"total":0.621760797342},"2025-06-21":{"shift1":0.523975253405,"shift2":0.570445018972,"total":0.570445018972},"2025-06-29":{"shift1":0.244947735192,"total":0.244947735192},"2025-06-30":{"shift1":0.542857142857,"shift2":0.64555984556,"total":0.594208494208},"2025-07-01":{"shift1":0.565476190476,"shift2":0.622893772894,"total":0.594184981685},"2025-07-02":{"shift1":0.553571428571,"shift2":0.589285714286,"total":0.571428571429},"2025-07-03":{"shift1":0.542857142857,"shift2":0.640873015873,"total":0.591865079365},"2025-07-07":{"shift1":0.528571428571,"total":0.528571428571},"2025-07-08":{"shift1":0.633333333333,"shift2":0.482890365449,"total":0.558111849391},"2025-07-09":{"shift1":0.570695970696,"shift2":0.496515679443,"total":0.533605825069},"2025-07-10":{"shift1":0.589285714286,"shift2":0.519107142857,"total":0.554196428571},"2025-07-13":{"shift1":0.508058608059,"total":0.508058608059},"2025-07-14":{"shift1":0.515018315018,"shift2":0.560714285714,"total":0.537866300366},"2025-07-15":{"shift1":0.589387755102,"shift2":0.560256410256,"total":0.574822082679},"2025-07-16":{"shift1":0,"total":0}};
       const REWORK_TOP3_BY_DATE = {"2025-01-08":[{"reason":"Scarpette","count":7},{"reason":"Marriage Scanning","count":5},{"reason":"Electrical test (Airbag)","count":3}],"2025-01-09":[{"reason":"Electrical test (Airbag)","count":6},{"reason":"Marriage Scanning","count":3},{"reason":"Cushion Frame Scanning","count":2}],"2025-01-10":[{"reason":"Scarpette","count":7},{"reason":"Cable Layout","count":6},{"reason":"Internal Carter Missing","count":3}],"2025-01-13":[{"reason":"Marriage Scanning","count":7},{"reason":"Cable Layout","count":4},{"reason":"Scarpette","count":4}],"2025-01-14":[{"reason":"Scarpette","count":5},{"reason":"Cable Layout","count":4},{"reason":"Electrical test (Airbag)","count":4}],"2025-01-15":[{"reason":"Cable Layout","count":11},{"reason":"Marriage Scanning","count":11},{"reason":"Electrical test (Airbag)","count":8}],"2025-01-16":[{"reason":"Marriage Scanning","count":7},{"reason":"Cable Layout","count":6},{"reason":"Backrest Frame Scanning","count":2}],"2025-01-17":[{"reason":"Cable Layout","count":5},{"reason":"Scarpette","count":5},{"reason":"Electrical test (SBR)","count":4}],"2025-01-20":[{"reason":"Cable Layout","count":7},{"reason":"Backrest Hogring Label Scanning","count":6},{"reason":"Electrical test (Airbag)","count":3}],"2025-01-21":[{"reason":"Backrest Hogring Label Scanning","count":5},{"reason":"Buckle Scanning","count":5},{"reason":"Scarpette","count":4}],"2025-01-22":[{"reason":"Electrical test (Airbag)","count":8},{"reason":"Headrest Camera","count":7},{"reason":"Scarpette","count":6}],"2025-01-23":[{"reason":"Headrest Camera","count":7},{"reason":"Recliner Cup Missing","count":5},{"reason":"Electrical test (Airbag)","count":4}],"2025-01-24":[{"reason":"Q-gate","count":21},{"reason":"Cushion Hogring Scanning","count":20},{"reason":"Electrical test (SBR)","count":5}],"2025-01-25":[{"reason":"Q-gate","count":10},{"reason":"Electrical test (Airbag)","count":5},{"reason":"Scarpette","count":4}],"2025-01-27":[{"reason":"Q-gate","count":11},{"reason":"Cable Layout","count":6},{"reason":"Electrical test (Airbag)","count":5}],"2025-01-28":[{"reason":"Q-gate","count":15},{"reason":"Recliner Cup Missing","count":5},{"reason":"Airbag Tightening","count":4}],"2025-01-29":[{"reason":"Q-gate","count":17},{"reason":"Marriage Scanning","count":4},{"reason":"Backrest Hogring Label Scanning","count":3}],"2025-01-30":[{"reason":"Q-gate","count":17},{"reason":"Cable Layout","count":5},{"reason":"Buckle Tightening","count":3}],"2025-01-31":[{"reason":"Cable Layout","count":10},{"reason":"Recliner Tightening","count":7},{"reason":"Buckle Camera","count":4}],"2025-02-01":[{"reason":"Cable Layout","count":8},{"reason":"Headrest Camera","count":6},{"reason":"Buckle Camera","count":4}],"2025-02-03":[{"reason":"Q-gate","count":8},{"reason":"Cushion Frame Scanning","count":4},{"reason":"Buckle Tightening","count":3}],"2025-02-04":[{"reason":"Buckle Camera","count":10},{"reason":"Buckle Tightening","count":9},{"reason":"Cable Layout","count":9}],"2025-02-05":[{"reason":"Q-gate","count":21},{"reason":"Backrest Frame Scanning","count":4},{"reason":"Backrest Hogring Label Scanning","count":3}],"2025-02-06":[{"reason":"Q-gate","count":15},{"reason":"Backrest Hogring Label Scanning","count":6},{"reason":"Marriage Scanning","count":6}],"2025-02-07":[{"reason":"Q-gate","count":30},{"reason":"Backrest Hogring Label Scanning","count":6},{"reason":"Marriage Scanning","count":5}],"2025-02-10":[{"reason":"Q-gate","count":12},{"reason":"Headrest Camera","count":5},{"reason":"Isofix Missing","count":5}],"2025-02-11":[{"reason":"Q-gate","count":19},{"reason":"Electrical Test(Heater)","count":5},{"reason":"Buckle Camera","count":4}],"2025-02-12":[{"reason":"Q-gate","count":23},{"reason":"Cable Layout","count":8},{"reason":"Buckle Camera","count":6}],"2025-02-13":[{"reason":"Q-gate","count":15},{"reason":"Cable Layout","count":4},{"reason":"Electrical Test(Heater)","count":4}],"2025-02-14":[{"reason":"Q-gate","count":23},{"reason":"Electrical test (SBR)","count":5},{"reason":"Marriage Scanning","count":4}],"2025-02-17":[{"reason":"Q-gate","count":11},{"reason":"Backrest Hogring Label Scanning","count":10},{"reason":"Electrical Test(Heater)","count":3}],"2025-02-18":[{"reason":"Q-gate","count":17},{"reason":"Electrical Test(Heater)","count":9},{"reason":"Cable Layout","count":5}],"2025-02-19":[{"reason":"Q-gate","count":12},{"reason":"Electrical Test(Heater)","count":9},{"reason":"Electrical test (Airbag)","count":8}],"2025-02-20":[{"reason":"Q-gate","count":15},{"reason":"Electrical Test(Heater)","count":5},{"reason":"Scarpette","count":5}],"2025-02-21":[{"reason":"Q-gate","count":14},{"reason":"Cable Layout","count":9},{"reason":"Electrical Test(Heater)","count":9}],"2025-02-22":[{"reason":"Q-gate","count":11},{"reason":"Marriage Scanning","count":5},{"reason":"Backrest Hogring Label Scanning","count":2}],"2025-02-24":[{"reason":"Q-gate","count":16},{"reason":"Cable Layout","count":6},{"reason":"Marriage Scanning","count":4}],"2025-02-25":[{"reason":"Q-gate","count":8},{"reason":"Airbag Tightening","count":4},{"reason":"Headrest Camera","count":4}],"2025-03-03":[{"reason":"Q-gate","count":13},{"reason":"Scarpette","count":13},{"reason":"Cable Layout","count":10}],"2025-03-04":[{"reason":"Q-gate","count":17},{"reason":"Marriage Scanning","count":8},{"reason":"Cable Layout","count":7}],"2025-03-05":[{"reason":"Q-gate","count":25},{"reason":"Test Socket Missing","count":8},{"reason":"Cable Layout","count":5}],"2025-03-06":[{"reason":"Q-gate","count":19},{"reason":"Electrical test (SBR)","count":5},{"reason":"Headrest Camera","count":5}],"2025-03-07":[{"reason":"Q-gate","count":20},{"reason":"Marriage Scanning","count":11},{"reason":"Scarpette","count":9}],"2025-03-08":[{"reason":"Q-gate","count":6},{"reason":"Cable Layout","count":1},{"reason":"Electrical Test (Buckle hall)","count":1}],"2025-03-10":[{"reason":"Q-gate","count":20},{"reason":"Cable Layout","count":11},{"reason":"Test Socket Missing","count":6}],"2025-03-11":[{"reason":"Q-gate","count":25},{"reason":"Cable Layout","count":6},{"reason":"Isofix Missing","count":5}],"2025-03-12":[{"reason":"Q-gate","count":18},{"reason":"Electrical test (SBR)","count":5},{"reason":"Headrest Camera","count":5}],"2025-03-13":[{"reason":"Q-gate","count":17},{"reason":"Scarpette","count":13},{"reason":"Headrest Camera","count":6}],"2025-03-14":[{"reason":"Q-gate","count":20},{"reason":"Scarpette","count":10},{"reason":"Headrest Camera","count":6}],"2025-03-17":[{"reason":"Q-gate","count":173},{"reason":"Scarpette","count":66},{"reason":"Headrest Camera","count":59}],"2025-03-24":[{"reason":"Q-gate","count":31},{"reason":"Headrest Camera","count":8},{"reason":"Scarpette","count":5}],"2025-03-25":[{"reason":"Q-gate","count":25},{"reason":"Scarpette","count":13},{"reason":"Cable Layout","count":8}],"2025-03-26":[{"reason":"Q-gate","count":26},{"reason":"Scarpette","count":14},{"reason":"Cable Layout","count":12}],"2025-03-27":[{"reason":"Q-gate","count":24},{"reason":"Cable Layout","count":7},{"reason":"Scarpette","count":7}],"2025-03-28":[{"reason":"Q-gate","count":27},{"reason":"Cable Layout","count":10},{"reason":"Scarpette","count":8}],"2025-03-29":[{"reason":"Cable Layout","count":3},{"reason":"Q-gate","count":3},{"reason":"Abarth Matching","count":2}],"2025-03-31":[{"reason":"Q-gate","count":23},{"reason":"Scarpette","count":11},{"reason":"Cable Layout","count":7}],"2025-04-01":[{"reason":"Q-gate","count":22},{"reason":"Cable Layout","count":10},{"reason":"Electrical Test(Heater)","count":7}],"2025-04-02":[{"reason":"Q-gate","count":14},{"reason":"Scarpette","count":11},{"reason":"Cable Layout","count":7}],"2025-04-03":[{"reason":"Q-gate","count":26},{"reason":"Cable Layout","count":15},{"reason":"Scarpette","count":14}],"2025-04-04":[{"reason":"Q-gate","count":10},{"reason":"Scarpette","count":9},{"reason":"Marriage Scanning","count":4}],"2025-04-08":[{"reason":"Q-gate","count":31},{"reason":"Scarpette","count":12},{"reason":"Cable Layout","count":8}],"2025-04-09":[{"reason":"Q-gate","count":21},{"reason":"Scarpette","count":16},{"reason":"Cable Layout","count":8}],"2025-04-10":[{"reason":"Q-gate","count":30},{"reason":"Scarpette","count":19},{"reason":"Headrest Camera","count":5}],"2025-04-11":[{"reason":"Q-gate","count":22},{"reason":"Electrical test (SBR)","count":9},{"reason":"Electrical Test(Heater)","count":9}],"2025-04-14":[{"reason":"Q-gate","count":20},{"reason":"Backrest Hogring Label Scanning","count":7},{"reason":"Cable Layout","count":6}],"2025-04-15":[{"reason":"Q-gate","count":26},{"reason":"Scarpette","count":17},{"reason":"Cable Layout","count":6}],"2025-04-16":[{"reason":"Q-gate","count":25},{"reason":"Scarpette","count":8},{"reason":"Backrest Hogring Label Scanning","count":5}],"2025-04-17":[{"reason":"Q-gate","count":27},{"reason":"Scarpette","count":12},{"reason":"Cable Layout","count":9}],"2025-04-18":[{"reason":"Q-gate","count":9},{"reason":"Recliner Tightening","count":6},{"reason":"Cable Layout","count":5}],"2025-04-19":[{"reason":"Q-gate","count":7},{"reason":"Buckle Scanning","count":2},{"reason":"Buckle Tightening","count":2}],"2025-04-21":[{"reason":"Scarpette","count":22},{"reason":"Q-gate","count":14},{"reason":"Cable Layout","count":9}],"2025-04-22":[{"reason":"Cable Layout","count":21},{"reason":"Test Socket Missing","count":10},{"reason":"Q-gate","count":7}],"2025-04-23":[{"reason":"Q-gate","count":14},{"reason":"Cable Layout","count":8},{"reason":"Scarpette","count":7}],"2025-04-24":[{"reason":"Q-gate","count":18},{"reason":"Scarpette","count":8},{"reason":"Cable Layout","count":6}],"2025-04-25":[{"reason":"Cable Layout","count":10},{"reason":"Q-gate","count":10},{"reason":"Headrest Camera","count":5}],"2025-04-28":[{"reason":"Q-gate","count":16},{"reason":"Scarpette","count":11},{"reason":"Cable Layout","count":9}],"2025-04-29":[{"reason":"Q-gate","count":16},{"reason":"Scarpette","count":8},{"reason":"Cable Layout","count":7}],"2025-04-30":[{"reason":"Q-gate","count":17},{"reason":"Scarpette","count":17},{"reason":"Cable Layout","count":9}],"2025-05-01":[{"reason":"Cable Layout","count":17},{"reason":"Scarpette","count":9},{"reason":"Q-gate","count":6}],"2025-05-05":[{"reason":"Q-gate","count":15},{"reason":"Marriage Scanning","count":14},{"reason":"Scarpette","count":11}],"2025-05-06":[{"reason":"Q-gate","count":20},{"reason":"Cable Layout","count":5},{"reason":"Internal Carter Missing","count":3}],"2025-05-07":[{"reason":"Cable Layout","count":12},{"reason":"Q-gate","count":8},{"reason":"Marriage Scanning","count":6}],"2025-05-08":[{"reason":"Cable Layout","count":7},{"reason":"Q-gate","count":7},{"reason":"Scarpette","count":5}],"2025-05-09":[{"reason":"Q-gate","count":21},{"reason":"Cable Layout","count":13},{"reason":"Backrest Hogring Label Scanning","count":4}],"2025-05-12":[{"reason":"Q-gate","count":17},{"reason":"Cable Layout","count":12},{"reason":"Scarpette","count":10}],"2025-05-13":[{"reason":"Q-gate","count":18},{"reason":"Scarpette","count":14},{"reason":"Cable Layout","count":6}],"2025-05-14":[{"reason":"Q-gate","count":14},{"reason":"Cable Layout","count":6},{"reason":"Marriage Scanning","count":3}],"2025-05-15":[{"reason":"Q-gate","count":12},{"reason":"Cable Layout","count":7},{"reason":"Scarpette","count":7}],"2025-05-16":[{"reason":"Q-gate","count":15},{"reason":"Scarpette","count":7},{"reason":"Backrest Hogring Label Scanning","count":6}],"2025-05-19":[{"reason":"Scarpette","count":16},{"reason":"Q-gate","count":12},{"reason":"Marriage Scanning","count":9}],"2025-05-20":[{"reason":"Airbag Tightening","count":8},{"reason":"Q-gate","count":8},{"reason":"Cable Layout","count":6}],"2025-05-21":[{"reason":"Scarpette","count":13},{"reason":"Cable Layout","count":9},{"reason":"Q-gate","count":9}],"2025-05-22":[{"reason":"Q-gate","count":15},{"reason":"Scarpette","count":12},{"reason":"Cable Layout","count":8}],"2025-05-23":[{"reason":"Q-gate","count":13},{"reason":"Scarpette","count":9},{"reason":"Marriage Scanning","count":6}],"2025-05-26":[{"reason":"Q-gate","count":12},{"reason":"Backrest Hogring Label Scanning","count":7},{"reason":"Marriage Scanning","count":6}],"2025-05-27":[{"reason":"Q-gate","count":13},{"reason":"Scarpette","count":5},{"reason":"Backrest Hogring Label Scanning","count":4}],"2025-05-28":[{"reason":"Marriage Scanning","count":9},{"reason":"Q-gate","count":7},{"reason":"Backrest Hogring Label Scanning","count":4}],"2025-05-29":[{"reason":"Q-gate","count":9},{"reason":"Backrest Hogring Label Scanning","count":8},{"reason":"Cable Layout","count":4}],"2025-05-30":[{"reason":"Q-gate","count":21},{"reason":"Scarpette","count":9},{"reason":"Cable Layout","count":4}],"2025-06-04":[{"reason":"Q-gate","count":12},{"reason":"Electrical test (Airbag)","count":7},{"reason":"Airbag Tightening","count":6}],"2025-06-05":[{"reason":"Backrest Hogring Label Scanning","count":11},{"reason":"Cable Layout","count":11},{"reason":"Q-gate","count":9}],"2025-06-06":[{"reason":"Q-gate","count":14},{"reason":"Scarpette","count":10},{"reason":"Cable Layout","count":3}],"2025-06-10":[{"reason":"Q-gate","count":23},{"reason":"Buckle Camera","count":19},{"reason":"Scarpette","count":10}],"2025-06-11":[{"reason":"Q-gate","count":32},{"reason":"Cable Layout","count":9},{"reason":"Scarpette","count":9}],"2025-06-12":[{"reason":"Q-gate","count":29},{"reason":"Scarpette","count":7},{"reason":"Abarth Matching","count":5}],"2025-06-13":[{"reason":"Q-gate","count":11},{"reason":"Scarpette","count":10},{"reason":"Cable Layout","count":7}],"2025-06-16":[{"reason":"Q-gate","count":17},{"reason":"Scarpette","count":8},{"reason":"Internal Carter Missing","count":4}],"2025-06-17":[{"reason":"Q-gate","count":9},{"reason":"Abarth Matching","count":5},{"reason":"Electrical Test (Buckle hall)","count":5}],"2025-06-18":[{"reason":"Cable Layout","count":8},{"reason":"Q-gate","count":8},{"reason":"Electrical test (Airbag)","count":6}],"2025-06-19":[{"reason":"Cable Layout","count":11},{"reason":"Q-gate","count":6},{"reason":"Backrest Hogring Label Scanning","count":3}],"2025-06-20":[{"reason":"Cable Layout","count":11},{"reason":"Q-gate","count":10},{"reason":"Scarpette","count":9}],"2025-06-30":[{"reason":"Airbag Scanning","count":35},{"reason":"Q-gate","count":4},{"reason":"Electrical Test (Buckle hall)","count":2}],"2025-07-01":[{"reason":"Scarpette","count":17},{"reason":"Q-gate","count":16},{"reason":"Marriage Scanning","count":9}],"2025-07-02":[{"reason":"Q-gate","count":17},{"reason":"Cable Layout","count":8},{"reason":"Marriage Scanning","count":7}],"2025-07-03":[{"reason":"Abarth Matching","count":13},{"reason":"Q-gate","count":11},{"reason":"Airbag Scanning","count":8}],"2025-07-04":[{"reason":"Marriage Scanning","count":25},{"reason":"Scarpette","count":15},{"reason":"Abarth Matching","count":13}],"2025-07-08":[{"reason":"Abarth Matching","count":4},{"reason":"Airbag Scanning","count":3},{"reason":"Buckle Tightening","count":3}],"2025-07-09":[{"reason":"Backrest Hogring Label Scanning","count":11},{"reason":"Abarth Matching","count":10},{"reason":"Marriage Scanning","count":7}],"2025-07-10":[{"reason":"Abarth Matching","count":14},{"reason":"Q-gate","count":11},{"reason":"Marriage Scanning","count":8}],"2025-07-11":[{"reason":"Abarth Matching","count":17},{"reason":"Marriage Scanning","count":12},{"reason":"Q-gate","count":12}],"2025-07-14":[{"reason":"Marriage Scanning","count":16},{"reason":"Electrical Test(Heater)","count":8},{"reason":"Backrest Frame Scanning","count":6}],"2025-07-15":[{"reason":"Q-gate","count":15},{"reason":"Marriage Scanning","count":14},{"reason":"Backrest Hogring Label Scanning","count":10}],"2025-07-16":[{"reason":"Marriage Scanning","count":14},{"reason":"Cable Layout","count":12},{"reason":"Backrest Hogring Label Scanning","count":9}],"2025-07-17":[{"reason":"Backrest Hogring Label Scanning","count":11},{"reason":"Marriage Scanning","count":11},{"reason":"Q-gate","count":11}]};
-      const REWORK_OPTIONS = ["Abarth Matching","Airbag Scanning","Airbag Tightening","Backrest Frame Scanning","Backrest Hogring Label Scanning","Buckle Camera","Buckle Scanning","Buckle Tightening","Cable Layout","Cushion Frame Scanning","Cushion Hogring Scanning","Easy Entry Camera","Electrical test (Airbag)","Electrical Test (Buckle hall)","Electrical test (Buckle pass)","Electrical test (SBR)","Electrical test (TPS)","Electrical Test(Heater)","Ham Lever Cup Missing","HAM Tightening","Headrest Camera","Internal Carter Missing","Isofix Missing","Marriage Scanning","Marriage Tightening","Q-gate","Recliner Cup Missing","Recliner Tightening","Robot Recliner NON Avviato","Scarpette","Test Socket Missing","Top Tether Check","Wire Harness Scanning"];
+      const REWORK_OPTIONS_DEFAULT = ["Abarth Matching","Airbag Scanning","Airbag Tightening","Backrest Frame Scanning","Backrest Hogring Label Scanning","Buckle Camera","Buckle Scanning","Buckle Tightening","Cable Layout","Cushion Frame Scanning","Cushion Hogring Scanning","Easy Entry Camera","Electrical test (Airbag)","Electrical Test (Buckle hall)","Electrical test (Buckle pass)","Electrical test (SBR)","Electrical test (TPS)","Electrical Test(Heater)","Ham Lever Cup Missing","HAM Tightening","Headrest Camera","Internal Carter Missing","Isofix Missing","Marriage Scanning","Marriage Tightening","Q-gate","Recliner Cup Missing","Recliner Tightening","Robot Recliner NON Avviato","Scarpette","Test Socket Missing","Top Tether Check","Wire Harness Scanning"];
       const OPERATORS = [{"id":"41507","name":"ALESSANDRO BOSCOLO"},{"id":"41877","name":"ALESSANDRO GABRIELE CHIRILA"},{"id":"42744","name":"ALESSANDRO ZERBINO"},{"id":"40996","name":"ALESSANDRO ZIZZARI"},{"id":"41704","name":"ALESSIO LIBERTI"},{"id":"42434","name":"ALESSIO MOLES"},{"id":"41819","name":"ALEX NEGRINI"},{"id":"26253","name":"ALFUSAINEY SAIDY"},{"id":"100148","name":"ANAMARIA TANASA"},{"id":"41811","name":"ANDREA BULLO"},{"id":"100202","name":"ANDREA CAMPANELLA"},{"id":"42294","name":"ANDREA GISONDI"},{"id":"100003","name":"ANDREA MAMMARELLA"},{"id":"100094","name":"Andrea Sansalone"},{"id":"100190","name":"ANGELO GALANTI"},{"id":"100199","name":"ANGELO RUMERE"},{"id":"100179","name":"ANNA IENOPOLI"},{"id":"41814","name":"BASIRU SECKSA"},{"id":"23208","name":"BAYE SERIGNE SARR"},{"id":"41300","name":"BOUBACAR DIENG"},{"id":"100005","name":"CESARE BARBATI"},{"id":"23206","name":"CHERIF BALDE"},{"id":"100191","name":"CHRISTIAN CALABRO'"},{"id":"100142","name":"CHRISTIAN GENOVESE"},{"id":"23373","name":"CLAUDIO NITTI"},{"id":"41941","name":"COSTEL DAVIDE ICHIM"},{"id":"100173","name":"DAMIANO SCIUTO"},{"id":"41298","name":"DANIELE GENESIO"},{"id":"100206","name":"DANIELE PINARD"},{"id":"41156","name":"DANILO FINOTTI"},{"id":"100167","name":"DIEGO BENEDETTI"},{"id":"41013","name":"DIEGO TALPO"},{"id":"100147","name":"DORIANO POLO"},{"id":"23286","name":"ELISA MILAZZO"},{"id":"41939","name":"ELISEO PISCIONERI"},{"id":"42202","name":"ERIK PERNUMIAN"},{"id":"41942","name":"FABIO LEONE"},{"id":"100134","name":"FEDERICO ANZANELLO"},{"id":"42302","name":"FEDERICO DELLE CAVE"},{"id":"23065","name":"FILOMENA DEMBECH"},{"id":"41707","name":"GABRIELE TAMMONE"},{"id":"40997","name":"GHEORGHE ROIBU"},{"id":"41381","name":"GIANLUCA MODICA"},{"id":"40507","name":"GIOELE CANTONE"},{"id":"42743","name":"GUGLIELMO ZAMBURRU"},{"id":"41705","name":"HASSAN ZIANI"},{"id":"41905","name":"Hussein Abdelgawad Abdelaal Nasr Ahmed"},{"id":"21492","name":"IGOR FALCO"},{"id":"100020","name":"IVAN LENTINI"},{"id":"23207","name":"LAURA DI GREGORIO"},{"id":"41907","name":"LORENZO PANETTA"},{"id":"100124","name":"LUCA CASTELLI"},{"id":"40220","name":"LUCA COLLA"},{"id":"41816","name":"LUCA GAGLIARDI"},{"id":"41876","name":"LUIGI ANGELO CAROZZO"},{"id":"41908","name":"LUIZ DAKAJ"},{"id":"40488","name":"MANUEL LOIZZI"},{"id":"41879","name":"MARCO CUTULI"},{"id":"42006","name":"MARCO ZANETTI"},{"id":"22803","name":"MARINELA MIHAELA PALADE"},{"id":"22970","name":"MARTA VILLA"},{"id":"40501","name":"MATTEO DURANDO"},{"id":"39746","name":"MATTEO LICITRA"},{"id":"39815","name":"MATTEO ZANELLATO"},{"id":"40506","name":"MATTIA BECCASIO"},{"id":"41380","name":"MAURO MAGGIORA"},{"id":"26277","name":"MIHAEL CLAUDIU COMAN"},{"id":"100018","name":"MOHAMED ANAS EL MANSOUR"},{"id":"41004","name":"MOHAMED CESAY"},{"id":"23205","name":"MONICA BRAMINI"},{"id":"42449","name":"MUHAMMAD JALLOW"},{"id":"41904","name":"NICHOLAS COLELLA"},{"id":"41818","name":"NICOLA CINQUE"},{"id":"100025","name":"NICOLAE DARJAN"},{"id":"23064","name":"NICOLAS MANICONE"},{"id":"22947","name":"OGUZHAN YUNAL"},{"id":"41297","name":"OMAR FAYE"},{"id":"22969","name":"PASQUALE APPELLA"},{"id":"41881","name":"PASQUALE LUPPINO"},{"id":"41504","name":"RADU SEBASTIAN ICHIM"},{"id":"100122","name":"RAFFAELE D'ABDON"},{"id":"41001","name":"REMO GATTABRIA"},{"id":"41817","name":"RICCARDO BENEDETTO DOLCETTA"},{"id":"42401","name":"Riccardo Maria Laterza"},{"id":"42297","name":"SAMI FAHMY"},{"id":"40999","name":"SAMIR MABCHOUR"},{"id":"100182","name":"VALENTINA VALENTI"},{"id":"43171","name":"VALERIO SHIMELES"},{"id":"41154","name":"VINCENZO ARAGONA"},{"id":"42109","name":"Vito Nicola Pedone"},{"id":"42750","name":"YASSIN NAOURAK"},{"id":"42096","name":"YOUSSEF EL HIRNOU"},{"id":"41506","name":"YOUSSEF WARID"},{"id":"42758","name":"YUNIOR ENMANUEL ROSA MENA"},{"id":"41906","name":"ZOUZOU YOUSSEF"}];
       const STORAGE_KEY = 'martur-operations-manual-v1';
       const OPERATOR_BY_ID = new Map(OPERATORS.map((operator) => [operator.id, operator]));
@@ -3652,7 +3649,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Password',
           wrongPassword: 'Nome utente o password errati.',
           enter: 'Entra',
-          stoppages: 'LIVE',
+          stoppages: 'Fermi linea',
           abarth: 'Abarth',
           dmcSection: 'DMC',
           sectionComingSoon: 'Sezione in preparazione.',
@@ -3699,11 +3696,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           targetShort: 'Target',
           oeeSettings: 'OEE — parametri',
           oeeEffectiveHint: 'La modifica vale dalla data odierna in poi; i giorni precedenti mantengono i valori precedenti.',
+          manageReworks: 'Elenco rework',
+          addRework: 'Aggiungi',
+          addReworkPlaceholder: 'Nuovo rework…',
           lossWaterfall: 'Cascata delle perdite',
           theoretical: 'Teorico',
           goodPieces: 'Buoni',
           missedProduction: 'Mancata produzione',
           downtimeByHour: 'Fermi per ora',
+          heatmapHint: 'minuti di fermo per ora',
           current: 'Attuale',
           previous: 'Precedente',
           noComparison: 'Serve almeno un periodo precedente per il confronto.',
@@ -3910,7 +3911,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Password',
           wrongPassword: 'Wrong username or password.',
           enter: 'Enter',
-          stoppages: 'LIVE',
+          stoppages: 'Line stoppages',
           abarth: 'Abarth',
           dmcSection: 'DMC',
           sectionComingSoon: 'Section coming soon.',
@@ -3957,11 +3958,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           targetShort: 'Target',
           oeeSettings: 'OEE — parameters',
           oeeEffectiveHint: 'Changes apply from today onward; previous days keep their earlier values.',
+          manageReworks: 'Rework list',
+          addRework: 'Add',
+          addReworkPlaceholder: 'New rework…',
           lossWaterfall: 'Loss waterfall',
           theoretical: 'Theoretical',
           goodPieces: 'Good',
           missedProduction: 'Missed output',
           downtimeByHour: 'Downtime by hour',
+          heatmapHint: 'downtime minutes per hour',
           current: 'Current',
           previous: 'Previous',
           noComparison: 'At least one previous period is needed to compare.',
@@ -4168,7 +4173,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           password: 'Şifre',
           wrongPassword: 'Kullanıcı adı veya şifre yanlış.',
           enter: 'Giriş',
-          stoppages: 'LIVE',
+          stoppages: 'Hat duruşları',
           abarth: 'Abarth',
           dmcSection: 'DMC',
           sectionComingSoon: 'Bölüm hazırlanıyor.',
@@ -4215,11 +4220,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           targetShort: 'Hedef',
           oeeSettings: 'OEE — parametreler',
           oeeEffectiveHint: 'Değişiklik bugünden itibaren geçerlidir; önceki günler eski değerleri korur.',
+          manageReworks: 'Rework listesi',
+          addRework: 'Ekle',
+          addReworkPlaceholder: 'Yeni rework…',
           lossWaterfall: 'Kayıp şelalesi',
           theoretical: 'Teorik',
           goodPieces: 'İyi',
           missedProduction: 'Eksik üretim',
           downtimeByHour: 'Saate göre duruşlar',
+          heatmapHint: 'saat başına duruş dakikası',
           current: 'Güncel',
           previous: 'Önceki',
           noComparison: 'Karşılaştırma için en az bir önceki dönem gerekli.',
@@ -4429,6 +4438,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const STOPPAGE_CONFIG_KEY = 'martur-stoppage-config-v1';
       const OEE_CONFIG_KEY = 'martur-oee-config-v1';
       const CHAT_SEEN_KEY = 'martur-chat-seen-v1';
+      const REWORK_STORAGE_KEY = 'martur-rework-options-v1';
       const OEE_DEFAULTS = { plannedMinPerShift: 450, targetKitPerShift: 170 };
       const THEME_STORAGE_KEY = 'martur-dashboard-theme';
       let savedTheme = null;
@@ -4453,6 +4463,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         viewHistory: [],
         oeeConfig: Object.assign({}, OEE_DEFAULTS),
         oeeConfigHistory: [],
+        reworkOptions: REWORK_OPTIONS_DEFAULT.slice(),
         selectedDate: null,
         selectedMonth: null,
         editingDate: null,
@@ -4502,6 +4513,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         oeePlanned: root.querySelector('#mod-oee-planned'),
         oeeTarget: root.querySelector('#mod-oee-target'),
         oeeSave: root.querySelector('#mod-oee-save'),
+        reworkAdmin: root.querySelector('#mod-rework-admin'),
         stoppageSettingsBtn: root.querySelector('#mod-stoppage-settings-btn'),
         stoppageSettingsDialog: root.querySelector('#mod-stoppage-settings-dialog'),
         closeStoppageSettings: root.querySelector('#mod-close-stoppage-settings'),
@@ -4518,6 +4530,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppageLinesGroup: root.querySelector('#mod-stoppage-lines-group'),
         stoppageLines: root.querySelector('#mod-stoppage-lines'),
         stoppageCauses: root.querySelector('#mod-stoppage-causes'),
+        stoppageDate: root.querySelector('#mod-stoppage-date'),
+        stoppageTime: root.querySelector('#mod-stoppage-time'),
         stoppageDuration: root.querySelector('#mod-stoppage-duration'),
         stoppageUnit: root.querySelector('#mod-stoppage-unit'),
         stoppageReporter: root.querySelector('#mod-stoppage-reporter'),
@@ -4564,9 +4578,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         waterfallSubtitle: root.querySelector('#mod-waterfall-subtitle'),
         heatmapWrap: root.querySelector('#mod-heatmap-wrap'),
         heatmapSubtitle: root.querySelector('#mod-heatmap-subtitle'),
-        compareSection: root.querySelector('#mod-compare-section'),
-        compareWrap: root.querySelector('#mod-compare-wrap'),
-        compareSubtitle: root.querySelector('#mod-compare-subtitle'),
         periodShiftSection: root.querySelector('#mod-period-shift-section'),
         downtimeSubtitle: root.querySelector('#mod-downtime-subtitle'),
         downtimeWrap: root.querySelector('#mod-downtime-wrap'),
@@ -4993,6 +5004,68 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function persistOeeConfig() {
         try { window.localStorage.setItem(OEE_CONFIG_KEY, JSON.stringify(state.oeeConfigHistory)); } catch (error) {}
+      }
+
+      function loadReworkOptions() {
+        let stored = null;
+        try { stored = JSON.parse(window.localStorage.getItem(REWORK_STORAGE_KEY)); } catch (error) {}
+        if (Array.isArray(stored) && stored.length) {
+          state.reworkOptions = stored.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim());
+        } else {
+          state.reworkOptions = REWORK_OPTIONS_DEFAULT.slice();
+        }
+      }
+
+      function persistReworkOptions() {
+        try { window.localStorage.setItem(REWORK_STORAGE_KEY, JSON.stringify(state.reworkOptions)); } catch (error) {}
+      }
+
+      function renderReworkAdmin() {
+        if (!state.authUser) { el.reworkAdmin.innerHTML = ''; return; }
+        const list = state.reworkOptions.map((reason, i) =>
+          '<div class="mod-rework-admin-row">' +
+            '<input type="text" class="form-control mod-rework-edit" data-index="' + i + '" value="' + escapeHtml(reason) + '">' +
+            '<button type="button" class="btn btn-ghost mod-rework-del" data-index="' + i + '" title="' + escapeHtml(t('delete')) + '"><i data-lucide="trash-2" aria-hidden="true"></i></button>' +
+          '</div>'
+        ).join('');
+        el.reworkAdmin.innerHTML =
+          '<div class="mod-section-label">' + escapeHtml(t('manageReworks')) + '</div>' +
+          '<div class="mod-rework-admin-list">' + list + '</div>' +
+          '<div class="mod-rework-admin-add">' +
+            '<input type="text" class="form-control mod-rework-new" placeholder="' + escapeHtml(t('addReworkPlaceholder')) + '">' +
+            '<button type="button" class="btn btn-primary" id="mod-rework-add-btn">' + escapeHtml(t('addRework')) + '</button>' +
+          '</div>';
+        el.reworkAdmin.querySelectorAll('.mod-rework-edit').forEach((input) => {
+          input.addEventListener('change', () => {
+            const idx = Number(input.dataset.index);
+            const val = input.value.trim();
+            if (!val) { renderReworkAdmin(); return; }
+            state.reworkOptions[idx] = val;
+            persistReworkOptions();
+            renderReworkOptions();
+          });
+        });
+        el.reworkAdmin.querySelectorAll('.mod-rework-del').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.reworkOptions.splice(Number(button.dataset.index), 1);
+            persistReworkOptions();
+            renderReworkOptions();
+            renderReworkAdmin();
+          });
+        });
+        const addBtn = el.reworkAdmin.querySelector('#mod-rework-add-btn');
+        const addInput = el.reworkAdmin.querySelector('.mod-rework-new');
+        const doAdd = () => {
+          const val = addInput.value.trim();
+          if (!val || state.reworkOptions.includes(val)) { addInput.value = ''; return; }
+          state.reworkOptions.push(val);
+          persistReworkOptions();
+          renderReworkOptions();
+          renderReworkAdmin();
+        };
+        addBtn.addEventListener('click', doAdd);
+        addInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 15, height: 15 } });
       }
 
       function oeeConfigFor(date) {
@@ -5700,7 +5773,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         renderOee(summary, oeeDowntimeMin, oeePlanned, oeeTarget, subtitle);
         renderWaterfall(summary, oeeTarget, subtitle);
         renderHeatmap(getPeriodStoppages(), subtitle);
-        renderPeriodComparison();
         renderDowntime();
       }
 
@@ -5767,7 +5839,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderReworkOptions() {
-        el.reworkOptions.innerHTML = REWORK_OPTIONS.map((reason, index) => {
+        el.reworkOptions.innerHTML = state.reworkOptions.map((reason, index) => {
           const id = 'mod-rework-option-' + index;
           return '<div class="mod-rework-option-row">' +
             '<label class="form-check" for="' + id + '"><input id="' + id + '" class="form-check-input mod-rework-option-input" type="checkbox" value="' + escapeHtml(reason) + '"><span class="form-check-label">' + escapeHtml(reason) + '</span></label>' +
@@ -6040,6 +6112,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.entryViewBtn.disabled = !state.isAdmin;
         root.classList.toggle('mod-admin-on', state.isAdmin);
         root.classList.toggle('mod-config-on', state.isConfigAdmin);
+        root.classList.toggle('mod-editor-on', Boolean(state.authUser));
         el.adminLock.setAttribute('aria-pressed', String(state.isAdmin));
         el.adminLock.classList.toggle('mod-admin-active', state.isAdmin);
         el.adminLock.classList.toggle('mod-greeting-btn', state.isAdmin);
@@ -6359,8 +6432,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.stoppageReporter.value = selectedReporter || state.authUsername || '';
       }
 
+      function setStoppageDateTime(date) {
+        const d = date instanceof Date && !isNaN(date) ? date : new Date();
+        el.stoppageDate.value = isoDate(d);
+        el.stoppageTime.value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      }
+
+      function stoppageTimestampFromInputs() {
+        const dateStr = el.stoppageDate.value;
+        const timeStr = el.stoppageTime.value || '00:00';
+        if (!dateStr) return null;
+        const dp = dateStr.split('-').map(Number);
+        const tp = timeStr.split(':').map(Number);
+        const d = new Date(dp[0], (dp[1] || 1) - 1, dp[2] || 1, tp[0] || 0, tp[1] || 0);
+        return isNaN(d) ? null : d.toISOString();
+      }
+
       function openStoppageDialog(lineId, op) {
-        if (!state.isAdmin) {
+        if (!state.authUser) {
           promptAdminLogin();
           return;
         }
@@ -6370,6 +6459,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.stoppageLinesGroup.hidden = false;
         fillStoppageLines(lineId);
         fillStoppageSelects(lineId, [], '');
+        setStoppageDateTime(new Date());
         el.stoppageDuration.value = '';
         el.stoppageUnit.value = 'min';
         el.stoppageNote.value = '';
@@ -6379,7 +6469,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function openStoppageEdit(ids) {
-        if (!state.isAdmin) return;
+        if (!state.authUser) return;
         const idList = Array.isArray(ids) ? ids : [ids];
         const rec = state.stoppages.find((s) => s.id === idList[0]);
         if (!rec) return;
@@ -6393,6 +6483,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.stoppageLinesGroup.hidden = true;
         el.stoppageLines.innerHTML = '';
         fillStoppageSelects(rec.lineId, stoppageCauseList(rec), rec.reporter);
+        setStoppageDateTime(new Date(rec.timestamp));
         el.stoppageDuration.value = rec.durationMin;
         el.stoppageUnit.value = 'min';
         el.stoppageNote.value = rec.note || '';
@@ -6402,11 +6493,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function submitStoppage() {
-        if (!state.isAdmin) { el.stoppageDialog.close(); return; }
+        if (!state.authUser) { el.stoppageDialog.close(); return; }
         const causes = Array.from(el.stoppageCauses.querySelectorAll('.mod-cause-check:checked')).map((input) => input.value);
         const durationRaw = Number(el.stoppageDuration.value);
         const reporter = el.stoppageReporter.value;
-        if (!causes.length || !reporter || !Number.isFinite(durationRaw) || durationRaw <= 0 || !state.stoppageTarget) {
+        const timestamp = stoppageTimestampFromInputs();
+        if (!causes.length || !reporter || !timestamp || !Number.isFinite(durationRaw) || durationRaw <= 0 || !state.stoppageTarget) {
           el.stoppageError.hidden = false;
           return;
         }
@@ -6415,13 +6507,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (state.stoppageEditingIds) {
           state.stoppageEditingIds.forEach((id) => {
             const rec = state.stoppages.find((s) => s.id === id);
-            if (rec) { rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; }
+            if (rec) { rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; rec.timestamp = timestamp; }
           });
           persistStoppages();
         } else {
           const selectedLines = Array.from(el.stoppageLines.querySelectorAll('.mod-stoppage-line-check:checked')).map((input) => input.value);
           const targetLines = selectedLines.length ? selectedLines : [state.stoppageTarget.lineId];
-          const timestamp = new Date().toISOString();
           targetLines.forEach((lineId) => {
             addStoppage({
               id: (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2) + lineId,
@@ -6458,7 +6549,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return state.stoppages.filter((s) => String(s.timestamp).slice(0, 10) === state.selectedDate);
       }
 
-      function downtimeParetoHtml(items, limit) {
+      function downtimeParetoHtml(items, limit, withCaption) {
         const map = new Map();
         items.forEach((s) => {
           const key = s.lineId + '|' + s.op;
@@ -6493,14 +6584,42 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '</div>');
         });
         let caption = '';
-        if (capped) {
-          caption = '<div class="mod-pareto-caption">' + t('paretoTopN')
-            .replace('{n}', '<strong>' + shownCount + '</strong>')
-            .replace('{pct}', '<strong>' + Math.round(cumAtShown * 100) + '%</strong>') + '</div>';
-        } else if (rows.length > 1) {
-          caption = '<div class="mod-pareto-caption">' + t('paretoVitalFew').replace('{n}', '<strong>' + vitalCount + '</strong>') + '</div>';
+        if (withCaption !== false) {
+          if (capped) {
+            caption = '<div class="mod-pareto-caption">' + t('paretoTopN')
+              .replace('{n}', '<strong>' + shownCount + '</strong>')
+              .replace('{pct}', '<strong>' + Math.round(cumAtShown * 100) + '%</strong>') + '</div>';
+          } else if (rows.length > 1) {
+            caption = '<div class="mod-pareto-caption">' + t('paretoVitalFew').replace('{n}', '<strong>' + vitalCount + '</strong>') + '</div>';
+          }
         }
         return '<div class="mod-downtime-pareto">' + parts.join('') + '</div>' + caption;
+      }
+
+      function paretoCaption(items, limit) {
+        const map = new Map();
+        items.forEach((s) => {
+          const key = s.lineId + '|' + s.op;
+          if (!map.has(key)) map.set(key, 0);
+          map.set(key, map.get(key) + (isNumber(s.durationMin) ? s.durationMin : 0));
+        });
+        const totals = Array.from(map.values()).filter((v) => v > 0).sort((a, b) => b - a);
+        if (totals.length <= 1) return '';
+        const grand = totals.reduce((sum, v) => sum + v, 0) || 1;
+        const capped = isNumber(limit) && limit < totals.length;
+        const shownCount = capped ? limit : totals.length;
+        let cum = 0, reached = false, vitalCount = 0, cumAtShown = 1;
+        totals.forEach((v, index) => {
+          if (!reached) vitalCount = index + 1;
+          cum += v;
+          const cumPct = cum / grand;
+          if (index + 1 === shownCount) cumAtShown = cumPct;
+          if (cumPct >= 0.8) reached = true;
+        });
+        if (capped) {
+          return t('paretoTopN').replace('{n}', '<strong>' + shownCount + '</strong>').replace('{pct}', '<strong>' + Math.round(cumAtShown * 100) + '%</strong>');
+        }
+        return t('paretoVitalFew').replace('{n}', '<strong>' + vitalCount + '</strong>');
       }
 
       function oeeGaugeSvg(oeeVal) {
@@ -6641,40 +6760,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       }
 
-      function renderPeriodComparison() {
-        const series = kpiTrendSeries();
-        if (series.length < 2) {
-          el.compareSubtitle.textContent = '';
-          el.compareWrap.innerHTML = '<div class="mod-empty">' + t('noComparison') + '</div>';
-          return;
-        }
-        const cur = series[series.length - 1];
-        const prev = series[series.length - 2];
-        const metrics = [
-          { label: t('marturSets'), get: (r) => r.completeKits, kind: 'int' },
-          { label: t('stellantisProduction'), get: (r) => r.stellantisCars, kind: 'int' },
-          { label: t('supplyGap'), get: (r) => r.supplyGap, kind: 'int' },
-          { label: t('efficiency'), get: (r) => r.efficiency, kind: 'pct' }
-        ];
-        const rowsHtml = metrics.map((m) => {
-          const c = m.get(cur), p = m.get(prev);
-          const fmt = (v) => !isNumber(v) ? '—' : (m.kind === 'pct' ? formatPercent(v) : formatNumber(v));
-          let deltaStr = '—';
-          let cls = '';
-          if (isNumber(c) && isNumber(p)) {
-            const delta = c - p;
-            const flat = Math.abs(delta) < (m.kind === 'pct' ? 0.0005 : 0.5);
-            deltaStr = m.kind === 'pct'
-              ? (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta * 1000) / 10)) + ' pt'
-              : (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta)));
-            if (flat) { cls = ''; deltaStr = '='; } else cls = delta > 0 ? 'mod-positive' : 'mod-negative';
-          }
-          return '<tr><td>' + escapeHtml(m.label) + '</td><td><strong>' + fmt(c) + '</strong></td><td class="text-muted">' + fmt(p) + '</td><td class="' + cls + '">' + deltaStr + '</td></tr>';
-        }).join('');
-        el.compareSubtitle.textContent = t(state.view === 'weekly' ? 'weekOverWeek' : state.view === 'monthly' ? 'monthOverMonth' : 'dayOverDay');
-        el.compareWrap.innerHTML = '<table class="mod-compare-table"><thead><tr><th></th><th>' + t('current') + '</th><th>' + t('previous') + '</th><th>Δ</th></tr></thead><tbody>' + rowsHtml + '</tbody></table>';
-      }
-
       function renderWaterfall(summary, target, subtitle) {
         const produced = isNumber(summary.completeKits) ? summary.completeKits : 0;
         const rework = valueOrZero(summary.rework);
@@ -6715,30 +6800,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           buckets[h] += isNumber(s.durationMin) ? s.durationMin : 0;
         });
         const max = Math.max.apply(null, Object.keys(buckets).map((h) => buckets[h]).concat(0));
-        el.heatmapSubtitle.textContent = subtitle || '';
+        el.heatmapSubtitle.textContent = (subtitle ? subtitle + ' · ' : '') + t('heatmapHint');
         if (max <= 0) {
           el.heatmapWrap.innerHTML = '<div class="mod-empty">' + t('noStoppagesPeriod') + '</div>';
           return;
         }
-        let cells = '';
+        let cols = '';
         for (let h = startH; h <= endH; h++) {
           const v = buckets[h];
-          const alpha = v > 0 ? (0.15 + (v / max) * 0.85).toFixed(2) : 0;
-          const style = v > 0 ? 'background: rgb(220 38 38 / ' + alpha + ')' : '';
-          cells += '<div class="mod-heat-cell' + (v > 0 ? ' mod-heat-on' : '') + '" style="' + style + '" title="' + h + ':00 · ' + escapeHtml(stoppageDurationText(v)) + '">' +
-            '<span class="mod-heat-hour">' + h + '</span>' +
-            '<span class="mod-heat-val">' + (v > 0 ? formatNumber(v) : '') + '</span>' +
+          const hpct = v > 0 ? Math.max(8, Math.round(v / max * 100)) : 0;
+          const hourLabel = String(h).padStart(2, '0');
+          cols += '<div class="mod-hourbar-col" title="' + hourLabel + ':00 · ' + escapeHtml(stoppageDurationText(v)) + '">' +
+            '<span class="mod-hourbar-val">' + (v > 0 ? formatNumber(v) : '') + '</span>' +
+            '<span class="mod-hourbar-track"><span class="mod-hourbar-fill" style="height:' + hpct + '%"></span></span>' +
+            '<span class="mod-hourbar-hour">' + hourLabel + '</span>' +
           '</div>';
         }
-        el.heatmapWrap.innerHTML = '<div class="mod-heatmap">' + cells + '</div>';
+        el.heatmapWrap.innerHTML = '<div class="mod-hourbars">' + cols + '</div>';
       }
 
       function renderDowntime() {
         const items = getPeriodStoppages();
         const totalMin = items.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
-        el.downtimeSubtitle.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin) + ' · ' + formatNumber(items.length);
+        const caption = items.length ? paretoCaption(items, 3) : '';
+        el.downtimeSubtitle.innerHTML = escapeHtml(t('totalDowntime') + ': ' + stoppageDurationText(totalMin) + ' · ' + formatNumber(items.length)) + (caption ? ' · ' + caption : '');
         el.downtimeWrap.innerHTML = items.length
-          ? downtimeParetoHtml(items, 3)
+          ? downtimeParetoHtml(items, 3, false)
           : '<div class="mod-empty">' + t('noStoppagesPeriod') + '</div>';
       }
 
@@ -6851,7 +6938,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderStoppageAdmin() {
-        if (!state.isConfigAdmin) { el.stoppageAdmin.innerHTML = ''; return; }
+        if (!state.authUser) { el.stoppageAdmin.innerHTML = ''; return; }
         const opsHtml = STOPPAGE_LINES.map((line) =>
           '<div class="mod-cfg-line"><span class="mod-cfg-line-name">' + escapeHtml(line.name) + '</span>' +
             '<div class="mod-cfg-chips">' +
@@ -7074,7 +7161,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.tvScreen.hidden = !isTv;
         el.contextBar.hidden = !isDashboard && !isTv;
         el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
-        el.stoppageSettingsBtn.hidden = !state.isConfigAdmin;
+        el.stoppageSettingsBtn.hidden = !state.authUser;
         root.classList.toggle('mod-tv-on', isTv);
         if (!isChat) updateChatBadge();
         if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'chat', 'tv', 'stoppages'].includes(state.view)) {
@@ -7160,8 +7247,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.filterReporter.addEventListener('change', () => { state.stoppageFilters.reporter = el.filterReporter.value; renderStoppages(); });
       el.exportStoppages.addEventListener('click', exportStoppagesCsv);
       el.stoppageSettingsBtn.addEventListener('click', () => {
-        if (!state.isConfigAdmin) return;
+        if (!state.authUser) return;
         renderUserAdmin();
+        renderReworkAdmin();
         el.oeePlanned.value = state.oeeConfig.plannedMinPerShift;
         el.oeeTarget.value = state.oeeConfig.targetKitPerShift;
         el.stoppageSettingsDialog.showModal();
@@ -7381,6 +7469,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.topbar.classList.toggle('mod-topbar-stuck', !entries[0].isIntersecting);
       }, { threshold: [1] }).observe(stickySentinel);
 
+      loadReworkOptions();
       renderReworkOptions();
       loadManual();
       loadStoppages();
