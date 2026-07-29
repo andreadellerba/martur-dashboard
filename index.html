@@ -1113,19 +1113,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-date-weekday {
       position: absolute;
-      left: 11px;
+      left: 12px;
       top: 50%;
       transform: translateY(-50%);
       z-index: 1;
       pointer-events: none;
-      font-weight: 700;
-      font-size: var(--font-size-small);
-      color: var(--primary);
+      font-weight: 400;
+      color: var(--foreground);
       text-transform: capitalize;
     }
     #martur-operations-dashboard #mod-date-picker .form-control {
       width: 100%;
-      padding-left: 46px;
+      padding-left: 42px;
     }
     #martur-operations-dashboard .mod-header-picker .mod-period-picker .form-control {
       margin-top: 0;
@@ -1476,34 +1475,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         grid-template-columns: 1fr;
       }
     }
-    #martur-operations-dashboard .mod-waterfall-bar {
-      display: flex;
-      height: 26px;
-      border-radius: var(--radius-full);
-      overflow: hidden;
-      background: var(--muted);
+    #martur-operations-dashboard .mod-waterfall-chart svg {
+      width: 100%;
+      height: auto;
+      max-height: 210px;
+      display: block;
     }
-    #martur-operations-dashboard .mod-waterfall-seg {
-      height: 100%;
-      transition: width 0.4s ease;
+    #martur-operations-dashboard .mod-wf-val {
+      font-size: 11px;
+      font-weight: 700;
     }
-    #martur-operations-dashboard .mod-waterfall-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 16px;
-      margin-top: 12px;
-      font-size: var(--font-size-small);
-    }
-    #martur-operations-dashboard .mod-wf-key {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-wf-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
+    #martur-operations-dashboard .mod-wf-cat {
+      font-size: 10px;
+      fill: var(--muted-foreground);
     }
     #martur-operations-dashboard .mod-hourbars {
       display: grid;
@@ -2231,7 +2215,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-pareto-row {
       display: grid;
-      grid-template-columns: auto minmax(90px, 24%) 1fr auto auto;
+      grid-template-columns: auto minmax(90px, 26%) 1fr auto;
       align-items: center;
       gap: 10px;
     }
@@ -6298,7 +6282,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           { label: t('efficiency'), value: formatPercent(summary.efficiency), cls: 'mod-tv-violet' }
         ];
         el.tvScreen.innerHTML =
-          '<div class="mod-tv-head"><span class="mod-tv-title">MARTUR FOMPAK</span><span class="mod-tv-date">' + escapeHtml(formatDate(state.selectedDate)) + '</span></div>' +
+          '<div class="mod-tv-head"><span class="mod-tv-title">MARTUR ITALY PRODUCTION DASHBOARD</span><span class="mod-tv-date">' + escapeHtml(formatDate(state.selectedDate)) + '</span></div>' +
           '<div class="mod-tv-grid">' +
             '<div class="mod-tv-oee">' + (oee ? oeeGaugeSvg(oee.oee) : '<div class="mod-oee-empty">' + escapeHtml(t('oeeNoData')) + '</div>') + '</div>' +
             '<div class="mod-tv-kpis">' + tiles.map((tl) =>
@@ -6580,7 +6564,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<span class="mod-pareto-label">' + escapeHtml(r.label) + '</span>' +
             '<span class="mod-pareto-track"><span class="mod-pareto-bar" style="width:' + Math.max(4, Math.round(r.total / max * 100)) + '%"></span></span>' +
             '<span class="mod-pareto-value">' + escapeHtml(stoppageDurationText(r.total)) + '</span>' +
-            '<span class="mod-pareto-cum">' + Math.round(cumPct * 100) + '%</span>' +
           '</div>');
         });
         let caption = '';
@@ -6771,22 +6754,37 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         const good = Math.max(0, produced - rework);
         const missed = Math.max(0, tgt - produced);
-        const total = Math.max(tgt, produced, 1);
-        const pct = (v) => Math.max(0, v / total * 100);
-        const segs = [
-          { label: t('goodPieces'), value: good, col: 'light-dark(rgb(31 143 62), rgb(116 213 139))' },
-          { label: t('rework'), value: rework, col: 'light-dark(rgb(207 143 15), rgb(240 189 96))' },
-          { label: t('missedProduction'), value: missed, col: 'light-dark(rgb(211 47 47), rgb(255 99 99))' }
-        ].filter((s) => s.value > 0);
-        const bar = '<div class="mod-waterfall-bar">' + segs.map((s) =>
-          '<span class="mod-waterfall-seg" style="width:' + pct(s.value).toFixed(1) + '%;background:' + s.col + '" title="' + escapeHtml(s.label + ': ' + formatNumber(s.value)) + '"></span>'
-        ).join('') + '</div>';
-        const legend = '<div class="mod-waterfall-legend">' +
-          '<span class="mod-wf-key"><span class="mod-wf-dot" style="background:var(--muted-foreground)"></span>' + t('theoretical') + ': <strong>' + formatNumber(tgt) + '</strong></span>' +
-          segs.map((s) => '<span class="mod-wf-key"><span class="mod-wf-dot" style="background:' + s.col + '"></span>' + escapeHtml(s.label) + ': <strong>' + formatNumber(s.value) + '</strong></span>').join('') +
-          '</div>';
+        const RED = 'light-dark(rgb(211 47 47), rgb(255 99 99))';
+        const GOLD = 'light-dark(rgb(207 143 15), rgb(240 189 96))';
+        const GREEN = 'light-dark(rgb(31 143 62), rgb(116 213 139))';
+        const GREY = 'light-dark(rgb(120 130 145), rgb(150 160 175))';
+        const cols = [{ label: t('theoretical'), base: 0, top: tgt, value: tgt, col: GREY }];
+        if (missed > 0) cols.push({ label: t('missedProduction'), base: produced, top: tgt, value: missed, col: RED, loss: true });
+        if (rework > 0) cols.push({ label: t('rework'), base: good, top: produced, value: rework, col: GOLD, loss: true });
+        cols.push({ label: t('goodPieces'), base: 0, top: good, value: good, col: GREEN });
+        const yMax = Math.max(tgt, produced, good, 1);
+        const W = 320, H = 178, padTop = 16, padBottom = 40;
+        const plotH = H - padTop - padBottom;
+        const n = cols.length;
+        const slot = W / n;
+        const bw = Math.min(58, slot * 0.58);
+        const yFor = (v) => padTop + plotH - (v / yMax) * plotH;
+        const centerX = (i) => slot * i + slot / 2;
+        let svg = '';
+        for (let i = 0; i < n - 1; i++) {
+          const y = yFor(cols[i + 1].top);
+          svg += '<line x1="' + (centerX(i) + bw / 2).toFixed(1) + '" y1="' + y.toFixed(1) + '" x2="' + (centerX(i + 1) - bw / 2).toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="var(--border)" stroke-dasharray="3 3"></line>';
+        }
+        cols.forEach((c, i) => {
+          const x = centerX(i);
+          const yTop = yFor(c.top);
+          const hgt = Math.max(2, yFor(c.base) - yTop);
+          svg += '<rect x="' + (x - bw / 2).toFixed(1) + '" y="' + yTop.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hgt.toFixed(1) + '" rx="3" fill="' + c.col + '"></rect>';
+          svg += '<text class="mod-wf-val" x="' + x.toFixed(1) + '" y="' + (yTop - 5).toFixed(1) + '" text-anchor="middle" fill="' + c.col + '">' + (c.loss ? '−' : '') + formatNumber(c.value) + '</text>';
+          svg += '<text class="mod-wf-cat" x="' + x.toFixed(1) + '" y="' + (H - padBottom + 15).toFixed(1) + '" text-anchor="middle">' + escapeHtml(c.label) + '</text>';
+        });
         el.waterfallSubtitle.textContent = subtitle || '';
-        el.waterfallWrap.innerHTML = bar + legend;
+        el.waterfallWrap.innerHTML = '<div class="mod-waterfall-chart"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + t('lossWaterfall') + '">' + svg + '</svg></div>';
       }
 
       function renderHeatmap(items, subtitle) {
