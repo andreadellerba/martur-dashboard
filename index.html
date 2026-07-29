@@ -1388,6 +1388,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-chat-tab {
       padding-left: 24px;
     }
+    #martur-operations-dashboard .mod-compare-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #martur-operations-dashboard .mod-compare-table th,
+    #martur-operations-dashboard .mod-compare-table td {
+      text-align: right;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-compare-table th:first-child,
+    #martur-operations-dashboard .mod-compare-table td:first-child {
+      text-align: left;
+    }
+    #martur-operations-dashboard .mod-compare-table th {
+      font-size: var(--font-size-small);
+      color: var(--muted-foreground);
+      font-weight: 600;
+    }
     #martur-operations-dashboard .mod-tv-screen {
       display: flex;
       flex-direction: column;
@@ -3034,6 +3054,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </section>
     </div>
 
+    <section id="mod-compare-section" class="mod-section">
+      <div class="mod-section-head">
+        <div>
+          <div class="mod-section-label" data-i18n="periodComparison">Confronto con periodo precedente</div>
+          <div id="mod-compare-subtitle" class="text-small text-muted"></div>
+        </div>
+      </div>
+      <div id="mod-compare-wrap" class="mod-table-wrap"></div>
+    </section>
+
     <section id="mod-daily-rework-section" class="mod-section" aria-labelledby="mod-daily-rework-title">
       <div class="mod-section-head">
         <div>
@@ -3674,6 +3704,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           goodPieces: 'Buoni',
           missedProduction: 'Mancata produzione',
           downtimeByHour: 'Fermi per ora',
+          current: 'Attuale',
+          previous: 'Precedente',
+          noComparison: 'Serve almeno un periodo precedente per il confronto.',
+          dayOverDay: 'Giorno su giorno produttivo',
+          weekOverWeek: 'Settimana su settimana',
+          monthOverMonth: 'Mese su mese',
           plannedMinPerShiftLabel: 'Minuti pianificati / turno',
           targetKitPerShiftLabel: 'Target Kit / turno',
           roleAdmin: 'Operatore',
@@ -3926,6 +3962,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           goodPieces: 'Good',
           missedProduction: 'Missed output',
           downtimeByHour: 'Downtime by hour',
+          current: 'Current',
+          previous: 'Previous',
+          noComparison: 'At least one previous period is needed to compare.',
+          dayOverDay: 'Day over production day',
+          weekOverWeek: 'Week over week',
+          monthOverMonth: 'Month over month',
           plannedMinPerShiftLabel: 'Planned minutes / shift',
           targetKitPerShiftLabel: 'Target Kit / shift',
           roleAdmin: 'Operator',
@@ -4178,6 +4220,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           goodPieces: 'İyi',
           missedProduction: 'Eksik üretim',
           downtimeByHour: 'Saate göre duruşlar',
+          current: 'Güncel',
+          previous: 'Önceki',
+          noComparison: 'Karşılaştırma için en az bir önceki dönem gerekli.',
+          dayOverDay: 'Üretim gününe göre',
+          weekOverWeek: 'Haftadan haftaya',
+          monthOverMonth: 'Aydan aya',
           plannedMinPerShiftLabel: 'Vardiya başına planlanan dakika',
           targetKitPerShiftLabel: 'Vardiya başına hedef Kit',
           roleAdmin: 'Operatör',
@@ -4516,6 +4564,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         waterfallSubtitle: root.querySelector('#mod-waterfall-subtitle'),
         heatmapWrap: root.querySelector('#mod-heatmap-wrap'),
         heatmapSubtitle: root.querySelector('#mod-heatmap-subtitle'),
+        compareSection: root.querySelector('#mod-compare-section'),
+        compareWrap: root.querySelector('#mod-compare-wrap'),
+        compareSubtitle: root.querySelector('#mod-compare-subtitle'),
         periodShiftSection: root.querySelector('#mod-period-shift-section'),
         downtimeSubtitle: root.querySelector('#mod-downtime-subtitle'),
         downtimeWrap: root.querySelector('#mod-downtime-wrap'),
@@ -5649,6 +5700,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         renderOee(summary, oeeDowntimeMin, oeePlanned, oeeTarget, subtitle);
         renderWaterfall(summary, oeeTarget, subtitle);
         renderHeatmap(getPeriodStoppages(), subtitle);
+        renderPeriodComparison();
         renderDowntime();
       }
 
@@ -6587,6 +6639,40 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             m.trend.className = 'mod-kpi-trend';
           }
         });
+      }
+
+      function renderPeriodComparison() {
+        const series = kpiTrendSeries();
+        if (series.length < 2) {
+          el.compareSubtitle.textContent = '';
+          el.compareWrap.innerHTML = '<div class="mod-empty">' + t('noComparison') + '</div>';
+          return;
+        }
+        const cur = series[series.length - 1];
+        const prev = series[series.length - 2];
+        const metrics = [
+          { label: t('marturSets'), get: (r) => r.completeKits, kind: 'int' },
+          { label: t('stellantisProduction'), get: (r) => r.stellantisCars, kind: 'int' },
+          { label: t('supplyGap'), get: (r) => r.supplyGap, kind: 'int' },
+          { label: t('efficiency'), get: (r) => r.efficiency, kind: 'pct' }
+        ];
+        const rowsHtml = metrics.map((m) => {
+          const c = m.get(cur), p = m.get(prev);
+          const fmt = (v) => !isNumber(v) ? '—' : (m.kind === 'pct' ? formatPercent(v) : formatNumber(v));
+          let deltaStr = '—';
+          let cls = '';
+          if (isNumber(c) && isNumber(p)) {
+            const delta = c - p;
+            const flat = Math.abs(delta) < (m.kind === 'pct' ? 0.0005 : 0.5);
+            deltaStr = m.kind === 'pct'
+              ? (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta * 1000) / 10)) + ' pt'
+              : (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta)));
+            if (flat) { cls = ''; deltaStr = '='; } else cls = delta > 0 ? 'mod-positive' : 'mod-negative';
+          }
+          return '<tr><td>' + escapeHtml(m.label) + '</td><td><strong>' + fmt(c) + '</strong></td><td class="text-muted">' + fmt(p) + '</td><td class="' + cls + '">' + deltaStr + '</td></tr>';
+        }).join('');
+        el.compareSubtitle.textContent = t(state.view === 'weekly' ? 'weekOverWeek' : state.view === 'monthly' ? 'monthOverMonth' : 'dayOverDay');
+        el.compareWrap.innerHTML = '<table class="mod-compare-table"><thead><tr><th></th><th>' + t('current') + '</th><th>' + t('previous') + '</th><th>Δ</th></tr></thead><tbody>' + rowsHtml + '</tbody></table>';
       }
 
       function renderWaterfall(summary, target, subtitle) {
