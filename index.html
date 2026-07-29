@@ -1782,14 +1782,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-shift-support-grid {
       grid-template-columns: repeat(6, minmax(0, 1fr));
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
     }
     #martur-operations-dashboard .mod-shift-seq-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
-      padding: 11px 0;
+      padding-top: 11px;
       border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
     }
     #martur-operations-dashboard .mod-shift-metric,
     #martur-operations-dashboard .mod-shift-support-item {
@@ -3029,33 +3030,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <section class="mod-section">
         <div class="mod-section-head">
           <div>
-            <div class="mod-section-label" data-i18n="downtimeTitle">Fermi</div>
-            <div id="mod-downtime-subtitle" class="text-small text-muted"></div>
-          </div>
-        </div>
-        <div id="mod-downtime-wrap" class="mod-table-wrap"></div>
-      </section>
-    </div>
-
-    <div class="mod-two-col mod-loss-row">
-      <section class="mod-section">
-        <div class="mod-section-head">
-          <div>
             <div class="mod-section-label" data-i18n="lossWaterfall">Cascata delle perdite</div>
             <div id="mod-waterfall-subtitle" class="text-small text-muted"></div>
           </div>
         </div>
         <div id="mod-waterfall-wrap"></div>
-      </section>
-
-      <section class="mod-section">
-        <div class="mod-section-head">
-          <div>
-            <div class="mod-section-label" data-i18n="downtimeByHour">Fermi per ora</div>
-            <div id="mod-heatmap-subtitle" class="text-small text-muted"></div>
-          </div>
-        </div>
-        <div id="mod-heatmap-wrap"></div>
       </section>
     </div>
 
@@ -5852,8 +5831,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         renderOee(summary, oeeDowntimeMin, oeePlanned, oeeTarget, subtitle);
         renderWaterfall(summary, oeeTarget, subtitle);
-        renderHeatmap(getPeriodStoppages(), subtitle);
-        renderDowntime();
       }
 
       function readInput(id, percent) {
