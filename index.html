@@ -818,23 +818,33 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-topbar.mod-topbar-stuck {
       box-shadow: 0 6px 18px -10px rgb(0 0 0 / 30%);
     }
+    /* Griglia a 3 colonne con posizioni FISSE: logo (sx) · menu pill (centro) · calendario (dx).
+       Le tracce restano anche se il calendario e' nascosto in certe schede, quindi logo e menu non si spostano mai. */
     #martur-operations-dashboard .mod-topbar-cluster {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: center;
       gap: 14px;
-      flex-wrap: wrap;
       width: 100%;
       min-height: 40px;
     }
     #martur-operations-dashboard .mod-topbar-cluster .mod-brand-link {
-      flex: 0 0 auto;
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: start;
+    }
+    #martur-operations-dashboard .mod-pillnav {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: center;
     }
     #martur-operations-dashboard .mod-datenav {
+      grid-column: 3;
+      grid-row: 1;
+      justify-self: end;
       display: flex;
       align-items: center;
       gap: 4px;
-      flex: 0 0 auto;
     }
     #martur-operations-dashboard .mod-pillnav {
       display: flex;
@@ -1323,7 +1333,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       max-width: 220px;
       height: auto;
     }
-    #martur-operations-dashboard .mod-oee-fermi-row {
+    #martur-operations-dashboard .mod-two-col.mod-oee-fermi-row {
       align-items: stretch;
     }
     @media (max-width: 900px) {
@@ -1532,6 +1542,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-tv-kpis {
         grid-template-columns: 1fr;
       }
+    }
+    /* Centra verticalmente i KPI della cascata cosi' si allineano con le 3 barre dell'OLE (che sono centrate nella loro card). */
+    #martur-operations-dashboard #mod-waterfall-section {
+      display: flex;
+      flex-direction: column;
+    }
+    #martur-operations-dashboard #mod-waterfall-wrap {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     #martur-operations-dashboard .mod-loss-kpis {
       display: grid;
@@ -2667,15 +2688,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         height: 40px;
       }
       #martur-operations-dashboard .mod-topbar-cluster {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
         gap: 8px;
       }
+      #martur-operations-dashboard .mod-topbar-cluster .mod-brand-link {
+        align-self: center;
+        order: 1;
+      }
       #martur-operations-dashboard .mod-pillnav {
-        flex: 1 1 100%;
-        order: 3;
+        order: 2;
+        width: 100%;
       }
       #martur-operations-dashboard .mod-datenav {
-        order: 2;
-        flex: 1 1 auto;
+        order: 3;
+        width: 100%;
       }
       #martur-operations-dashboard .mod-main-nav {
         display: none;
@@ -3082,7 +3110,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </div>
       </section>
 
-      <section class="mod-section">
+      <section id="mod-waterfall-section" class="mod-section">
         <div class="mod-section-head">
           <div>
             <div class="mod-section-label" data-i18n="lossWaterfall">Cascata delle perdite</div>
