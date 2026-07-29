@@ -1388,6 +1388,89 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-chat-tab {
       padding-left: 24px;
     }
+    #martur-operations-dashboard .mod-tv-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    #martur-operations-dashboard .mod-tv-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 10px;
+    }
+    #martur-operations-dashboard .mod-tv-title {
+      font-size: calc(var(--font-size-normal) * 2);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    #martur-operations-dashboard .mod-tv-date {
+      font-size: calc(var(--font-size-normal) * 1.6);
+      font-weight: 700;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-tv-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 360px) 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+    #martur-operations-dashboard .mod-tv-oee svg {
+      width: 100%;
+      max-width: 360px;
+      height: auto;
+    }
+    #martur-operations-dashboard .mod-tv-oee .mod-oee-gauge-value {
+      font-size: calc(var(--font-size-normal) * 3.4);
+    }
+    #martur-operations-dashboard .mod-tv-kpis {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    #martur-operations-dashboard .mod-tv-tile {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 22px 24px;
+      border-radius: var(--radius-2xl);
+      background: var(--card);
+      border-left: 6px solid var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-tv-tile-value {
+      font-size: calc(var(--font-size-normal) * 2.6);
+      font-weight: 800;
+      line-height: 1.05;
+    }
+    #martur-operations-dashboard .mod-tv-tile-label {
+      font-size: calc(var(--font-size-normal) * 1.1);
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    #martur-operations-dashboard .mod-tv-blue { border-left-color: var(--viz-series-1); }
+    #martur-operations-dashboard .mod-tv-blue .mod-tv-tile-value { color: var(--viz-series-1); }
+    #martur-operations-dashboard .mod-tv-green { border-left-color: var(--viz-series-3); }
+    #martur-operations-dashboard .mod-tv-green .mod-tv-tile-value { color: var(--viz-series-3); }
+    #martur-operations-dashboard .mod-tv-red { border-left-color: light-dark(rgb(211 47 47), rgb(255 99 99)); }
+    #martur-operations-dashboard .mod-tv-red .mod-tv-tile-value { color: light-dark(rgb(211 47 47), rgb(255 99 99)); }
+    #martur-operations-dashboard .mod-tv-violet { border-left-color: var(--viz-series-5); }
+    #martur-operations-dashboard .mod-tv-violet .mod-tv-tile-value { color: var(--viz-series-5); }
+    #martur-operations-dashboard .mod-tv-fermi .mod-section-label {
+      font-size: calc(var(--font-size-normal) * 1.2);
+      margin-bottom: 12px;
+    }
+    @media (max-width: 760px) {
+      #martur-operations-dashboard .mod-tv-grid {
+        grid-template-columns: 1fr;
+      }
+      #martur-operations-dashboard .mod-tv-kpis {
+        grid-template-columns: 1fr;
+      }
+    }
     #martur-operations-dashboard .mod-waterfall-bar {
       display: flex;
       height: 26px;
@@ -2839,6 +2922,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" aria-pressed="false" data-i18n="abarth">Abarth</button>
         <button type="button" class="mod-nav-tab mod-view-btn" data-view="dmc" aria-pressed="false" data-i18n="dmcSection">DMC</button>
         <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false"><span data-i18n="chat">Chat</span><span id="mod-chat-badge" class="mod-chat-badge" hidden></span></button>
+        <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode">TV</button>
         <button type="button" class="mod-nav-tab mod-view-btn mod-live-tab" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">LIVE</button>
       </nav>
       <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
@@ -2848,6 +2932,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <option value="abarth" data-i18n="abarth">Abarth</option>
         <option value="dmc" data-i18n="dmcSection">DMC</option>
         <option value="chat" data-i18n="chat">Chat</option>
+        <option value="tv" data-i18n="tvMode">TV</option>
         <option value="stoppages" data-i18n="stoppages">LIVE</option>
       </select>
 
@@ -3302,6 +3387,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     <div class="text-small text-muted" data-i18n="sectionComingSoon">Sezione in preparazione.</div>
   </section>
 
+  <section id="mod-tv-screen" class="mod-tv-screen" hidden></section>
+
   <section id="mod-chat-screen" class="mod-chat-screen" hidden>
     <div id="mod-chat-messages" class="mod-chat-messages"></div>
     <div class="mod-chat-composer">
@@ -3519,6 +3606,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           greeting: 'Buongiorno',
           logout: 'Esci',
           chat: 'Chat',
+          tvMode: 'TV',
           chatPlaceholder: 'Scrivi un messaggio… usa @ per citare',
           chatSend: 'Invia',
           chatEmpty: 'Nessun messaggio. Scrivi il primo!',
@@ -3770,6 +3858,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           greeting: 'Hello',
           logout: 'Log out',
           chat: 'Chat',
+          tvMode: 'TV',
           chatPlaceholder: 'Write a message… use @ to mention',
           chatSend: 'Send',
           chatEmpty: 'No messages yet. Write the first one!',
@@ -4021,6 +4110,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           greeting: 'Günaydın',
           logout: 'Çıkış',
           chat: 'Sohbet',
+          tvMode: 'TV',
           chatPlaceholder: 'Mesaj yaz… bahsetmek için @ kullan',
           chatSend: 'Gönder',
           chatEmpty: 'Henüz mesaj yok. İlkini sen yaz!',
@@ -4349,6 +4439,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppagesScreen: root.querySelector('#mod-stoppages-screen'),
         abarthScreen: root.querySelector('#mod-abarth-screen'),
         dmcScreen: root.querySelector('#mod-dmc-screen'),
+        tvScreen: root.querySelector('#mod-tv-screen'),
         chatScreen: root.querySelector('#mod-chat-screen'),
         chatMessages: root.querySelector('#mod-chat-messages'),
         chatInput: root.querySelector('#mod-chat-input'),
@@ -6067,6 +6158,33 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
+      function renderTv() {
+        const rows = getDailyRows();
+        const summary = rows.find((r) => r.date === state.selectedDate) || deriveRow({ date: state.selectedDate, shift1: emptyShift(), shift2: emptyShift() });
+        const stoppages = getPeriodStoppages();
+        const downtime = stoppages.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
+        const sw = (valueOrZero(summary.shift1 && summary.shift1.front) > 0 ? 1 : 0) + (valueOrZero(summary.shift2 && summary.shift2.front) > 0 ? 1 : 0) || (summary.completeKits > 0 ? 2 : 0);
+        const cfg = oeeConfigFor(state.selectedDate);
+        const oee = computeOee(summary.completeKits, summary.rework, downtime, cfg.plannedMinPerShift * sw, cfg.targetKitPerShift * sw);
+        const tiles = [
+          { label: t('marturSets'), value: formatNumber(summary.completeKits) + ' Kit', cls: 'mod-tv-blue' },
+          { label: t('stellantisProduction'), value: formatNumber(summary.stellantisCars) + ' Kit', cls: 'mod-tv-green' },
+          { label: t('supplyGap'), value: formatSigned(summary.supplyGap) + ' Kit', cls: (isNumber(summary.supplyGap) && summary.supplyGap < 0) ? 'mod-tv-red' : 'mod-tv-green' },
+          { label: t('efficiency'), value: formatPercent(summary.efficiency), cls: 'mod-tv-violet' }
+        ];
+        el.tvScreen.innerHTML =
+          '<div class="mod-tv-head"><span class="mod-tv-title">MARTUR FOMPAK</span><span class="mod-tv-date">' + escapeHtml(formatDate(state.selectedDate)) + '</span></div>' +
+          '<div class="mod-tv-grid">' +
+            '<div class="mod-tv-oee">' + (oee ? oeeGaugeSvg(oee.oee) : '<div class="mod-oee-empty">' + escapeHtml(t('oeeNoData')) + '</div>') + '</div>' +
+            '<div class="mod-tv-kpis">' + tiles.map((tl) =>
+              '<div class="mod-tv-tile ' + tl.cls + '"><span class="mod-tv-tile-value">' + escapeHtml(tl.value) + '</span><span class="mod-tv-tile-label">' + escapeHtml(tl.label) + '</span></div>'
+            ).join('') + '</div>' +
+          '</div>' +
+          '<div class="mod-tv-fermi"><div class="mod-section-label">' + escapeHtml(t('downtimeTitle')) + '</div>' +
+            (stoppages.length ? downtimeParetoHtml(stoppages, 3) : '<div class="mod-empty">' + escapeHtml(t('noStoppagesPeriod')) + '</div>') +
+          '</div>';
+      }
+
       function sendChatMessage() {
         const text = el.chatInput.value.trim();
         if (!text || !state.authUsername || !db) return;
@@ -6333,6 +6451,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return '<div class="mod-downtime-pareto">' + parts.join('') + '</div>' + caption;
       }
 
+      function oeeGaugeSvg(oeeVal) {
+        const cx = 100, cy = 100, r = 82;
+        const angleFor = (v) => 180 - clamp01(v) * 180;
+        const color = oeeZoneColor(oeeVal);
+        const zones = [
+          { from: 0, to: 0.65, col: 'light-dark(rgb(211 47 47), rgb(255 99 99))' },
+          { from: 0.65, to: 0.85, col: 'light-dark(rgb(207 143 15), rgb(240 189 96))' },
+          { from: 0.85, to: 1, col: 'light-dark(rgb(31 143 62), rgb(116 213 139))' }
+        ];
+        const zoneArcs = zones.map((z) =>
+          '<path d="' + gaugeArcPath(cx, cy, r, angleFor(z.from), angleFor(z.to)) + '" fill="none" stroke="' + z.col + '" stroke-width="12" opacity="0.22"></path>'
+        ).join('');
+        const valueArc = '<path d="' + gaugeArcPath(cx, cy, r, 180, angleFor(oeeVal)) + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-linecap="round"></path>';
+        return '<svg viewBox="0 0 200 126" role="img" aria-label="OEE ' + Math.round(oeeVal * 100) + '%">' +
+          zoneArcs + valueArc +
+          '<text class="mod-oee-gauge-value" x="100" y="96" text-anchor="middle" fill="' + color + '">' + Math.round(oeeVal * 100) + '%</text>' +
+          '<text class="mod-oee-gauge-label" x="100" y="116" text-anchor="middle">OEE</text>' +
+          '</svg>';
+      }
+
       function gaugeArcPath(cx, cy, r, startDeg, endDeg) {
         const toXY = (deg) => {
           const a = deg * Math.PI / 180;
@@ -6353,23 +6491,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.oeeBreakdown.innerHTML = '<div class="mod-oee-empty">' + escapeHtml(t('oeeNoData')) + '</div>';
           return;
         }
-        const cx = 100, cy = 100, r = 82;
-        const angleFor = (v) => 180 - clamp01(v) * 180;
-        const color = oeeZoneColor(oee.oee);
-        const zones = [
-          { from: 0, to: 0.65, col: 'light-dark(rgb(211 47 47), rgb(255 99 99))' },
-          { from: 0.65, to: 0.85, col: 'light-dark(rgb(207 143 15), rgb(240 189 96))' },
-          { from: 0.85, to: 1, col: 'light-dark(rgb(31 143 62), rgb(116 213 139))' }
-        ];
-        const zoneArcs = zones.map((z) =>
-          '<path d="' + gaugeArcPath(cx, cy, r, angleFor(z.from), angleFor(z.to)) + '" fill="none" stroke="' + z.col + '" stroke-width="12" opacity="0.22"></path>'
-        ).join('');
-        const valueArc = '<path d="' + gaugeArcPath(cx, cy, r, 180, angleFor(oee.oee)) + '" fill="none" stroke="' + color + '" stroke-width="12" stroke-linecap="round"></path>';
-        el.oeeGauge.innerHTML = '<svg viewBox="0 0 200 126" role="img" aria-label="OEE ' + Math.round(oee.oee * 100) + '%">' +
-          zoneArcs + valueArc +
-          '<text class="mod-oee-gauge-value" x="100" y="96" text-anchor="middle" fill="' + color + '">' + Math.round(oee.oee * 100) + '%</text>' +
-          '<text class="mod-oee-gauge-label" x="100" y="116" text-anchor="middle">OEE</text>' +
-          '</svg>';
+        el.oeeGauge.innerHTML = oeeGaugeSvg(oee.oee);
         el.oeeSubtitle.textContent = (subtitle ? subtitle + ' · ' : '') +
           t('plannedShort') + ': ' + formatNumber(planned) + ' min · ' + t('targetShort') + ': ' + formatNumber(target) + ' Kit';
         const rows = [
@@ -6853,8 +6975,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const isAbarth = state.view === 'abarth';
         const isDmc = state.view === 'dmc';
         const isChat = state.view === 'chat';
+        const isTv = state.view === 'tv';
         const isPlaceholder = isAbarth || isDmc;
-        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat;
+        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat && !isTv;
         el.dashboardScreen.hidden = !isDashboard;
         el.attendanceScreen.hidden = !isAttendance;
         el.entryScreen.hidden = !isEntry;
@@ -6862,11 +6985,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.abarthScreen.hidden = !isAbarth;
         el.dmcScreen.hidden = !isDmc;
         el.chatScreen.hidden = !isChat;
-        el.contextBar.hidden = !isDashboard;
+        el.tvScreen.hidden = !isTv;
+        el.contextBar.hidden = !isDashboard && !isTv;
         el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
         el.stoppageSettingsBtn.hidden = !state.isConfigAdmin;
+        root.classList.toggle('mod-tv-on', isTv);
         if (!isChat) updateChatBadge();
-        if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'chat', 'stoppages'].includes(state.view)) {
+        if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'chat', 'tv', 'stoppages'].includes(state.view)) {
           el.viewSelect.value = state.view;
         }
         updateBackButton();
@@ -6883,6 +7008,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         } else if (state.view === 'attendance') renderAttendanceScreen(rows);
         else if (state.view === 'stoppages') renderStoppages();
         else if (state.view === 'chat') renderChat();
+        else if (state.view === 'tv') renderTv();
         else if (state.view === 'abarth' || state.view === 'dmc') { /* placeholder, nothing to render */ }
         else renderDashboard();
         if (globalThis.lucide) {
