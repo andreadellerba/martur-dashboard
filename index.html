@@ -7538,9 +7538,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           { trend: el.kpiEfficiencyTrend, spark: el.kpiEfficiencySpark, get: (r) => r.efficiency, kind: 'pct' }
         ];
         const series = kpiTrendSeries();
+        // Il sabato (turno unico, ore variabili) non e' paragonabile ai giorni feriali:
+        // niente freccia/delta, solo il valore e il grafico dell'andamento.
+        const skipBadge = state.view === 'daily' && isSaturday(state.selectedDate);
         metrics.forEach((m) => {
           m.spark.innerHTML = sparklineSvg(series.map(m.get));
-          if (series.length >= 2) {
+          if (series.length >= 2 && !skipBadge) {
             renderTrendBadge(m.trend, m.get(series[series.length - 1]), m.get(series[series.length - 2]), m.kind);
           } else {
             m.trend.textContent = '';
