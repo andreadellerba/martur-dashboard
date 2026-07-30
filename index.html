@@ -932,8 +932,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       outline: none;
     }
     #martur-operations-dashboard .mod-period-picker:focus-within {
+      background: var(--secondary);
       outline: 2px solid var(--ring);
       outline-offset: 2px;
+    }
+    /* L'overlay (sopra l'input nativo) prende lo stesso sfondo dell'hover/focus:
+       cosi' copre del tutto qualsiasi riquadro/evidenziazione che il browser
+       disegna internamente sull'input nativo quando e' a fuoco (altrimenti
+       spuntava come un riquadro strano sotto il testo). */
+    #martur-operations-dashboard .mod-period-picker:hover .mod-period-overlay,
+    #martur-operations-dashboard .mod-period-picker:focus-within .mod-period-overlay {
+      background: var(--secondary);
+      border-radius: var(--radius-lg);
     }
     #martur-operations-dashboard .mod-pillnav {
       display: flex;
@@ -1303,11 +1313,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 14px;
     }
     #martur-operations-dashboard .mod-view-context,
-    #martur-operations-dashboard .mod-view-actions,
-    #martur-operations-dashboard .mod-shift-card-head {
+    #martur-operations-dashboard .mod-view-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
+    }
+    #martur-operations-dashboard .mod-shift-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       gap: 12px;
     }
     #martur-operations-dashboard .mod-view-context {
@@ -1749,6 +1765,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       min-width: 0;
     }
     #martur-operations-dashboard .mod-chat-messages {
+      height: calc(100vh - 260px);
       height: calc(100dvh - 260px);
       min-height: 320px;
       overflow-y: auto;
@@ -1922,7 +1939,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-card-name {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px 7px;
     }
     #martur-operations-dashboard .mod-shift-time {
       font-weight: 500;
@@ -1950,8 +1969,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-grid-4col {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      grid-template-rows: repeat(4, auto);
-      grid-auto-flow: column;
       column-gap: 10px;
       row-gap: 10px;
       padding-top: 11px;
@@ -2769,9 +2786,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-message {
       min-height: 20px;
     }
-    #martur-operations-dashboard .mod-chat-messages {
-      height: calc(100dvh - 340px);
-    }
     #martur-operations-dashboard .mod-note-cell {
       max-width: 220px;
       text-align: left;
@@ -2999,14 +3013,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         overflow-x: clip;
         max-width: 100vw;
       }
+      /* Margine di sicurezza extra sotto l'header fisso: su mobile l'header puo'
+         cambiare altezza (calendario aperto/chiuso) e il primo elemento sotto
+         rischiava di finirci parzialmente coperto. */
+      #martur-operations-dashboard #mod-dashboard-screen {
+        margin-top: 6px;
+      }
+      #martur-operations-dashboard .mod-chat-messages {
+        height: calc(100vh - 340px);
+        height: calc(100dvh - 340px);
+      }
       #martur-operations-dashboard .mod-report-title {
         letter-spacing: 0;
         white-space: nowrap;
         overflow: hidden;
       }
       #martur-operations-dashboard .mod-shift-card-name {
-        font-size: clamp(10px, 3vw, 15px);
-        white-space: nowrap;
+        font-size: 12px;
+        white-space: normal;
       }
       #martur-operations-dashboard .mod-shift-card-head {
         gap: 8px;
@@ -4785,6 +4809,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       };
       const LANG_FLAGS = { it: '🇮🇹', en: '🇬🇧', tr: '🇹🇷' };
       const SHIFT_TIMES = { shift1: '06:00 - 14:00', shift2: '14:00 - 22:00' };
+      // Le due squadre si alternano ogni settimana ISO tra 1 e 2 Turno.
+      const SHIFT_TEAM_A = ['M. Lampis', 'D. Cristiano', 'A. Liotino'];
+      const SHIFT_TEAM_B = ['S. Perna', 'P. Zotta', 'M. Colverde'];
 
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyDsStEiIby8i_1RAc_rcHYHMqUpYo4LXw4',
@@ -5725,6 +5752,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return derived;
       }
 
+      function fitOverlayText(el) {
+        // Riduce il font solo di questa etichetta finche' il testo (mese per esteso,
+        // es. "Settembre") non entra su una riga sola dentro la pillola.
+        if (!el) return;
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        let guard = 0;
+        while (el.scrollWidth > el.clientWidth && size > 9 && guard < 12) {
+          size -= 0.5;
+          el.style.fontSize = size + 'px';
+          guard++;
+        }
+      }
+
       function ensurePeriodSelection(rows) {
         const activeRows = rows.filter(hasOperationalData);
         const productionRows = rows.filter((row) => row.totalFront > 0 || row.totalRear > 0);
@@ -5752,8 +5793,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const wd = parseDate(state.selectedDate).getDay();
           const idx = (wd + 6) % 7;
           const weekday = (WEEKDAY_FULL[state.lang] || WEEKDAY_FULL.it)[idx];
-          const dayMonthYear = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: 'short', year: 'numeric' }).format(parseDate(state.selectedDate));
+          const dayMonthYear = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: 'long', year: 'numeric' }).format(parseDate(state.selectedDate));
           el.dateWeekday.textContent = weekday + ' ' + dayMonthYear;
+          fitOverlayText(el.dateWeekday);
         }
         el.periodWeek.value = isoWeekStringOf(mondayOf(parseDate(state.selectedDate)));
         if (el.weekOverlay) {
@@ -6130,12 +6172,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
       }
 
-      function shiftAlphaLabel(shiftKey, dateStr) {
-        // Turno A / Turno B si alternano ogni settimana ISO tra 1 e 2 Turno.
+      function shiftTeamInfo(shiftKey, dateStr) {
+        // Le squadre A/B si alternano ogni settimana ISO tra 1 e 2 Turno.
         const weekNum = getIsoWeekNumber(parseDate(dateStr));
         const isShift1 = shiftKey === 'shift1';
         const isA = weekNum % 2 === 0 ? isShift1 : !isShift1;
-        return t(isA ? 'shiftA' : 'shiftB');
+        return { letter: isA ? 'A' : 'B', names: isA ? SHIFT_TEAM_A : SHIFT_TEAM_B };
       }
 
       function renderDailyShiftCards(row) {
@@ -6155,10 +6197,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const icon = index === 0 ? 'sun' : 'moon';
           const overtimeText = isNumber(shift.overtimePct) ? formatPercent(shift.overtimePct) : formatPercent(0);
           const noteText = (shift.note || '').trim();
+          const team = shiftTeamInfo(shiftKey, row.date);
           const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
-              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + escapeHtml(shiftAlphaLabel(shiftKey, row.date)) + ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span></span>' +
+              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')' +
+                ' · ' + escapeHtml(team.names.join(' / ')) +
+                ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span></span>' +
             '</div>' +
             '<div class="mod-shift-grid-4col">' +
               metric(seqFirstLabelHtml(t('seqMarturFirst')), formatSequenceNumber(shift.firstSeqMartur)) +
