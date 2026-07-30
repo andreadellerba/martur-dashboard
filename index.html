@@ -1284,6 +1284,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       color: transparent;
       caret-color: transparent;
     }
+    /* Icona nativa del calendario rimossa ovunque (desktop e mobile): l'input resta
+       cliccabile su tutta l'area (apre comunque il selettore data), e senza l'icona
+       il testo si puo' centrare davvero, senza spazio asimmetrico da un lato. */
+    #martur-operations-dashboard .mod-period-native::-webkit-calendar-picker-indicator {
+      display: none;
+    }
     #martur-operations-dashboard .mod-period-overlay {
       position: absolute;
       inset: 0;
@@ -1291,7 +1297,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: none;
+      cursor: pointer;
       font: inherit;
       font-weight: 600;
       text-transform: uppercase;
@@ -2954,12 +2960,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-period-overlay {
         font-size: 12px;
         padding-inline: 4px;
-      }
-      /* Su mobile lo spazio e' stretto: l'icona nativa del calendario si nasconde
-         (l'input resta cliccabile ovunque, apre comunque il selettore data) cosi'
-         l'etichetta centrata puo' usare tutta la larghezza senza finirci sotto. */
-      #martur-operations-dashboard .mod-period-native::-webkit-calendar-picker-indicator {
-        opacity: 0;
       }
       #martur-operations-dashboard .mod-header-picker .form-control::-webkit-date-and-time-value {
         text-align: center;
@@ -7961,6 +7961,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           state.mainChartSeries[series] = !state.mainChartSeries[series];
           button.setAttribute('aria-pressed', String(state.mainChartSeries[series]));
           renderDashboard();
+        });
+      });
+      // Click sull'etichetta centrata (overlay) -> apre il selettore data nativo via
+      // showPicker() invece di lasciare che il click "arrivi" all'input sottostante:
+      // cosi' non si attiva mai lo stato di editing testuale nativo (che disegnava
+      // quello strano riquadro sotto il testo).
+      [[el.dateWeekday, el.periodDate], [el.weekOverlay, el.periodWeek], [el.monthOverlay, el.periodMonth]].forEach(([overlay, input]) => {
+        if (!overlay || !input) return;
+        overlay.addEventListener('click', (event) => {
+          event.preventDefault();
+          if (typeof input.showPicker === 'function') {
+            try { input.showPicker(); } catch (error) { input.focus(); }
+          } else {
+            input.focus();
+          }
         });
       });
       el.periodDate.addEventListener('change', () => {
