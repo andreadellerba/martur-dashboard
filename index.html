@@ -1405,7 +1405,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       box-shadow: 0 10px 26px -10px rgb(0 0 0 / 55%), 0 2px 4px rgb(0 0 0 / 30%);
     }
     #martur-operations-dashboard .mod-kpi-tile .viz-stat-value {
-      color: var(--kpi-accent, var(--foreground));
+      color: light-dark(rgb(20 20 22), #fff);
     }
     #martur-operations-dashboard .mod-kpi-icon {
       position: absolute;
@@ -1996,6 +1996,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-warn { color: var(--metric-warn); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-bad { color: var(--metric-bad); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-yellow { color: var(--metric-yellow); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-gold { color: var(--gold); }
     @media (min-width: 901px) {
       #martur-operations-dashboard .mod-shift-card-name {
         font-size: calc(var(--font-size-normal) * 1.15);
@@ -6467,28 +6468,30 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             effCls = shift.efficiency > 0.65 ? 'mod-metric-good' : shift.efficiency >= 0.50 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let otCls = '';
-          if (!singleShift && isNumber(shift.overtimePct)) {
-            otCls = shift.overtimePct <= 0 ? 'mod-metric-good' : shift.overtimePct <= 0.10 ? 'mod-metric-yellow' : 'mod-metric-bad';
+          if (!singleShift) {
+            const otValue = isNumber(shift.overtimePct) ? shift.overtimePct : 0;
+            otCls = otValue <= 0 ? 'mod-metric-good' : otValue <= 0.10 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let dummyCls = '';
           if (!singleShift && isNumber(shift.dummy)) {
             dummyCls = shift.dummy <= 30 ? 'mod-metric-bad' : shift.dummy <= 50 ? 'mod-metric-yellow' : 'mod-metric-good';
           }
+          const goldCls = singleShift ? '' : 'mod-metric-gold';
           const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
               '<span class="mod-shift-card-name">' + titleHtml + '</span>' +
             '</div>' +
             '<div class="mod-shift-grid-4col">' +
-              metric(seqFirstLabelHtml(t('seqMarturFirst')), formatSequenceNumber(shift.firstSeqMartur)) +
-              metric(seqFirstLabelHtml(t('seqMarturLast')), formatSequenceNumber(shift.lastSeqMartur)) +
-              metric(seqFirstLabelHtml(t('seqStellFirst')), formatSequenceNumber(shift.firstSeqStellantis)) +
-              metric(seqFirstLabelHtml(t('seqStellLast')), formatSequenceNumber(shift.lastSeqStellantis)) +
+              metric(seqFirstLabelHtml(t('seqMarturFirst')), formatSequenceNumber(shift.firstSeqMartur), goldCls) +
+              metric(seqFirstLabelHtml(t('seqMarturLast')), formatSequenceNumber(shift.lastSeqMartur), goldCls) +
+              metric(seqFirstLabelHtml(t('seqStellFirst')), formatSequenceNumber(shift.firstSeqStellantis), goldCls) +
+              metric(seqFirstLabelHtml(t('seqStellLast')), formatSequenceNumber(shift.lastSeqStellantis), goldCls) +
               metric(t('frontLine'), formatOptionalNumber(shift.front), frontCls) +
               metric(t('rearLine'), formatOptionalNumber(shift.rear), rearCls) +
               metric('Stellantis', formatOptionalNumber(shift.stellantisCars), stellCls) +
               metric(t('gap'), formatSigned(gap), gapCls) +
-              metric(t('presence'), formatOptionalNumber(shift.presence)) +
+              metric(t('presence'), formatOptionalNumber(shift.presence), goldCls) +
               metric(t('absent'), formatOptionalNumber(shift.absent), absentCls) +
               metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
               metric(t('rework'), reworkText, reworkCls) +
@@ -7605,7 +7608,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ).join('');
       }
 
-      function sparklineSvg(values) {
+      function sparklineSvg(values, trendDir) {
         const nums = values.map((v) => (isNumber(v) ? v : null));
         const valid = nums.filter((v) => v != null);
         if (valid.length < 2) return '';
@@ -7618,7 +7621,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const pts = [];
         let lastIdx = -1;
         nums.forEach((v, i) => { if (v != null) { pts.push(xAt(i).toFixed(1) + ',' + yAt(v).toFixed(1)); lastIdx = i; } });
-        const stroke = 'var(--kpi-accent, var(--primary))';
+        const stroke = trendDir === 'up' ? 'var(--metric-good)' : trendDir === 'down' ? 'var(--metric-bad)' : 'var(--kpi-accent, var(--primary))';
         return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
           '<polyline fill="none" stroke="' + stroke + '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="' + pts.join(' ') + '"></polyline>' +
           (lastIdx >= 0 ? '<circle cx="' + xAt(lastIdx).toFixed(1) + '" cy="' + yAt(nums[lastIdx]).toFixed(1) + '" r="2.4" fill="' + stroke + '" vector-effect="non-scaling-stroke"></circle>' : '') +
@@ -7681,7 +7684,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // niente freccia/delta, solo il valore e il grafico dell'andamento.
         const skipBadge = state.view === 'daily' && isSingleShiftDay(state.selectedDate);
         metrics.forEach((m) => {
-          m.spark.innerHTML = sparklineSvg(series.map(m.get));
+          const valuesForSpark = series.map(m.get);
+          const validVals = valuesForSpark.filter(isNumber);
+          let dir = null;
+          if (validVals.length >= 2) {
+            const d = validVals[validVals.length - 1] - validVals[validVals.length - 2];
+            const threshold = m.kind === 'pct' ? 0.0005 : 0.5;
+            dir = Math.abs(d) < threshold ? 'flat' : (d > 0 ? 'up' : 'down');
+          }
+          m.spark.innerHTML = sparklineSvg(valuesForSpark, dir);
           if (series.length >= 2 && !skipBadge) {
             renderTrendBadge(m.trend, m.get(series[series.length - 1]), m.get(series[series.length - 2]), m.kind);
           } else {
