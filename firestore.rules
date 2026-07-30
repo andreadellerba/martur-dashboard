@@ -34,5 +34,13 @@ service cloud.firestore {
       // Solo utenti autenticati con ruolo admin/configAdmin possono inserire o modificare dati.
       allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }
+
+    match /auditLog/{id} {
+      // Ogni utente autenticato puo' registrare un proprio evento (login/modifica);
+      // il registro si legge/elimina solo con ruolo configAdmin.
+      allow create: if isSignedIn() && request.resource.data.username is string;
+      allow read, delete: if isSignedIn() && myRole() == 'configAdmin';
+      allow update: if false;
+    }
   }
 }
