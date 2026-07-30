@@ -1941,7 +1941,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       bottom: 2px;
       width: 3px;
       border-radius: 2px;
-      background: var(--primary);
+      background: var(--gold);
     }
     #martur-operations-dashboard .mod-daily-shift-grid {
       display: grid;
@@ -2026,6 +2026,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 8px;
       padding-bottom: 7px;
       border-bottom: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-rework-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 7px;
+      border-radius: var(--radius-full);
+      background: var(--gold);
+      color: var(--gold-foreground);
+      font-weight: 700;
+      font-size: var(--font-size-normal);
     }
     #martur-operations-dashboard .mod-rework-ranking-name {
       min-width: 0;
@@ -5857,6 +5871,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.periodMonth.max = lastMonth;
         el.periodMonth.value = state.selectedMonth;
         if (el.monthOverlay) el.monthOverlay.textContent = formatMonth(state.selectedMonth + '-01');
+        // Il selettore giorno/settimana/mese mostrato segue la vista; in tutte le altre
+        // pagine (Comunicazioni, Abarth, DMC, ecc.) resta il giorno, con la data odierna.
+        el.datePicker.hidden = state.view === 'weekly' || state.view === 'monthly';
+        el.weekPicker.hidden = state.view !== 'weekly';
+        el.monthPicker.hidden = state.view !== 'monthly';
       }
 
       function getDailyPeriods(rows, selectedDate) {
@@ -6219,7 +6238,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderDailyTopReworks(row) {
         const topReworks = normalizeTopReworks(row.topReworks);
         el.dailyReworkList.innerHTML = topReworks.length
-          ? topReworks.map((item, index) => '<li><span class="viz-badge">#' + (index + 1) + '</span><span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span>' + (isNumber(item.count) ? '<span class="mod-rework-ranking-count">' + formatNumber(item.count) + ' ' + t('cases') + '</span>' : '') + '</li>').join('')
+          ? topReworks.map((item, index) => '<li><span class="mod-rework-rank-badge">' + (index + 1) + '</span><span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span>' + (isNumber(item.count) ? '<span class="mod-rework-ranking-count">' + formatNumber(item.count) + ' ' + t('cases') + '</span>' : '') + '</li>').join('')
           : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
       }
 
@@ -6320,9 +6339,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
         const summary = state.view === 'daily' ? dailySummary : overall;
 
-        el.datePicker.hidden = state.view !== 'daily';
-        el.weekPicker.hidden = state.view !== 'weekly';
-        el.monthPicker.hidden = state.view !== 'monthly';
         el.dailyShiftSection.hidden = state.view !== 'daily';
         el.dailyReworkSection.hidden = state.view !== 'daily';
         el.periodShiftSection.hidden = state.view === 'daily';
