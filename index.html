@@ -815,6 +815,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-form-actions {
       flex-wrap: wrap;
     }
+    /* Titolo di sezione + sottotitolo sulla stessa riga (affiancati) invece che impilati;
+       se il sottotitolo non entra si accorcia con i puntini invece di andare a capo.
+       Quando la sezione non ha altri elementi (legenda/azioni) a destra, il gruppo
+       titolo+sottotitolo si centra nell'intestazione. */
+    #martur-operations-dashboard .mod-section-head:has(> div:only-child) {
+      justify-content: center;
+    }
+    #martur-operations-dashboard .mod-section-head > div:first-child {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-section-head > div:first-child > .mod-section-label {
+      flex: 0 0 auto;
+      margin-bottom: 0;
+    }
+    #martur-operations-dashboard .mod-section-head > div:first-child > .text-small {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
     #martur-operations-dashboard .mod-brand,
     #martur-operations-dashboard .mod-actions,
     #martur-operations-dashboard .mod-legend {
@@ -1845,10 +1868,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       margin: 1px 8px 0;
     }
     #martur-operations-dashboard .mod-chat-composer {
-      position: relative;
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
       display: flex;
       flex-direction: column;
       gap: 4px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      background: var(--background);
     }
     #martur-operations-dashboard .mod-chat-composer-row {
       display: flex;
@@ -7824,13 +7852,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dmcScreen.hidden = !isDmc;
         el.chatScreen.hidden = !isChat;
         el.tvScreen.hidden = !isTv;
-        el.contextBar.hidden = !isDashboard && !isTv;
-        // Icona calendario (mobile) disponibile solo quando c'e' una barra data; altrimenti chiudila.
-        el.calToggle.hidden = el.contextBar.hidden;
-        if (el.contextBar.hidden) {
-          el.topbarCluster.classList.remove('mod-cal-open');
-          el.calToggle.setAttribute('aria-expanded', 'false');
-        }
+        // Il calendario resta sempre visibile: header identico in ogni pagina
+        // (prima spariva in "+"/Comunicazioni/ecc. e il resto del gruppo si ricentrava).
+        el.contextBar.hidden = false;
+        el.calToggle.hidden = false;
         // "+" (nuovo dato) e Modifica/Elimina restano sempre fissi nel menu, in qualsiasi pagina.
         el.entryViewBtn.hidden = false;
         renderDailyAdminActions();
