@@ -59,6 +59,14 @@
   --viz-series-4: light-dark(rgb(200 51 116), rgb(240 143 192));
   --viz-series-5: light-dark(rgb(110 68 214), rgb(170 145 239));
   --viz-series-6: light-dark(rgb(11 137 129), rgb(90 203 194));
+  --metric-good: light-dark(rgb(21 128 61), rgb(74 222 128));
+  --metric-warn: light-dark(rgb(196 108 6), rgb(251 191 36));
+  --metric-bad: light-dark(rgb(220 38 38), rgb(255 99 99));
+  --crew-blue: light-dark(rgb(29 78 216), rgb(96 165 250));
+  --kpi-green: light-dark(rgb(21 128 61), rgb(74 222 128));
+  --kpi-yellow: light-dark(rgb(202 138 4), rgb(250 204 21));
+  --kpi-purple: light-dark(rgb(126 34 206), rgb(192 132 252));
+  --kpi-red: light-dark(rgb(220 38 38), rgb(255 99 99));
 
   /* Internal implementation variables; not part of the agent contract. */
   --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
@@ -1407,10 +1415,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       color: var(--kpi-accent, var(--primary));
       opacity: 0.55;
     }
-    #martur-operations-dashboard .mod-kpi-tile-1 { --kpi-accent: var(--viz-series-1); }
-    #martur-operations-dashboard .mod-kpi-tile-2 { --kpi-accent: var(--viz-series-3); }
-    #martur-operations-dashboard .mod-kpi-tile-3 { --kpi-accent: var(--viz-series-5); }
-    #martur-operations-dashboard .mod-kpi-tile-4 { --kpi-accent: var(--viz-series-2); }
+    #martur-operations-dashboard .mod-kpi-tile-1 { --kpi-accent: var(--kpi-green); }
+    #martur-operations-dashboard .mod-kpi-tile-2 { --kpi-accent: var(--kpi-yellow); }
+    #martur-operations-dashboard .mod-kpi-tile-3 { --kpi-accent: var(--kpi-red); }
+    #martur-operations-dashboard .mod-kpi-tile-4 { --kpi-accent: var(--kpi-purple); }
     #martur-operations-dashboard .mod-kpi-value-row {
       display: inline-flex;
       align-items: baseline;
@@ -1978,8 +1986,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: grid;
       gap: 13px;
       padding: 14px;
-      border: 2px solid light-dark(rgb(237 28 36), rgb(255 69 58));
+      border: 2px solid var(--gold);
     }
+    #martur-operations-dashboard .mod-shift-title-main { color: #fff; }
+    #martur-operations-dashboard .mod-shift-lead { color: var(--gold); font-weight: var(--font-weight-medium); }
+    #martur-operations-dashboard .mod-shift-crew { color: var(--crew-blue); font-weight: var(--font-weight-medium); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-good { color: var(--metric-good); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-warn { color: var(--metric-warn); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-bad { color: var(--metric-bad); }
     #martur-operations-dashboard .mod-shift-card-name,
     #martur-operations-dashboard .mod-shift-summary-text {
       font-size: calc(var(--font-size-normal) * 1.1);
@@ -6403,6 +6417,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const reworkText = formatOptionalNumber(shift.rework) + (isNumber(reworkRate) ? ' \u00b7 ' + formatPercent(reworkRate) : '');
           const overtimeText = isNumber(shift.overtimePct) ? formatPercent(shift.overtimePct) : formatPercent(0);
           const noteText = (shift.note || '').trim();
+          // Colori a soglia sui valori: disattivi di sabato/domenica (turno unico, non
+          // paragonabile) dove tutto resta bianco.
+          const singleShift = isSingleShiftDay(row.date);
+          let frontCls = '', stellCls = '';
+          if (!singleShift && isNumber(shift.front) && isNumber(shift.stellantisCars) && shift.front !== shift.stellantisCars) {
+            if (shift.front > shift.stellantisCars) { frontCls = 'mod-metric-good'; stellCls = 'mod-metric-bad'; }
+            else { frontCls = 'mod-metric-bad'; stellCls = 'mod-metric-good'; }
+          }
+          let reworkCls = '';
+          if (!singleShift && isNumber(reworkRate)) {
+            reworkCls = reworkRate < 0.10 ? 'mod-metric-good' : reworkRate <= 0.20 ? 'mod-metric-warn' : 'mod-metric-bad';
+          }
+          let absCls = '';
+          if (!singleShift && isNumber(absenteeism)) {
+            absCls = absenteeism <= 0.12 ? 'mod-metric-good' : absenteeism <= 0.20 ? 'mod-metric-warn' : 'mod-metric-bad';
+          }
           const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
@@ -6413,14 +6443,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(seqFirstLabelHtml(t('seqMarturLast')), formatSequenceNumber(shift.lastSeqMartur)) +
               metric(seqFirstLabelHtml(t('seqStellFirst')), formatSequenceNumber(shift.firstSeqStellantis)) +
               metric(seqFirstLabelHtml(t('seqStellLast')), formatSequenceNumber(shift.lastSeqStellantis)) +
-              metric(t('frontLine'), formatOptionalNumber(shift.front)) +
+              metric(t('frontLine'), formatOptionalNumber(shift.front), frontCls) +
               metric(t('rearLine'), formatOptionalNumber(shift.rear)) +
-              metric('Stellantis', formatOptionalNumber(shift.stellantisCars)) +
+              metric('Stellantis', formatOptionalNumber(shift.stellantisCars), stellCls) +
               metric(t('gap'), formatSigned(gap), isNumber(gap) && gap < 0 ? 'mod-negative' : '') +
               metric(t('presence'), formatOptionalNumber(shift.presence)) +
               metric(t('absent'), formatOptionalNumber(shift.absent)) +
-              metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—') +
-              metric(t('rework'), reworkText) +
+              metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
+              metric(t('rework'), reworkText, reworkCls) +
               metric(t('dummySeats'), formatOptionalNumber(shift.dummy)) +
               metric(t('coda'), formatOptionalNumber(shift.coda)) +
               metric(t('overtime'), overtimeText) +
@@ -6469,8 +6499,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dailyShiftGrid.innerHTML = ['shift1', 'shift2'].map((shiftKey, index) => {
           const icon = index === 0 ? 'sun' : 'moon';
           const team = shiftTeamInfo(shiftKey, row.date);
-          const titleHtml = '<i data-lucide="' + icon + '" aria-hidden="true"></i>' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')' +
-            ' · ' + escapeHtml(team.names.join(' / ')) +
+          const lead = team.names[0];
+          const crew = team.names.slice(1);
+          const titleHtml = '<i data-lucide="' + icon + '" aria-hidden="true"></i>' +
+            '<span class="mod-shift-title-main">' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')</span>' +
+            ' · <span class="mod-shift-lead">' + escapeHtml(lead) + '</span>' +
+            (crew.length ? ' / <span class="mod-shift-crew">' + escapeHtml(crew.join(' / ')) + '</span>' : '') +
             ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>';
           return shiftCardHtml(row, shiftKey, index, titleHtml);
         }).join('');
