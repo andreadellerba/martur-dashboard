@@ -889,6 +889,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: var(--topbar-gap);
       min-width: 0;
     }
+    /* Ordine visivo: logo, menu, calendario (invertito rispetto al markup, dove
+       il calendario viene prima del menu). Gli spazi restano uguali perche' e'
+       sempre lo stesso flex con lo stesso gap, cambia solo l'ordine. */
+    #martur-operations-dashboard .mod-topbar-cluster > .mod-pillnav {
+      order: 2;
+    }
+    #martur-operations-dashboard .mod-topbar-cluster > #mod-context-bar {
+      order: 3;
+    }
     #martur-operations-dashboard .mod-back-btn {
       flex: 0 0 auto;
       display: inline-flex;
