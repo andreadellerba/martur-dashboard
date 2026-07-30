@@ -6283,7 +6283,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // Le squadre A/B si alternano ogni settimana ISO tra 1 e 2 Turno.
         const weekNum = getIsoWeekNumber(parseDate(dateStr));
         const isShift1 = shiftKey === 'shift1';
-        const isA = weekNum % 2 === 0 ? isShift1 : !isShift1;
+        const isA = weekNum % 2 === 0 ? !isShift1 : isShift1;
         return { letter: isA ? 'A' : 'B', names: isA ? SHIFT_TEAM_A : SHIFT_TEAM_B };
       }
 
