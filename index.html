@@ -1950,9 +1950,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       align-items: start;
     }
     /* Sabato: turno unico, una sola card centrata (non a tutta larghezza). */
+    /* Sabato (giornaliero): card turno unico al centro, le 4 tile KPI impilate a coppie
+       a sx/dx, tutto centrato insieme come un unico gruppo. */
     #martur-operations-dashboard .mod-daily-shift-grid.mod-single-shift {
-      grid-template-columns: minmax(0, min(560px, 100%));
+      grid-template-columns: minmax(0, 220px) minmax(0, min(560px, 100%)) minmax(0, 220px);
       justify-content: center;
+      align-items: center;
+    }
+    #martur-operations-dashboard .mod-single-shift-side {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      height: 100%;
+      justify-content: center;
+    }
+    @media (max-width: 900px) {
+      #martur-operations-dashboard .mod-daily-shift-grid.mod-single-shift {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      #martur-operations-dashboard .mod-single-shift-side {
+        flex-direction: row;
+      }
     }
     #martur-operations-dashboard .mod-daily-shift-card {
       position: relative;
@@ -5078,6 +5096,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         dailyShiftSection: root.querySelector('#mod-daily-shift-section'),
         dailyAdminActions: root.querySelector('#mod-daily-admin-actions'),
         dailyShiftGrid: root.querySelector('#mod-daily-shift-grid'),
+        kpiGrid: root.querySelector('.mod-kpi-grid'),
+        kpiTile1: root.querySelector('.mod-kpi-tile-1'),
+        kpiTile2: root.querySelector('.mod-kpi-tile-2'),
+        kpiTile4: root.querySelector('.mod-kpi-tile-4'),
+        kpiTile3: root.querySelector('.mod-kpi-tile-3'),
         dailyReworkSection: root.querySelector('#mod-daily-rework-section'),
         dailyReworkList: root.querySelector('#mod-daily-rework-list'),
         oeeSection: root.querySelector('#mod-oee-section'),
@@ -5364,6 +5387,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }).filter(Boolean);
       }
 
+      function timeRangeHours(start, end) {
+        if (!start || !end) return null;
+        const [sh, sm] = start.split(':').map(Number);
+        const [eh, em] = end.split(':').map(Number);
+        if (![sh, sm, eh, em].every(Number.isFinite)) return null;
+        const hours = (eh * 60 + em - (sh * 60 + sm)) / 60;
+        return hours > 0 ? hours : null;
+      }
+
       function deriveRow(row) {
         const shift1 = Object.assign(emptyShift(), row.shift1 || {});
         const shift2 = Object.assign(emptyShift(), row.shift2 || {});
@@ -5372,6 +5404,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         if (isNumber(shift2.convocati) && isNumber(shift2.presence)) {
           shift2.absent = Math.max(0, Math.round(shift2.convocati - shift2.presence));
+        }
+        // Sabato: l'Efficienza usa le ore realmente lavorate (inizio/fine turno unico
+        // inserite), non le 7 ore fisse dei giorni feriali.
+        if (isSaturday(row.date)) {
+          const uniqueHours = timeRangeHours(shift1.uniqueShiftStart, shift1.uniqueShiftEnd);
+          if (uniqueHours) shift1.hours = uniqueHours;
         }
         shift1.efficiency = isNumber(shift1.efficiency) ? shift1.efficiency : calculateShiftEfficiency(shift1);
         shift2.efficiency = isNumber(shift2.efficiency) ? shift2.efficiency : calculateShiftEfficiency(shift2);
@@ -6328,18 +6366,39 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '</article>';
       }
 
+      function positionKpiTiles(sideBySide) {
+        // Sabato (giornaliero): le 4 tile KPI si spostano a sx/dx della card turno unico,
+        // impilate a coppie. Negli altri casi restano nella loro griglia normale.
+        if (sideBySide) {
+          if (!el.kpiLeftSlot) {
+            el.kpiLeftSlot = document.createElement('div');
+            el.kpiLeftSlot.className = 'mod-single-shift-side';
+            el.kpiRightSlot = document.createElement('div');
+            el.kpiRightSlot.className = 'mod-single-shift-side';
+          }
+          const card = el.dailyShiftGrid.querySelector('.mod-daily-shift-card');
+          el.dailyShiftGrid.insertBefore(el.kpiLeftSlot, card);
+          el.dailyShiftGrid.appendChild(el.kpiRightSlot);
+          el.kpiLeftSlot.append(el.kpiTile1, el.kpiTile2);
+          el.kpiRightSlot.append(el.kpiTile4, el.kpiTile3);
+          el.kpiGrid.hidden = true;
+        } else {
+          el.kpiGrid.hidden = false;
+          el.kpiGrid.append(el.kpiTile1, el.kpiTile2, el.kpiTile4, el.kpiTile3);
+        }
+      }
+
       function renderDailyShiftCards(row) {
         if (isSaturday(row.date)) {
           // Sabato: turno unico solo, una card centrata (dati nel campo "1° turno").
+          // L'orario si vede solo se e quando viene inserito (nessun orario di default).
           const shift1 = row.shift1 || emptyShift();
-          const defaultStart = SHIFT_TIMES.shift1.split(' - ')[0];
-          const defaultEnd = SHIFT_TIMES.shift1.split(' - ')[1];
-          const start = shift1.uniqueShiftStart || defaultStart;
-          const end = shift1.uniqueShiftEnd || defaultEnd;
-          const titleHtml = '<i data-lucide="sun" aria-hidden="true"></i>☀️ ' + escapeHtml(t('uniqueShift')) +
-            ' <span class="mod-shift-time">(' + escapeHtml(start) + ' - ' + escapeHtml(end) + ')</span>';
+          const hasTime = shift1.uniqueShiftStart && shift1.uniqueShiftEnd;
+          const titleHtml = '<i data-lucide="sun" aria-hidden="true"></i>' + escapeHtml(t('uniqueShift')) +
+            (hasTime ? ' <span class="mod-shift-time">(' + escapeHtml(shift1.uniqueShiftStart) + ' - ' + escapeHtml(shift1.uniqueShiftEnd) + ')</span>' : '');
           el.dailyShiftGrid.classList.add('mod-single-shift');
           el.dailyShiftGrid.innerHTML = shiftCardHtml(row, 'shift1', 0, titleHtml);
+          positionKpiTiles(state.view === 'daily');
           return;
         }
         el.dailyShiftGrid.classList.remove('mod-single-shift');
@@ -6351,6 +6410,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>';
           return shiftCardHtml(row, shiftKey, index, titleHtml);
         }).join('');
+        positionKpiTiles(false);
       }
 
       function renderShiftTables(overall, subtitle) {
