@@ -105,9 +105,11 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  /* Sfondo nero OLED puro + palette piu' satura/accesa (le card restano leggermente
-     sollevate dal nero grazie al mix esistente su --card, come da pattern OLED). */
+  /* Sfondo nero OLED puro + palette piu' satura/accesa. --card diventa un colore pieno
+     (invece del mix al 5% su trasparente) perche' sul nero puro risultava troppo scuro
+     e le card non si distinguevano dallo sfondo. */
   --background: rgb(0 0 0);
+  --card: rgb(26 26 28);
   --primary: rgb(41 150 255);
   --primary-foreground: rgb(6 6 6);
   --accent: rgb(9 41 74);
@@ -906,6 +908,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-datenav .mod-period-nav {
       border-radius: var(--radius-full);
+      /* Dentro la pillola (sfondo muted) l'icona ghost muted-foreground si vedeva a malapena:
+         piu' contrasto. */
+      color: var(--foreground);
+    }
+    #martur-operations-dashboard .mod-datenav .mod-period-nav:not(:disabled):hover {
+      background: var(--card);
     }
     #martur-operations-dashboard .mod-datenav .form-control {
       border-color: transparent;
@@ -1246,7 +1254,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-header-picker #mod-date-picker {
       position: relative;
-      width: 290px;
+      width: 215px;
       display: block;
     }
     #martur-operations-dashboard .mod-date-weekday {
@@ -1257,13 +1265,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       z-index: 1;
       pointer-events: none;
       font-weight: 400;
+      font-size: var(--font-size-small);
       color: var(--foreground);
       text-transform: capitalize;
       white-space: nowrap;
     }
     #martur-operations-dashboard #mod-date-picker .form-control {
       width: 100%;
-      padding-left: 96px;
+      padding-left: 78px;
+      padding-right: 6px;
     }
     #martur-operations-dashboard .mod-header-picker .mod-period-picker .form-control {
       margin-top: 0;
@@ -1899,7 +1909,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       position: absolute;
       inset: 0 0 auto 0;
       height: 3px;
-      background: light-dark(rgb(211 47 47), rgb(255 99 99));
+      background: light-dark(rgb(237 28 36), rgb(255 69 58));
     }
     #martur-operations-dashboard .mod-shift-card-name,
     #martur-operations-dashboard .mod-shift-summary-text {
@@ -2915,9 +2925,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-header-picker .mod-period-picker {
         width: 100%;
       }
-      /* Su mobile la label #mod-date-picker (giornaliero) ha un ID piu' specifico che sul
-         desktop la fissa a 290px: senza questa regola resta stretta e lascia spazio vuoto
-         a destra, mentre settimana/mese (solo classe) si allargano gia' al 100%. */
+      /* Su mobile la label #mod-date-picker (giornaliero) ha un ID piu' specifico del
+         desktop (larghezza fissa): senza questa regola resta stretta e lascia spazio
+         vuoto a destra, mentre settimana/mese (solo classe) si allargano gia' al 100%. */
       #martur-operations-dashboard .mod-header-picker #mod-date-picker {
         width: 100%;
       }
@@ -4099,10 +4109,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           lastSeqMartur: 'Ultima Sequenza Martur',
           firstSeqStellantis: 'Prima Sequenza Stellantis',
           lastSeqStellantis: 'Ultima Sequenza Stellantis',
-          seqMarturFirst: '1ª seq. Martur',
-          seqMarturLast: 'Ult. seq. Martur',
-          seqStellFirst: '1ª seq. Stellantis',
-          seqStellLast: 'Ult. seq. Stellantis',
+          seqMarturFirst: '1° Martur',
+          seqMarturLast: 'Ultima Martur',
+          seqStellFirst: '1° Stellantis',
+          seqStellLast: 'Ultima Stellantis',
           productionVsClient: 'Martur vs Stellantis',
           frontLine: 'Linea anteriore',
           rearLine: 'Linea posteriore',
@@ -4376,10 +4386,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           lastSeqMartur: 'Last Martur sequence',
           firstSeqStellantis: 'First Stellantis sequence',
           lastSeqStellantis: 'Last Stellantis sequence',
-          seqMarturFirst: '1st seq. Martur',
-          seqMarturLast: 'Last seq. Martur',
-          seqStellFirst: '1st seq. Stellantis',
-          seqStellLast: 'Last seq. Stellantis',
+          seqMarturFirst: '1st Martur',
+          seqMarturLast: 'Last Martur',
+          seqStellFirst: '1st Stellantis',
+          seqStellLast: 'Last Stellantis',
           productionVsClient: 'Martur vs Stellantis',
           frontLine: 'Front line',
           rearLine: 'Rear line',
@@ -4653,10 +4663,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           lastSeqMartur: 'Son Martur sırası',
           firstSeqStellantis: 'İlk Stellantis sırası',
           lastSeqStellantis: 'Son Stellantis sırası',
-          seqMarturFirst: 'İlk seq. Martur',
-          seqMarturLast: 'Son seq. Martur',
-          seqStellFirst: 'İlk seq. Stellantis',
-          seqStellLast: 'Son seq. Stellantis',
+          seqMarturFirst: 'İlk Martur',
+          seqMarturLast: 'Son Martur',
+          seqStellFirst: 'İlk Stellantis',
+          seqStellLast: 'Son Stellantis',
           productionVsClient: 'Martur vs Stellantis',
           frontLine: 'Ön hat',
           rearLine: 'Arka hat',
@@ -5946,6 +5956,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return isNumber(value) ? formatNumber(value) : '\u2014';
       }
 
+      function formatSequenceNumber(value) {
+        // Numeri di sequenza (progressivi Martur/Stellantis): niente separatore delle migliaia.
+        return isNumber(value) ? String(Math.round(value)) : '\u2014';
+      }
+
       function topReworksCell(items) {
         const topReworks = normalizeTopReworks(items);
         if (!topReworks.length) return '\u2014';
@@ -6034,13 +6049,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const summaryText = hasData
             ? formatOptionalNumber(completeSets) + ' ' + t('completeSets') + ' - ' + t('efficiency') + ' ' + (isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—')
             : t('noShiftData');
-          const editButton = state.isAdmin
-            ? '<button type="button" class="btn btn-ghost mod-shift-edit" data-date="' + row.date + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>'
-            : '';
           const noteText = (shift.note || '').trim();
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
-              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + t(shiftKey) + ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>' + editButton + '</span>' +
+              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + t(shiftKey) + ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span></span>' +
               '<span class="mod-shift-summary-text">' + escapeHtml(summaryText) + '</span>' +
             '</div>' +
             '<div class="mod-shift-metric-grid">' +
@@ -6050,10 +6062,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('gap') + '</span><strong class="' + (isNumber(gap) && gap < 0 ? 'mod-negative' : '') + '">' + formatSigned(gap) + '</strong></div>' +
             '</div>' +
             '<div class="mod-shift-seq-grid">' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturFirst') + '</span><strong>' + formatOptionalNumber(shift.firstSeqMartur) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturLast') + '</span><strong>' + formatOptionalNumber(shift.lastSeqMartur) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellFirst') + '</span><strong>' + formatOptionalNumber(shift.firstSeqStellantis) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellLast') + '</span><strong>' + formatOptionalNumber(shift.lastSeqStellantis) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturFirst') + '</span><strong>' + formatSequenceNumber(shift.firstSeqMartur) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturLast') + '</span><strong>' + formatSequenceNumber(shift.lastSeqMartur) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellFirst') + '</span><strong>' + formatSequenceNumber(shift.firstSeqStellantis) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellLast') + '</span><strong>' + formatSequenceNumber(shift.lastSeqStellantis) + '</strong></div>' +
             '</div>' +
             '<div class="mod-shift-support-grid">' +
               '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('presence') + '</span><strong>' + formatOptionalNumber(shift.presence) + '</strong></div>' +
@@ -6066,9 +6078,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span>' + (noteText ? ' ' + escapeHtml(noteText) : '') + '</div>' +
           '</article>';
         }).join('');
-        el.dailyShiftGrid.querySelectorAll('.mod-shift-edit').forEach((button) => {
-          button.addEventListener('click', () => openShiftEditor(button.dataset.date));
-        });
       }
 
       function renderShiftTables(overall, subtitle) {
@@ -6145,7 +6154,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.mainDetail.innerHTML = '<span>' + t('selectedRange') + ': <strong>' + subtitle + '</strong></span><span>' + t('supplyGap') + ': <strong class="' + (overall.supplyGap < 0 ? 'mod-negative' : '') + '">' + formatSigned(overall.supplyGap) + ' ' + t('pieces') + '</strong></span>';
         renderKpiTrends();
         renderDailyShiftCards(dailySummary);
-        renderDailyAdminActions();
         renderDailyTopReworks(dailySummary);
         renderShiftTables(overall, subtitle);
         const oeeDowntimeMin = getPeriodStoppages().reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
@@ -6431,7 +6439,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderDailyAdminActions() {
-        const canEdit = state.isAdmin && state.view === 'daily';
+        const canEdit = state.isAdmin;
         el.dailyAdminActions.hidden = !canEdit;
         if (!canEdit) { el.dailyAdminActions.innerHTML = ''; return; }
         const hasManual = state.manual.some((row) => row.date === state.selectedDate);
@@ -7125,7 +7133,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         else cls += dir === 'up' ? 'mod-trend-up' : 'mod-trend-down';
         const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '▬';
         let mag;
-        if (kind === 'pct') mag = (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta * 1000) / 10)) + ' pt';
+        if (kind === 'pct') mag = (delta > 0 ? '+' : '−') + formatNumber(Math.abs(delta) * 100, 1) + '%';
         else mag = (delta > 0 ? '+' : '−') + formatNumber(Math.abs(Math.round(delta)));
         node.className = cls;
         node.textContent = dir === 'flat' ? arrow : arrow + ' ' + mag;
@@ -7587,7 +7595,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.topbarCluster.classList.remove('mod-cal-open');
           el.calToggle.setAttribute('aria-expanded', 'false');
         }
-        el.entryViewBtn.hidden = !(state.view === 'daily' || isEntry);
+        // "+" (nuovo dato) e Modifica/Elimina restano sempre fissi nel menu, in qualsiasi pagina.
+        el.entryViewBtn.hidden = false;
+        renderDailyAdminActions();
         el.stoppageSettingsBtn.hidden = !state.authUser;
         root.classList.toggle('mod-tv-on', isTv);
         if (!isChat) updateChatBadge();
