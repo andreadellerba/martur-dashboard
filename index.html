@@ -6444,11 +6444,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           }
           let reworkCls = '';
           if (!singleShift && isNumber(reworkRate)) {
-            reworkCls = reworkRate < 0.10 ? 'mod-metric-good' : reworkRate <= 0.20 ? 'mod-metric-warn' : 'mod-metric-bad';
+            reworkCls = reworkRate < 0.10 ? 'mod-metric-good' : reworkRate <= 0.20 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let absCls = '';
           if (!singleShift && isNumber(absenteeism)) {
-            absCls = absenteeism <= 0.12 ? 'mod-metric-good' : absenteeism <= 0.20 ? 'mod-metric-warn' : 'mod-metric-bad';
+            absCls = absenteeism <= 0.12 ? 'mod-metric-good' : absenteeism <= 0.20 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let absentCls = '';
           if (!singleShift && isNumber(shift.absent)) {
@@ -6456,7 +6456,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           }
           let codaCls = '';
           if (!singleShift && isNumber(shift.coda)) {
-            codaCls = shift.coda <= 45 ? 'mod-metric-good' : shift.coda <= 60 ? 'mod-metric-yellow' : shift.coda <= 80 ? 'mod-metric-warn' : 'mod-metric-bad';
+            codaCls = shift.coda <= 45 ? 'mod-metric-good' : shift.coda <= 70 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let gapCls = '';
           if (!singleShift && isNumber(gap)) {
