@@ -67,6 +67,7 @@
   --kpi-yellow: light-dark(rgb(202 138 4), rgb(250 204 21));
   --kpi-purple: light-dark(rgb(126 34 206), rgb(192 132 252));
   --kpi-red: light-dark(rgb(220 38 38), rgb(255 99 99));
+  --metric-yellow: light-dark(rgb(161 130 0), rgb(240 210 40));
 
   /* Internal implementation variables; not part of the agent contract. */
   --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
@@ -1994,6 +1995,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-good { color: var(--metric-good); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-warn { color: var(--metric-warn); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-bad { color: var(--metric-bad); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-yellow { color: var(--metric-yellow); }
     #martur-operations-dashboard .mod-shift-card-name,
     #martur-operations-dashboard .mod-shift-summary-text {
       font-size: calc(var(--font-size-normal) * 1.1);
@@ -2009,6 +2011,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-time {
       font-weight: 500;
       color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-shift-time.mod-shift-title-main {
+      color: light-dark(rgb(20 20 22), #fff);
     }
     #martur-operations-dashboard .mod-shift-note {
       padding-top: 10px;
@@ -6425,6 +6430,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             if (shift.front > shift.stellantisCars) { frontCls = 'mod-metric-good'; stellCls = 'mod-metric-bad'; }
             else { frontCls = 'mod-metric-bad'; stellCls = 'mod-metric-good'; }
           }
+          let rearCls = '';
+          if (!singleShift && isNumber(shift.rear) && isNumber(shift.stellantisCars) && shift.rear !== shift.stellantisCars) {
+            rearCls = shift.rear > shift.stellantisCars ? 'mod-metric-good' : 'mod-metric-bad';
+          }
           let reworkCls = '';
           if (!singleShift && isNumber(reworkRate)) {
             reworkCls = reworkRate < 0.10 ? 'mod-metric-good' : reworkRate <= 0.20 ? 'mod-metric-warn' : 'mod-metric-bad';
@@ -6432,6 +6441,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           let absCls = '';
           if (!singleShift && isNumber(absenteeism)) {
             absCls = absenteeism <= 0.12 ? 'mod-metric-good' : absenteeism <= 0.20 ? 'mod-metric-warn' : 'mod-metric-bad';
+          }
+          let absentCls = '';
+          if (!singleShift && isNumber(shift.absent)) {
+            absentCls = shift.absent <= 5 ? 'mod-metric-good' : shift.absent <= 8 ? 'mod-metric-yellow' : 'mod-metric-bad';
+          }
+          let codaCls = '';
+          if (!singleShift && isNumber(shift.coda)) {
+            codaCls = shift.coda <= 45 ? 'mod-metric-good' : shift.coda <= 60 ? 'mod-metric-yellow' : shift.coda <= 80 ? 'mod-metric-warn' : 'mod-metric-bad';
           }
           const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
@@ -6444,15 +6461,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(seqFirstLabelHtml(t('seqStellFirst')), formatSequenceNumber(shift.firstSeqStellantis)) +
               metric(seqFirstLabelHtml(t('seqStellLast')), formatSequenceNumber(shift.lastSeqStellantis)) +
               metric(t('frontLine'), formatOptionalNumber(shift.front), frontCls) +
-              metric(t('rearLine'), formatOptionalNumber(shift.rear)) +
+              metric(t('rearLine'), formatOptionalNumber(shift.rear), rearCls) +
               metric('Stellantis', formatOptionalNumber(shift.stellantisCars), stellCls) +
               metric(t('gap'), formatSigned(gap), isNumber(gap) && gap < 0 ? 'mod-negative' : '') +
               metric(t('presence'), formatOptionalNumber(shift.presence)) +
-              metric(t('absent'), formatOptionalNumber(shift.absent)) +
+              metric(t('absent'), formatOptionalNumber(shift.absent), absentCls) +
               metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
               metric(t('rework'), reworkText, reworkCls) +
               metric(t('dummySeats'), formatOptionalNumber(shift.dummy)) +
-              metric(t('coda'), formatOptionalNumber(shift.coda)) +
+              metric(t('coda'), formatOptionalNumber(shift.coda), codaCls) +
               metric(t('overtime'), overtimeText) +
               metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—') +
             '</div>' +
@@ -6503,9 +6520,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const crew = team.names.slice(1);
           const titleHtml = '<i data-lucide="' + icon + '" aria-hidden="true"></i>' +
             '<span class="mod-shift-title-main">' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')</span>' +
+            ' · <span class="mod-shift-title-main mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>' +
             ' · <span class="mod-shift-lead">' + escapeHtml(lead) + '</span>' +
-            (crew.length ? ' / <span class="mod-shift-crew">' + escapeHtml(crew.join(' / ')) + '</span>' : '') +
-            ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>';
+            (crew.length ? ' / <span class="mod-shift-crew">' + escapeHtml(crew.join(' / ')) + '</span>' : '');
           return shiftCardHtml(row, shiftKey, index, titleHtml);
         }).join('');
         positionKpiTiles(false);
