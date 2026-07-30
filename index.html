@@ -1996,6 +1996,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-warn { color: var(--metric-warn); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-bad { color: var(--metric-bad); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-yellow { color: var(--metric-yellow); }
+    @media (min-width: 901px) {
+      #martur-operations-dashboard .mod-shift-card-name {
+        font-size: calc(var(--font-size-normal) * 1.15);
+      }
+      #martur-operations-dashboard .mod-shift-metric strong {
+        font-size: calc(var(--font-size-normal) * 1.45);
+      }
+    }
     #martur-operations-dashboard .mod-shift-card-name,
     #martur-operations-dashboard .mod-shift-summary-text {
       font-size: calc(var(--font-size-normal) * 1.1);
@@ -6450,6 +6458,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (!singleShift && isNumber(shift.coda)) {
             codaCls = shift.coda <= 45 ? 'mod-metric-good' : shift.coda <= 60 ? 'mod-metric-yellow' : shift.coda <= 80 ? 'mod-metric-warn' : 'mod-metric-bad';
           }
+          let gapCls = '';
+          if (!singleShift && isNumber(gap)) {
+            gapCls = gap >= 0 ? 'mod-metric-good' : gap >= -15 ? 'mod-metric-yellow' : 'mod-metric-bad';
+          }
+          let effCls = '';
+          if (!singleShift && isNumber(shift.efficiency)) {
+            effCls = shift.efficiency > 0.65 ? 'mod-metric-good' : shift.efficiency >= 0.50 ? 'mod-metric-yellow' : 'mod-metric-bad';
+          }
+          let otCls = '';
+          if (!singleShift && isNumber(shift.overtimePct)) {
+            otCls = shift.overtimePct <= 0 ? 'mod-metric-good' : shift.overtimePct <= 0.10 ? 'mod-metric-yellow' : 'mod-metric-bad';
+          }
+          let dummyCls = '';
+          if (!singleShift && isNumber(shift.dummy)) {
+            dummyCls = shift.dummy <= 30 ? 'mod-metric-bad' : shift.dummy <= 50 ? 'mod-metric-yellow' : 'mod-metric-good';
+          }
           const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
@@ -6463,15 +6487,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(t('frontLine'), formatOptionalNumber(shift.front), frontCls) +
               metric(t('rearLine'), formatOptionalNumber(shift.rear), rearCls) +
               metric('Stellantis', formatOptionalNumber(shift.stellantisCars), stellCls) +
-              metric(t('gap'), formatSigned(gap), isNumber(gap) && gap < 0 ? 'mod-negative' : '') +
+              metric(t('gap'), formatSigned(gap), gapCls) +
               metric(t('presence'), formatOptionalNumber(shift.presence)) +
               metric(t('absent'), formatOptionalNumber(shift.absent), absentCls) +
               metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
               metric(t('rework'), reworkText, reworkCls) +
-              metric(t('dummySeats'), formatOptionalNumber(shift.dummy)) +
+              metric(t('dummySeats'), formatOptionalNumber(shift.dummy), dummyCls) +
               metric(t('coda'), formatOptionalNumber(shift.coda), codaCls) +
-              metric(t('overtime'), overtimeText) +
-              metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—') +
+              metric(t('overtime'), overtimeText, otCls) +
+              metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
             '</div>' +
             '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span>' + (noteText ? ' ' + escapeHtml(noteText) : '') + '</div>' +
           '</article>';
@@ -6522,7 +6546,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<span class="mod-shift-title-main">' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')</span>' +
             ' · <span class="mod-shift-title-main mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>' +
             ' · <span class="mod-shift-lead">' + escapeHtml(lead) + '</span>' +
-            (crew.length ? ' / <span class="mod-shift-crew">' + escapeHtml(crew.join(' / ')) + '</span>' : '');
+            (crew.length ? ' <span class="mod-shift-title-main">/</span> ' + crew.map((name) => '<span class="mod-shift-crew">' + escapeHtml(name) + '</span>').join(' <span class="mod-shift-title-main">/</span> ') : '');
           return shiftCardHtml(row, shiftKey, index, titleHtml);
         }).join('');
         positionKpiTiles(false);
