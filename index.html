@@ -832,7 +832,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       background: var(--background);
     }
     #martur-operations-dashboard .mod-topbar.mod-topbar-stuck {
-      box-shadow: 0 6px 18px -10px rgb(0 0 0 / 30%);
+      /* Ombra piu' corta e leggera: prima arrivava fino alla card sotto, spegnendo
+         visivamente la barra rossa del 1 Turno che ci sta appena sotto. */
+      box-shadow: 0 2px 6px -3px rgb(0 0 0 / 18%);
     }
     /* Griglia a 3 colonne con posizioni FISSE: logo (sx) · menu pill (centro) · calendario (dx).
        Le tracce restano anche se il calendario e' nascosto in certe schede, quindi logo e menu non si spostano mai. */
@@ -1251,29 +1253,33 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-header-picker .mod-period-picker {
       width: 215px;
       margin-bottom: 0;
-    }
-    #martur-operations-dashboard .mod-header-picker #mod-date-picker {
       position: relative;
-      width: 215px;
       display: block;
     }
-    #martur-operations-dashboard .mod-date-weekday {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1;
-      pointer-events: none;
-      font-weight: 400;
-      font-size: var(--font-size-small);
-      color: var(--foreground);
-      text-transform: capitalize;
-      white-space: nowrap;
-    }
-    #martur-operations-dashboard #mod-date-picker .form-control {
+    /* Il testo nativo dell'input data/settimana/mese resta cliccabile (apre il calendario)
+       ma invisibile: al suo posto mostriamo un'unica etichetta centrata, stesso font
+       dell'app, in maiuscolo (es. "VENERDI 24 LUG 2026"), senza spazi vuoti asimmetrici. */
+    #martur-operations-dashboard .mod-period-native {
       width: 100%;
-      padding-left: 78px;
-      padding-right: 6px;
+      color: transparent;
+      caret-color: transparent;
+    }
+    #martur-operations-dashboard .mod-period-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font: inherit;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-inline: 6px;
     }
     #martur-operations-dashboard .mod-header-picker .mod-period-picker .form-control {
       margin-top: 0;
@@ -1951,6 +1957,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       grid-template-columns: repeat(6, minmax(0, 1fr));
       padding-top: 11px;
       border-top: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-seq-label-tail {
+      display: inline;
     }
     #martur-operations-dashboard .mod-shift-seq-grid {
       display: grid;
@@ -2843,15 +2852,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-topbar-left .mod-brand-link {
         grid-column: 2;
+        grid-row: 1;
         justify-self: center;
       }
       #martur-operations-dashboard .mod-topbar-cluster .mod-back-btn {
         grid-column: 1;
+        grid-row: 1;
         justify-self: center;
         margin: 0;
       }
       #martur-operations-dashboard .mod-cal-toggle {
         grid-column: 3;
+        grid-row: 1;
         justify-self: center;
         display: inline-flex;
         align-items: center;
@@ -2924,19 +2936,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-header-picker .mod-period-picker {
         width: 100%;
-      }
-      /* Su mobile la label #mod-date-picker (giornaliero) ha un ID piu' specifico del
-         desktop (larghezza fissa): senza questa regola resta stretta e lascia spazio
-         vuoto a destra, mentre settimana/mese (solo classe) si allargano gia' al 100%. */
-      #martur-operations-dashboard .mod-header-picker #mod-date-picker {
-        width: 100%;
-      }
-      #martur-operations-dashboard #mod-date-picker .form-control {
-        padding-left: 84px;
+        min-width: 0;
       }
       #martur-operations-dashboard .mod-header-picker .form-control {
         -webkit-appearance: none;
         appearance: none;
+        min-width: 0;
         width: 100%;
         min-width: 100%;
         min-height: 32px;
@@ -2945,6 +2950,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      #martur-operations-dashboard .mod-period-overlay {
+        font-size: 12px;
+        padding-inline: 4px;
+      }
+      /* Su mobile lo spazio e' stretto: l'icona nativa del calendario si nasconde
+         (l'input resta cliccabile ovunque, apre comunque il selettore data) cosi'
+         l'etichetta centrata puo' usare tutta la larghezza senza finirci sotto. */
+      #martur-operations-dashboard .mod-period-native::-webkit-calendar-picker-indicator {
+        opacity: 0;
       }
       #martur-operations-dashboard .mod-header-picker .form-control::-webkit-date-and-time-value {
         text-align: center;
@@ -2955,6 +2970,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard th {
         white-space: nowrap;
+      }
+      #martur-operations-dashboard .mod-seq-label-tail {
+        display: block;
       }
       #martur-operations-dashboard .mod-entry-head .form-label {
         display: flex;
@@ -3185,16 +3203,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <div id="mod-header-picker" class="mod-header-picker">
           <label id="mod-date-picker" class="form-label mod-period-picker">
             <span class="sr-only" data-i18n="selectDate">Seleziona data</span>
-            <span id="mod-date-weekday" class="mod-date-weekday" aria-hidden="true"></span>
-            <input id="mod-period-date" class="form-control" type="date">
+            <span id="mod-date-weekday" class="mod-period-overlay" aria-hidden="true"></span>
+            <input id="mod-period-date" class="form-control mod-period-native" type="date">
           </label>
           <label id="mod-week-picker" class="form-label mod-period-picker" hidden>
             <span class="sr-only" data-i18n="selectWeek">Seleziona settimana</span>
-            <input id="mod-period-week" class="form-control" type="week">
+            <span id="mod-week-overlay" class="mod-period-overlay" aria-hidden="true"></span>
+            <input id="mod-period-week" class="form-control mod-period-native" type="week">
           </label>
           <label id="mod-month-picker" class="form-label mod-period-picker" hidden>
             <span class="sr-only" data-i18n="selectMonth">Seleziona mese</span>
-            <input id="mod-period-month" class="form-control" type="month">
+            <span id="mod-month-overlay" class="mod-period-overlay" aria-hidden="true"></span>
+            <input id="mod-period-month" class="form-control mod-period-native" type="month">
           </label>
         </div>
         <button type="button" class="btn btn-ghost mod-pill-icon mod-period-nav" id="mod-period-next" title="Successivo" data-i18n-title="nextPeriod">
@@ -4109,9 +4129,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           lastSeqMartur: 'Ultima Sequenza Martur',
           firstSeqStellantis: 'Prima Sequenza Stellantis',
           lastSeqStellantis: 'Ultima Sequenza Stellantis',
-          seqMarturFirst: '1° Martur',
+          seqMarturFirst: 'Prima Martur',
           seqMarturLast: 'Ultima Martur',
-          seqStellFirst: '1° Stellantis',
+          seqStellFirst: 'Prima Stellantis',
           seqStellLast: 'Ultima Stellantis',
           productionVsClient: 'Martur vs Stellantis',
           frontLine: 'Linea anteriore',
@@ -4933,6 +4953,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         cancelAdminDialog: root.querySelector('#mod-cancel-admin-dialog'),
         datePicker: root.querySelector('#mod-date-picker'),
         dateWeekday: root.querySelector('#mod-date-weekday'),
+        weekOverlay: root.querySelector('#mod-week-overlay'),
+        monthOverlay: root.querySelector('#mod-month-overlay'),
         weekPicker: root.querySelector('#mod-week-picker'),
         monthPicker: root.querySelector('#mod-month-picker'),
         exportPdf: root.querySelector('#mod-export-pdf'),
@@ -5719,12 +5741,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (el.dateWeekday) {
           const wd = parseDate(state.selectedDate).getDay();
           const idx = (wd + 6) % 7;
-          el.dateWeekday.textContent = (WEEKDAY_FULL[state.lang] || WEEKDAY_FULL.it)[idx];
+          const weekday = (WEEKDAY_FULL[state.lang] || WEEKDAY_FULL.it)[idx];
+          const dayMonthYear = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: 'short', year: 'numeric' }).format(parseDate(state.selectedDate));
+          el.dateWeekday.textContent = weekday + ' ' + dayMonthYear;
         }
         el.periodWeek.value = isoWeekStringOf(mondayOf(parseDate(state.selectedDate)));
+        if (el.weekOverlay) {
+          const weekNum = getIsoWeekNumber(mondayOf(parseDate(state.selectedDate)));
+          el.weekOverlay.textContent = t('week') + ' ' + weekNum;
+        }
         el.periodMonth.min = firstMonth;
         el.periodMonth.max = lastMonth;
         el.periodMonth.value = state.selectedMonth;
+        if (el.monthOverlay) el.monthOverlay.textContent = formatMonth(state.selectedMonth + '-01');
       }
 
       function getDailyPeriods(rows, selectedDate) {
@@ -6016,6 +6045,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return isNumber(value) ? String(Math.round(value)) : '\u2014';
       }
 
+      function seqFirstLabelHtml(text) {
+        // "Prima Martur" / "Prima Stellantis": su mobile va a capo dopo "Prima" (CSS),
+        // su desktop resta su una riga sola.
+        const spaceIdx = text.indexOf(' ');
+        if (spaceIdx < 0) return escapeHtml(text);
+        return escapeHtml(text.slice(0, spaceIdx)) + ' <span class="mod-seq-label-tail">' + escapeHtml(text.slice(spaceIdx + 1)) + '</span>';
+      }
+
       function topReworksCell(items) {
         const topReworks = normalizeTopReworks(items);
         if (!topReworks.length) return '\u2014';
@@ -6117,9 +6154,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('gap') + '</span><strong class="' + (isNumber(gap) && gap < 0 ? 'mod-negative' : '') + '">' + formatSigned(gap) + '</strong></div>' +
             '</div>' +
             '<div class="mod-shift-seq-grid">' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturFirst') + '</span><strong>' + formatSequenceNumber(shift.firstSeqMartur) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + seqFirstLabelHtml(t('seqMarturFirst')) + '</span><strong>' + formatSequenceNumber(shift.firstSeqMartur) + '</strong></div>' +
               '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturLast') + '</span><strong>' + formatSequenceNumber(shift.lastSeqMartur) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellFirst') + '</span><strong>' + formatSequenceNumber(shift.firstSeqStellantis) + '</strong></div>' +
+              '<div class="mod-shift-metric"><span class="text-small text-muted">' + seqFirstLabelHtml(t('seqStellFirst')) + '</span><strong>' + formatSequenceNumber(shift.firstSeqStellantis) + '</strong></div>' +
               '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellLast') + '</span><strong>' + formatSequenceNumber(shift.lastSeqStellantis) + '</strong></div>' +
             '</div>' +
             '<div class="mod-shift-support-grid">' +
