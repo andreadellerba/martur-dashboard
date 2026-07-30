@@ -834,6 +834,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-overflow: ellipsis;
       white-space: nowrap;
       min-width: 0;
+      text-transform: uppercase;
     }
     #martur-operations-dashboard .mod-brand,
     #martur-operations-dashboard .mod-actions,
@@ -2033,6 +2034,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       overflow-wrap: anywhere;
       font-size: calc(var(--font-size-normal) * 1.25);
       line-height: 1.2;
+      color: #fff;
+    }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-negative {
+      color: var(--destructive);
     }
     #martur-operations-dashboard .mod-rework-ranking {
       display: grid;
@@ -2085,6 +2090,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       overflow-y: hidden;
       overscroll-behavior-x: contain;
     }
+    /* Asse verticale fisso: quando il grafico scorre in orizzontale (tante barre/giorni),
+       i valori dell'asse restano sempre visibili a sinistra invece di scorrere via. */
+    #martur-operations-dashboard .mod-chart-flex {
+      display: flex;
+      align-items: stretch;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-chart-axis {
+      display: block;
+      flex: 0 0 auto;
+      width: 52px;
+    }
+    #martur-operations-dashboard #mod-main-axis {
+      height: 285px;
+    }
+    #martur-operations-dashboard #mod-rework-axis,
+    #martur-operations-dashboard #mod-abs-axis {
+      height: 205px;
+    }
+    #martur-operations-dashboard .mod-chart-flex .mod-chart-wrap {
+      flex: 1 1 auto;
+    }
     #martur-operations-dashboard .mod-main-chart {
       width: 100%;
       max-width: none;
@@ -2106,7 +2133,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       shape-rendering: crispEdges;
     }
     #martur-operations-dashboard .mod-main-chart .mod-axis-text,
-    #martur-operations-dashboard .mod-rate-chart .mod-axis-text {
+    #martur-operations-dashboard .mod-rate-chart .mod-axis-text,
+    #martur-operations-dashboard .mod-chart-axis .mod-axis-text {
       fill: var(--muted-foreground);
     }
     #martur-operations-dashboard .mod-main-chart .mod-front-bar {
@@ -3262,6 +3290,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-chart-wrap {
         overflow: hidden;
       }
+      #martur-operations-dashboard #mod-main-axis {
+        height: 340px;
+      }
+      #martur-operations-dashboard #mod-rework-axis,
+      #martur-operations-dashboard #mod-abs-axis {
+        height: 240px;
+      }
       #martur-operations-dashboard .mod-two-col {
         gap: 24px;
       }
@@ -3459,8 +3494,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           </button>
         </div>
       </div>
-      <div id="mod-main-chart-wrap" class="mod-chart-wrap">
-        <svg id="mod-main-chart" class="mod-main-chart" role="img" aria-labelledby="mod-main-title mod-main-desc"></svg>
+      <div class="mod-chart-flex">
+        <svg id="mod-main-axis" class="mod-chart-axis" aria-hidden="true"></svg>
+        <div id="mod-main-chart-wrap" class="mod-chart-wrap">
+          <svg id="mod-main-chart" class="mod-main-chart" role="img" aria-labelledby="mod-main-title mod-main-desc"></svg>
+        </div>
       </div>
       <div id="mod-main-detail" class="mod-detail text-small text-muted"></div>
     </section>
@@ -3473,8 +3511,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <div id="mod-rework-subtitle" class="text-small text-muted"></div>
           </div>
         </div>
-        <div id="mod-rework-chart-wrap" class="mod-chart-wrap">
-          <svg id="mod-rework-chart" class="mod-rate-chart" role="img" aria-labelledby="mod-rework-chart-title mod-rework-chart-desc"></svg>
+        <div class="mod-chart-flex">
+          <svg id="mod-rework-axis" class="mod-chart-axis" aria-hidden="true"></svg>
+          <div id="mod-rework-chart-wrap" class="mod-chart-wrap">
+            <svg id="mod-rework-chart" class="mod-rate-chart" role="img" aria-labelledby="mod-rework-chart-title mod-rework-chart-desc"></svg>
+          </div>
         </div>
       </div>
       <div class="mod-section">
@@ -3484,8 +3525,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <div id="mod-abs-subtitle" class="text-small text-muted"></div>
           </div>
         </div>
-        <div id="mod-abs-chart-wrap" class="mod-chart-wrap">
-          <svg id="mod-abs-chart" class="mod-rate-chart" role="img" aria-labelledby="mod-abs-chart-title mod-abs-chart-desc"></svg>
+        <div class="mod-chart-flex">
+          <svg id="mod-abs-axis" class="mod-chart-axis" aria-hidden="true"></svg>
+          <div id="mod-abs-chart-wrap" class="mod-chart-wrap">
+            <svg id="mod-abs-chart" class="mod-rate-chart" role="img" aria-labelledby="mod-abs-chart-title mod-abs-chart-desc"></svg>
+          </div>
         </div>
       </div>
     </section>
@@ -5133,14 +5177,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         mainSubtitle: root.querySelector('#mod-main-subtitle'),
         mainChartWrap: root.querySelector('#mod-main-chart-wrap'),
         mainChart: root.querySelector('#mod-main-chart'),
+        mainAxis: root.querySelector('#mod-main-axis'),
         mainDetail: root.querySelector('#mod-main-detail'),
         reworkSubtitle: root.querySelector('#mod-rework-subtitle'),
         rateChartsSection: root.querySelector('#mod-rate-charts-section'),
         reworkChartWrap: root.querySelector('#mod-rework-chart-wrap'),
         reworkChart: root.querySelector('#mod-rework-chart'),
+        reworkAxis: root.querySelector('#mod-rework-axis'),
         absSubtitle: root.querySelector('#mod-abs-subtitle'),
         absChartWrap: root.querySelector('#mod-abs-chart-wrap'),
         absChart: root.querySelector('#mod-abs-chart'),
+        absAxis: root.querySelector('#mod-abs-axis'),
         operatorAbsenceSubtitle: root.querySelector('#mod-operator-absence-subtitle'),
         operatorAbsenceCount: root.querySelector('#mod-operator-absence-count'),
         operatorAbsenceBody: root.querySelector('#mod-operator-absence-body'),
@@ -5342,8 +5389,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         };
       }
 
-      function isSaturday(dateStr) {
-        return Boolean(dateStr) && parseDate(dateStr).getDay() === 6;
+      function isSingleShiftDay(dateStr) {
+        // Sabato e domenica: turno unico invece di 1°/2° Turno.
+        if (!dateStr) return false;
+        const day = parseDate(dateStr).getDay();
+        return day === 6 || day === 0;
       }
 
       function calculateShiftEfficiency(shift) {
@@ -5407,7 +5457,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         // Sabato: l'Efficienza usa le ore realmente lavorate (inizio/fine turno unico
         // inserite), non le 7 ore fisse dei giorni feriali.
-        if (isSaturday(row.date)) {
+        if (isSingleShiftDay(row.date)) {
           const uniqueHours = timeRangeHours(shift1.uniqueShiftStart, shift1.uniqueShiftEnd);
           if (uniqueHours) shift1.hours = uniqueHours;
         }
@@ -6008,7 +6058,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function selectedPeriodLabel() {
         if (state.view === 'weekly') return weekLabel(state.selectedDate);
         if (state.view === 'monthly') return formatMonth(state.selectedMonth + '-01');
-        return formatDate(state.selectedDate);
+        return new Intl.DateTimeFormat(locale(), { day: '2-digit', month: 'long', year: 'numeric' }).format(parseDate(state.selectedDate));
       }
 
       function fitReportTitle() {
@@ -6080,7 +6130,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderMainChart(periods) {
-        const margin = { top: 16, right: 12, bottom: 40, left: 52 };
+        const axisWidth = 52;
+        const margin = { top: 16, right: 12, bottom: 40, left: 16 };
         const wrapWidth = Math.max(300, Math.round(el.mainChartWrap.getBoundingClientRect().width || 640));
         const width = Math.max(wrapWidth, margin.left + margin.right + periods.length * 96);
         el.mainChart.style.width = width > wrapWidth ? width + 'px' : '';
@@ -6113,13 +6164,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const parts = [];
         parts.push('<title id="mod-main-title">' + t('productionVsClient') + '</title>');
         parts.push('<desc id="mod-main-desc">' + t('mainChartDesc') + '</desc>');
+        const axisParts = [];
         for (let tick = 0; tick <= 4; tick++) {
           const value = yMax * tick / 4;
           const yy = y(value);
           parts.push('<line class="mod-grid-line" x1="' + margin.left + '" y1="' + yy + '" x2="' + (width - margin.right) + '" y2="' + yy + '"></line>');
-          parts.push('<text class="mod-axis-text text-small" x="' + (margin.left - 8) + '" y="' + (yy + 4) + '" text-anchor="end">' + formatNumber(value) + '</text>');
+          axisParts.push('<text class="mod-axis-text text-small" x="' + (axisWidth - 8) + '" y="' + (yy + 4) + '" text-anchor="end">' + formatNumber(value) + '</text>');
         }
         parts.push('<line class="mod-axis-line" x1="' + margin.left + '" y1="' + (margin.top + innerHeight) + '" x2="' + (width - margin.right) + '" y2="' + (margin.top + innerHeight) + '"></line>');
+        if (el.mainAxis) {
+          el.mainAxis.setAttribute('viewBox', '0 0 ' + axisWidth + ' ' + height);
+          el.mainAxis.innerHTML = axisParts.join('');
+        }
 
         periods.forEach((period, index) => {
           const groupX = margin.left + index * step + (step - groupWidth) / 2;
@@ -6160,7 +6216,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderPercentageChart(periods, config) {
-        const margin = { top: 14, right: 12, bottom: 35, left: 52 };
+        const axisWidth = 52;
+        const margin = { top: 14, right: 12, bottom: 35, left: 16 };
         const wrapWidth = Math.max(300, Math.round(config.wrap.getBoundingClientRect().width || 640));
         const width = Math.max(wrapWidth, margin.left + margin.right + periods.length * 92);
         config.chart.style.width = width > wrapWidth ? width + 'px' : '';
@@ -6175,13 +6232,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const parts = [];
         parts.push('<title id="' + config.chart.id + '-title">' + config.label + '</title>');
         parts.push('<desc id="' + config.chart.id + '-desc">' + config.description + '</desc>');
+        const axisParts = [];
         for (let tick = 0; tick <= 4; tick++) {
           const value = yMax * tick / 4;
           const yy = y(value);
           parts.push('<line class="mod-grid-line" x1="' + margin.left + '" y1="' + yy + '" x2="' + (width - margin.right) + '" y2="' + yy + '"></line>');
-          parts.push('<text class="mod-axis-text text-small" x="' + (margin.left - 8) + '" y="' + (yy + 4) + '" text-anchor="end">' + formatPercent(value) + '</text>');
+          axisParts.push('<text class="mod-axis-text text-small" x="' + (axisWidth - 8) + '" y="' + (yy + 4) + '" text-anchor="end">' + formatPercent(value) + '</text>');
         }
         parts.push('<line class="mod-axis-line" x1="' + margin.left + '" y1="' + (margin.top + innerHeight) + '" x2="' + (width - margin.right) + '" y2="' + (margin.top + innerHeight) + '"></line>');
+        if (config.axis) {
+          config.axis.setAttribute('viewBox', '0 0 ' + axisWidth + ' ' + height);
+          config.axis.innerHTML = axisParts.join('');
+        }
 
         const available = periods.map((period, index) => ({ period, index, value: period[config.key] })).filter((item) => isNumber(item.value));
         if (available.length) {
@@ -6216,6 +6278,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         renderPercentageChart(periods, {
           wrap: el.reworkChartWrap,
           chart: el.reworkChart,
+          axis: el.reworkAxis,
           key: 'reworkPct',
           lineClass: 'mod-rework-line',
           dotClass: 'mod-rework-dot',
@@ -6225,6 +6288,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         renderPercentageChart(periods, {
           wrap: el.absChartWrap,
           chart: el.absChart,
+          axis: el.absAxis,
           key: 'absenteeismPct',
           lineClass: 'mod-abs-line',
           dotClass: 'mod-abs-dot',
@@ -6389,7 +6453,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderDailyShiftCards(row) {
-        if (isSaturday(row.date)) {
+        if (isSingleShiftDay(row.date)) {
           // Sabato: turno unico solo, una card centrata (dati nel campo "1° turno").
           // L'orario si vede solo se e quando viene inserito (nessun orario di default).
           const shift1 = row.shift1 || emptyShift();
@@ -6685,7 +6749,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         entry.shift2.topReworks = state.shift2TopReworks;
         entry.shift1.note = el.entryNoteShift1.value.trim();
         entry.shift2.note = el.entryNoteShift2.value.trim();
-        if (isSaturday(entry.date)) {
+        if (isSingleShiftDay(entry.date)) {
           entry.shift1.uniqueShiftStart = el.entryUniqueStart.value || null;
           entry.shift1.uniqueShiftEnd = el.entryUniqueEnd.value || null;
         }
@@ -6714,7 +6778,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // squadra (A/B) e nomi, che si alternano ogni settimana ISO. Il sabato c'e'
         // un turno unico solo (2° turno nascosto), con orario libero da inserire.
         if (!date || !el.entryShift1Title || !el.entryShift2Title) return;
-        const saturday = isSaturday(date);
+        const saturday = isSingleShiftDay(date);
         el.entryShift2Group.hidden = saturday;
         el.entryUniqueTimeWrap.hidden = !saturday;
         if (saturday) {
@@ -7540,7 +7604,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const series = kpiTrendSeries();
         // Il sabato (turno unico, ore variabili) non e' paragonabile ai giorni feriali:
         // niente freccia/delta, solo il valore e il grafico dell'andamento.
-        const skipBadge = state.view === 'daily' && isSaturday(state.selectedDate);
+        const skipBadge = state.view === 'daily' && isSingleShiftDay(state.selectedDate);
         metrics.forEach((m) => {
           m.spark.innerHTML = sparklineSvg(series.map(m.get));
           if (series.length >= 2 && !skipBadge) {
