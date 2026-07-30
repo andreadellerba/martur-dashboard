@@ -819,9 +819,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
        se il sottotitolo non entra si accorcia con i puntini invece di andare a capo.
        Quando la sezione non ha altri elementi (legenda/azioni) a destra, il gruppo
        titolo+sottotitolo si centra nell'intestazione. */
-    #martur-operations-dashboard .mod-section-head:has(> div:only-child) {
-      justify-content: center;
-    }
     #martur-operations-dashboard .mod-section-head > div:first-child {
       display: flex;
       align-items: baseline;
@@ -7873,6 +7870,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         setTranslations();
         renderScreens();
         const rows = getDailyRows();
+        // Il calendario nell'header e' sempre visibile: tienilo aggiornato (data odierna
+        // per giornaliero) anche nelle pagine che non passano da renderDashboard().
+        ensurePeriodSelection(rows);
         if (state.view === 'entry') {
           updateLiveSummary();
           updateReworkSelectionState();
