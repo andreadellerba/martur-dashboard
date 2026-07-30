@@ -2166,13 +2166,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       fill: var(--muted-foreground);
     }
     #martur-operations-dashboard .mod-main-chart .mod-front-bar {
-      fill: var(--viz-series-1);
-    }
-    #martur-operations-dashboard .mod-main-chart .mod-rear-bar {
-      fill: var(--viz-series-2);
+      fill: var(--gold);
     }
     #martur-operations-dashboard .mod-main-chart .mod-stellantis-bar {
-      fill: light-dark(rgb(211 47 47), rgb(255 99 99));
+      fill: light-dark(rgb(23 121 227), rgb(64 158 255));
     }
     #martur-operations-dashboard .mod-main-chart .mod-bar {
       transition: y 320ms ease, height 320ms ease, opacity 160ms ease;
@@ -2207,13 +2204,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border-radius: 50%;
     }
     #martur-operations-dashboard .mod-swatch-front {
-      background: var(--viz-series-1);
-    }
-    #martur-operations-dashboard .mod-swatch-rear {
-      background: var(--viz-series-2);
+      background: var(--gold);
     }
     #martur-operations-dashboard .mod-swatch-client {
-      background: light-dark(rgb(211 47 47), rgb(255 99 99));
+      background: light-dark(rgb(23 121 227), rgb(64 158 255));
     }
     #martur-operations-dashboard .mod-legend-toggle {
       display: inline-flex;
@@ -3512,10 +3506,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </div>
         <div class="mod-legend text-small" aria-label="Legend">
           <button type="button" class="mod-legend-toggle" data-series="front" aria-pressed="true">
-            <span class="mod-swatch mod-swatch-front" aria-hidden="true"></span><span data-i18n="frontLine">Linea anteriore</span>
-          </button>
-          <button type="button" class="mod-legend-toggle" data-series="rear" aria-pressed="true">
-            <span class="mod-swatch mod-swatch-rear" aria-hidden="true"></span><span data-i18n="rearLine">Linea posteriore</span>
+            <span class="mod-swatch mod-swatch-front" aria-hidden="true"></span><span>Martur</span>
           </button>
           <button type="button" class="mod-legend-toggle" data-series="stellantis" aria-pressed="true">
             <span class="mod-swatch mod-swatch-client" aria-hidden="true"></span><span>Stellantis</span>
@@ -5060,7 +5051,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppageFilters: { date: '', line: '', cause: '', reporter: '' },
         storageAvailable: true,
         chartRendered: false,
-        mainChartSeries: { front: true, rear: true, stellantis: true }
+        mainChartSeries: { front: true, stellantis: true }
       };
 
       function applyTheme(theme) {
@@ -6167,8 +6158,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
         const seriesDefs = [
-          { key: 'front', cls: 'mod-front-bar', label: t('frontLine'), getValue: (p) => p.totalFront },
-          { key: 'rear', cls: 'mod-rear-bar', label: t('rearLine'), getValue: (p) => p.totalRear },
+          { key: 'front', cls: 'mod-front-bar', label: 'Martur', getValue: (p) => p.totalFront },
           { key: 'stellantis', cls: 'mod-stellantis-bar', label: 'Stellantis', getValue: (p) => p.stellantisCars }
         ];
         const visibleSeries = seriesDefs.filter((s) => state.mainChartSeries[s.key]);
@@ -6177,7 +6167,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const yMax = Math.ceil(maxValue / magnitude) * magnitude;
         const y = (value) => margin.top + innerHeight - (value / yMax) * innerHeight;
         const step = innerWidth / Math.max(1, periods.length);
-        const groupWidth = Math.max(5, Math.min(34, step * 0.72));
+        const groupWidth = Math.max(5, Math.min(44, step * 0.78));
         const barWidth = Math.max(2, groupWidth / Math.max(1, visibleSeries.length) - 2);
         const previous = new Map();
         if (state.chartRendered) {
