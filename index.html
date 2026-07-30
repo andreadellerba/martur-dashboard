@@ -832,9 +832,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       background: var(--background);
     }
     #martur-operations-dashboard .mod-topbar.mod-topbar-stuck {
-      /* Ombra piu' corta e leggera: prima arrivava fino alla card sotto, spegnendo
-         visivamente la barra rossa del 1 Turno che ci sta appena sotto. */
-      box-shadow: 0 2px 6px -3px rgb(0 0 0 / 18%);
+      /* Bordo invece di ombra: un box-shadow, per quanto corto, dipinge comunque sopra
+         il contenuto sotto (l'header ha z-index piu' alto) spegnendo la barra rossa del
+         1 Turno appena sotto. Il bordo non ha questo problema. */
+      border-bottom: 1px solid var(--border);
     }
     /* Griglia a 3 colonne con posizioni FISSE: logo (sx) · menu pill (centro) · calendario (dx).
        Le tracce restano anche se il calendario e' nascosto in certe schede, quindi logo e menu non si spostano mai. */
@@ -921,10 +922,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border-color: transparent;
       background: transparent;
     }
-    #martur-operations-dashboard .mod-datenav .form-control:hover,
-    #martur-operations-dashboard .mod-datenav .form-control:focus {
-      border-color: var(--input);
+    /* Il focus/hover si mostra sull'intera pillola (stessa forma dell'etichetta centrata),
+       non sull'input nativo: prima il box del solo input (piu' piccolo, spigoli diversi)
+       spuntava sotto/dietro il testo creando uno strano "doppio riquadro". */
+    #martur-operations-dashboard .mod-period-picker:hover {
       background: var(--secondary);
+    }
+    #martur-operations-dashboard .mod-datenav .form-control:focus-visible {
+      outline: none;
+    }
+    #martur-operations-dashboard .mod-period-picker:focus-within {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
     }
     #martur-operations-dashboard .mod-pillnav {
       display: flex;
@@ -1255,6 +1264,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       margin-bottom: 0;
       position: relative;
       display: block;
+      border-radius: var(--radius-lg);
     }
     /* Il testo nativo dell'input data/settimana/mese resta cliccabile (apre il calendario)
        ma invisibile: al suo posto mostriamo un'unica etichetta centrata, stesso font
@@ -1332,11 +1342,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-kpi-tile {
       position: relative;
       padding: 18px 14px 16px;
-      overflow: hidden;
       box-shadow: 0 6px 20px -10px rgb(0 0 0 / 18%), 0 1px 2px rgb(0 0 0 / 5%);
       align-items: center;
       text-align: center;
       transition: box-shadow 200ms ease, transform 200ms ease;
+      border: 2px solid var(--kpi-accent, var(--primary));
     }
     #martur-operations-dashboard .mod-kpi-tile:hover {
       box-shadow: 0 10px 26px -10px rgb(0 0 0 / 22%), 0 2px 4px rgb(0 0 0 / 6%);
@@ -1347,13 +1357,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     :root[data-theme="dark"] #martur-operations-dashboard .mod-kpi-tile:hover {
       box-shadow: 0 10px 26px -10px rgb(0 0 0 / 55%), 0 2px 4px rgb(0 0 0 / 30%);
-    }
-    #martur-operations-dashboard .mod-kpi-tile::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 3px;
-      background: var(--kpi-accent, var(--primary));
     }
     #martur-operations-dashboard .mod-kpi-tile .viz-stat-value {
       color: var(--kpi-accent, var(--foreground));
@@ -1746,7 +1749,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       min-width: 0;
     }
     #martur-operations-dashboard .mod-chat-messages {
-      height: 58vh;
+      height: calc(100dvh - 260px);
       min-height: 320px;
       overflow-y: auto;
       overscroll-behavior: contain;
@@ -1908,14 +1911,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       position: relative;
       display: grid;
       gap: 13px;
-      padding-top: 16px;
-    }
-    #martur-operations-dashboard .mod-daily-shift-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 3px;
-      background: light-dark(rgb(237 28 36), rgb(255 69 58));
+      padding: 14px;
+      border: 2px solid light-dark(rgb(237 28 36), rgb(255 69 58));
     }
     #martur-operations-dashboard .mod-shift-card-name,
     #martur-operations-dashboard .mod-shift-summary-text {
@@ -1943,48 +1940,34 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       letter-spacing: 0.05em;
       margin-right: 4px;
     }
-    #martur-operations-dashboard .mod-shift-metric-grid,
-    #martur-operations-dashboard .mod-shift-support-grid {
-      display: grid;
-      gap: 10px;
-    }
-    #martur-operations-dashboard .mod-shift-metric-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      padding-top: 11px;
-      border-top: 1px solid var(--border);
-    }
-    #martur-operations-dashboard .mod-shift-support-grid {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      padding-top: 11px;
-      border-top: 1px solid var(--border);
-    }
     #martur-operations-dashboard .mod-seq-label-tail {
       display: inline;
     }
-    #martur-operations-dashboard .mod-shift-seq-grid {
+    /* 4 colonne logiche: sequenze | anteriore/posteriore/stellantis/delta |
+       presenze/assenti/assenteismo/rework | dummy/coda/straordinario/efficienza.
+       grid-auto-flow:column con 4 righe esplicite riempie ogni colonna dall'alto in basso
+       nell'ordine in cui gli elementi compaiono nell'HTML. */
+    #martur-operations-dashboard .mod-shift-grid-4col {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
+      grid-template-rows: repeat(4, auto);
+      grid-auto-flow: column;
+      column-gap: 10px;
+      row-gap: 10px;
       padding-top: 11px;
       border-top: 1px solid var(--border);
     }
-    #martur-operations-dashboard .mod-shift-metric,
-    #martur-operations-dashboard .mod-shift-support-item {
+    #martur-operations-dashboard .mod-shift-metric {
       display: grid;
       gap: 1px;
       min-width: 0;
       text-align: center;
       justify-items: center;
     }
-    #martur-operations-dashboard .mod-shift-metric strong,
-    #martur-operations-dashboard .mod-shift-support-item strong {
+    #martur-operations-dashboard .mod-shift-metric strong {
       overflow-wrap: anywhere;
       font-size: calc(var(--font-size-normal) * 1.25);
       line-height: 1.2;
-    }
-    #martur-operations-dashboard .mod-shift-support-grid {
-      padding-top: 11px;
-      border-top: 1px solid var(--border);
     }
     #martur-operations-dashboard .mod-rework-ranking {
       display: grid;
@@ -2786,6 +2769,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-message {
       min-height: 20px;
     }
+    #martur-operations-dashboard .mod-chat-messages {
+      height: calc(100dvh - 340px);
+    }
     #martur-operations-dashboard .mod-note-cell {
       max-width: 220px;
       text-align: left;
@@ -3018,17 +3004,35 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         white-space: nowrap;
         overflow: hidden;
       }
-      #martur-operations-dashboard .mod-shift-card-name,
-      #martur-operations-dashboard .mod-shift-summary-text {
+      #martur-operations-dashboard .mod-shift-card-name {
         font-size: clamp(10px, 3vw, 15px);
         white-space: nowrap;
       }
       #martur-operations-dashboard .mod-shift-card-head {
         gap: 8px;
       }
-      #martur-operations-dashboard .mod-shift-metric-grid,
-      #martur-operations-dashboard .mod-shift-support-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      #martur-operations-dashboard .mod-shift-grid-4col {
+        column-gap: 3px;
+        row-gap: 8px;
+        min-width: 0;
+      }
+      #martur-operations-dashboard .mod-shift-metric {
+        min-width: 0;
+      }
+      #martur-operations-dashboard .mod-shift-metric .text-small {
+        font-size: 9px;
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        hyphens: auto;
+      }
+      #martur-operations-dashboard .mod-shift-metric strong {
+        font-size: 11px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+      #martur-operations-dashboard .mod-daily-shift-card {
+        padding: 12px 6px;
       }
       #martur-operations-dashboard .mod-entry-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4080,6 +4084,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           and: 'e',
           shift1NoteLabel: 'Nota 1° turno',
           shift2NoteLabel: 'Nota 2° turno',
+          shiftA: 'Turno A',
+          shiftB: 'Turno B',
           absent: 'Assenti',
           absenteeism: 'Assenteismo',
           absenteeismRate: 'Tasso assenteismo',
@@ -4357,6 +4363,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           and: 'and',
           shift1NoteLabel: '1st shift note',
           shift2NoteLabel: '2nd shift note',
+          shiftA: 'Shift A',
+          shiftB: 'Shift B',
           absent: 'Absent',
           absenteeism: 'Absenteeism',
           absenteeismRate: 'Absenteeism rate',
@@ -4634,6 +4642,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           and: 've',
           shift1NoteLabel: '1. vardiya notu',
           shift2NoteLabel: '2. vardiya notu',
+          shiftA: 'Vardiya A',
+          shiftB: 'Vardiya B',
           absent: 'Devamsız',
           absenteeism: 'Devamsızlık',
           absenteeismRate: 'Devamsızlık oranı',
@@ -6120,13 +6130,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
       }
 
+      function shiftAlphaLabel(shiftKey, dateStr) {
+        // Turno A / Turno B si alternano ogni settimana ISO tra 1 e 2 Turno.
+        const weekNum = getIsoWeekNumber(parseDate(dateStr));
+        const isShift1 = shiftKey === 'shift1';
+        const isA = weekNum % 2 === 0 ? isShift1 : !isShift1;
+        return t(isA ? 'shiftA' : 'shiftB');
+      }
+
       function renderDailyShiftCards(row) {
         el.dailyShiftGrid.innerHTML = ['shift1', 'shift2'].map((name, index) => {
           const shift = row[name] || emptyShift();
-          const hasData = Object.keys(emptyShift()).some((key) => isNumber(shift[key]));
-          const completeSets = isNumber(shift.front) ? shift.front : null;
-          const gap = isNumber(completeSets) && isNumber(shift.stellantisCars) && shift.stellantisCars > 0
-            ? completeSets - shift.stellantisCars
+          const gap = isNumber(shift.front) && isNumber(shift.stellantisCars) && shift.stellantisCars > 0
+            ? shift.front - shift.stellantisCars
             : null;
           const absenteeism = isNumber(shift.presence) && isNumber(shift.absent) && shift.presence + shift.absent > 0
             ? shift.absent / (shift.presence + shift.absent)
@@ -6134,38 +6150,33 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const reworkRate = isNumber(shift.rework) && isNumber(shift.front) && shift.front > 0
             ? shift.rework / shift.front
             : null;
-          const absentText = formatOptionalNumber(shift.absent) + (isNumber(absenteeism) ? ' \u00b7 ' + formatPercent(absenteeism) : '');
           const reworkText = formatOptionalNumber(shift.rework) + (isNumber(reworkRate) ? ' \u00b7 ' + formatPercent(reworkRate) : '');
           const shiftKey = index === 0 ? 'shift1' : 'shift2';
           const icon = index === 0 ? 'sun' : 'moon';
-          const summaryText = hasData
-            ? formatOptionalNumber(completeSets) + ' ' + t('completeSets') + ' - ' + t('efficiency') + ' ' + (isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—')
-            : t('noShiftData');
+          const overtimeText = isNumber(shift.overtimePct) ? formatPercent(shift.overtimePct) : formatPercent(0);
           const noteText = (shift.note || '').trim();
+          const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
-              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + t(shiftKey) + ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span></span>' +
-              '<span class="mod-shift-summary-text">' + escapeHtml(summaryText) + '</span>' +
+              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + escapeHtml(shiftAlphaLabel(shiftKey, row.date)) + ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span></span>' +
             '</div>' +
-            '<div class="mod-shift-metric-grid">' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('frontLine') + '</span><strong>' + formatOptionalNumber(shift.front) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('rearLine') + '</span><strong>' + formatOptionalNumber(shift.rear) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">Stellantis</span><strong>' + formatOptionalNumber(shift.stellantisCars) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('gap') + '</span><strong class="' + (isNumber(gap) && gap < 0 ? 'mod-negative' : '') + '">' + formatSigned(gap) + '</strong></div>' +
-            '</div>' +
-            '<div class="mod-shift-seq-grid">' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + seqFirstLabelHtml(t('seqMarturFirst')) + '</span><strong>' + formatSequenceNumber(shift.firstSeqMartur) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqMarturLast') + '</span><strong>' + formatSequenceNumber(shift.lastSeqMartur) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + seqFirstLabelHtml(t('seqStellFirst')) + '</span><strong>' + formatSequenceNumber(shift.firstSeqStellantis) + '</strong></div>' +
-              '<div class="mod-shift-metric"><span class="text-small text-muted">' + t('seqStellLast') + '</span><strong>' + formatSequenceNumber(shift.lastSeqStellantis) + '</strong></div>' +
-            '</div>' +
-            '<div class="mod-shift-support-grid">' +
-              '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('presence') + '</span><strong>' + formatOptionalNumber(shift.presence) + '</strong></div>' +
-              '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('absenteeism') + '</span><strong>' + absentText + '</strong></div>' +
-              '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('rework') + '</span><strong>' + reworkText + '</strong></div>' +
-              '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('dummySeats') + '</span><strong>' + formatOptionalNumber(shift.dummy) + '</strong></div>' +
-              '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('coda') + '</span><strong>' + formatOptionalNumber(shift.coda) + '</strong></div>' +
-              '<div class="mod-shift-support-item"><span class="text-small text-muted">' + t('overtime') + '</span><strong>' + formatPercent(shift.overtimePct) + '</strong></div>' +
+            '<div class="mod-shift-grid-4col">' +
+              metric(seqFirstLabelHtml(t('seqMarturFirst')), formatSequenceNumber(shift.firstSeqMartur)) +
+              metric(seqFirstLabelHtml(t('seqMarturLast')), formatSequenceNumber(shift.lastSeqMartur)) +
+              metric(seqFirstLabelHtml(t('seqStellFirst')), formatSequenceNumber(shift.firstSeqStellantis)) +
+              metric(seqFirstLabelHtml(t('seqStellLast')), formatSequenceNumber(shift.lastSeqStellantis)) +
+              metric(t('frontLine'), formatOptionalNumber(shift.front)) +
+              metric(t('rearLine'), formatOptionalNumber(shift.rear)) +
+              metric('Stellantis', formatOptionalNumber(shift.stellantisCars)) +
+              metric(t('gap'), formatSigned(gap), isNumber(gap) && gap < 0 ? 'mod-negative' : '') +
+              metric(t('presence'), formatOptionalNumber(shift.presence)) +
+              metric(t('absent'), formatOptionalNumber(shift.absent)) +
+              metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—') +
+              metric(t('rework'), reworkText) +
+              metric(t('dummySeats'), formatOptionalNumber(shift.dummy)) +
+              metric(t('coda'), formatOptionalNumber(shift.coda)) +
+              metric(t('overtime'), overtimeText) +
+              metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—') +
             '</div>' +
             '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span>' + (noteText ? ' ' + escapeHtml(noteText) : '') + '</div>' +
           '</article>';
