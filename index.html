@@ -105,6 +105,20 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
+  /* Sfondo nero OLED puro + palette piu' satura/accesa (le card restano leggermente
+     sollevate dal nero grazie al mix esistente su --card, come da pattern OLED). */
+  --background: rgb(0 0 0);
+  --primary: rgb(41 150 255);
+  --primary-foreground: rgb(6 6 6);
+  --accent: rgb(9 41 74);
+  --accent-foreground: var(--primary);
+  --destructive: rgb(255 107 53);
+  --ring: rgb(41 150 255 / 80%);
+  --viz-series-2: rgb(255 149 43);
+  --viz-series-3: rgb(48 209 88);
+  --viz-series-4: rgb(255 92 168);
+  --viz-series-5: rgb(148 108 255);
+  --viz-series-6: rgb(15 210 196);
 }
 
 * {
@@ -876,13 +890,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       grid-row: 1;
       justify-self: center;
     }
+    /* Pillola calendario: stesso trattamento visivo del menu (mod-pillnav) e del tasto Indietro,
+       con le frecce prec/succ come icone senza bordo proprio dentro la pillola. */
     #martur-operations-dashboard .mod-datenav {
       grid-column: 3;
       grid-row: 1;
       justify-self: end;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 3px;
+    }
+    #martur-operations-dashboard .mod-datenav .mod-period-nav {
+      border-radius: var(--radius-full);
+    }
+    #martur-operations-dashboard .mod-datenav .form-control {
+      border-color: transparent;
+      background: transparent;
+    }
+    #martur-operations-dashboard .mod-datenav .form-control:hover,
+    #martur-operations-dashboard .mod-datenav .form-control:focus {
+      border-color: var(--input);
+      background: var(--secondary);
     }
     #martur-operations-dashboard .mod-pillnav {
       display: flex;
@@ -1214,7 +1246,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-header-picker #mod-date-picker {
       position: relative;
-      width: 230px;
+      width: 290px;
       display: block;
     }
     #martur-operations-dashboard .mod-date-weekday {
@@ -1227,10 +1259,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 400;
       color: var(--foreground);
       text-transform: capitalize;
+      white-space: nowrap;
     }
     #martur-operations-dashboard #mod-date-picker .form-control {
       width: 100%;
-      padding-left: 42px;
+      padding-left: 96px;
     }
     #martur-operations-dashboard .mod-header-picker .mod-period-picker .form-control {
       margin-top: 0;
@@ -2615,6 +2648,35 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       flex-wrap: wrap;
       padding-top: 4px;
     }
+    #martur-operations-dashboard .mod-welcome-langs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 4px;
+    }
+    #martur-operations-dashboard .mod-welcome-lang {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 9px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background: var(--card);
+      color: var(--foreground);
+      font: inherit;
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    #martur-operations-dashboard .mod-welcome-lang:hover {
+      background: var(--muted);
+    }
+    #martur-operations-dashboard .mod-welcome-lang[aria-pressed="true"] {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--primary-foreground);
+    }
     #martur-operations-dashboard .mod-welcome-actions {
       justify-content: stretch;
       gap: 10px;
@@ -2755,7 +2817,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         align-items: stretch;
         gap: 8px;
       }
-      /* Header mobile: riga 1 = [Indietro] [logo] [Calendario] centrati insieme;
+      /* Header mobile: riga 1 = [Indietro] [logo] [Calendario], logo al centro esatto e i due
+         pulsanti centrati ciascuno nello spazio libero a sx/dx del logo (non appiccicati);
          riga 2 = menu; il calendario compare come riga sotto toccando l'icona. */
       #martur-operations-dashboard .mod-topbar {
         padding-bottom: 12px;
@@ -2763,20 +2826,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-topbar-left {
         order: 1;
-        align-self: center;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        gap: 14px;
+        width: 100%;
       }
       #martur-operations-dashboard .mod-topbar-left .mod-brand-link {
-        order: 2;
+        grid-column: 2;
+        justify-self: center;
       }
       #martur-operations-dashboard .mod-topbar-cluster .mod-back-btn {
-        order: 1;
+        grid-column: 1;
+        justify-self: center;
         margin: 0;
       }
       #martur-operations-dashboard .mod-cal-toggle {
-        order: 3;
+        grid-column: 3;
+        justify-self: center;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -2848,6 +2914,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-header-picker .mod-period-picker {
         width: 100%;
+      }
+      /* Su mobile la label #mod-date-picker (giornaliero) ha un ID piu' specifico che sul
+         desktop la fissa a 290px: senza questa regola resta stretta e lascia spazio vuoto
+         a destra, mentre settimana/mese (solo classe) si allargano gia' al 100%. */
+      #martur-operations-dashboard .mod-header-picker #mod-date-picker {
+        width: 100%;
+      }
+      #martur-operations-dashboard #mod-date-picker .form-control {
+        padding-left: 84px;
       }
       #martur-operations-dashboard .mod-header-picker .form-control {
         -webkit-appearance: none;
@@ -3715,6 +3790,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <h2 id="mod-welcome-title" class="mod-dialog-title" data-i18n="welcomeTitle">Benvenuto</h2>
           <span class="text-small text-muted" data-i18n="welcomeHint">Accedi per inserire e modificare i dati, oppure continua in sola visualizzazione.</span>
         </div>
+      </div>
+      <div id="mod-welcome-langs" class="mod-welcome-langs" role="group" aria-label="Language">
+        <button type="button" class="mod-welcome-lang" data-lang="it" aria-pressed="false">🇮🇹 Italiano</button>
+        <button type="button" class="mod-welcome-lang" data-lang="en" aria-pressed="false">🇬🇧 English</button>
+        <button type="button" class="mod-welcome-lang" data-lang="tr" aria-pressed="false">🇹🇷 Türkçe</button>
       </div>
       <div class="mod-dialog-actions mod-welcome-actions">
         <button id="mod-welcome-guest" type="button" class="btn"><i data-lucide="eye" aria-hidden="true"></i><span data-i18n="viewOnly">Solo visualizzazione</span></button>
@@ -4658,6 +4738,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         en: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         tr: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
       };
+      const WEEKDAY_FULL = {
+        it: ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'],
+        en: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        tr: ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']
+      };
       const LANG_FLAGS = { it: '🇮🇹', en: '🇬🇧', tr: '🇹🇷' };
       const SHIFT_TIMES = { shift1: '06:00 - 14:00', shift2: '14:00 - 22:00' };
 
@@ -4697,9 +4782,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       try {
         savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
       } catch (error) {}
+      const LANG_STORAGE_KEY = 'martur-dashboard-lang';
+      let savedLang = null;
+      try {
+        savedLang = window.localStorage.getItem(LANG_STORAGE_KEY);
+      } catch (error) {}
 
       const state = {
-        lang: 'it',
+        lang: ['it', 'en', 'tr'].includes(savedLang) ? savedLang : 'it',
         isAdmin: false,
         isConfigAdmin: false,
         authUser: null,
@@ -4740,6 +4830,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         document.documentElement.setAttribute('data-theme', theme);
         try {
           window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+        } catch (error) {}
+      }
+
+      function setLang(lang) {
+        if (!['it', 'en', 'tr'].includes(lang)) return;
+        state.lang = lang;
+        try {
+          window.localStorage.setItem(LANG_STORAGE_KEY, lang);
         } catch (error) {}
       }
 
@@ -4811,6 +4909,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         welcomeDialog: root.querySelector('#mod-welcome-dialog'),
         welcomeLogin: root.querySelector('#mod-welcome-login'),
         welcomeGuest: root.querySelector('#mod-welcome-guest'),
+        welcomeLangs: root.querySelector('#mod-welcome-langs'),
         adminForm: root.querySelector('#mod-admin-form'),
         adminUsername: root.querySelector('#mod-admin-username'),
         adminPassword: root.querySelector('#mod-admin-password'),
@@ -5555,7 +5654,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (el.dateWeekday) {
           const wd = parseDate(state.selectedDate).getDay();
           const idx = (wd + 6) % 7;
-          el.dateWeekday.textContent = (WEEKDAY_SHORT[state.lang] || WEEKDAY_SHORT.it)[idx];
+          el.dateWeekday.textContent = (WEEKDAY_FULL[state.lang] || WEEKDAY_FULL.it)[idx];
         }
         el.periodWeek.value = isoWeekStringOf(mondayOf(parseDate(state.selectedDate)));
         el.periodMonth.min = firstMonth;
@@ -6071,6 +6170,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         renderOee(summary, oeeDowntimeMin, oeePlanned, oeeTarget, subtitle);
         renderWaterfall(summary, oeeTarget, subtitle);
+        // renderDashboard() e' anche chiamato direttamente (resize, toggle legenda, salvataggio OLE)
+        // senza passare da renderAll(): rigenera qui le icone Lucide per non perdere quelle appena inserite via innerHTML.
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
       function readInput(id, percent) {
@@ -6430,12 +6532,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.isConfigAdmin = role === 'configAdmin';
       }
 
+      function syncWelcomeLangButtons() {
+        if (!el.welcomeLangs) return;
+        el.welcomeLangs.querySelectorAll('.mod-welcome-lang').forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.lang === state.lang));
+        });
+      }
+
       function maybeShowWelcome() {
-        // Alla prima apertura, se non si e' loggati, proponi Accesso o Sola visualizzazione.
+        // Alla prima apertura, se non si e' loggati, proponi lingua + Accesso o Sola visualizzazione.
         if (state.welcomePrompted) return;
         state.welcomePrompted = true;
         if (state.authUser) return;
         if (el.welcomeDialog && typeof el.welcomeDialog.showModal === 'function' && !el.welcomeDialog.open) {
+          syncWelcomeLangButtons();
           el.welcomeDialog.showModal();
         }
       }
@@ -7508,7 +7618,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       el.langBtn.addEventListener('click', () => {
         const order = ['it', 'en', 'tr'];
-        state.lang = order[(order.indexOf(state.lang) + 1) % order.length];
+        setLang(order[(order.indexOf(state.lang) + 1) % order.length]);
         renderAll();
       });
       root.querySelectorAll('.mod-theme').forEach((button) => {
@@ -7545,7 +7655,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.adminDialog.showModal();
         el.adminUsername.focus();
       }
-      // Schermata di benvenuto: Accedi apre il login; Solo visualizzazione la chiude.
+      // Schermata di benvenuto: selezione lingua (persistita), poi Accedi apre il login o Solo visualizzazione la chiude.
+      el.welcomeLangs.querySelectorAll('.mod-welcome-lang').forEach((button) => {
+        button.addEventListener('click', () => {
+          setLang(button.dataset.lang);
+          syncWelcomeLangButtons();
+          setTranslations();
+        });
+      });
       el.welcomeLogin.addEventListener('click', () => {
         if (el.welcomeDialog.open) el.welcomeDialog.close();
         promptAdminLogin();
