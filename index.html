@@ -4797,6 +4797,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       try {
         savedLang = window.localStorage.getItem(LANG_STORAGE_KEY);
       } catch (error) {}
+      // Sincronizzazione dati di produzione su Firestore (collezione "entries", doc id = data).
+      // localStorage resta come cache locale: mostra subito qualcosa, poi arriva la versione cloud condivisa.
+      let localSeedManual = [];
+      let entriesCloudReady = false;
+      let entriesMigrated = false;
 
       const state = {
         lang: ['it', 'en', 'tr'].includes(savedLang) ? savedLang : 'it',
@@ -5311,6 +5316,56 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           state.storageAvailable = false;
           return false;
         }
+      }
+
+      function pushEntryToCloud(row) {
+        if (!db) return;
+        db.collection('entries').doc(row.date).set({
+          shift1: row.shift1 || {},
+          shift2: row.shift2 || {},
+          absentOperators: Array.isArray(row.absentOperators) ? row.absentOperators : [],
+          updatedAt: row.updatedAt || new Date().toISOString()
+        }).catch(() => {});
+      }
+
+      function deleteEntryFromCloud(date) {
+        if (!db) return;
+        db.collection('entries').doc(date).delete().catch(() => {});
+      }
+
+      function migrateLocalEntriesToCloud() {
+        // Prima sincronizzazione: i dati inseriti su questo dispositivo prima di questo
+        // aggiornamento (presenti solo in localStorage) vengono caricati una volta sul cloud,
+        // cosi' diventano visibili anche dagli altri dispositivi.
+        if (entriesMigrated || !entriesCloudReady || !state.isAdmin || !db) return;
+        entriesMigrated = true;
+        const cloudDates = new Set(state.manual.map((row) => row.date));
+        localSeedManual.forEach((row) => {
+          if (row && row.date && !cloudDates.has(row.date)) pushEntryToCloud(row);
+        });
+      }
+
+      function subscribeEntries() {
+        if (!db) return;
+        db.collection('entries').onSnapshot((snap) => {
+          const rows = [];
+          snap.forEach((doc) => {
+            const d = doc.data();
+            rows.push({
+              date: doc.id,
+              shift1: d.shift1 || {},
+              shift2: d.shift2 || {},
+              absentOperators: Array.isArray(d.absentOperators) ? d.absentOperators : [],
+              updatedAt: d.updatedAt || null
+            });
+          });
+          rows.sort((a, b) => a.date.localeCompare(b.date));
+          state.manual = rows;
+          entriesCloudReady = true;
+          persistManual();
+          migrateLocalEntriesToCloud();
+          renderAll();
+        }, () => {});
       }
 
       // Store microfermate: oggi su localStorage, domani sostituibile con Firestore
@@ -6457,6 +6512,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.manual = state.manual.filter((row) => row.date !== date);
         if (state.editingDate === date) resetEntry(date);
         persistManual();
+        deleteEntryFromCloud(date);
         renderAll();
       }
 
@@ -6503,6 +6559,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             state.manual = state.manual.filter((row) => row.date !== button.dataset.date);
             if (state.editingDate === button.dataset.date) resetEntry(button.dataset.date);
             persistManual();
+            deleteEntryFromCloud(button.dataset.date);
             renderAll();
             el.entryMessage.textContent = t('deleted');
           });
@@ -6582,6 +6639,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             updateAdminUI();
             loadChatUsers();
             subscribeChat();
+            migrateLocalEntriesToCloud();
             renderAll();
           }).catch(() => {
             applyAuthRole(null);
@@ -7910,6 +7968,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.manual.push(storedEntry);
         state.manual.sort((a, b) => a.date.localeCompare(b.date));
         const persisted = persistManual();
+        pushEntryToCloud(storedEntry);
         setEntryMode(entry.date);
         el.entryMessage.classList.toggle('text-destructive', !persisted);
         el.entryMessage.textContent = persisted ? t(wasExisting ? 'entryUpdated' : 'saved') : t('storageUnavailable');
@@ -7947,6 +8006,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       loadReworkOptions();
       renderReworkOptions();
       loadManual();
+      localSeedManual = state.manual.slice();
+      subscribeEntries();
       loadStoppages();
       loadStoppageConfig();
       loadOeeConfig();

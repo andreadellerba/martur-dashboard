@@ -27,5 +27,12 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if isSignedIn() && myRole() == 'configAdmin';
     }
+
+    match /entries/{date} {
+      // I dati di produzione si vedono anche senza login (modalita' sola visualizzazione).
+      allow read: if true;
+      // Solo utenti autenticati con ruolo admin/configAdmin possono inserire o modificare dati.
+      allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
+    }
   }
 }
