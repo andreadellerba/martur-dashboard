@@ -1949,6 +1949,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 14px;
       align-items: start;
     }
+    /* Sabato: turno unico, una sola card centrata (non a tutta larghezza). */
+    #martur-operations-dashboard .mod-daily-shift-grid.mod-single-shift {
+      grid-template-columns: minmax(0, min(560px, 100%));
+      justify-content: center;
+    }
     #martur-operations-dashboard .mod-daily-shift-card {
       position: relative;
       display: grid;
@@ -2217,6 +2222,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-entry-fields {
       align-items: start;
+    }
+    #martur-operations-dashboard .mod-entry-unique-time {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 6px 0 12px;
+    }
+    #martur-operations-dashboard .mod-entry-unique-time .form-label {
+      min-width: 150px;
     }
     #martur-operations-dashboard .mod-entry-fields > .form-label {
       min-width: min(100%, 128px);
@@ -3576,6 +3590,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <div class="mod-entry-groups">
         <fieldset class="mod-field-group">
           <legend id="mod-entry-shift1-title" class="mod-field-title" data-i18n="shift1">1° turno</legend>
+          <div id="mod-entry-unique-time" class="mod-entry-unique-time" hidden>
+            <label class="form-label"><span data-i18n="uniqueShiftStart">Inizio turno unico</span><input id="mod-s1-uniquestart" class="form-control" type="time"></label>
+            <label class="form-label"><span data-i18n="uniqueShiftEnd">Fine turno unico</span><input id="mod-s1-uniqueend" class="form-control" type="time"></label>
+          </div>
           <div class="viz-controls mod-entry-fields">
             <label class="form-label"><span data-i18n="frontLine">Linea anteriore</span><input id="mod-s1-front" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="rearLine">Linea posteriore</span><input id="mod-s1-rear" class="form-control" type="number" min="0" step="1"></label>
@@ -3616,7 +3634,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           </section>
         </fieldset>
 
-        <fieldset class="mod-field-group">
+        <fieldset id="mod-entry-shift2-group" class="mod-field-group">
           <legend id="mod-entry-shift2-title" class="mod-field-title" data-i18n="shift2">2° turno</legend>
           <div class="viz-controls mod-entry-fields">
             <label class="form-label"><span data-i18n="frontLine">Linea anteriore</span><input id="mod-s2-front" class="form-control" type="number" min="0" step="1"></label>
@@ -4149,6 +4167,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           shift2NoteLabel: 'Nota 2° turno',
           shiftA: 'Turno A',
           shiftB: 'Turno B',
+          uniqueShift: 'Turno Unico',
+          uniqueShiftStart: 'Inizio turno unico',
+          uniqueShiftEnd: 'Fine turno unico',
           absent: 'Assenti',
           absenteeism: 'Assenteismo',
           absenteeismRate: 'Tasso assenteismo',
@@ -4433,6 +4454,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           shift2NoteLabel: '2nd shift note',
           shiftA: 'Shift A',
           shiftB: 'Shift B',
+          uniqueShift: 'Single Shift',
+          uniqueShiftStart: 'Single shift start',
+          uniqueShiftEnd: 'Single shift end',
           absent: 'Absent',
           absenteeism: 'Absenteeism',
           absenteeismRate: 'Absenteeism rate',
@@ -4717,6 +4741,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           shift2NoteLabel: '2. vardiya notu',
           shiftA: 'Vardiya A',
           shiftB: 'Vardiya B',
+          uniqueShift: 'Tek Vardiya',
+          uniqueShiftStart: 'Tek vardiya başlangıcı',
+          uniqueShiftEnd: 'Tek vardiya bitişi',
           absent: 'Devamsız',
           absenteeism: 'Devamsızlık',
           absenteeismRate: 'Devamsızlık oranı',
@@ -5107,6 +5134,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         entryDate: root.querySelector('#mod-entry-date'),
         entryShift1Title: root.querySelector('#mod-entry-shift1-title'),
         entryShift2Title: root.querySelector('#mod-entry-shift2-title'),
+        entryShift2Group: root.querySelector('#mod-entry-shift2-group'),
+        entryUniqueTimeWrap: root.querySelector('#mod-entry-unique-time'),
+        entryUniqueStart: root.querySelector('#mod-s1-uniquestart'),
+        entryUniqueEnd: root.querySelector('#mod-s1-uniqueend'),
         entryNoteShift1: root.querySelector('#mod-s1-note'),
         entryNoteShift2: root.querySelector('#mod-s2-note'),
         reworkDialog: root.querySelector('#mod-rework-dialog'),
@@ -5282,8 +5313,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           lastSeqMartur: null,
           firstSeqStellantis: null,
           lastSeqStellantis: null,
-          efficiency: null
+          efficiency: null,
+          uniqueShiftStart: null,
+          uniqueShiftEnd: null
         };
+      }
+
+      function isSaturday(dateStr) {
+        return Boolean(dateStr) && parseDate(dateStr).getDay() === 6;
       }
 
       function calculateShiftEfficiency(shift) {
@@ -6250,9 +6287,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return { letter: isA ? 'A' : 'B', names: isA ? SHIFT_TEAM_A : SHIFT_TEAM_B };
       }
 
-      function renderDailyShiftCards(row) {
-        el.dailyShiftGrid.innerHTML = ['shift1', 'shift2'].map((name, index) => {
-          const shift = row[name] || emptyShift();
+      function shiftCardHtml(row, shiftKey, index, titleHtml) {
+          const shift = row[shiftKey] || emptyShift();
           const gap = isNumber(shift.front) && isNumber(shift.stellantisCars) && shift.stellantisCars > 0
             ? shift.front - shift.stellantisCars
             : null;
@@ -6263,17 +6299,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             ? shift.rework / shift.front
             : null;
           const reworkText = formatOptionalNumber(shift.rework) + (isNumber(reworkRate) ? ' \u00b7 ' + formatPercent(reworkRate) : '');
-          const shiftKey = index === 0 ? 'shift1' : 'shift2';
-          const icon = index === 0 ? 'sun' : 'moon';
           const overtimeText = isNumber(shift.overtimePct) ? formatPercent(shift.overtimePct) : formatPercent(0);
           const noteText = (shift.note || '').trim();
-          const team = shiftTeamInfo(shiftKey, row.date);
           const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
-              '<span class="mod-shift-card-name"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')' +
-                ' · ' + escapeHtml(team.names.join(' / ')) +
-                ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span></span>' +
+              '<span class="mod-shift-card-name">' + titleHtml + '</span>' +
             '</div>' +
             '<div class="mod-shift-grid-4col">' +
               metric(seqFirstLabelHtml(t('seqMarturFirst')), formatSequenceNumber(shift.firstSeqMartur)) +
@@ -6295,6 +6326,30 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '</div>' +
             '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span>' + (noteText ? ' ' + escapeHtml(noteText) : '') + '</div>' +
           '</article>';
+      }
+
+      function renderDailyShiftCards(row) {
+        if (isSaturday(row.date)) {
+          // Sabato: turno unico solo, una card centrata (dati nel campo "1° turno").
+          const shift1 = row.shift1 || emptyShift();
+          const defaultStart = SHIFT_TIMES.shift1.split(' - ')[0];
+          const defaultEnd = SHIFT_TIMES.shift1.split(' - ')[1];
+          const start = shift1.uniqueShiftStart || defaultStart;
+          const end = shift1.uniqueShiftEnd || defaultEnd;
+          const titleHtml = '<i data-lucide="sun" aria-hidden="true"></i>☀️ ' + escapeHtml(t('uniqueShift')) +
+            ' <span class="mod-shift-time">(' + escapeHtml(start) + ' - ' + escapeHtml(end) + ')</span>';
+          el.dailyShiftGrid.classList.add('mod-single-shift');
+          el.dailyShiftGrid.innerHTML = shiftCardHtml(row, 'shift1', 0, titleHtml);
+          return;
+        }
+        el.dailyShiftGrid.classList.remove('mod-single-shift');
+        el.dailyShiftGrid.innerHTML = ['shift1', 'shift2'].map((shiftKey, index) => {
+          const icon = index === 0 ? 'sun' : 'moon';
+          const team = shiftTeamInfo(shiftKey, row.date);
+          const titleHtml = '<i data-lucide="' + icon + '" aria-hidden="true"></i>' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')' +
+            ' · ' + escapeHtml(team.names.join(' / ')) +
+            ' <span class="mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>';
+          return shiftCardHtml(row, shiftKey, index, titleHtml);
         }).join('');
       }
 
@@ -6570,6 +6625,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         entry.shift2.topReworks = state.shift2TopReworks;
         entry.shift1.note = el.entryNoteShift1.value.trim();
         entry.shift2.note = el.entryNoteShift2.value.trim();
+        if (isSaturday(entry.date)) {
+          entry.shift1.uniqueShiftStart = el.entryUniqueStart.value || null;
+          entry.shift1.uniqueShiftEnd = el.entryUniqueEnd.value || null;
+        }
         return deriveRow(entry);
       }
 
@@ -6592,13 +6651,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function updateEntryShiftTitles(date) {
         // Il titolo del modulo segue lo stesso formato delle card KPI: numero turno,
-        // squadra (A/B) e nomi, che si alternano ogni settimana ISO.
+        // squadra (A/B) e nomi, che si alternano ogni settimana ISO. Il sabato c'e'
+        // un turno unico solo (2° turno nascosto), con orario libero da inserire.
         if (!date || !el.entryShift1Title || !el.entryShift2Title) return;
-        ['shift1', 'shift2'].forEach((shiftKey, index) => {
-          const target = index === 0 ? el.entryShift1Title : el.entryShift2Title;
-          const team = shiftTeamInfo(shiftKey, date);
-          target.textContent = t(shiftKey) + ' (' + team.letter + ') · ' + team.names.join(' / ');
-        });
+        const saturday = isSaturday(date);
+        el.entryShift2Group.hidden = saturday;
+        el.entryUniqueTimeWrap.hidden = !saturday;
+        if (saturday) {
+          el.entryShift1Title.textContent = '☀️ ' + t('uniqueShift');
+        } else {
+          ['shift1', 'shift2'].forEach((shiftKey, index) => {
+            const target = index === 0 ? el.entryShift1Title : el.entryShift2Title;
+            const team = shiftTeamInfo(shiftKey, date);
+            target.textContent = t(shiftKey) + ' (' + team.letter + ') · ' + team.names.join(' / ');
+          });
+        }
       }
 
       function setEntryMode(editingDate) {
@@ -6618,6 +6685,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         updateEntryShiftTitles(el.entryDate.value);
         fillShift('shift1', emptyShift());
         fillShift('shift2', emptyShift());
+        el.entryUniqueStart.value = '';
+        el.entryUniqueEnd.value = '';
         state.shift1TopReworks = [];
         state.shift2TopReworks = [];
         updateReworkLauncherPreview('shift1');
@@ -6649,6 +6718,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         updateEntryShiftTitles(date);
         fillShift('shift1', row.shift1);
         fillShift('shift2', row.shift2);
+        el.entryUniqueStart.value = row.shift1.uniqueShiftStart || '';
+        el.entryUniqueEnd.value = row.shift1.uniqueShiftEnd || '';
         state.shift1TopReworks = normalizeTopReworks(row.shift1.topReworks);
         state.shift2TopReworks = normalizeTopReworks(row.shift2.topReworks);
         updateReworkLauncherPreview('shift1');
