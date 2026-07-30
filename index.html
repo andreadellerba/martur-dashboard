@@ -6801,24 +6801,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const canEdit = state.isAdmin;
         el.dailyAdminActions.hidden = !canEdit;
         if (!canEdit) { el.dailyAdminActions.innerHTML = ''; return; }
-        const hasManual = state.manual.some((row) => row.date === state.selectedDate);
+        // Il tasto Elimina e' stato tolto dal menu: per cancellare un dato si entra
+        // in "+" (dove la cancellazione resta comunque disponibile).
         el.dailyAdminActions.innerHTML =
-          '<button type="button" class="btn btn-ghost mod-icon-btn mod-daily-edit-btn" title="' + escapeHtml(t('edit')) + '" aria-label="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' +
-          (hasManual ? '<button type="button" class="btn btn-ghost mod-icon-btn mod-daily-delete-btn" title="' + escapeHtml(t('delete')) + '" aria-label="' + escapeHtml(t('delete')) + '"><i data-lucide="trash-2" aria-hidden="true"></i></button>' : '');
+          '<button type="button" class="btn btn-ghost mod-icon-btn mod-daily-edit-btn" title="' + escapeHtml(t('edit')) + '" aria-label="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>';
         el.dailyAdminActions.querySelector('.mod-daily-edit-btn').addEventListener('click', () => openShiftEditor(state.selectedDate));
-        const delBtn = el.dailyAdminActions.querySelector('.mod-daily-delete-btn');
-        if (delBtn) delBtn.addEventListener('click', () => deleteManualDay(state.selectedDate));
-      }
-
-      function deleteManualDay(date) {
-        if (!state.isAdmin) return;
-        if (!window.confirm(t('confirmDelete'))) return;
-        state.manual = state.manual.filter((row) => row.date !== date);
-        if (state.editingDate === date) resetEntry(date);
-        persistManual();
-        deleteEntryFromCloud(date);
-        logAuditEvent('delete', null, date);
-        renderAll();
       }
 
       function openShiftEditor(date) {
