@@ -1988,6 +1988,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-title-main { color: light-dark(rgb(20 20 22), #fff); }
     #martur-operations-dashboard .mod-shift-lead { color: var(--gold); font-weight: var(--font-weight-medium); }
     #martur-operations-dashboard .mod-shift-crew { color: var(--crew-blue); font-weight: var(--font-weight-medium); }
+    /* Numeri dei turni: stessi ruoli di colore ma molto piu accesi. Ridefinire i
+       token QUI dentro (e non globalmente) tinge solo queste cifre e lascia in
+       pace grafici, KPI e bordi, che con questi valori risulterebbero urlati. */
+    #martur-operations-dashboard .mod-shift-metric {
+      --metric-good: light-dark(rgb(0 163 62), rgb(45 255 130));
+      --metric-warn: light-dark(rgb(226 116 0), rgb(255 201 41));
+      --metric-bad: light-dark(rgb(238 17 17), rgb(255 92 92));
+      --metric-yellow: light-dark(rgb(196 156 0), rgb(255 233 41));
+      --gold: light-dark(rgb(178 133 28), rgb(255 209 122));
+      --destructive: light-dark(rgb(238 17 17), rgb(255 92 92));
+    }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-good { color: var(--metric-good); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-warn { color: var(--metric-warn); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-bad { color: var(--metric-bad); }
@@ -1998,7 +2009,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         font-size: calc(var(--font-size-normal) * 1.15);
       }
       #martur-operations-dashboard .mod-shift-metric strong {
-        font-size: calc(var(--font-size-normal) * 1.45);
+        font-size: calc(var(--font-size-normal) * 1.8);
       }
     }
     #martur-operations-dashboard .mod-shift-card-name,
@@ -2056,7 +2067,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-shift-metric strong {
       overflow-wrap: anywhere;
-      font-size: calc(var(--font-size-normal) * 1.25);
+      font-size: calc(var(--font-size-normal) * 1.5);
       line-height: 1.2;
       color: light-dark(rgb(20 20 22), #fff);
     }
@@ -3167,7 +3178,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         hyphens: auto;
       }
       #martur-operations-dashboard .mod-shift-metric strong {
-        font-size: 11px;
+        font-size: 13px;
         overflow-wrap: anywhere;
         word-break: break-word;
       }
@@ -3681,7 +3692,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <label class="form-label"><span data-i18n="rearLine">Linea posteriore</span><input id="mod-s1-rear" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="convocati">Convocati Diretti</span><input id="mod-s1-convocati" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="presence">Presenze</span><input id="mod-s1-presence" class="form-control" type="number" min="0" step="1"></label>
-            <label class="form-label"><span data-i18n="absent">Assenti</span><input id="mod-s1-absent" class="form-control" type="number" min="0" step="1" readonly></label>
+            <label class="form-label"><span data-i18n="absent">Assenti</span><input id="mod-s1-absent" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="rework">Rework</span><input id="mod-s1-rework" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label mod-overtime-field-label">
               <span data-i18n="overtimePct">Straordinario %</span>
@@ -3723,7 +3734,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <label class="form-label"><span data-i18n="rearLine">Linea posteriore</span><input id="mod-s2-rear" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="convocati">Convocati Diretti</span><input id="mod-s2-convocati" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="presence">Presenze</span><input id="mod-s2-presence" class="form-control" type="number" min="0" step="1"></label>
-            <label class="form-label"><span data-i18n="absent">Assenti</span><input id="mod-s2-absent" class="form-control" type="number" min="0" step="1" readonly></label>
+            <label class="form-label"><span data-i18n="absent">Assenti</span><input id="mod-s2-absent" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="rework">Rework</span><input id="mod-s2-rework" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label mod-overtime-field-label">
               <span data-i18n="overtimePct">Straordinario %</span>
@@ -3758,6 +3769,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           </section>
         </fieldset>
       </div>
+
+      <fieldset class="mod-field-group mod-entry-oee">
+        <legend class="mod-field-title" data-i18n="dayOeeParams">Parametri OEE della giornata</legend>
+        <div class="viz-controls mod-entry-fields">
+          <label class="form-label"><span data-i18n="effectiveMinLabel">Minuti effettivi / turno</span><input id="mod-entry-planned" class="form-control" type="number" min="1" step="1"></label>
+          <label class="form-label"><span data-i18n="targetKitLabel">Target Kit / turno</span><input id="mod-entry-target" class="form-control" type="number" min="1" step="1"></label>
+        </div>
+        <div class="text-small text-muted" data-i18n="dayOeeHint">Lascia vuoto per usare i valori delle impostazioni. Quello che scrivi qui vale solo per questa giornata.</div>
+      </fieldset>
 
       <div class="mod-entry-summary">
         <div><span class="text-small text-muted" data-i18n="completeSets">Kit</span><strong id="mod-live-sets">0</strong></div>
@@ -4195,6 +4215,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           weekOverWeek: 'Settimana su settimana',
           monthOverMonth: 'Mese su mese',
           plannedMinPerShiftLabel: 'Minuti pianificati / turno',
+          dayOeeParams: 'Parametri OEE della giornata',
+          effectiveMinLabel: 'Minuti effettivi / turno',
+          targetKitLabel: 'Target Kit / turno',
+          dayOeeHint: 'Lascia vuoto per usare i valori delle impostazioni. Quello che scrivi qui vale solo per questa giornata.',
           targetKitPerShiftLabel: 'Target Kit / turno',
           roleAdmin: 'Operatore',
           roleConfigAdmin: 'Amministratore',
@@ -4482,6 +4506,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           weekOverWeek: 'Week over week',
           monthOverMonth: 'Month over month',
           plannedMinPerShiftLabel: 'Planned minutes / shift',
+          dayOeeParams: 'OEE parameters for this day',
+          effectiveMinLabel: 'Effective minutes / shift',
+          targetKitLabel: 'Target Kit / shift',
+          dayOeeHint: 'Leave empty to use the values from settings. What you type here applies to this day only.',
           targetKitPerShiftLabel: 'Target Kit / shift',
           roleAdmin: 'Operator',
           roleConfigAdmin: 'Administrator',
@@ -4769,6 +4797,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           weekOverWeek: 'Haftadan haftaya',
           monthOverMonth: 'Aydan aya',
           plannedMinPerShiftLabel: 'Vardiya başına planlanan dakika',
+          dayOeeParams: 'Günün OEE parametreleri',
+          effectiveMinLabel: 'Vardiya başına efektif dakika',
+          targetKitLabel: 'Vardiya başına hedef Kit',
+          dayOeeHint: 'Ayarlardaki değerleri kullanmak için boş bırakın. Buraya yazdığınız yalnızca bu gün için geçerlidir.',
           targetKitPerShiftLabel: 'Vardiya başına hedef Kit',
           roleAdmin: 'Operatör',
           roleConfigAdmin: 'Yönetici',
@@ -5093,6 +5125,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         auditLog: root.querySelector('#mod-audit-log'),
         oeePlanned: root.querySelector('#mod-oee-planned'),
         oeeTarget: root.querySelector('#mod-oee-target'),
+        entryPlanned: root.querySelector('#mod-entry-planned'),
+        entryTarget: root.querySelector('#mod-entry-target'),
         oeeSave: root.querySelector('#mod-oee-save'),
         reworkAdmin: root.querySelector('#mod-rework-admin'),
         stoppageSettingsBtn: root.querySelector('#mod-stoppage-settings-btn'),
@@ -5593,6 +5627,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           shift1: row.shift1 || {},
           shift2: row.shift2 || {},
           absentOperators: Array.isArray(row.absentOperators) ? row.absentOperators : [],
+          plannedMinPerShift: isNumber(row.plannedMinPerShift) ? row.plannedMinPerShift : null,
+          targetKitPerShift: isNumber(row.targetKitPerShift) ? row.targetKitPerShift : null,
           updatedAt: row.updatedAt || new Date().toISOString()
         }).catch(() => {});
       }
@@ -5625,6 +5661,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               shift1: d.shift1 || {},
               shift2: d.shift2 || {},
               absentOperators: Array.isArray(d.absentOperators) ? d.absentOperators : [],
+              plannedMinPerShift: isNumber(d.plannedMinPerShift) ? d.plannedMinPerShift : null,
+              targetKitPerShift: isNumber(d.targetKitPerShift) ? d.targetKitPerShift : null,
               updatedAt: d.updatedAt || null
             });
           });
@@ -5773,13 +5811,30 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 15, height: 15 } });
       }
 
-      function oeeConfigFor(date) {
+      function oeeConfigBaseFor(date) {
         const history = state.oeeConfigHistory || [];
         let chosen = history[0] || state.oeeConfig;
         for (let i = 0; i < history.length; i++) {
           if (history[i].effectiveFrom <= date) chosen = history[i]; else break;
         }
         return chosen;
+      }
+
+      // I parametri OEE arrivano dalle impostazioni, ma una singola giornata puo'
+      // sovrascriverli dal modulo di inserimento: capita che i minuti disponibili
+      // o il target di quel giorno non siano quelli standard.
+      function oeeConfigFor(date) {
+        const base = oeeConfigBaseFor(date);
+        const day = (state.manual || []).find((item) => item && item.date === date);
+        if (!day) return base;
+        const planned = isNumber(day.plannedMinPerShift) && day.plannedMinPerShift > 0 ? day.plannedMinPerShift : null;
+        const target = isNumber(day.targetKitPerShift) && day.targetKitPerShift > 0 ? day.targetKitPerShift : null;
+        if (planned === null && target === null) return base;
+        return {
+          effectiveFrom: base.effectiveFrom,
+          plannedMinPerShift: planned === null ? base.plannedMinPerShift : planned,
+          targetKitPerShift: target === null ? base.targetKitPerShift : target
+        };
       }
 
       function clamp01(value) {
@@ -6814,6 +6869,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             entry[name][key] = readInput(fieldIds[name][key], key === 'overtimePct');
           });
         });
+        entry.plannedMinPerShift = readInput('mod-entry-planned');
+        entry.targetKitPerShift = readInput('mod-entry-target');
         entry.shift1.topReworks = state.shift1TopReworks;
         entry.shift2.topReworks = state.shift2TopReworks;
         entry.shift1.note = el.entryNoteShift1.value.trim();
@@ -6872,6 +6929,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.submitLabel.textContent = t(el.submitLabel.dataset.i18n);
       }
 
+      // Mostra come segnaposto il valore che verrebbe usato lasciando vuoto,
+      // cosi' si vede subito da cosa si sta partendo.
+      function fillEntryOee(date, row) {
+        const base = oeeConfigBaseFor(date || isoDate(new Date()));
+        el.entryPlanned.placeholder = base ? String(base.plannedMinPerShift) : '';
+        el.entryTarget.placeholder = base ? String(base.targetKitPerShift) : '';
+        el.entryPlanned.value = row && isNumber(row.plannedMinPerShift) ? row.plannedMinPerShift : '';
+        el.entryTarget.value = row && isNumber(row.targetKitPerShift) ? row.targetKitPerShift : '';
+      }
+
       function resetEntry(date) {
         setEntryMode(null);
         el.entryDate.value = date || isoDate(new Date());
@@ -6888,6 +6955,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.entryNoteShift2.value = '';
         autoGrow(el.entryNoteShift1);
         autoGrow(el.entryNoteShift2);
+        fillEntryOee(el.entryDate.value, null);
         el.entryMessage.textContent = '';
         el.entryMessage.classList.remove('text-destructive');
         updateLiveSummary();
@@ -6921,6 +6989,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.entryNoteShift2.value = row.shift2.note || '';
         autoGrow(el.entryNoteShift1);
         autoGrow(el.entryNoteShift2);
+        fillEntryOee(el.entryDate.value, row);
         el.entryMessage.textContent = '';
         el.entryMessage.classList.remove('text-destructive');
         updateLiveSummary();
@@ -8403,19 +8472,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           root.querySelector('#' + id).addEventListener('input', updateLiveSummary);
         });
       });
-      function updateComputedAbsent(name) {
-        const convocatiInput = root.querySelector('#' + fieldIds[name].convocati);
-        const presenceInput = root.querySelector('#' + fieldIds[name].presence);
-        const absentInput = root.querySelector('#' + fieldIds[name].absent);
-        const convocati = convocatiInput.value === '' ? null : Number(convocatiInput.value);
-        const presence = presenceInput.value === '' ? null : Number(presenceInput.value);
-        absentInput.value = (isNumber(convocati) && isNumber(presence)) ? Math.max(0, Math.round(convocati - presence)) : '';
+      // Presenze e Assenti si completano a vicenda partendo dai Convocati Diretti:
+      // ne inserisci uno qualsiasi dei due e l'altro esce da solo. Ricordiamo
+      // quale dei due hai scritto per ultimo, perche' e' quello che "comanda":
+      // altrimenti, cambiando i Convocati, non si saprebbe quale dei due tenere
+      // fermo e quale ricalcolare.
+      const crewDriver = { shift1: 'presence', shift2: 'presence' };
+      function syncCrew(name, source) {
+        const ids = fieldIds[name];
+        const convocatiInput = root.querySelector('#' + ids.convocati);
+        const presenceInput = root.querySelector('#' + ids.presence);
+        const absentInput = root.querySelector('#' + ids.absent);
+        if (source === 'presence' || source === 'absent') crewDriver[name] = source;
+        const num = (input) => input.value === '' ? null : Number(input.value);
+        const convocati = num(convocatiInput);
+        const presence = num(presenceInput);
+        const absent = num(absentInput);
+        if (!isNumber(convocati)) {
+          // senza Convocati non c'e' totale da cui dedurre: non tocchiamo nulla
+          updateLiveSummary();
+          return;
+        }
+        if (crewDriver[name] === 'absent' && isNumber(absent)) {
+          presenceInput.value = Math.max(0, Math.round(convocati - absent));
+        } else if (isNumber(presence)) {
+          absentInput.value = Math.max(0, Math.round(convocati - presence));
+        }
+        // scrivere .value non fa scattare l'evento input, quindi il riepilogo
+        // in fondo al modulo va aggiornato a mano
+        updateLiveSummary();
       }
       ['shift1', 'shift2'].forEach((name) => {
-        const convocatiInput = root.querySelector('#' + fieldIds[name].convocati);
-        const presenceInput = root.querySelector('#' + fieldIds[name].presence);
-        convocatiInput.addEventListener('input', () => updateComputedAbsent(name));
-        presenceInput.addEventListener('input', () => updateComputedAbsent(name));
+        const ids = fieldIds[name];
+        root.querySelector('#' + ids.convocati).addEventListener('input', () => syncCrew(name, 'convocati'));
+        root.querySelector('#' + ids.presence).addEventListener('input', () => syncCrew(name, 'presence'));
+        root.querySelector('#' + ids.absent).addEventListener('input', () => syncCrew(name, 'absent'));
       });
       el.entryDate.addEventListener('change', () => {
         if (el.entryDate.value) loadEntry(el.entryDate.value);
@@ -8460,6 +8551,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           shift1: entry.shift1,
           shift2: entry.shift2,
           absentOperators: entry.absentOperators,
+          // parametri OEE validi solo per questa giornata: se restano vuoti
+          // valgono quelli delle impostazioni
+          plannedMinPerShift: entry.plannedMinPerShift,
+          targetKitPerShift: entry.targetKitPerShift,
           updatedAt: entry.updatedAt
         };
         state.manual = state.manual.filter((row) => row.date !== entry.date);
