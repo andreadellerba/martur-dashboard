@@ -7777,13 +7777,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           { trend: el.kpiSetsTrend, spark: el.kpiSetsSpark, get: (r) => r.completeKits, kind: 'int' },
           { trend: el.kpiCarsTrend, spark: el.kpiCarsSpark, get: (r) => r.stellantisCars, kind: 'int' },
           { trend: el.kpiGapTrend, spark: el.kpiGapSpark, get: (r) => r.supplyGap, kind: 'int' },
-          { trend: el.kpiAbsenteeismTrend, spark: el.kpiAbsenteeismSpark, get: (r) => r.absenteeismPct, kind: 'pct', lowerIsBetter: true },
+          { trend: el.kpiAbsenteeismTrend, spark: el.kpiAbsenteeismSpark, get: (r) => r.absenteeismPct, kind: 'pct', lowerIsBetter: true, skipMonday: true },
           { trend: el.kpiEfficiencyTrend, spark: el.kpiEfficiencySpark, get: (r) => r.efficiency, kind: 'pct' }
         ];
         const series = kpiTrendSeries();
         // Il sabato (turno unico, ore variabili) non e' paragonabile ai giorni feriali:
         // niente freccia/delta, solo il valore e il grafico dell'andamento.
         const skipBadge = state.view === 'daily' && isSingleShiftDay(state.selectedDate);
+        // Lunedi: il giorno prima e' il fine settimana, quindi per l'assenteismo
+        // il confronto non direbbe niente di utile. Resta il valore e la linea,
+        // sparisce solo la variazione.
+        const isMonday = state.view === 'daily' && parseDate(state.selectedDate).getDay() === 1;
         metrics.forEach((m) => {
           const valuesForSpark = series.map(m.get);
           const validVals = valuesForSpark.filter(isNumber);
@@ -7796,7 +7800,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           // per l assenteismo verde e rosso vanno invertiti, come per la freccia
           const dirSpark = (m.lowerIsBetter && dir && dir !== 'flat') ? (dir === 'up' ? 'down' : 'up') : dir;
           m.spark.innerHTML = sparklineSvg(valuesForSpark, dirSpark);
-          if (series.length >= 2 && !skipBadge) {
+          if (series.length >= 2 && !skipBadge && !(m.skipMonday && isMonday)) {
             renderTrendBadge(m.trend, m.get(series[series.length - 1]), m.get(series[series.length - 2]), m.kind, m.lowerIsBetter);
           } else {
             m.trend.textContent = '';
@@ -8520,26 +8524,46 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // quale dei due hai scritto per ultimo, perche' e' quello che "comanda":
       // altrimenti, cambiando i Convocati, non si saprebbe quale dei due tenere
       // fermo e quale ricalcolare.
-      const crewDriver = { shift1: 'presence', shift2: 'presence' };
+      // Convocati Diretti, Presenze e Assenti sono legati da: convocati = presenze + assenti.
+      // Regola: si ricalcola SEMPRE, e non si scrive MAI nel campo che si sta
+      // scrivendo. Prima invece, svuotando un campo per riscriverlo, quel campo
+      // veniva subito riempito di nuovo dal calcolo e diventava impossibile
+      // modificarlo a mano.
+      const crewLast = { shift1: 'presence', shift2: 'presence' };
       function syncCrew(name, source) {
         const ids = fieldIds[name];
         const convocatiInput = root.querySelector('#' + ids.convocati);
         const presenceInput = root.querySelector('#' + ids.presence);
         const absentInput = root.querySelector('#' + ids.absent);
-        if (source === 'presence' || source === 'absent') crewDriver[name] = source;
-        const num = (input) => input.value === '' ? null : Number(input.value);
+        const num = (input) => {
+          const v = input.value.trim();
+          if (v === '') return null;
+          const n = Number(v);
+          return Number.isFinite(n) ? n : null;
+        };
         const convocati = num(convocatiInput);
         const presence = num(presenceInput);
         const absent = num(absentInput);
-        if (!isNumber(convocati)) {
-          // senza Convocati non c'e' totale da cui dedurre: non tocchiamo nulla
-          updateLiveSummary();
-          return;
-        }
-        if (crewDriver[name] === 'absent' && isNumber(absent)) {
-          presenceInput.value = Math.max(0, Math.round(convocati - absent));
-        } else if (isNumber(presence)) {
-          absentInput.value = Math.max(0, Math.round(convocati - presence));
+        const scrivi = (input, valore) => {
+          const testo = String(Math.max(0, Math.round(valore)));
+          if (input.value !== testo) input.value = testo;
+        };
+
+        // fra Presenze e Assenti si ricorda l'ultimo scritto a mano: cambiando i
+        // Convocati e' quello che resta fermo, e l'altro si riadegua
+        if (source === 'presence' || source === 'absent') crewLast[name] = source;
+
+        if (source === 'presence') {
+          if (isNumber(convocati) && isNumber(presence)) scrivi(absentInput, convocati - presence);
+        } else if (source === 'absent') {
+          if (isNumber(convocati) && isNumber(absent)) scrivi(presenceInput, convocati - absent);
+        } else {
+          // ha cambiato i Convocati: si aggiorna quello dei due che non comanda
+          if (crewLast[name] === 'absent') {
+            if (isNumber(convocati) && isNumber(absent)) scrivi(presenceInput, convocati - absent);
+          } else {
+            if (isNumber(convocati) && isNumber(presence)) scrivi(absentInput, convocati - presence);
+          }
         }
         // scrivere .value non fa scattare l'evento input, quindi il riepilogo
         // in fondo al modulo va aggiornato a mano
