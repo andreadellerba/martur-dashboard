@@ -2003,6 +2003,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-title-main { color: light-dark(rgb(20 20 22), #fff); }
     #martur-operations-dashboard .mod-shift-lead { color: var(--gold); font-weight: var(--font-weight-medium); }
     #martur-operations-dashboard .mod-shift-crew { color: var(--crew-blue); font-weight: var(--font-weight-medium); }
+    /* Capoturno e squadra in maiuscolo. La spaziatura serve: in maiuscolo
+       le lettere si impastano, e questi sono cognomi da leggere al volo. */
+    #martur-operations-dashboard .mod-shift-lead,
+    #martur-operations-dashboard .mod-shift-crew {
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
     /* Numeri dei turni: stessi ruoli di colore ma molto piu accesi. Ridefinire i
        token QUI dentro (e non globalmente) tinge solo queste cifre e lascia in
        pace grafici, KPI e bordi, che con questi valori risulterebbero urlati. */
