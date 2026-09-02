@@ -2080,6 +2080,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-align: center;
       justify-items: center;
     }
+    /* Etichette sopra i numeri: piu grandi e in bianco acceso invece del grigio.
+       Il colore passa da light-dark perche' in tema chiaro il bianco sparirebbe:
+       li' diventa quasi nero, che e' l'equivalente "acceso" su fondo chiaro. */
+    #martur-operations-dashboard .mod-shift-metric .text-small,
+    #martur-operations-dashboard .mod-kpi-tile > .text-muted:not(.text-small) {
+      color: light-dark(rgb(20 20 22), #fff);
+    }
+    #martur-operations-dashboard .mod-shift-metric .text-small {
+      font-size: calc(var(--font-size-small) * 1.27);
+      /* alle larghezze intermedie parole lunghe come Assenteismo o Straordinario
+         uscivano dalla colonna: qui possono andare a capo invece di sbordare */
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-height: 1.2;
+    }
+    #martur-operations-dashboard .mod-kpi-tile > .text-muted:not(.text-small) {
+      font-size: calc(var(--font-size-normal) * 1.2);
+    }
     #martur-operations-dashboard .mod-shift-metric strong {
       overflow-wrap: anywhere;
       font-size: calc(var(--font-size-normal) * 1.7);
@@ -3186,7 +3204,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         min-width: 0;
       }
       #martur-operations-dashboard .mod-shift-metric .text-small {
-        font-size: 9px;
+        font-size: 10.5px;
         line-height: 1.1;
         overflow-wrap: anywhere;
         word-break: break-word;
