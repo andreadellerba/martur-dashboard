@@ -29,8 +29,9 @@ service cloud.firestore {
     }
 
     match /entries/{date} {
-      // I dati di produzione si vedono anche senza login (modalita' sola visualizzazione).
-      allow read: if true;
+      // Dati aziendali: si leggono solo da autenticati. L'accesso anonimo e'
+      // disabilitato nel progetto, quindi serve un utente vero.
+      allow read: if isSignedIn();
       // Solo utenti autenticati con ruolo admin/configAdmin possono inserire o modificare dati.
       allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }

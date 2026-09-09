@@ -784,7 +784,7 @@ svg {
 html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 </head>
 <body>
-<div id="martur-operations-dashboard">
+<div id="martur-operations-dashboard" class="mod-locked">
   <style>
     #martur-operations-dashboard {
       display: flex;
@@ -796,6 +796,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       color: var(--foreground);
     }
     #martur-operations-dashboard [hidden] {
+      display: none !important;
+    }
+    /* Finche' non si e' fatto l'accesso non deve comparire nulla: i dati di
+       produzione sono informazioni aziendali. Restano visibili solo i dialog
+       (benvenuto e login). */
+    #martur-operations-dashboard.mod-locked > *:not(dialog):not(script):not(style) {
       display: none !important;
     }
     #martur-operations-dashboard .mod-topbar,
@@ -4048,7 +4054,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <div class="mod-dialog-head">
         <div class="mod-selection-copy">
           <h2 id="mod-welcome-title" class="mod-dialog-title" data-i18n="welcomeTitle">Benvenuto</h2>
-          <span class="text-small text-muted" data-i18n="welcomeHint">Accedi per inserire e modificare i dati, oppure continua in sola visualizzazione.</span>
+          <span class="text-small text-muted" data-i18n="welcomeHint">Accedi per vedere i dati: senza accesso non si vede nulla.</span>
         </div>
       </div>
       <div id="mod-welcome-langs" class="mod-welcome-langs" role="group" aria-label="Language">
@@ -4057,7 +4063,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-welcome-lang" data-lang="tr" aria-pressed="false">🇹🇷 Türkçe</button>
       </div>
       <div class="mod-dialog-actions mod-welcome-actions">
-        <button id="mod-welcome-guest" type="button" class="btn"><i data-lucide="eye" aria-hidden="true"></i><span data-i18n="viewOnly">Solo visualizzazione</span></button>
         <button id="mod-welcome-login" type="button" class="btn btn-primary"><i data-lucide="log-in" aria-hidden="true"></i><span data-i18n="login">Accedi</span></button>
       </div>
     </div>
@@ -4193,7 +4198,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           adminAccess: 'Accesso amministratore',
           adminAccessHint: 'Accedi con nome utente e password per abilitare l\'inserimento e la modifica dei dati.',
           welcomeTitle: 'Benvenuto',
-          welcomeHint: 'Accedi per inserire e modificare i dati, oppure continua in sola visualizzazione.',
+          welcomeHint: 'Accedi per vedere i dati: senza accesso non si vede nulla.',
           viewOnly: 'Solo visualizzazione',
           login: 'Accedi',
           username: 'Nome utente',
@@ -4484,7 +4489,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           adminAccess: 'Admin access',
           adminAccessHint: 'Sign in with username and password to enable adding and editing data.',
           welcomeTitle: 'Welcome',
-          welcomeHint: 'Sign in to enter and edit data, or continue in view-only mode.',
+          welcomeHint: 'Sign in to see the data: nothing is visible without an account.',
           viewOnly: 'View only',
           login: 'Sign in',
           username: 'Username',
@@ -4775,7 +4780,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           adminAccess: 'Yönetici girişi',
           adminAccessHint: 'Veri ekleme ve düzenlemeyi etkinleştirmek için kullanıcı adı ve şifre ile giriş yapın.',
           welcomeTitle: 'Hoş geldiniz',
-          welcomeHint: 'Veri girmek ve düzenlemek için giriş yapın veya yalnızca görüntüleme modunda devam edin.',
+          welcomeHint: 'Verileri görmek için giriş yapın: giriş yapmadan hiçbir şey görünmez.',
           viewOnly: 'Yalnızca görüntüleme',
           login: 'Giriş',
           username: 'Kullanıcı adı',
@@ -5221,7 +5226,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         adminDialog: root.querySelector('#mod-admin-dialog'),
         welcomeDialog: root.querySelector('#mod-welcome-dialog'),
         welcomeLogin: root.querySelector('#mod-welcome-login'),
-        welcomeGuest: root.querySelector('#mod-welcome-guest'),
         welcomeLangs: root.querySelector('#mod-welcome-langs'),
         adminForm: root.querySelector('#mod-admin-form'),
         adminUsername: root.querySelector('#mod-admin-username'),
@@ -5703,9 +5707,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       }
 
+      // I dati di produzione si leggono solo da autenticati: la sottoscrizione
+      // parte dopo il login e si chiude all'uscita.
+      let entriesUnsub = null;
+      function unsubscribeEntries() {
+        if (entriesUnsub) { try { entriesUnsub(); } catch (e) {} entriesUnsub = null; }
+      }
       function subscribeEntries() {
-        if (!db) return;
-        db.collection('entries').onSnapshot((snap) => {
+        if (!db || entriesUnsub) return;
+        entriesUnsub = db.collection('entries').onSnapshot((snap) => {
           const rows = [];
           snap.forEach((doc) => {
             const d = doc.data();
@@ -7161,10 +7171,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       }
 
+      // Senza accesso la pagina resta vuota: si vede solo la schermata di
+      // benvenuto con la scelta della lingua e il pulsante Accedi.
+      function setLocked(locked) {
+        if (!root) return;
+        root.classList.toggle('mod-locked', !!locked);
+      }
+
       function maybeShowWelcome() {
-        // Alla prima apertura, se non si e' loggati, proponi lingua + Accesso o Sola visualizzazione.
-        if (state.welcomePrompted) return;
-        state.welcomePrompted = true;
+        // Riproposta ogni volta che non si e' autenticati, anche dopo l'uscita.
         if (state.authUser) return;
         if (el.welcomeDialog && typeof el.welcomeDialog.showModal === 'function' && !el.welcomeDialog.open) {
           syncWelcomeLangButtons();
@@ -7173,7 +7188,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function initAuth() {
-        if (!auth || !db) return;
+        // Senza Firebase non si puo' autenticare nessuno: la pagina resta
+        // bloccata, ma almeno si vede la schermata di benvenuto invece del vuoto.
+        if (!auth || !db) { setLocked(true); maybeShowWelcome(); return; }
         auth.onAuthStateChanged((user) => {
           state.authUser = user;
           if (!user) {
@@ -7181,19 +7198,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             state.authUsername = null;
             unsubscribeChat();
             if (state.view === 'entry') state.view = 'daily';
+            // Uscendo non deve restare niente a schermo per chi prende in mano
+            // il dispositivo dopo. La copia su questo device resta al suo posto:
+            // serve alla migrazione e si ricarica al prossimo accesso.
+            unsubscribeEntries();
+            state.manual = [];
+            setLocked(true);
             updateAdminUI();
             renderAll();
             maybeShowWelcome();
             return;
           }
-          // Loggato: chiudi l'eventuale schermata di benvenuto.
-          state.welcomePrompted = true;
+          // Loggato: chiudi la schermata di benvenuto e mostra la dashboard.
+          setLocked(false);
           if (el.welcomeDialog && el.welcomeDialog.open) el.welcomeDialog.close();
           db.collection('users').doc(user.uid).get().then((doc) => {
             applyAuthRole(doc.exists ? doc.data().role : null);
             state.authUsername = doc.exists ? doc.data().username : null;
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
+            subscribeEntries();
             loadChatUsers();
             subscribeChat();
             migrateLocalEntriesToCloud();
@@ -7202,6 +7226,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             applyAuthRole(null);
             state.authUsername = null;
             updateAdminUI();
+            subscribeEntries();
             renderAll();
           });
         });
@@ -8357,8 +8382,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (el.welcomeDialog.open) el.welcomeDialog.close();
         promptAdminLogin();
       });
-      el.welcomeGuest.addEventListener('click', () => {
-        if (el.welcomeDialog.open) el.welcomeDialog.close();
+      // La schermata di benvenuto non si chiude senza accesso: ne' con Esc,
+      // ne' cliccando fuori. L'unica via avanti e' il login.
+      el.welcomeDialog.addEventListener('cancel', (event) => {
+        if (!state.authUser) event.preventDefault();
       });
       el.adminLock.addEventListener('click', () => {
         if (state.isAdmin) {
@@ -8693,7 +8720,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       renderReworkOptions();
       loadManual();
       localSeedManual = state.manual.slice();
-      subscribeEntries();
+      // subscribeEntries() parte dal login (initAuth): senza accesso non si
+      // interroga nemmeno il database.
+      state.manual = [];
       loadStoppages();
       loadStoppageConfig();
       loadOeeConfig();
