@@ -9100,11 +9100,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // La chiave porta la data: per un annuncio futuro basta cambiarla e il
       // banner ricompare a tutti, una volta sola.
       const UPDATE_BANNER_KEY = 'martur-update-banner-2026-09';
+      // Scadenza: 10 settembre 2026 alle 10:00. Passata quell'ora sparisce da
+      // solo, anche a chi non l'ha mai chiuso. (Il mese in JS parte da 0.)
+      const UPDATE_BANNER_UNTIL = new Date(2026, 8, 10, 10, 0, 0);
       function maybeShowUpdateBanner() {
         if (!el.updateBanner) return;
+        const left = UPDATE_BANNER_UNTIL.getTime() - Date.now();
+        if (left <= 0) { el.updateBanner.hidden = true; return; }
         let seen = false;
         try { seen = window.localStorage.getItem(UPDATE_BANNER_KEY) === '1'; } catch (e) {}
         el.updateBanner.hidden = seen;
+        // Sul televisore la pagina resta aperta per giorni: alla scadenza il
+        // banner deve sparire da solo, senza aspettare un ricaricamento.
+        if (!seen && left < 2147483647) {
+          window.setTimeout(() => { el.updateBanner.hidden = true; }, left);
+        }
       }
       el.updateBannerClose.addEventListener('click', () => {
         try { window.localStorage.setItem(UPDATE_BANNER_KEY, '1'); } catch (e) {}
