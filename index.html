@@ -1646,6 +1646,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-size: calc(var(--font-size-base) * 0.95);
       color: var(--muted-foreground);
     }
+    #martur-operations-dashboard .mod-period-note-day {
+      margin-left: auto;
+      font-size: calc(var(--font-size-base) * 0.95);
+      color: var(--muted-foreground);
+    }
 
     /* Rimasta senza la riga Efficienza, la card si regge su due righe sole:
        si distribuiscono nell'altezza invece di lasciare un vuoto in fondo. */
@@ -4590,6 +4595,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           periodNoteMonth: 'Chiusura mese',
           periodNotePrev: 'Periodo precedente',
           periodNoteNoPrev: 'Nessun dato nel periodo precedente',
+          periodNoteClosedOn: 'chiuso il',
           summaryTab: 'RIEPILOGO',
           summaryTitle: 'Riepilogo attività',
           summaryHint: 'Le attività della squadra, divise per stato di avanzamento.',
@@ -4917,6 +4923,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           periodNoteMonth: 'Month close',
           periodNotePrev: 'Previous period',
           periodNoteNoPrev: 'No data in the previous period',
+          periodNoteClosedOn: 'closed on',
           summaryTab: 'SUMMARY',
           summaryTitle: 'Activity summary',
           summaryHint: 'Team activities, grouped by progress.',
@@ -5244,6 +5251,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           periodNoteMonth: 'Ay kapanisi',
           periodNotePrev: 'Onceki donem',
           periodNoteNoPrev: 'Onceki donemde veri yok',
+          periodNoteClosedOn: 'kapanis',
           summaryTab: 'OZET',
           summaryTitle: 'Faaliyet ozeti',
           summaryHint: 'Ekip faaliyetleri, ilerleme durumuna gore.',
@@ -6544,14 +6552,67 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return { start, end: isoDate(end) };
       }
 
-      // Somma i dummy: nel resto della dashboard il dummy di giornata e' un
-      // valore di giacenza (vince l'ultimo inserito), quindi il totale del
-      // periodo e' l'ultimo dato disponibile, non la somma dei giorni.
-      function dummyOfRange(rows, startIso, endIso) {
+      // Confini del periodo che dista "offset" da quello che contiene refIso
+      // (0 = quello mostrato, -1 = il precedente, e cosi' via).
+      function periodBoundsAt(view, refIso, offset) {
+        if (view === 'weekly') {
+          const monday = addDays(mondayOf(parseDate(refIso)), offset * 7);
+          return { start: isoDate(monday), end: isoDate(addDays(monday, 6)) };
+        }
+        const d = parseDate(refIso.slice(0, 7) + '-01');
+        const shifted = new Date(d.getFullYear(), d.getMonth() + offset, 1);
+        return monthBounds(isoDate(shifted).slice(0, 7));
+      }
+
+      // Il dummy di giornata e' una giacenza, non una produzione: nel resto
+      // della dashboard vince l'ultimo valore inserito, non si somma. La
+      // chiusura del periodo e' quindi il dummy dell'ultimo giorno lavorativo,
+      // cioe' come si e' chiuso il secondo turno di quel giorno.
+      function dummyOn(rows, dateIso) {
+        const row = rows.find((r) => r.date === dateIso);
+        return row && isNumber(row.dummy) ? row.dummy : null;
+      }
+
+      // Chiusura di un periodo, se c'e'. Due casi:
+      //  - l'ultimo giorno lavorativo ha gia' il dummy del secondo turno: e'
+      //    quello il dato di chiusura;
+      //  - quel giorno e' ormai passato ma senza dato (fermata, festivo, dato
+      //    non inserito): si prende l'ultimo dummy disponibile nel periodo.
+      // Se invece l'ultimo giorno lavorativo deve ancora arrivare, il periodo
+      // non e' chiuso e non si mostra.
+      function periodClosing(rows, view, refIso, offset) {
+        const b = periodBoundsAt(view, refIso, offset);
+        const lwd = lastWorkingDay(b.start, b.end, rows);
+        if (!lwd) return null;
+        const onLwd = dummyOn(rows, lwd);
+        if (isNumber(onLwd)) return { start: b.start, end: b.end, day: lwd, value: onLwd, offset };
+        if (lwd >= isoDate(new Date())) return null;
         const inRange = rows
-          .filter((r) => r.date >= startIso && r.date <= endIso && isNumber(r.dummy))
-          .sort((a, b) => a.date.localeCompare(b.date));
-        return inRange.length ? inRange[inRange.length - 1].dummy : null;
+          .filter((r) => r.date >= b.start && r.date <= b.end && isNumber(r.dummy))
+          .sort((a, c) => a.date.localeCompare(c.date));
+        if (!inRange.length) return null;
+        const last = inRange[inRange.length - 1];
+        return { start: b.start, end: b.end, day: last.date, value: last.dummy, offset };
+      }
+
+      // Si torna indietro finche' non si trova un periodo chiuso: cosi' il
+      // lunedi si vede la chiusura del venerdi precedente e il primo del mese
+      // quella dell'ultimo giorno lavorativo del mese prima.
+      function lastClosedPeriod(rows, view, refIso, startOffset) {
+        for (let k = startOffset; k > startOffset - 24; k--) {
+          const closing = periodClosing(rows, view, refIso, k);
+          if (closing) return closing;
+        }
+        return null;
+      }
+
+      function periodNoteLabel(view, period) {
+        if (view === 'weekly') {
+          const start = parseDate(period.start);
+          return t('periodNoteWeek') + ' ' + getIsoWeekNumber(start) + ' · ' +
+            formatDayMonth(period.start) + ' - ' + formatDayMonth(period.end);
+        }
+        return t('periodNoteMonth') + ' · ' + formatMonth(period.start);
       }
 
       function renderPeriodNote(rows) {
@@ -6560,30 +6621,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!node || !section) return;
         if (state.view !== 'weekly' && state.view !== 'monthly') { section.hidden = true; return; }
 
-        let start, end, prevStart, prevEnd, label;
-        if (state.view === 'weekly') {
-          const monday = mondayOf(parseDate(state.selectedDate));
-          start = isoDate(monday);
-          end = isoDate(addDays(monday, 6));
-          prevStart = isoDate(addDays(monday, -7));
-          prevEnd = isoDate(addDays(monday, -1));
-          label = t('periodNoteWeek');
-        } else {
-          const b = monthBounds(state.selectedMonth);
-          start = b.start; end = b.end;
-          const prevRef = addDays(parseDate(start), -1);
-          const pb = monthBounds(isoDate(prevRef).slice(0, 7));
-          prevStart = pb.start; prevEnd = pb.end;
-          label = t('periodNoteMonth');
-        }
+        const refIso = state.view === 'weekly' ? state.selectedDate : state.selectedMonth + '-01';
+        const current = lastClosedPeriod(rows, state.view, refIso, 0);
+        if (!current) { section.hidden = true; return; }
+        const previous = lastClosedPeriod(rows, state.view, refIso, current.offset - 1);
 
-        // Solo nell'ultimo giorno lavorativo del periodo.
-        const last = lastWorkingDay(start, end, rows);
-        if (!last || state.selectedDate !== last) { section.hidden = true; return; }
-
-        const cur = dummyOfRange(rows, start, end);
-        if (!isNumber(cur)) { section.hidden = true; return; }
-        const prev = dummyOfRange(rows, prevStart, prevEnd);
+        const cur = current.value;
+        const prev = previous ? previous.value : null;
+        const label = periodNoteLabel(state.view, current);
 
         let deltaHtml = '';
         if (isNumber(prev)) {
@@ -6603,7 +6648,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '<span class="mod-period-note-label">' + escapeHtml(label) + '</span>' +
           '<span class="mod-period-note-value">' + escapeHtml(formatNumber(cur)) + '</span>' +
           '<span class="mod-period-note-label">' + escapeHtml(t('dummySeats')) + '</span>' +
-          deltaHtml;
+          deltaHtml +
+          '<span class="mod-period-note-day">' + escapeHtml(t('periodNoteClosedOn')) + ' ' +
+            escapeHtml(formatDayMonth(current.day)) + '</span>';
         section.hidden = false;
       }
 
