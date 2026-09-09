@@ -3739,15 +3739,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <div id="mod-period-note" class="mod-period-note"></div>
     </section>
 
-    <section id="mod-daily-rework-section" class="mod-section" aria-labelledby="mod-daily-rework-title">
-      <div class="mod-section-head">
-        <div>
-          <div id="mod-daily-rework-title" class="mod-section-label" data-i18n="dailyTopReworks">I 3 rework più frequenti del giorno</div>
-        </div>
-      </div>
-      <ol id="mod-daily-rework-list" class="mod-rework-ranking"></ol>
-    </section>
-
     <div class="mod-two-col mod-oee-fermi-row">
       <section id="mod-oee-section" class="mod-section">
         <div class="mod-section-head">
@@ -5669,8 +5660,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         kpiTile4: root.querySelector('.mod-kpi-tile-4'),
         kpiTile5: root.querySelector('.mod-kpi-tile-5'),
         kpiTile3: root.querySelector('.mod-kpi-tile-3'),
-        dailyReworkSection: root.querySelector('#mod-daily-rework-section'),
-        dailyReworkList: root.querySelector('#mod-daily-rework-list'),
         oeeSection: root.querySelector('#mod-oee-section'),
         oeeSubtitle: root.querySelector('#mod-oee-subtitle'),
         oeeGauge: root.querySelector('#mod-oee-gauge'),
@@ -7081,13 +7070,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           : '<tr><td colspan="4" class="mod-empty">' + t('noAbsenceLog') + '</td></tr>';
       }
 
-      function renderDailyTopReworks(row) {
-        const topReworks = normalizeTopReworks(row.topReworks);
-        el.dailyReworkList.innerHTML = topReworks.length
-          ? topReworks.map((item, index) => '<li><span class="mod-rework-rank-badge">' + (index + 1) + '</span><span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span>' + (isNumber(item.count) ? '<span class="mod-rework-ranking-count">' + formatNumber(item.count) + ' ' + t('cases') + '</span>' : '') + '</li>').join('')
-          : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
-      }
-
       function shiftTeamInfo(shiftKey, dateStr) {
         // Le squadre A/B si alternano ogni settimana ISO tra 1 e 2 Turno.
         const weekNum = getIsoWeekNumber(parseDate(dateStr));
@@ -7276,7 +7258,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const summary = state.view === 'daily' ? dailySummary : overall;
 
         el.dailyShiftSection.hidden = state.view !== 'daily';
-        el.dailyReworkSection.hidden = state.view !== 'daily';
         el.periodShiftSection.hidden = state.view === 'daily';
         renderPeriodNote(rows);
 
@@ -7315,7 +7296,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.mainDetail.innerHTML = '<span>' + t('selectedRange') + ': <strong>' + subtitle + '</strong></span><span>' + t('supplyGap') + ': <strong class="' + (overall.supplyGap < 0 ? 'mod-negative' : '') + '">' + formatSigned(overall.supplyGap) + ' ' + t('pieces') + '</strong></span>';
         renderKpiTrends();
         renderDailyShiftCards(dailySummary);
-        renderDailyTopReworks(dailySummary);
         renderShiftTables(overall, subtitle);
         const oeeDowntimeMin = getPeriodStoppages().reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
         const shiftsWorkedFor = (shiftRow) => {
