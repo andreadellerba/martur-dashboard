@@ -9092,20 +9092,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (el.welcomeDialog.open) el.welcomeDialog.close();
         promptAdminLogin();
       });
-      // La chiave porta la data: per un annuncio futuro basta cambiarla e il
-      // banner ricompare a tutti, una volta sola.
-      const UPDATE_BANNER_KEY = 'martur-update-banner-2026-09';
-      // Scadenza: 10 settembre 2026 alle 10:00. Passata quell'ora sparisce da
-      // solo, anche a chi non l'ha mai chiuso. (Il mese in JS parte da 0.)
+      // Scadenza: 10 settembre 2026 alle 10:00. (Il mese in JS parte da 0.)
+      // Fino a quel momento il popup si ripropone a ogni apertura dell'app:
+      // chiuderlo lo toglie solo per quella volta, al ricaricamento ritorna.
       const UPDATE_BANNER_UNTIL = new Date(2026, 8, 10, 10, 0, 0);
       function maybeShowUpdateBanner() {
         const dlg = el.updateDialog;
         if (!dlg || dlg.open) return;
         const left = UPDATE_BANNER_UNTIL.getTime() - Date.now();
         if (left <= 0) return;
-        let seen = false;
-        try { seen = window.localStorage.getItem(UPDATE_BANNER_KEY) === '1'; } catch (e) {}
-        if (seen) return;
         if (typeof dlg.showModal !== 'function') return;
         dlg.showModal();
         // Sul televisore la pagina resta aperta per giorni: alla scadenza il
@@ -9114,19 +9109,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           window.setTimeout(() => { if (dlg.open) dlg.close(); }, left);
         }
       }
-      // Chiuso e' chiuso, in qualsiasi modo lo si chiuda (X, Ho capito, Esc).
-      // Il flag si scrive qui e non nell'evento "close" del dialog: quello non
-      // e' arrivato in modo affidabile nelle prove.
       function dismissUpdateBanner() {
-        try { window.localStorage.setItem(UPDATE_BANNER_KEY, '1'); } catch (e) {}
         if (el.updateDialog.open) el.updateDialog.close();
       }
       el.updateClose.addEventListener('click', dismissUpdateBanner);
       el.updateOk.addEventListener('click', dismissUpdateBanner);
-      el.updateDialog.addEventListener('cancel', dismissUpdateBanner);
-      el.updateDialog.addEventListener('close', () => {
-        try { window.localStorage.setItem(UPDATE_BANNER_KEY, '1'); } catch (e) {}
-      });
 
       el.taskAdd.addEventListener('click', () => openTaskDialog(null));
       el.taskClose.addEventListener('click', () => el.taskDialog.close());
