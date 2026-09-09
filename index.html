@@ -1615,16 +1615,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-task-delete { margin-right: auto; color: var(--destructive); }
 
-    /* Banner degli aggiornamenti: si chiude una volta e non torna piu'.
-       Stesso corpo delle note turno, italiano e inglese affiancati. */
-    #martur-operations-dashboard .mod-update-banner {
-      position: relative;
-      margin-bottom: 14px;
-      padding: 20px 56px 20px 22px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--card);
-    }
+    /* Popup degli aggiornamenti: compare all'apertura, si chiude una volta e
+       non torna piu'. Stesso corpo delle note turno, italiano e inglese
+       affiancati. */
     #martur-operations-dashboard .mod-update-banner-cols {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1650,7 +1643,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       margin-bottom: 10px;
       color: light-dark(rgb(20 20 22), #fff);
     }
-    #martur-operations-dashboard .mod-update-banner ul {
+    #martur-operations-dashboard .mod-update-banner-col ul {
       margin: 0;
       padding-left: 1.2em;
       font-size: calc(var(--font-size-base) * 1.55);
@@ -1658,7 +1651,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 600;
       color: light-dark(rgb(20 20 22), #fff);
     }
-    #martur-operations-dashboard .mod-update-banner li { margin-bottom: 6px; }
+    #martur-operations-dashboard .mod-update-banner-col li { margin-bottom: 6px; }
     #martur-operations-dashboard .mod-update-banner-sign {
       margin-top: 14px;
       font-size: calc(var(--font-size-base) * 1.55);
@@ -1666,24 +1659,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 700;
       color: var(--primary);
     }
-    #martur-operations-dashboard .mod-update-banner-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-full);
-      background: var(--muted);
-      color: var(--foreground);
+    /* Il popup si adatta all'elenco: e' piu' alto degli altri dialoghi. */
+    #martur-operations-dashboard .mod-update-dialog .mod-update-banner-cols {
+      overflow-y: auto;
     }
-    #martur-operations-dashboard .mod-update-banner-close:hover { border-color: var(--primary); }
 
     /* Chiusura di settimana o mese: si legge da lontano come le note turno. */
     #martur-operations-dashboard .mod-period-note {
@@ -3713,32 +3692,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </header>
 
-  <section id="mod-update-banner" class="mod-update-banner" hidden>
-    <button id="mod-update-banner-close" type="button" class="mod-update-banner-close" aria-label="Chiudi / Close">✕</button>
-    <div class="mod-update-banner-cols">
-      <div class="mod-update-banner-col">
-        <div class="mod-update-banner-title">In base ai recenti feedback</div>
-        <ul>
-          <li>N° Dummy visibili ogni fine settimana e fine del mese.</li>
-          <li>Aggiunto il riepilogo (Daily Task) per tracciare le attività giornalmente, con progressi e chiusure attività.</li>
-          <li>Aumentato il font delle note.</li>
-          <li>Rimosso il dato Efficienza dall'OLE (non era il dato corretto).</li>
-        </ul>
-        <div class="mod-update-banner-sign">Buon lavoro e forza Juve!<br>Andrea ;)</div>
-      </div>
-      <div class="mod-update-banner-col">
-        <div class="mod-update-banner-title">Based on your recent feedback</div>
-        <ul>
-          <li>Dummy count now shown at the end of every week and month.</li>
-          <li>Added the summary (Daily Task) to track activities day by day, with progress and closures.</li>
-          <li>Larger font for the shift notes.</li>
-          <li>Removed the Efficiency figure from OLE (it was not the correct data).</li>
-        </ul>
-        <div class="mod-update-banner-sign">Have a good shift and forza Juve!<br>Andrea ;)</div>
-      </div>
-    </div>
-  </section>
-
   <main id="mod-dashboard-screen">
     <section id="mod-daily-shift-section" class="mod-section">
       <div id="mod-daily-shift-grid" class="mod-daily-shift-grid"></div>
@@ -4213,6 +4166,44 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
     <div id="mod-summary-board" class="mod-summary-board"></div>
   </section>
+
+  <dialog id="mod-update-dialog" class="card mod-selection-dialog mod-update-dialog" aria-labelledby="mod-update-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-update-title" class="mod-dialog-title">Aggiornamenti · Updates</h2>
+        </div>
+        <button type="button" class="btn btn-ghost mod-dialog-close" id="mod-update-close" aria-label="Chiudi / Close">✕</button>
+      </div>
+      <div class="mod-update-banner-cols">
+        <div class="mod-update-banner-col">
+          <div class="mod-update-banner-title">In base ai recenti feedback</div>
+          <ul>
+            <li>N° Dummy visibili ogni fine settimana e fine del mese.</li>
+            <li>Aggiunto il riepilogo (Daily Task) per tracciare le attività giornalmente, con progressi e chiusure attività.</li>
+            <li>Aumentato il font delle note.</li>
+            <li>Rimosso il dato Efficienza dall'OLE (non era il dato corretto).</li>
+            <li>Resa l'applicazione non visibile e privata senza login, per evitare problemi di sicurezza e dati sensibili.</li>
+          </ul>
+          <div class="mod-update-banner-sign">Buon lavoro e forza Juve!<br>Andrea ;)</div>
+        </div>
+        <div class="mod-update-banner-col">
+          <div class="mod-update-banner-title">Based on your recent feedback</div>
+          <ul>
+            <li>Dummy count now shown at the end of every week and month.</li>
+            <li>Added the summary (Daily Task) to track activities day by day, with progress and closures.</li>
+            <li>Larger font for the shift notes.</li>
+            <li>Removed the Efficiency figure from OLE (it was not the correct data).</li>
+            <li>The app is now private and shows nothing without a login, to protect security and sensitive data.</li>
+          </ul>
+          <div class="mod-update-banner-sign">Have a good shift and forza Juve!<br>Andrea ;)</div>
+        </div>
+      </div>
+      <div class="mod-dialog-actions">
+        <button type="button" id="mod-update-ok" class="btn btn-primary">Ho capito · Got it</button>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="mod-task-dialog" class="card mod-selection-dialog" aria-labelledby="mod-task-dialog-title">
     <div class="mod-dialog-shell">
@@ -5686,8 +5677,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         oeeBreakdown: root.querySelector('#mod-oee-breakdown'),
         periodNoteSection: root.querySelector('#mod-period-note-section'),
         periodNote: root.querySelector('#mod-period-note'),
-        updateBanner: root.querySelector('#mod-update-banner'),
-        updateBannerClose: root.querySelector('#mod-update-banner-close'),
+        updateDialog: root.querySelector('#mod-update-dialog'),
+        updateClose: root.querySelector('#mod-update-close'),
+        updateOk: root.querySelector('#mod-update-ok'),
         summaryScreen: root.querySelector('#mod-summary-screen'),
         summaryBoard: root.querySelector('#mod-summary-board'),
         taskAdd: root.querySelector('#mod-task-add'),
@@ -7776,6 +7768,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             // serve alla migrazione e si ricarica al prossimo accesso.
             unsubscribeEntries();
             unsubscribeTasks();
+            if (el.updateDialog && el.updateDialog.open) el.updateDialog.close();
             state.manual = [];
             setLocked(true);
             updateAdminUI();
@@ -7797,6 +7790,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             subscribeChat();
             migrateLocalEntriesToCloud();
             renderAll();
+            // Dopo l'accesso, cosi' non si sovrappone alla schermata di login.
+            maybeShowUpdateBanner();
           }).catch(() => {
             applyAuthRole(null);
             state.authUsername = null;
@@ -9104,21 +9099,33 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // solo, anche a chi non l'ha mai chiuso. (Il mese in JS parte da 0.)
       const UPDATE_BANNER_UNTIL = new Date(2026, 8, 10, 10, 0, 0);
       function maybeShowUpdateBanner() {
-        if (!el.updateBanner) return;
+        const dlg = el.updateDialog;
+        if (!dlg || dlg.open) return;
         const left = UPDATE_BANNER_UNTIL.getTime() - Date.now();
-        if (left <= 0) { el.updateBanner.hidden = true; return; }
+        if (left <= 0) return;
         let seen = false;
         try { seen = window.localStorage.getItem(UPDATE_BANNER_KEY) === '1'; } catch (e) {}
-        el.updateBanner.hidden = seen;
+        if (seen) return;
+        if (typeof dlg.showModal !== 'function') return;
+        dlg.showModal();
         // Sul televisore la pagina resta aperta per giorni: alla scadenza il
-        // banner deve sparire da solo, senza aspettare un ricaricamento.
-        if (!seen && left < 2147483647) {
-          window.setTimeout(() => { el.updateBanner.hidden = true; }, left);
+        // popup si chiude da solo, senza aspettare un ricaricamento.
+        if (left < 2147483647) {
+          window.setTimeout(() => { if (dlg.open) dlg.close(); }, left);
         }
       }
-      el.updateBannerClose.addEventListener('click', () => {
+      // Chiuso e' chiuso, in qualsiasi modo lo si chiuda (X, Ho capito, Esc).
+      // Il flag si scrive qui e non nell'evento "close" del dialog: quello non
+      // e' arrivato in modo affidabile nelle prove.
+      function dismissUpdateBanner() {
         try { window.localStorage.setItem(UPDATE_BANNER_KEY, '1'); } catch (e) {}
-        el.updateBanner.hidden = true;
+        if (el.updateDialog.open) el.updateDialog.close();
+      }
+      el.updateClose.addEventListener('click', dismissUpdateBanner);
+      el.updateOk.addEventListener('click', dismissUpdateBanner);
+      el.updateDialog.addEventListener('cancel', dismissUpdateBanner);
+      el.updateDialog.addEventListener('close', () => {
+        try { window.localStorage.setItem(UPDATE_BANNER_KEY, '1'); } catch (e) {}
       });
 
       el.taskAdd.addEventListener('click', () => openTaskDialog(null));
@@ -9471,7 +9478,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       loadStoppages();
       loadStoppageConfig();
       loadOeeConfig();
-      maybeShowUpdateBanner();
       try { state.chatSeenTs = Number(window.localStorage.getItem(CHAT_SEEN_KEY)) || 0; } catch (e) {}
       clearForm();
       renderAll();
