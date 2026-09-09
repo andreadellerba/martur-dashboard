@@ -1615,6 +1615,76 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-task-delete { margin-right: auto; color: var(--destructive); }
 
+    /* Banner degli aggiornamenti: si chiude una volta e non torna piu'.
+       Stesso corpo delle note turno, italiano e inglese affiancati. */
+    #martur-operations-dashboard .mod-update-banner {
+      position: relative;
+      margin-bottom: 14px;
+      padding: 20px 56px 20px 22px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+    #martur-operations-dashboard .mod-update-banner-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px 34px;
+    }
+    @media (max-width: 900px) {
+      #martur-operations-dashboard .mod-update-banner-cols { grid-template-columns: 1fr; }
+      #martur-operations-dashboard .mod-update-banner-col + .mod-update-banner-col {
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding-left: 0;
+        padding-top: 18px;
+      }
+    }
+    #martur-operations-dashboard .mod-update-banner-col + .mod-update-banner-col {
+      border-left: 1px solid var(--border);
+      padding-left: 34px;
+    }
+    #martur-operations-dashboard .mod-update-banner-title {
+      font-size: calc(var(--font-size-base) * 1.55);
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: light-dark(rgb(20 20 22), #fff);
+    }
+    #martur-operations-dashboard .mod-update-banner ul {
+      margin: 0;
+      padding-left: 1.2em;
+      font-size: calc(var(--font-size-base) * 1.55);
+      line-height: 1.35;
+      font-weight: 600;
+      color: light-dark(rgb(20 20 22), #fff);
+    }
+    #martur-operations-dashboard .mod-update-banner li { margin-bottom: 6px; }
+    #martur-operations-dashboard .mod-update-banner-sign {
+      margin-top: 14px;
+      font-size: calc(var(--font-size-base) * 1.55);
+      line-height: 1.3;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    #martur-operations-dashboard .mod-update-banner-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background: var(--muted);
+      color: var(--foreground);
+    }
+    #martur-operations-dashboard .mod-update-banner-close:hover { border-color: var(--primary); }
+
     /* Chiusura di settimana o mese: si legge da lontano come le note turno. */
     #martur-operations-dashboard .mod-period-note {
       display: flex;
@@ -3643,6 +3713,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </header>
 
+  <section id="mod-update-banner" class="mod-update-banner" hidden>
+    <button id="mod-update-banner-close" type="button" class="mod-update-banner-close" aria-label="Chiudi / Close">✕</button>
+    <div class="mod-update-banner-cols">
+      <div class="mod-update-banner-col">
+        <div class="mod-update-banner-title">In base ai recenti feedback</div>
+        <ul>
+          <li>N° Dummy visibili ogni fine settimana e fine del mese.</li>
+          <li>Aggiunto il riepilogo (Daily Task) per tracciare le attività giornalmente, con progressi e chiusure attività.</li>
+          <li>Aumentato il font delle note.</li>
+          <li>Rimosso il dato Efficienza dall'OLE (non era il dato corretto).</li>
+        </ul>
+        <div class="mod-update-banner-sign">Buon lavoro e forza Juve!<br>Andrea ;)</div>
+      </div>
+      <div class="mod-update-banner-col">
+        <div class="mod-update-banner-title">Based on your recent feedback</div>
+        <ul>
+          <li>Dummy count now shown at the end of every week and month.</li>
+          <li>Added the summary (Daily Task) to track activities day by day, with progress and closures.</li>
+          <li>Larger font for the shift notes.</li>
+          <li>Removed the Efficiency figure from OLE (it was not the correct data).</li>
+        </ul>
+        <div class="mod-update-banner-sign">Have a good shift and forza Juve!<br>Andrea ;)</div>
+      </div>
+    </div>
+  </section>
+
   <main id="mod-dashboard-screen">
     <section id="mod-daily-shift-section" class="mod-section">
       <div id="mod-daily-shift-grid" class="mod-daily-shift-grid"></div>
@@ -5590,6 +5686,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         oeeBreakdown: root.querySelector('#mod-oee-breakdown'),
         periodNoteSection: root.querySelector('#mod-period-note-section'),
         periodNote: root.querySelector('#mod-period-note'),
+        updateBanner: root.querySelector('#mod-update-banner'),
+        updateBannerClose: root.querySelector('#mod-update-banner-close'),
         summaryScreen: root.querySelector('#mod-summary-screen'),
         summaryBoard: root.querySelector('#mod-summary-board'),
         taskAdd: root.querySelector('#mod-task-add'),
@@ -8999,6 +9097,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (el.welcomeDialog.open) el.welcomeDialog.close();
         promptAdminLogin();
       });
+      // La chiave porta la data: per un annuncio futuro basta cambiarla e il
+      // banner ricompare a tutti, una volta sola.
+      const UPDATE_BANNER_KEY = 'martur-update-banner-2026-09';
+      function maybeShowUpdateBanner() {
+        if (!el.updateBanner) return;
+        let seen = false;
+        try { seen = window.localStorage.getItem(UPDATE_BANNER_KEY) === '1'; } catch (e) {}
+        el.updateBanner.hidden = seen;
+      }
+      el.updateBannerClose.addEventListener('click', () => {
+        try { window.localStorage.setItem(UPDATE_BANNER_KEY, '1'); } catch (e) {}
+        el.updateBanner.hidden = true;
+      });
+
       el.taskAdd.addEventListener('click', () => openTaskDialog(null));
       el.taskClose.addEventListener('click', () => el.taskDialog.close());
       el.taskCancel.addEventListener('click', () => el.taskDialog.close());
@@ -9349,6 +9461,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       loadStoppages();
       loadStoppageConfig();
       loadOeeConfig();
+      maybeShowUpdateBanner();
       try { state.chatSeenTs = Number(window.localStorage.getItem(CHAT_SEEN_KEY)) || 0; } catch (e) {}
       clearForm();
       renderAll();
