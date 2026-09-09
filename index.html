@@ -6545,7 +6545,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const lastDate = todayIso > dataLastDate ? todayIso : dataLastDate;
 
         if (!state.selectedDate || state.selectedDate < firstDate || state.selectedDate > lastDate) {
-          state.selectedDate = defaultRow ? defaultRow.date : DATA.latestDate;
+          // All'apertura si parte sempre dal giorno di oggi, non dall'ultimo
+          // giorno con dati inseriti: aprendo la dashboard si vuole vedere la
+          // giornata in corso. Si ripiega sui dati solo se oggi e' fuori
+          // dall'intervallo disponibile.
+          state.selectedDate = todayIso >= firstDate
+            ? todayIso
+            : (defaultRow ? defaultRow.date : DATA.latestDate);
         }
         const firstMonth = firstDate.slice(0, 7);
         const lastMonth = lastDate.slice(0, 7);
