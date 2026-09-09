@@ -2205,8 +2205,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-time.mod-shift-title-main {
       color: light-dark(rgb(20 20 22), #fff);
     }
-    /* La nota va letta da lontano: la dashboard sta su un televisore. */
+    /* La nota va letta da lontano: la dashboard sta su un televisore.
+       Altezza fissa di 3 righe anche quando la nota e' vuota, cosi' le due
+       card dei turni restano sempre alte uguali. */
     #martur-operations-dashboard .mod-shift-note {
+      box-sizing: content-box;
       padding-top: 12px;
       border-top: 1px solid var(--border);
       font-size: calc(var(--font-size-base) * 1.55);
@@ -2214,13 +2217,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 600;
       color: light-dark(rgb(20 20 22), #fff);
       overflow-wrap: anywhere;
-    }
-    #martur-operations-dashboard .mod-shift-note span {
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-right: 8px;
-      font-size: calc(var(--font-size-base) * 0.95);
-      font-weight: 600;
+      height: 3.9em;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
     #martur-operations-dashboard .mod-seq-label-tail {
       display: inline;
@@ -7040,7 +7041,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(t('overtime'), overtimeText, otCls) +
               metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
             '</div>' +
-            '<div class="mod-shift-note"><span class="text-small text-muted">' + escapeHtml(t('note')) + '</span>' + (noteText ? ' ' + escapeHtml(noteText) : '') + '</div>' +
+            '<div class="mod-shift-note">' + (noteText ? escapeHtml(noteText) : '') + '</div>' +
           '</article>';
       }
 
