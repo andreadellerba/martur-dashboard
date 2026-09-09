@@ -36,6 +36,11 @@ service cloud.firestore {
       allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }
 
+    match /tasks/{id} {
+      // Riepilogo attivita': si legge e si scrive solo da autenticati.
+      allow read, write: if isSignedIn();
+    }
+
     match /auditLog/{id} {
       // Ogni utente autenticato puo' registrare un proprio evento (login/modifica);
       // il registro si legge/elimina solo con ruolo configAdmin.

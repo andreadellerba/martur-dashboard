@@ -1504,12 +1504,158 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
+    /* ---- Riepilogo attivita' ---- */
+    #martur-operations-dashboard .mod-summary-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    #martur-operations-dashboard .mod-summary-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    #martur-operations-dashboard .mod-summary-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      #martur-operations-dashboard .mod-summary-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      #martur-operations-dashboard .mod-summary-board { grid-template-columns: 1fr; }
+    }
+    #martur-operations-dashboard .mod-task-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--muted);
+    }
+    #martur-operations-dashboard .mod-task-col-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--col-color, var(--border));
+      color: var(--col-color, var(--foreground));
+    }
+    #martur-operations-dashboard .mod-task-col-count {
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-task-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--prio-color, var(--border));
+      border-radius: var(--radius);
+      background: var(--card);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-task-card:hover { border-color: var(--primary); }
+    #martur-operations-dashboard .mod-task-people {
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    #martur-operations-dashboard .mod-task-desc {
+      font-size: var(--font-size-small);
+      color: var(--muted-foreground);
+      overflow-wrap: anywhere;
+    }
+    #martur-operations-dashboard .mod-task-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    #martur-operations-dashboard .mod-task-tag {
+      font-size: calc(var(--font-size-small) - 1px);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+      color: #10131a;
+    }
+    #martur-operations-dashboard .mod-task-dates {
+      font-size: calc(var(--font-size-small) - 1px);
+      color: var(--muted-foreground);
+      font-variant-numeric: tabular-nums;
+    }
+    #martur-operations-dashboard .mod-task-empty {
+      font-size: var(--font-size-small);
+      color: var(--muted-foreground);
+      padding: 6px 2px;
+    }
+    #martur-operations-dashboard .mod-task-form-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 640px) {
+      #martur-operations-dashboard .mod-task-form-row { grid-template-columns: 1fr; }
+    }
+    #martur-operations-dashboard .mod-task-delete { margin-right: auto; color: var(--destructive); }
+
+    /* Chiusura di settimana o mese: si legge da lontano come le note turno. */
+    #martur-operations-dashboard .mod-period-note {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+    #martur-operations-dashboard .mod-period-note-label {
+      font-size: calc(var(--font-size-base) * 0.95);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted-foreground);
+      font-weight: 600;
+    }
+    #martur-operations-dashboard .mod-period-note-value {
+      font-size: calc(var(--font-size-base) * 1.85);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    #martur-operations-dashboard .mod-period-note-delta {
+      font-size: calc(var(--font-size-base) * 1.15);
+      font-weight: 700;
+    }
+    #martur-operations-dashboard .mod-period-note-prev {
+      font-size: calc(var(--font-size-base) * 0.95);
+      color: var(--muted-foreground);
+    }
+
+    /* Rimasta senza la riga Efficienza, la card si regge su due righe sole:
+       si distribuiscono nell'altezza invece di lasciare un vuoto in fondo. */
     #martur-operations-dashboard .mod-oee-breakdown {
       display: grid;
       gap: 16px;
       min-width: 0;
       min-height: 138px;
-      align-content: center;
+      align-content: space-evenly;
     }
     #martur-operations-dashboard .mod-oee-row {
       display: grid;
@@ -1518,12 +1664,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 12px;
     }
     #martur-operations-dashboard .mod-oee-row-label {
-      font-size: var(--font-size-small);
+      font-size: var(--font-size-normal);
       color: var(--muted-foreground);
     }
     #martur-operations-dashboard .mod-oee-track {
       position: relative;
-      height: 10px;
+      height: 14px;
       border-radius: var(--radius-full);
       background: var(--muted);
       overflow: hidden;
@@ -2059,17 +2205,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-time.mod-shift-title-main {
       color: light-dark(rgb(20 20 22), #fff);
     }
+    /* La nota va letta da lontano: la dashboard sta su un televisore. */
     #martur-operations-dashboard .mod-shift-note {
-      padding-top: 10px;
+      padding-top: 12px;
       border-top: 1px solid var(--border);
-      font-size: var(--font-size-small);
-      line-height: 1.4;
+      font-size: calc(var(--font-size-base) * 1.55);
+      line-height: 1.3;
+      font-weight: 600;
+      color: light-dark(rgb(20 20 22), #fff);
       overflow-wrap: anywhere;
     }
     #martur-operations-dashboard .mod-shift-note span {
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-right: 4px;
+      margin-right: 8px;
+      font-size: calc(var(--font-size-base) * 0.95);
+      font-weight: 600;
     }
     #martur-operations-dashboard .mod-seq-label-tail {
       display: inline;
@@ -3440,7 +3591,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <button type="button" class="mod-nav-tab mod-view-btn" data-view="dmc" aria-pressed="false" data-i18n="dmcSection">DMC</button>
           <button type="button" class="mod-nav-tab mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages" hidden>Fermi linea</button>
           <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode" hidden>TV</button>
-          <button type="button" class="mod-nav-tab mod-view-btn mod-chat-tab" data-view="chat" aria-pressed="false"><span data-i18n="chat">Comunicazioni</span><span id="mod-chat-badge" class="mod-chat-badge" hidden></span></button>
+          <button type="button" class="mod-nav-tab mod-view-btn" data-view="summary" aria-pressed="false"><span data-i18n="summaryTab">RIEPILOGO</span></button>
         </nav>
         <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
           <option value="daily" data-i18n="daily">Giornaliero</option>
@@ -3448,7 +3599,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <option value="monthly" data-i18n="monthly">Mensile</option>
           <option value="abarth" data-i18n="abarth">Abarth</option>
           <option value="dmc" data-i18n="dmcSection">DMC</option>
-          <option value="chat" data-i18n="chat">Comunicazioni</option>
+          <option value="summary" data-i18n="summaryTab">RIEPILOGO</option>
         </select>
         <span class="mod-pill-sep"></span>
         <div id="mod-daily-admin-actions" class="mod-daily-admin-actions"></div>
@@ -3528,6 +3679,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <span id="mod-kpi-efficiency-context" class="text-small text-muted"></span>
         <div id="mod-kpi-efficiency-spark" class="mod-kpi-spark" aria-hidden="true"></div>
       </div>
+    </section>
+
+    <section id="mod-period-note-section" class="mod-section" hidden>
+      <div id="mod-period-note" class="mod-period-note"></div>
     </section>
 
     <section id="mod-daily-rework-section" class="mod-section" aria-labelledby="mod-daily-rework-title">
@@ -3951,6 +4106,68 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </section>
 
+  <section id="mod-summary-screen" class="mod-summary-screen" hidden>
+    <div class="mod-summary-head">
+      <div>
+        <h2 class="mod-dialog-title" data-i18n="summaryTitle">Riepilogo attività</h2>
+        <div class="text-small text-muted" data-i18n="summaryHint">Le attività della squadra, divise per stato di avanzamento.</div>
+      </div>
+      <button id="mod-task-add" type="button" class="btn btn-primary" data-i18n="taskAdd">+ Nuova attività</button>
+    </div>
+    <div id="mod-summary-board" class="mod-summary-board"></div>
+  </section>
+
+  <dialog id="mod-task-dialog" class="card mod-selection-dialog" aria-labelledby="mod-task-dialog-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-task-dialog-title" class="mod-dialog-title" data-i18n="taskNew">Nuova attività</h2>
+        </div>
+        <button type="button" class="btn btn-ghost mod-dialog-close" id="mod-task-close" aria-label="X">✕</button>
+      </div>
+      <form id="mod-task-form" class="mod-dialog-body">
+        <label class="mod-field">
+          <span data-i18n="taskPeople">Persone</span>
+          <input id="mod-task-people" type="text" class="form-control" maxlength="120" data-i18n-placeholder="taskPeoplePh" placeholder="Es. M. Colverde, A. Liotino">
+        </label>
+        <label class="mod-field">
+          <span data-i18n="taskDescription">Descrizione</span>
+          <textarea id="mod-task-description" class="form-control" rows="3" maxlength="600"></textarea>
+        </label>
+        <div class="mod-task-form-row">
+          <label class="mod-field">
+            <span data-i18n="taskCategory">Categoria</span>
+            <select id="mod-task-category" class="form-control"></select>
+          </label>
+          <label class="mod-field">
+            <span data-i18n="taskPriority">Priorità</span>
+            <select id="mod-task-priority" class="form-control"></select>
+          </label>
+          <label class="mod-field">
+            <span data-i18n="taskStatus">Stato</span>
+            <select id="mod-task-status" class="form-control"></select>
+          </label>
+        </div>
+        <div class="mod-task-form-row">
+          <label class="mod-field">
+            <span data-i18n="taskOpenedAt">Data apertura</span>
+            <input id="mod-task-opened" type="date" class="form-control">
+          </label>
+          <label class="mod-field">
+            <span data-i18n="taskClosedAt">Data chiusura</span>
+            <input id="mod-task-closed" type="date" class="form-control">
+          </label>
+        </div>
+        <div id="mod-task-error" class="text-small mod-negative" hidden></div>
+        <div class="mod-dialog-actions">
+          <button type="button" id="mod-task-delete" class="btn btn-ghost mod-task-delete" data-i18n="taskDelete">Elimina</button>
+          <button type="button" id="mod-task-cancel" class="btn" data-i18n="cancel">Annulla</button>
+          <button type="submit" class="btn btn-primary" data-i18n="save">Salva</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
   <dialog id="mod-stoppage-settings-dialog" class="card mod-selection-dialog" aria-labelledby="mod-stoppage-settings-title">
     <div class="mod-dialog-shell">
       <div class="mod-dialog-head">
@@ -4373,6 +4590,42 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtime: 'Straordinario',
           overtimePct: 'Straordinario %',
           dummySeats: 'Dummy',
+          periodNoteWeek: 'Chiusura settimana',
+          periodNoteMonth: 'Chiusura mese',
+          periodNotePrev: 'Periodo precedente',
+          periodNoteNoPrev: 'Nessun dato nel periodo precedente',
+          summaryTab: 'RIEPILOGO',
+          summaryTitle: 'Riepilogo attività',
+          summaryHint: 'Le attività della squadra, divise per stato di avanzamento.',
+          taskAdd: '+ Nuova attività',
+          taskNew: 'Nuova attività',
+          taskEdit: 'Modifica attività',
+          taskPeople: 'Persone',
+          taskPeoplePh: 'Es. M. Colverde, A. Liotino',
+          taskDescription: 'Descrizione',
+          taskCategory: 'Categoria',
+          taskPriority: 'Priorità',
+          taskStatus: 'Stato',
+          taskOpenedAt: 'Data apertura',
+          taskClosedAt: 'Data chiusura',
+          taskOpenedShort: 'Aperta',
+          taskClosedShort: 'Chiusa',
+          taskDelete: 'Elimina',
+          taskConfirmDelete: 'Eliminare questa attività?',
+          taskFormInvalid: 'Inserisci almeno le persone o una descrizione.',
+          taskSaveError: 'Salvataggio non riuscito.',
+          taskNone: 'Nessuna attività',
+          taskNoPeople: 'Senza assegnatario',
+          taskCatTodo: 'Da fare',
+          taskCatDoing: 'In corso',
+          taskCatReview: 'In revisione',
+          taskCatDone: 'Completata',
+          taskPrioLow: 'Bassa',
+          taskPrioMedium: 'Media',
+          taskPrioHigh: 'Alta',
+          taskStatusOpen: 'Aperto',
+          taskStatusDoing: 'In corso',
+          taskStatusClosed: 'Chiuso',
           coda: 'Coda',
           firstSeqMartur: 'Prima Sequenza Martur',
           lastSeqMartur: 'Ultima Sequenza Martur',
@@ -4664,6 +4917,42 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtime: 'Overtime',
           overtimePct: 'Overtime %',
           dummySeats: 'Dummy seats',
+          periodNoteWeek: 'Week close',
+          periodNoteMonth: 'Month close',
+          periodNotePrev: 'Previous period',
+          periodNoteNoPrev: 'No data in the previous period',
+          summaryTab: 'SUMMARY',
+          summaryTitle: 'Activity summary',
+          summaryHint: 'Team activities, grouped by progress.',
+          taskAdd: '+ New activity',
+          taskNew: 'New activity',
+          taskEdit: 'Edit activity',
+          taskPeople: 'People',
+          taskPeoplePh: 'E.g. M. Colverde, A. Liotino',
+          taskDescription: 'Description',
+          taskCategory: 'Category',
+          taskPriority: 'Priority',
+          taskStatus: 'Status',
+          taskOpenedAt: 'Opened on',
+          taskClosedAt: 'Closed on',
+          taskOpenedShort: 'Opened',
+          taskClosedShort: 'Closed',
+          taskDelete: 'Delete',
+          taskConfirmDelete: 'Delete this activity?',
+          taskFormInvalid: 'Enter at least the people or a description.',
+          taskSaveError: 'Could not save.',
+          taskNone: 'No activities',
+          taskNoPeople: 'Unassigned',
+          taskCatTodo: 'To do',
+          taskCatDoing: 'In progress',
+          taskCatReview: 'In review',
+          taskCatDone: 'Completed',
+          taskPrioLow: 'Low',
+          taskPrioMedium: 'Medium',
+          taskPrioHigh: 'High',
+          taskStatusOpen: 'Open',
+          taskStatusDoing: 'In progress',
+          taskStatusClosed: 'Closed',
           coda: 'Queue',
           firstSeqMartur: 'First Martur sequence',
           lastSeqMartur: 'Last Martur sequence',
@@ -4955,6 +5244,42 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           overtime: 'Fazla mesai',
           overtimePct: 'Fazla mesai %',
           dummySeats: 'Dummy koltuk',
+          periodNoteWeek: 'Hafta kapanisi',
+          periodNoteMonth: 'Ay kapanisi',
+          periodNotePrev: 'Onceki donem',
+          periodNoteNoPrev: 'Onceki donemde veri yok',
+          summaryTab: 'OZET',
+          summaryTitle: 'Faaliyet ozeti',
+          summaryHint: 'Ekip faaliyetleri, ilerleme durumuna gore.',
+          taskAdd: '+ Yeni faaliyet',
+          taskNew: 'Yeni faaliyet',
+          taskEdit: 'Faaliyeti duzenle',
+          taskPeople: 'Kisiler',
+          taskPeoplePh: 'Or. M. Colverde, A. Liotino',
+          taskDescription: 'Aciklama',
+          taskCategory: 'Kategori',
+          taskPriority: 'Oncelik',
+          taskStatus: 'Durum',
+          taskOpenedAt: 'Acilis tarihi',
+          taskClosedAt: 'Kapanis tarihi',
+          taskOpenedShort: 'Acildi',
+          taskClosedShort: 'Kapandi',
+          taskDelete: 'Sil',
+          taskConfirmDelete: 'Bu faaliyet silinsin mi?',
+          taskFormInvalid: 'En az kisi veya aciklama girin.',
+          taskSaveError: 'Kaydedilemedi.',
+          taskNone: 'Faaliyet yok',
+          taskNoPeople: 'Atanmamis',
+          taskCatTodo: 'Yapilacak',
+          taskCatDoing: 'Devam ediyor',
+          taskCatReview: 'Incelemede',
+          taskCatDone: 'Tamamlandi',
+          taskPrioLow: 'Dusuk',
+          taskPrioMedium: 'Orta',
+          taskPrioHigh: 'Yuksek',
+          taskStatusOpen: 'Acik',
+          taskStatusDoing: 'Devam ediyor',
+          taskStatusClosed: 'Kapali',
           coda: 'Kuyruk',
           firstSeqMartur: 'İlk Martur sırası',
           lastSeqMartur: 'Son Martur sırası',
@@ -5110,6 +5435,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         authUser: null,
         authRole: null,
         authUsername: null,
+        tasks: [],
         chatMessages: [],
         chatUsers: [],
         chatUnsub: null,
@@ -5258,6 +5584,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         oeeSubtitle: root.querySelector('#mod-oee-subtitle'),
         oeeGauge: root.querySelector('#mod-oee-gauge'),
         oeeBreakdown: root.querySelector('#mod-oee-breakdown'),
+        periodNoteSection: root.querySelector('#mod-period-note-section'),
+        periodNote: root.querySelector('#mod-period-note'),
+        summaryScreen: root.querySelector('#mod-summary-screen'),
+        summaryBoard: root.querySelector('#mod-summary-board'),
+        taskAdd: root.querySelector('#mod-task-add'),
+        taskDialog: root.querySelector('#mod-task-dialog'),
+        taskDialogTitle: root.querySelector('#mod-task-dialog-title'),
+        taskForm: root.querySelector('#mod-task-form'),
+        taskPeople: root.querySelector('#mod-task-people'),
+        taskDescription: root.querySelector('#mod-task-description'),
+        taskCategory: root.querySelector('#mod-task-category'),
+        taskPriority: root.querySelector('#mod-task-priority'),
+        taskStatus: root.querySelector('#mod-task-status'),
+        taskOpened: root.querySelector('#mod-task-opened'),
+        taskClosed: root.querySelector('#mod-task-closed'),
+        taskError: root.querySelector('#mod-task-error'),
+        taskDelete: root.querySelector('#mod-task-delete'),
+        taskClose: root.querySelector('#mod-task-close'),
+        taskCancel: root.querySelector('#mod-task-cancel'),
         waterfallWrap: root.querySelector('#mod-waterfall-wrap'),
         waterfallSubtitle: root.querySelector('#mod-waterfall-subtitle'),
         heatmapWrap: root.querySelector('#mod-heatmap-wrap'),
@@ -6180,6 +6525,92 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return periods;
       }
 
+      // Ultimo giorno lavorativo: la domenica non si lavora mai, il sabato solo
+      // se quel giorno risultano dati inseriti. Si parte dalla fine e si torna
+      // indietro fino al primo giorno buono.
+      function lastWorkingDay(startIso, endIso, rows) {
+        const worked = new Set(rows.filter(hasOperationalData).map((r) => r.date));
+        let d = parseDate(endIso);
+        const limit = parseDate(startIso);
+        while (d >= limit) {
+          const iso = isoDate(d);
+          const dow = d.getDay();
+          if (dow !== 0 && (dow !== 6 || worked.has(iso))) return iso;
+          d = addDays(d, -1);
+        }
+        return null;
+      }
+
+      function monthBounds(monthKey) {
+        const start = monthKey + '-01';
+        const d = parseDate(start);
+        const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+        return { start, end: isoDate(end) };
+      }
+
+      // Somma i dummy: nel resto della dashboard il dummy di giornata e' un
+      // valore di giacenza (vince l'ultimo inserito), quindi il totale del
+      // periodo e' l'ultimo dato disponibile, non la somma dei giorni.
+      function dummyOfRange(rows, startIso, endIso) {
+        const inRange = rows
+          .filter((r) => r.date >= startIso && r.date <= endIso && isNumber(r.dummy))
+          .sort((a, b) => a.date.localeCompare(b.date));
+        return inRange.length ? inRange[inRange.length - 1].dummy : null;
+      }
+
+      function renderPeriodNote(rows) {
+        const node = el.periodNote;
+        const section = el.periodNoteSection;
+        if (!node || !section) return;
+        if (state.view !== 'weekly' && state.view !== 'monthly') { section.hidden = true; return; }
+
+        let start, end, prevStart, prevEnd, label;
+        if (state.view === 'weekly') {
+          const monday = mondayOf(parseDate(state.selectedDate));
+          start = isoDate(monday);
+          end = isoDate(addDays(monday, 6));
+          prevStart = isoDate(addDays(monday, -7));
+          prevEnd = isoDate(addDays(monday, -1));
+          label = t('periodNoteWeek');
+        } else {
+          const b = monthBounds(state.selectedMonth);
+          start = b.start; end = b.end;
+          const prevRef = addDays(parseDate(start), -1);
+          const pb = monthBounds(isoDate(prevRef).slice(0, 7));
+          prevStart = pb.start; prevEnd = pb.end;
+          label = t('periodNoteMonth');
+        }
+
+        // Solo nell'ultimo giorno lavorativo del periodo.
+        const last = lastWorkingDay(start, end, rows);
+        if (!last || state.selectedDate !== last) { section.hidden = true; return; }
+
+        const cur = dummyOfRange(rows, start, end);
+        if (!isNumber(cur)) { section.hidden = true; return; }
+        const prev = dummyOfRange(rows, prevStart, prevEnd);
+
+        let deltaHtml = '';
+        if (isNumber(prev)) {
+          const delta = cur - prev;
+          const dir = delta === 0 ? 'flat' : (delta > 0 ? 'up' : 'down');
+          // Piu' dummy e' un peggioramento: il colore va al contrario della freccia.
+          const cls = dir === 'flat' ? 'mod-trend-flat' : (dir === 'up' ? 'mod-trend-down' : 'mod-trend-up');
+          const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '▬';
+          deltaHtml = '<span class="mod-period-note-delta mod-kpi-trend ' + cls + '">' + arrow + ' ' +
+            escapeHtml(formatSigned(delta)) + '</span>' +
+            '<span class="mod-period-note-prev">' + escapeHtml(t('periodNotePrev')) + ': ' + escapeHtml(formatNumber(prev)) + '</span>';
+        } else {
+          deltaHtml = '<span class="mod-period-note-prev">' + escapeHtml(t('periodNoteNoPrev')) + '</span>';
+        }
+
+        node.innerHTML =
+          '<span class="mod-period-note-label">' + escapeHtml(label) + '</span>' +
+          '<span class="mod-period-note-value">' + escapeHtml(formatNumber(cur)) + '</span>' +
+          '<span class="mod-period-note-label">' + escapeHtml(t('dummySeats')) + '</span>' +
+          deltaHtml;
+        section.hidden = false;
+      }
+
       function getPeriods(rows) {
         if (state.view === 'weekly') return getWeeklyPeriods(rows, state.selectedDate);
         if (state.view === 'monthly') return getMonthlyPeriods(rows, state.selectedMonth);
@@ -6708,6 +7139,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dailyShiftSection.hidden = state.view !== 'daily';
         el.dailyReworkSection.hidden = state.view !== 'daily';
         el.periodShiftSection.hidden = state.view === 'daily';
+        renderPeriodNote(rows);
 
         setKpiText(el.kpiSets, formatNumber(summary.completeKits) + ' ' + t('pieces'));
         el.kpiSetsContext.textContent = t('frontLabel') + ': ' + formatNumber(summary.totalFront) + ' · ' + t('rearLabel') + ': ' + formatNumber(summary.totalRear);
@@ -7202,6 +7634,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             // il dispositivo dopo. La copia su questo device resta al suo posto:
             // serve alla migrazione e si ricarica al prossimo accesso.
             unsubscribeEntries();
+            unsubscribeTasks();
             state.manual = [];
             setLocked(true);
             updateAdminUI();
@@ -7218,6 +7651,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
             subscribeEntries();
+            subscribeTasks();
             loadChatUsers();
             subscribeChat();
             migrateLocalEntriesToCloud();
@@ -7240,6 +7674,139 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           state.chatUsers = names.sort((a, b) => a.localeCompare(b));
           state.chatUsersLoaded = true;
         }).catch(() => {});
+      }
+
+      /* ---- Riepilogo attivita' ---- */
+      // Le quattro colonne della bacheca e le due tendine (priorita' e stato)
+      // hanno chiavi fisse: quelle finiscono nel database, l'etichetta e' tradotta.
+      const TASK_CATEGORIES = [
+        { id: 'todo',     key: 'taskCatTodo',     color: '#94a3b8' },
+        { id: 'doing',    key: 'taskCatDoing',    color: '#38bdf8' },
+        { id: 'review',   key: 'taskCatReview',   color: '#a78bfa' },
+        { id: 'done',     key: 'taskCatDone',     color: '#34d399' }
+      ];
+      const TASK_PRIORITIES = [
+        { id: 'low',    key: 'taskPrioLow',    color: '#34d399' },
+        { id: 'medium', key: 'taskPrioMedium', color: '#fbbf24' },
+        { id: 'high',   key: 'taskPrioHigh',   color: '#f87171' }
+      ];
+      const TASK_STATUSES = [
+        { id: 'open',   key: 'taskStatusOpen',   color: '#38bdf8' },
+        { id: 'doing',  key: 'taskStatusDoing',  color: '#fbbf24' },
+        { id: 'closed', key: 'taskStatusClosed', color: '#34d399' }
+      ];
+      const findBy = (list, id, fallback) => list.find((x) => x.id === id) || (fallback ? list[0] : null);
+
+      let tasksUnsub = null;
+      function unsubscribeTasks() {
+        if (tasksUnsub) { try { tasksUnsub(); } catch (e) {} tasksUnsub = null; }
+        state.tasks = [];
+      }
+      function subscribeTasks() {
+        if (!db || tasksUnsub) return;
+        tasksUnsub = db.collection('tasks').onSnapshot((snap) => {
+          const list = [];
+          snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
+          list.sort((a, b) => String(b.openedAt || '').localeCompare(String(a.openedAt || '')));
+          state.tasks = list;
+          if (state.view === 'summary') renderSummaryBoard();
+        }, () => {});
+      }
+
+      function taskTag(entry) {
+        return '<span class="mod-task-tag" style="background:' + entry.color + '">' + escapeHtml(t(entry.key)) + '</span>';
+      }
+
+      function renderSummaryBoard() {
+        if (!el.summaryBoard) return;
+        const tasks = Array.isArray(state.tasks) ? state.tasks : [];
+        el.summaryBoard.innerHTML = TASK_CATEGORIES.map((cat) => {
+          const items = tasks.filter((task) => (task.category || 'todo') === cat.id);
+          const cards = items.map((task) => {
+            const prio = findBy(TASK_PRIORITIES, task.priority, true);
+            const status = findBy(TASK_STATUSES, task.status, true);
+            const dates = [
+              task.openedAt ? escapeHtml(t('taskOpenedShort')) + ' ' + escapeHtml(formatDateNumeric(task.openedAt)) : '',
+              task.closedAt ? escapeHtml(t('taskClosedShort')) + ' ' + escapeHtml(formatDateNumeric(task.closedAt)) : ''
+            ].filter(Boolean).join(' · ');
+            return '<button type="button" class="mod-task-card" data-task-id="' + escapeHtml(task.id) + '" style="--prio-color:' + prio.color + '">' +
+              '<span class="mod-task-people">' + (task.people ? escapeHtml(task.people) : escapeHtml(t('taskNoPeople'))) + '</span>' +
+              (task.description ? '<span class="mod-task-desc">' + escapeHtml(task.description) + '</span>' : '') +
+              '<span class="mod-task-tags">' + taskTag(prio) + taskTag(status) + '</span>' +
+              (dates ? '<span class="mod-task-dates">' + dates + '</span>' : '') +
+            '</button>';
+          }).join('');
+          return '<div class="mod-task-col" style="--col-color:' + cat.color + '">' +
+            '<div class="mod-task-col-head">' + escapeHtml(t(cat.key)) +
+              '<span class="mod-task-col-count">' + items.length + '</span></div>' +
+            (cards || '<div class="mod-task-empty">' + escapeHtml(t('taskNone')) + '</div>') +
+          '</div>';
+        }).join('');
+        el.summaryBoard.querySelectorAll('.mod-task-card').forEach((card) => {
+          card.addEventListener('click', () => openTaskDialog(card.dataset.taskId));
+        });
+        if (el.taskAdd) el.taskAdd.hidden = !state.authUser;
+      }
+
+      function fillTaskSelect(node, list, selected) {
+        node.innerHTML = list.map((x) =>
+          '<option value="' + x.id + '"' + (x.id === selected ? ' selected' : '') + '>' + escapeHtml(t(x.key)) + '</option>'
+        ).join('');
+      }
+
+      let taskEditingId = null;
+      function openTaskDialog(taskId) {
+        if (!state.authUser) return;
+        const task = taskId ? (state.tasks || []).find((x) => x.id === taskId) : null;
+        taskEditingId = task ? task.id : null;
+        el.taskDialogTitle.textContent = t(task ? 'taskEdit' : 'taskNew');
+        el.taskPeople.value = task ? (task.people || '') : '';
+        el.taskDescription.value = task ? (task.description || '') : '';
+        fillTaskSelect(el.taskCategory, TASK_CATEGORIES, task ? task.category : 'todo');
+        fillTaskSelect(el.taskPriority, TASK_PRIORITIES, task ? task.priority : 'medium');
+        fillTaskSelect(el.taskStatus, TASK_STATUSES, task ? task.status : 'open');
+        el.taskOpened.value = task ? (task.openedAt || '') : isoDate(new Date());
+        el.taskClosed.value = task ? (task.closedAt || '') : '';
+        el.taskError.hidden = true;
+        el.taskDelete.hidden = !task;
+        el.taskDialog.showModal();
+        el.taskPeople.focus();
+      }
+
+      function saveTask() {
+        if (!db || !state.authUser) return;
+        const people = el.taskPeople.value.trim();
+        const description = el.taskDescription.value.trim();
+        if (!people && !description) {
+          el.taskError.textContent = t('taskFormInvalid');
+          el.taskError.hidden = false;
+          return;
+        }
+        const payload = {
+          people,
+          description,
+          category: el.taskCategory.value,
+          priority: el.taskPriority.value,
+          status: el.taskStatus.value,
+          openedAt: el.taskOpened.value || null,
+          closedAt: el.taskClosed.value || null,
+          updatedAt: new Date().toISOString(),
+          updatedBy: state.authUsername || ''
+        };
+        const ref = taskEditingId
+          ? db.collection('tasks').doc(taskEditingId)
+          : db.collection('tasks').doc(String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8));
+        ref.set(payload, { merge: true })
+          .then(() => { el.taskDialog.close(); })
+          .catch(() => { el.taskError.textContent = t('taskSaveError'); el.taskError.hidden = false; });
+      }
+
+      function deleteTask() {
+        if (!db || !taskEditingId) return;
+        if (!window.confirm(t('taskConfirmDelete'))) return;
+        db.collection('tasks').doc(taskEditingId).delete()
+          .then(() => { el.taskDialog.close(); })
+          .catch(() => {});
       }
 
       function subscribeChat() {
@@ -7275,6 +7842,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function updateChatBadge() {
+        // La chat non ha piu' una scheda nel menu (sostituita da RIEPILOGO),
+        // quindi il pallino dei non letti non esiste piu'.
+        if (!el.chatBadge) return;
         const count = state.view === 'chat' ? 0 : chatUnreadCount();
         if (count > 0) {
           el.chatBadge.textContent = count > 99 ? '99+' : String(count);
@@ -7743,8 +8313,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.oeeGauge.innerHTML = oeeGaugeSvg(oee.oee);
         el.oeeSubtitle.textContent = (subtitle ? subtitle + ' · ' : '') +
           t('plannedShort') + ': ' + formatNumber(planned) + ' min · ' + t('targetShort') + ': ' + formatNumber(target) + ' Kit';
+        // La riga Efficienza (availability) non si mostra piu': resta nel
+        // calcolo dell'indice OLE, ma a schermo restano Performance e Qualita'.
         const rows = [
-          { label: t('availability'), value: oee.availability },
           { label: t('performance'), value: oee.performance },
           { label: t('quality'), value: oee.quality }
         ];
@@ -8282,9 +8853,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const isAbarth = state.view === 'abarth';
         const isDmc = state.view === 'dmc';
         const isChat = state.view === 'chat';
+        const isSummary = state.view === 'summary';
         const isTv = state.view === 'tv';
         const isPlaceholder = isAbarth || isDmc;
-        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat && !isTv;
+        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat && !isSummary && !isTv;
         el.dashboardScreen.hidden = !isDashboard;
         el.attendanceScreen.hidden = !isAttendance;
         el.entryScreen.hidden = !isEntry;
@@ -8292,6 +8864,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.abarthScreen.hidden = !isAbarth;
         el.dmcScreen.hidden = !isDmc;
         el.chatScreen.hidden = !isChat;
+        el.summaryScreen.hidden = !isSummary;
+        if (isSummary) renderSummaryBoard();
         el.tvScreen.hidden = !isTv;
         // Il calendario resta sempre visibile: header identico in ogni pagina
         // (prima spariva in "+"/Comunicazioni/ecc. e il resto del gruppo si ricentrava).
@@ -8303,7 +8877,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.stoppageSettingsBtn.hidden = !state.authUser;
         root.classList.toggle('mod-tv-on', isTv);
         if (!isChat) updateChatBadge();
-        if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'chat', 'tv', 'stoppages'].includes(state.view)) {
+        if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'summary', 'tv', 'stoppages'].includes(state.view)) {
           el.viewSelect.value = state.view;
         }
         updateBackButton();
@@ -8382,6 +8956,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (el.welcomeDialog.open) el.welcomeDialog.close();
         promptAdminLogin();
       });
+      el.taskAdd.addEventListener('click', () => openTaskDialog(null));
+      el.taskClose.addEventListener('click', () => el.taskDialog.close());
+      el.taskCancel.addEventListener('click', () => el.taskDialog.close());
+      el.taskDelete.addEventListener('click', deleteTask);
+      el.taskForm.addEventListener('submit', (event) => { event.preventDefault(); saveTask(); });
+
       // La schermata di benvenuto non si chiude senza accesso: ne' con Esc,
       // ne' cliccando fuori. L'unica via avanti e' il login.
       el.welcomeDialog.addEventListener('cancel', (event) => {
