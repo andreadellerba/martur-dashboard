@@ -1520,7 +1520,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-summary-board {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
       align-items: start;
     }
@@ -1583,13 +1583,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       outline-offset: 2px;
       background: var(--card);
     }
+    /* Nome e descrizione si leggono da lontano: maiuscolo per entrambi, con
+       il nome un gradino sopra la descrizione. */
     #martur-operations-dashboard .mod-task-people {
+      font-size: calc(var(--font-size-base) * 1.3);
       font-weight: 700;
+      line-height: 1.25;
+      text-transform: uppercase;
       overflow-wrap: anywhere;
     }
     #martur-operations-dashboard .mod-task-desc {
-      font-size: var(--font-size-small);
-      color: var(--muted-foreground);
+      font-size: calc(var(--font-size-base) * 1.1);
+      font-weight: 600;
+      line-height: 1.3;
+      text-transform: uppercase;
+      color: var(--foreground);
       overflow-wrap: anywhere;
     }
     #martur-operations-dashboard .mod-task-tags {
@@ -4741,7 +4749,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskNoPeople: 'Senza assegnatario',
           taskCatTodo: 'Da fare',
           taskCatDoing: 'In corso',
-          taskCatReview: 'In revisione',
           taskCatDone: 'Completata',
           taskPrioLow: 'Bassa',
           taskPrioMedium: 'Media',
@@ -5078,7 +5085,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskNoPeople: 'Unassigned',
           taskCatTodo: 'To do',
           taskCatDoing: 'In progress',
-          taskCatReview: 'In review',
           taskCatDone: 'Completed',
           taskPrioLow: 'Low',
           taskPrioMedium: 'Medium',
@@ -5415,7 +5421,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskNoPeople: 'Atanmamis',
           taskCatTodo: 'Yapilacak',
           taskCatDoing: 'Devam ediyor',
-          taskCatReview: 'Incelemede',
           taskCatDone: 'Tamamlandi',
           taskPrioLow: 'Dusuk',
           taskPrioMedium: 'Orta',
@@ -8018,9 +8023,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const TASK_CATEGORIES = [
         { id: 'todo',     key: 'taskCatTodo',     color: '#94a3b8' },
         { id: 'doing',    key: 'taskCatDoing',    color: '#38bdf8' },
-        { id: 'review',   key: 'taskCatReview',   color: '#a78bfa' },
         { id: 'done',     key: 'taskCatDone',     color: '#34d399' }
       ];
+      // "In revisione" e' stata tolta perche' coincideva con "In corso": le
+      // attivita' che ci stavano dentro ci finiscono, e la correzione viene
+      // riscritta sul database cosi' il travaso avviene una volta sola.
+      const TASK_CATEGORY_ALIASES = { review: 'doing' };
+      function normalizeTaskCategory(id) {
+        if (TASK_CATEGORY_ALIASES[id]) return TASK_CATEGORY_ALIASES[id];
+        return TASK_CATEGORIES.some((c) => c.id === id) ? id : 'todo';
+      }
       const TASK_PRIORITIES = [
         { id: 'low',    key: 'taskPrioLow',    color: '#34d399' },
         { id: 'medium', key: 'taskPrioMedium', color: '#fbbf24' },
@@ -8042,10 +8054,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!db || tasksUnsub) return;
         tasksUnsub = db.collection('tasks').onSnapshot((snap) => {
           const list = [];
-          snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
+          const daCorreggere = [];
+          snap.forEach((doc) => {
+            const task = Object.assign({ id: doc.id }, doc.data());
+            const nuova = normalizeTaskCategory(task.category);
+            if (nuova !== task.category) { task.category = nuova; daCorreggere.push(doc.id); }
+            list.push(task);
+          });
           list.sort((a, b) => String(b.openedAt || '').localeCompare(String(a.openedAt || '')));
           state.tasks = list;
           if (state.view === 'summary') renderSummaryBoard();
+          // Travaso delle vecchie "In revisione": una volta scritte restano
+          // cosi' e questo blocco non scatta piu'.
+          daCorreggere.forEach((id) => {
+            db.collection('tasks').doc(id).set({ category: 'doing' }, { merge: true }).catch(() => {});
+          });
         }, () => {});
       }
 
