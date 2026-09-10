@@ -6186,8 +6186,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }, () => {});
       }
 
-      // Store microfermate: oggi su localStorage, domani sostituibile con Firestore
-      // mantenendo la stessa interfaccia (loadStoppages / addStoppage / deleteStoppage).
+      // Le impostazioni valgono per tutta la squadra, non per il singolo
+      // browser: stanno in /config su Firestore.
+      function saveConfigDoc(id, data) {
+        if (!db) return;
+        db.collection('config').doc(id)
+          .set(Object.assign({}, data, {
+            updatedAt: new Date().toISOString(),
+            updatedBy: state.authUsername || ''
+          }))
+          .catch(() => {});
+      }
+
+      // Le microfermate sono di tutti: stanno su Firestore, una per documento.
+      // Il localStorage resta come copia d'appoggio per il primo disegno e per
+      // quando il database non e' raggiungibile.
       function loadStoppages() {
         try {
           const stored = window.localStorage.getItem(STOPPAGE_STORAGE_KEY);
@@ -6207,19 +6220,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
       }
 
+      function saveStoppageDoc(record) {
+        if (!db || !record || !record.id) return;
+        db.collection('stoppages').doc(String(record.id)).set(record).catch(() => {});
+      }
+
       function addStoppage(record) {
         state.stoppages.push(record);
         persistStoppages();
+        saveStoppageDoc(record);
       }
 
       function deleteStoppage(id) {
         state.stoppages = state.stoppages.filter((item) => item.id !== id);
         persistStoppages();
+        if (db) db.collection('stoppages').doc(String(id)).delete().catch(() => {});
       }
 
-      function loadStoppageConfig() {
-        let stored = null;
-        try { stored = JSON.parse(window.localStorage.getItem(STOPPAGE_CONFIG_KEY)); } catch (error) {}
+      let stoppagesUnsub = null;
+      function unsubscribeStoppages() {
+        if (stoppagesUnsub) { try { stoppagesUnsub(); } catch (e) {} stoppagesUnsub = null; }
+      }
+      function subscribeStoppages() {
+        if (!db || stoppagesUnsub) return;
+        stoppagesUnsub = db.collection('stoppages').onSnapshot((snap) => {
+          const list = [];
+          snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
+          state.stoppages = list;
+          persistStoppages();
+          if (state.view === 'stoppages') renderStoppages();
+          else if (state.view !== 'entry' && state.view !== 'attendance') renderDashboard();
+        }, () => {});
+      }
+
+      // Configurazione microfermate (operazioni e cause per linea): condivisa.
+      function applyStoppageConfig(stored) {
         const ops = {};
         const causes = {};
         STOPPAGE_LINES.forEach((line) => {
@@ -6235,8 +6270,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.stoppageConfig = { ops, causes };
       }
 
+      function loadStoppageConfig() {
+        let stored = null;
+        try { stored = JSON.parse(window.localStorage.getItem(STOPPAGE_CONFIG_KEY)); } catch (error) {}
+        applyStoppageConfig(stored);
+      }
+
       function persistStoppageConfig() {
         try { window.localStorage.setItem(STOPPAGE_CONFIG_KEY, JSON.stringify(state.stoppageConfig)); } catch (error) {}
+        saveConfigDoc('stoppages', state.stoppageConfig);
+      }
+
+      let stoppageConfigUnsub = null;
+      function unsubscribeStoppageConfig() {
+        if (stoppageConfigUnsub) { try { stoppageConfigUnsub(); } catch (e) {} stoppageConfigUnsub = null; }
+      }
+      function subscribeStoppageConfig() {
+        if (!db || stoppageConfigUnsub) return;
+        stoppageConfigUnsub = db.collection('config').doc('stoppages').onSnapshot((doc) => {
+          if (!doc.exists) return;
+          const data = doc.data();
+          if (!data || (!data.ops && !data.causes)) return;
+          applyStoppageConfig(data);
+          try { window.localStorage.setItem(STOPPAGE_CONFIG_KEY, JSON.stringify(state.stoppageConfig)); } catch (error) {}
+          if (state.view === 'stoppages') renderStoppages();
+          renderStoppageAdmin();
+        }, () => {});
       }
 
       function loadOeeConfig() {
@@ -6311,6 +6370,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function persistReworkOptions() {
         try { window.localStorage.setItem(REWORK_STORAGE_KEY, JSON.stringify(state.reworkOptions)); } catch (error) {}
+        saveConfigDoc('rework', { options: state.reworkOptions });
+      }
+
+      let reworkUnsub = null;
+      function unsubscribeReworkOptions() {
+        if (reworkUnsub) { try { reworkUnsub(); } catch (e) {} reworkUnsub = null; }
+      }
+      function subscribeReworkOptions() {
+        if (!db || reworkUnsub) return;
+        reworkUnsub = db.collection('config').doc('rework').onSnapshot((doc) => {
+          const data = doc.exists ? doc.data() : null;
+          const list = data && Array.isArray(data.options)
+            ? data.options.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim())
+            : null;
+          if (!list || !list.length) return;
+          state.reworkOptions = list;
+          try { window.localStorage.setItem(REWORK_STORAGE_KEY, JSON.stringify(state.reworkOptions)); } catch (error) {}
+          renderReworkOptions();
+          renderReworkAdmin();
+        }, () => {});
       }
 
       function renderReworkAdmin() {
@@ -7827,6 +7906,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             unsubscribeEntries();
             unsubscribeTasks();
             unsubscribeOeeConfig();
+            unsubscribeStoppages();
+            unsubscribeStoppageConfig();
+            unsubscribeReworkOptions();
             if (el.updateDialog && el.updateDialog.open) el.updateDialog.close();
             state.manual = [];
             setLocked(true);
@@ -7846,6 +7928,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             subscribeEntries();
             subscribeTasks();
             subscribeOeeConfig();
+            subscribeStoppages();
+            subscribeStoppageConfig();
+            subscribeReworkOptions();
             loadChatUsers();
             subscribeChat();
             migrateLocalEntriesToCloud();
@@ -8352,7 +8437,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (state.stoppageEditingIds) {
           state.stoppageEditingIds.forEach((id) => {
             const rec = state.stoppages.find((s) => s.id === id);
-            if (rec) { rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin; rec.reporter = reporter; rec.note = note; rec.timestamp = timestamp; }
+            if (rec) {
+              rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin;
+              rec.reporter = reporter; rec.note = note; rec.timestamp = timestamp;
+              saveStoppageDoc(rec);
+            }
           });
           persistStoppages();
         } else {
