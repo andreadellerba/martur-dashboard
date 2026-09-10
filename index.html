@@ -6256,8 +6256,47 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.oeeConfig = history[history.length - 1];
       }
 
-      function persistOeeConfig() {
+      // I parametri OEE valgono per tutti, non per il singolo dispositivo:
+      // stanno su Firestore. La copia locale resta solo come cache, per avere
+      // qualcosa di sensato prima che arrivi il dato dal database.
+      function cacheOeeConfigLocally() {
         try { window.localStorage.setItem(OEE_CONFIG_KEY, JSON.stringify(state.oeeConfigHistory)); } catch (error) {}
+      }
+
+      function persistOeeConfig() {
+        cacheOeeConfigLocally();
+        if (!db) return;
+        db.collection('config').doc('oee')
+          .set({ history: state.oeeConfigHistory, updatedAt: new Date().toISOString(), updatedBy: state.authUsername || '' })
+          .catch(() => {});
+      }
+
+      function validOeeHistory(list) {
+        if (!Array.isArray(list)) return null;
+        const clean = list.filter((e) => e && e.effectiveFrom
+          && isNumber(e.plannedMinPerShift) && e.plannedMinPerShift > 0
+          && isNumber(e.targetKitPerShift) && e.targetKitPerShift > 0);
+        return clean.length ? clean.sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom)) : null;
+      }
+
+      let oeeConfigUnsub = null;
+      function unsubscribeOeeConfig() {
+        if (oeeConfigUnsub) { try { oeeConfigUnsub(); } catch (e) {} oeeConfigUnsub = null; }
+      }
+      function subscribeOeeConfig() {
+        if (!db || oeeConfigUnsub) return;
+        oeeConfigUnsub = db.collection('config').doc('oee').onSnapshot((doc) => {
+          const history = validOeeHistory(doc.exists ? doc.data().history : null);
+          // Se sul database non c'e' ancora niente si tiene quello che c'e' in
+          // locale: sara' il primo salvataggio a crearlo.
+          if (!history) return;
+          state.oeeConfigHistory = history;
+          state.oeeConfig = history[history.length - 1];
+          cacheOeeConfigLocally();
+          if (el.oeePlanned) el.oeePlanned.value = state.oeeConfig.plannedMinPerShift;
+          if (el.oeeTarget) el.oeeTarget.value = state.oeeConfig.targetKitPerShift;
+          if (state.view !== 'entry' && state.view !== 'attendance' && state.view !== 'stoppages') renderDashboard();
+        }, () => {});
       }
 
       function loadReworkOptions() {
@@ -7787,6 +7826,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             // serve alla migrazione e si ricarica al prossimo accesso.
             unsubscribeEntries();
             unsubscribeTasks();
+            unsubscribeOeeConfig();
             if (el.updateDialog && el.updateDialog.open) el.updateDialog.close();
             state.manual = [];
             setLocked(true);
@@ -7805,6 +7845,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             updateAdminUI();
             subscribeEntries();
             subscribeTasks();
+            subscribeOeeConfig();
             loadChatUsers();
             subscribeChat();
             migrateLocalEntriesToCloud();

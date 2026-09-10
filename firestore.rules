@@ -36,6 +36,12 @@ service cloud.firestore {
       allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }
 
+    match /config/{id} {
+      // Parametri condivisi (minuti pianificati e target Kit per turno):
+      // valgono per tutti, quindi stanno qui e non sul singolo dispositivo.
+      allow read, write: if isSignedIn();
+    }
+
     match /tasks/{id} {
       // Riepilogo attivita': si legge e si scrive solo da autenticati.
       allow read, write: if isSignedIn();
