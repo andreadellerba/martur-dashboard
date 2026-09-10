@@ -1515,6 +1515,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-summary-actions {
       display: flex;
       justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     #martur-operations-dashboard .mod-summary-board {
       display: grid;
@@ -4177,6 +4179,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
   <section id="mod-summary-screen" class="mod-summary-screen" hidden>
     <div class="mod-summary-actions">
+      <button id="mod-task-pdf" type="button" class="btn btn-ghost">
+        <i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="taskExportPdf">PDF</span>
+      </button>
+      <button id="mod-task-excel" type="button" class="btn btn-ghost">
+        <i data-lucide="table" aria-hidden="true"></i><span data-i18n="taskExportExcel">Excel</span>
+      </button>
       <button id="mod-task-add" type="button" class="btn btn-primary" data-i18n="taskAdd">+ Nuova attività</button>
     </div>
     <div id="mod-summary-board" class="mod-summary-board"></div>
@@ -4730,6 +4738,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskStatusOpen: 'Aperto',
           taskStatusDoing: 'In corso',
           taskStatusClosed: 'Chiuso',
+          taskExportPdf: 'PDF',
+          taskExportExcel: 'Excel',
+          reportGeneratedOn: 'Generato il',
+          reportGeneratedBy: 'da',
+          reportTotals: 'Totali',
+          reportTotalTasks: 'Attivita',
+          reportOpen: 'Non chiuse',
+          reportClosed: 'Chiuse',
+          reportDaysOpen: 'Giorni aperta',
           coda: 'Coda',
           firstSeqMartur: 'Prima Sequenza Martur',
           lastSeqMartur: 'Ultima Sequenza Martur',
@@ -5058,6 +5075,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskStatusOpen: 'Open',
           taskStatusDoing: 'In progress',
           taskStatusClosed: 'Closed',
+          taskExportPdf: 'PDF',
+          taskExportExcel: 'Excel',
+          reportGeneratedOn: 'Generated on',
+          reportGeneratedBy: 'by',
+          reportTotals: 'Totals',
+          reportTotalTasks: 'Activities',
+          reportOpen: 'Not closed',
+          reportClosed: 'Closed',
+          reportDaysOpen: 'Days open',
           coda: 'Queue',
           firstSeqMartur: 'First Martur sequence',
           lastSeqMartur: 'Last Martur sequence',
@@ -5386,6 +5412,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskStatusOpen: 'Acik',
           taskStatusDoing: 'Devam ediyor',
           taskStatusClosed: 'Kapali',
+          taskExportPdf: 'PDF',
+          taskExportExcel: 'Excel',
+          reportGeneratedOn: 'Olusturuldu',
+          reportGeneratedBy: 'kisi',
+          reportTotals: 'Toplam',
+          reportTotalTasks: 'Faaliyet',
+          reportOpen: 'Kapanmamis',
+          reportClosed: 'Kapali',
+          reportDaysOpen: 'Acik gun',
           coda: 'Kuyruk',
           firstSeqMartur: 'İlk Martur sırası',
           lastSeqMartur: 'Son Martur sırası',
@@ -5696,6 +5731,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         summaryScreen: root.querySelector('#mod-summary-screen'),
         summaryBoard: root.querySelector('#mod-summary-board'),
         taskAdd: root.querySelector('#mod-task-add'),
+        taskPdf: root.querySelector('#mod-task-pdf'),
+        taskExcel: root.querySelector('#mod-task-excel'),
         taskDialog: root.querySelector('#mod-task-dialog'),
         taskDialogTitle: root.querySelector('#mod-task-dialog-title'),
         taskForm: root.querySelector('#mod-task-form'),
@@ -8042,6 +8079,188 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ).join('');
       }
 
+      /* ---- Esportazione attivita' (PDF ed Excel) ----
+         Un solo generatore di HTML per tutti e due: il PDF lo stampa il
+         browser, l'Excel e' lo stesso documento salvato come foglio. Cosi'
+         i due riepiloghi non possono divergere. */
+      function taskLogoSrc() {
+        // Versione del logo pensata per fondo chiaro: i fogli sono bianchi.
+        const img = root.querySelector('.mod-brand-logo-light') || root.querySelector('.mod-brand-logo');
+        return img ? img.src : '';
+      }
+
+      function taskDaysOpen(task) {
+        if (!task.openedAt) return null;
+        const from = parseDate(task.openedAt);
+        const to = task.closedAt ? parseDate(task.closedAt) : new Date();
+        const days = Math.round((to - from) / 86400000);
+        return days >= 0 ? days : null;
+      }
+
+      function tasksSorted() {
+        const order = {};
+        TASK_CATEGORIES.forEach((c, i) => { order[c.id] = i; });
+        const prio = { high: 0, medium: 1, low: 2 };
+        return (state.tasks || []).slice().sort((a, b) => {
+          const ca = order[a.category] === undefined ? 99 : order[a.category];
+          const cb = order[b.category] === undefined ? 99 : order[b.category];
+          if (ca !== cb) return ca - cb;
+          const pa = prio[a.priority] === undefined ? 9 : prio[a.priority];
+          const pb = prio[b.priority] === undefined ? 9 : prio[b.priority];
+          if (pa !== pb) return pa - pb;
+          return String(a.openedAt || '').localeCompare(String(b.openedAt || ''));
+        });
+      }
+
+      function taskCountsBy(list, field, table) {
+        return table.map((entry) => ({
+          label: t(entry.key),
+          color: entry.color,
+          count: list.filter((task) => (task[field] || table[0].id) === entry.id).length
+        }));
+      }
+
+      function taskReportHtml(forExcel) {
+        const list = tasksSorted();
+        const now = new Date();
+        const loc = locale();
+        const stamp = new Intl.DateTimeFormat(loc, {
+          day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        }).format(now);
+        const byCat = taskCountsBy(list, 'category', TASK_CATEGORIES);
+        const byPrio = taskCountsBy(list, 'priority', TASK_PRIORITIES);
+        const byStatus = taskCountsBy(list, 'status', TASK_STATUSES);
+        const chiuse = list.filter((x) => x.status === 'closed').length;
+        const aperte = list.length - chiuse;
+
+        const card = (titolo, voci) =>
+          '<div class="blocco"><div class="blocco-tit">' + escapeHtml(titolo) + '</div><table class="mini">' +
+          voci.map((v) =>
+            '<tr><td><span class="pallino" style="background:' + v.color + '"></span>' + escapeHtml(v.label) + '</td>' +
+            '<td class="num">' + v.count + '</td></tr>'
+          ).join('') + '</table></div>';
+
+        const righe = list.length ? list.map((task) => {
+          const cat = findBy(TASK_CATEGORIES, task.category, true);
+          const prio = findBy(TASK_PRIORITIES, task.priority, true);
+          const st = findBy(TASK_STATUSES, task.status, true);
+          const giorni = taskDaysOpen(task);
+          return '<tr>' +
+            '<td><span class="tag" style="background:' + cat.color + '">' + escapeHtml(t(cat.key)) + '</span></td>' +
+            '<td class="forte">' + escapeHtml(task.people || t('taskNoPeople')) + '</td>' +
+            '<td>' + escapeHtml(task.description || '—') + '</td>' +
+            '<td><span class="tag" style="background:' + prio.color + '">' + escapeHtml(t(prio.key)) + '</span></td>' +
+            '<td><span class="tag" style="background:' + st.color + '">' + escapeHtml(t(st.key)) + '</span></td>' +
+            '<td class="num">' + (task.openedAt ? escapeHtml(formatDateNumeric(task.openedAt)) : '—') + '</td>' +
+            '<td class="num">' + (task.closedAt ? escapeHtml(formatDateNumeric(task.closedAt)) : '—') + '</td>' +
+            '<td class="num">' + (giorni === null ? '—' : giorni) + '</td>' +
+          '</tr>';
+        }).join('') : '<tr><td colspan="8" class="vuoto">' + escapeHtml(t('taskNone')) + '</td></tr>';
+
+        const stile =
+          'body{font-family:Arial,Helvetica,sans-serif;color:#14171f;margin:0;padding:26px 30px;}' +
+          '.testata{display:flex;align-items:center;justify-content:space-between;gap:20px;' +
+            'border-bottom:3px solid #b99b5f;padding-bottom:14px;margin-bottom:18px;}' +
+          '.logo{height:42px;}' +
+          '.tit{font-size:22px;font-weight:700;margin:0 0 4px;}' +
+          '.sub{font-size:12px;color:#5c6373;}' +
+          '.sintesi{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;}' +
+          '.blocco{border:1px solid #d8dce4;border-radius:8px;padding:10px 14px;min-width:190px;}' +
+          '.blocco-tit{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#5c6373;' +
+            'font-weight:700;margin-bottom:6px;}' +
+          '.mini{border-collapse:collapse;width:100%;font-size:12px;}' +
+          '.mini td{padding:2px 0;}' +
+          '.pallino{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;}' +
+          'table.dati{border-collapse:collapse;width:100%;font-size:11px;}' +
+          'table.dati th{background:#1f2430;color:#fff;text-align:left;padding:7px 8px;font-size:10px;' +
+            'text-transform:uppercase;letter-spacing:.05em;}' +
+          'table.dati td{border-bottom:1px solid #e3e6ec;padding:6px 8px;vertical-align:top;}' +
+          'table.dati tr:nth-child(even) td{background:#f7f8fa;}' +
+          '.tag{display:inline-block;padding:2px 7px;border-radius:9px;font-size:10px;font-weight:700;color:#10131a;}' +
+          '.forte{font-weight:700;}' +
+          '.num{white-space:nowrap;}' +
+          '.vuoto{text-align:center;color:#5c6373;padding:18px;}' +
+          '.piede{margin-top:18px;font-size:10px;color:#5c6373;text-align:center;}' +
+          '@page{size:A4 landscape;margin:12mm;}';
+
+        const testata =
+          '<div class="testata">' +
+            '<div>' +
+              '<div class="tit">' + escapeHtml(t('summaryTitle')) + '</div>' +
+              '<div class="sub">' + escapeHtml(t('reportGeneratedOn')) + ' ' + escapeHtml(stamp) +
+                (state.authUsername ? ' · ' + escapeHtml(t('reportGeneratedBy')) + ' ' + escapeHtml(state.authUsername) : '') +
+              '</div>' +
+            '</div>' +
+            (forExcel ? '' : '<img class="logo" src="' + taskLogoSrc() + '" alt="Martur Italy">') +
+          '</div>';
+
+        const sintesi =
+          '<div class="sintesi">' +
+            '<div class="blocco"><div class="blocco-tit">' + escapeHtml(t('reportTotals')) + '</div>' +
+              '<table class="mini">' +
+                '<tr><td>' + escapeHtml(t('reportTotalTasks')) + '</td><td class="num">' + list.length + '</td></tr>' +
+                '<tr><td>' + escapeHtml(t('reportOpen')) + '</td><td class="num">' + aperte + '</td></tr>' +
+                '<tr><td>' + escapeHtml(t('reportClosed')) + '</td><td class="num">' + chiuse + '</td></tr>' +
+              '</table></div>' +
+            card(t('taskCategory'), byCat) +
+            card(t('taskPriority'), byPrio) +
+            card(t('taskStatus'), byStatus) +
+          '</div>';
+
+        const tabella =
+          '<table class="dati"><thead><tr>' +
+            '<th>' + escapeHtml(t('taskCategory')) + '</th>' +
+            '<th>' + escapeHtml(t('taskPeople')) + '</th>' +
+            '<th>' + escapeHtml(t('taskDescription')) + '</th>' +
+            '<th>' + escapeHtml(t('taskPriority')) + '</th>' +
+            '<th>' + escapeHtml(t('taskStatus')) + '</th>' +
+            '<th>' + escapeHtml(t('taskOpenedAt')) + '</th>' +
+            '<th>' + escapeHtml(t('taskClosedAt')) + '</th>' +
+            '<th>' + escapeHtml(t('reportDaysOpen')) + '</th>' +
+          '</tr></thead><tbody>' + righe + '</tbody></table>';
+
+        return '<!doctype html><html lang="' + state.lang + '"><head><meta charset="utf-8">' +
+          '<title>' + escapeHtml(t('summaryTitle')) + '</title><style>' + stile + '</style></head><body>' +
+          testata + sintesi + tabella +
+          '<div class="piede">Martur Italy · ' + escapeHtml(t('summaryTitle')) + ' · ' + escapeHtml(stamp) + '</div>' +
+          '</body></html>';
+      }
+
+      function taskFileName(ext) {
+        return 'attivita-martur-' + isoDate(new Date()) + '.' + ext;
+      }
+
+      function exportTasksPdf() {
+        // Stampa da un iframe nascosto: niente finestre bloccate dal browser.
+        const frame = document.createElement('iframe');
+        frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
+        document.body.appendChild(frame);
+        const doc = frame.contentWindow.document;
+        doc.open();
+        doc.write(taskReportHtml(false));
+        doc.close();
+        const stampa = () => {
+          try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch (e) {}
+          setTimeout(() => { if (frame.parentNode) frame.parentNode.removeChild(frame); }, 1000);
+        };
+        // Si aspetta il logo, altrimenti finisce nel PDF come riquadro vuoto.
+        const img = doc.querySelector('img');
+        if (img && !img.complete) { img.onload = stampa; img.onerror = stampa; setTimeout(stampa, 1500); }
+        else setTimeout(stampa, 250);
+      }
+
+      function exportTasksExcel() {
+        const blob = new Blob(['﻿' + taskReportHtml(true)], { type: 'application/vnd.ms-excel;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = taskFileName('xls');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
       let taskEditingId = null;
       function openTaskDialog(taskId) {
         if (!state.authUser) return;
@@ -9272,6 +9491,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.updateOk.addEventListener('click', dismissUpdateBanner);
 
       el.taskAdd.addEventListener('click', () => openTaskDialog(null));
+      el.taskPdf.addEventListener('click', exportTasksPdf);
+      el.taskExcel.addEventListener('click', exportTasksExcel);
       el.taskClose.addEventListener('click', () => el.taskDialog.close());
       el.taskCancel.addEventListener('click', () => el.taskDialog.close());
       el.taskDelete.addEventListener('click', deleteTask);
