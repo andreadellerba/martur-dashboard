@@ -2270,6 +2270,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 600;
       color: light-dark(rgb(20 20 22), #fff);
       overflow-wrap: anywhere;
+      text-transform: uppercase;
       height: 2.6em;
       /* Il testo sta al centro dello spazio delle due righe: con una riga
          sola restava appiccicato in alto con il vuoto sotto. */
@@ -2341,6 +2342,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding: 0;
       list-style: none;
     }
+    /* Stesso corpo delle note turno: anche i rework vanno letti da lontano. */
     #martur-operations-dashboard .mod-rework-ranking li {
       display: flex;
       min-width: 0;
@@ -2348,6 +2350,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 8px;
       padding-bottom: 7px;
       border-bottom: 1px solid var(--border);
+      font-size: calc(var(--font-size-base) * 1.55);
+      line-height: 1.3;
+      font-weight: 600;
+      text-transform: uppercase;
     }
     #martur-operations-dashboard .mod-rework-rank-badge {
       display: inline-flex;
