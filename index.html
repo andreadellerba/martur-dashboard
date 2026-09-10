@@ -1572,6 +1572,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       min-width: 0;
     }
     #martur-operations-dashboard .mod-task-card:hover { border-color: var(--primary); }
+    /* Trascinamento fra colonne */
+    #martur-operations-dashboard .mod-task-card[draggable="true"] { cursor: grab; }
+    #martur-operations-dashboard .mod-task-card.mod-task-dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+    }
+    #martur-operations-dashboard .mod-task-col.mod-task-col-over {
+      outline: 2px dashed var(--col-color, var(--primary));
+      outline-offset: 2px;
+      background: var(--card);
+    }
     #martur-operations-dashboard .mod-task-people {
       font-weight: 700;
       overflow-wrap: anywhere;
@@ -8054,23 +8065,83 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               task.openedAt ? escapeHtml(t('taskOpenedShort')) + ' ' + escapeHtml(formatDateNumeric(task.openedAt)) : '',
               task.closedAt ? escapeHtml(t('taskClosedShort')) + ' ' + escapeHtml(formatDateNumeric(task.closedAt)) : ''
             ].filter(Boolean).join(' · ');
-            return '<button type="button" class="mod-task-card" data-task-id="' + escapeHtml(task.id) + '" style="--prio-color:' + prio.color + '">' +
+            return '<button type="button" class="mod-task-card" draggable="true" data-task-id="' + escapeHtml(task.id) + '" style="--prio-color:' + prio.color + '">' +
               '<span class="mod-task-people">' + (task.people ? escapeHtml(task.people) : escapeHtml(t('taskNoPeople'))) + '</span>' +
               (task.description ? '<span class="mod-task-desc">' + escapeHtml(task.description) + '</span>' : '') +
               '<span class="mod-task-tags">' + taskTag(prio) + taskTag(status) + '</span>' +
               (dates ? '<span class="mod-task-dates">' + dates + '</span>' : '') +
             '</button>';
           }).join('');
-          return '<div class="mod-task-col" style="--col-color:' + cat.color + '">' +
+          return '<div class="mod-task-col" data-cat-id="' + escapeHtml(cat.id) + '" style="--col-color:' + cat.color + '">' +
             '<div class="mod-task-col-head">' + escapeHtml(t(cat.key)) +
               '<span class="mod-task-col-count">' + items.length + '</span></div>' +
             (cards || '<div class="mod-task-empty">' + escapeHtml(t('taskNone')) + '</div>') +
           '</div>';
         }).join('');
         el.summaryBoard.querySelectorAll('.mod-task-card').forEach((card) => {
-          card.addEventListener('click', () => openTaskDialog(card.dataset.taskId));
+          card.addEventListener('click', () => { if (!draggingTaskId) openTaskDialog(card.dataset.taskId); });
+          card.addEventListener('dragstart', (event) => {
+            draggingTaskId = card.dataset.taskId;
+            card.classList.add('mod-task-dragging');
+            try {
+              event.dataTransfer.setData('text/plain', card.dataset.taskId);
+              event.dataTransfer.effectAllowed = 'move';
+            } catch (e) {}
+          });
+          card.addEventListener('dragend', () => {
+            card.classList.remove('mod-task-dragging');
+            el.summaryBoard.querySelectorAll('.mod-task-col-over')
+              .forEach((c) => c.classList.remove('mod-task-col-over'));
+            // il click parte subito dopo il rilascio: si aspetta un attimo
+            // prima di riabilitarlo, altrimenti si apre la finestra da sola
+            setTimeout(() => { draggingTaskId = null; }, 60);
+          });
+        });
+        el.summaryBoard.querySelectorAll('.mod-task-col').forEach((col) => {
+          col.addEventListener('dragover', (event) => {
+            if (!draggingTaskId) return;
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            col.classList.add('mod-task-col-over');
+          });
+          col.addEventListener('dragleave', (event) => {
+            if (!col.contains(event.relatedTarget)) col.classList.remove('mod-task-col-over');
+          });
+          col.addEventListener('drop', (event) => {
+            event.preventDefault();
+            col.classList.remove('mod-task-col-over');
+            let id = draggingTaskId;
+            try { id = event.dataTransfer.getData('text/plain') || draggingTaskId; } catch (e) {}
+            moveTaskToCategory(id, col.dataset.catId);
+          });
         });
         if (el.taskAdd) el.taskAdd.hidden = !state.authUser;
+      }
+
+      let draggingTaskId = null;
+
+      // Trascinando una card fra le colonne cambia la categoria. Arrivando in
+      // "Completata" l'attivita' si chiude anche di stato, con la data di oggi
+      // se non c'era; uscendo da li' torna in corso e la data si toglie,
+      // altrimenti resterebbe una chiusura senza senso.
+      function moveTaskToCategory(taskId, categoryId) {
+        if (!taskId || !categoryId || !state.authUser) return;
+        const task = (state.tasks || []).find((x) => x.id === taskId);
+        if (!task || task.category === categoryId) return;
+
+        const patch = { category: categoryId, updatedAt: new Date().toISOString(), updatedBy: state.authUsername || '' };
+        if (categoryId === 'done') {
+          patch.status = 'closed';
+          if (!task.closedAt) patch.closedAt = isoDate(new Date());
+        } else if (task.status === 'closed') {
+          patch.status = 'doing';
+          patch.closedAt = null;
+        }
+
+        // Aggiornamento subito a schermo: la conferma dal database arriva dopo.
+        Object.assign(task, patch);
+        renderSummaryBoard();
+        if (db) db.collection('tasks').doc(taskId).set(patch, { merge: true }).catch(() => {});
       }
 
       function fillTaskSelect(node, list, selected) {
