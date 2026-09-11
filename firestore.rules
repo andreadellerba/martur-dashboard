@@ -55,7 +55,11 @@ service cloud.firestore {
     match /auditLog/{id} {
       // Ogni utente autenticato puo' registrare un proprio evento (login/modifica);
       // il registro si legge/elimina solo con ruolo configAdmin.
-      allow create: if isSignedIn() && request.resource.data.username is string;
+      // la riga deve portare l'uid di chi la scrive: nessuno puo' registrare
+      // un'azione a nome di un altro utente
+      allow create: if isSignedIn()
+        && request.resource.data.username is string
+        && request.resource.data.uid == request.auth.uid;
       allow read, delete: if isSignedIn() && myRole() == 'configAdmin';
       allow update: if false;
     }

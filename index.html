@@ -1557,6 +1557,65 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-variant-numeric: tabular-nums;
       color: var(--muted-foreground);
     }
+    /* ---- Registro attivita' ----
+       Una riga per azione: orario, chi, cosa, su cosa; sotto i campi cambiati
+       con il valore vecchio barrato e quello nuovo in grassetto. La striscia a
+       sinistra dice la famiglia dell'azione. */
+    #martur-operations-dashboard .mod-audit-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+      margin: 6px 0 10px;
+    }
+    #martur-operations-dashboard .mod-audit-filters .form-select { width: auto; min-width: 170px; }
+    #martur-operations-dashboard .mod-audit-list {
+      display: flex;
+      flex-direction: column;
+      max-height: 52vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    #martur-operations-dashboard .mod-audit-row {
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr);
+      gap: 10px;
+      padding: 9px 12px;
+      border-left: 3px solid var(--audit-c, var(--border));
+      font-size: var(--font-size-small);
+      line-height: 1.4;
+    }
+    #martur-operations-dashboard .mod-audit-row + .mod-audit-row { border-top: 1px solid var(--border); }
+    #martur-operations-dashboard .mod-audit-g-access { --audit-c: light-dark(rgb(100 116 139), rgb(148 163 184)); }
+    #martur-operations-dashboard .mod-audit-g-data { --audit-c: light-dark(rgb(47 111 235), rgb(126 166 245)); }
+    #martur-operations-dashboard .mod-audit-g-stoppages { --audit-c: light-dark(rgb(200 54 59), rgb(248 113 113)); }
+    #martur-operations-dashboard .mod-audit-g-tasks { --audit-c: light-dark(rgb(14 116 144), rgb(34 211 238)); }
+    #martur-operations-dashboard .mod-audit-g-settings { --audit-c: light-dark(rgb(161 92 7), rgb(251 191 36)); }
+    #martur-operations-dashboard .mod-audit-g-users { --audit-c: light-dark(rgb(126 34 206), rgb(192 132 252)); }
+    #martur-operations-dashboard .mod-audit-g-exports { --audit-c: light-dark(rgb(21 128 61), rgb(74 222 128)); }
+    #martur-operations-dashboard .mod-audit-when {
+      color: var(--muted-foreground);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-audit-action { color: var(--audit-c); font-weight: 700; }
+    #martur-operations-dashboard .mod-audit-target { color: var(--foreground); }
+    #martur-operations-dashboard .mod-audit-changes {
+      margin: 4px 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    #martur-operations-dashboard .mod-audit-field { color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-audit-from { text-decoration: line-through; color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-audit-to { font-weight: 700; }
+    @media (max-width: 640px) {
+      #martur-operations-dashboard .mod-audit-row { grid-template-columns: 1fr; gap: 2px; }
+    }
+
     /* ---- Card attivita': scheda a caselle ----
        Ogni informazione ha un colore suo. Stato e priorita' non condividono
        piu' lo stesso verde: lo stato ha una tavolozza propria. */
@@ -4694,7 +4753,53 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           noUsers: 'Nessun utente creato.',
           loadingUsers: 'Caricamento utenti…',
           userListError: 'Impossibile caricare gli utenti.',
-          auditLog: 'Registro',
+          auditLog: 'Registro attività',
+          auditLogout: 'Uscita',
+          auditEntryCreate: 'Giornata inserita',
+          auditEntryUpdate: 'Giornata modificata',
+          auditEntryDelete: 'Giornata eliminata',
+          auditStoppageCreate: 'Fermo registrato',
+          auditStoppageUpdate: 'Fermo modificato',
+          auditStoppageDelete: 'Fermo eliminato',
+          auditTaskCreate: 'Attività creata',
+          auditTaskUpdate: 'Attività modificata',
+          auditTaskMove: 'Attività spostata',
+          auditTaskDelete: 'Attività eliminata',
+          auditOeeUpdate: 'Minuti e target cambiati',
+          auditStoppageConfig: 'Configurazione fermi cambiata',
+          auditReworkUpdate: 'Motivi di rework cambiati',
+          auditUserCreate: 'Utente creato',
+          auditUserRevoke: 'Accesso revocato',
+          auditExportPdf: 'PDF esportato',
+          auditExportCsv: 'CSV esportato',
+          auditExportTasksPdf: 'PDF attività esportato',
+          auditExportTasksExcel: 'Excel attività esportato',
+          auditGroupAll: 'Tutte le azioni',
+          auditGroupAccess: 'Accessi',
+          auditGroupData: 'Dati di produzione',
+          auditGroupStoppages: 'Fermi linea',
+          auditGroupTasks: 'Attività',
+          auditGroupSettings: 'Impostazioni',
+          auditGroupUsers: 'Utenti',
+          auditGroupExports: 'Esportazioni',
+          auditAllUsers: 'Tutti gli utenti',
+          auditRowsCount: '{n} voci',
+          auditReasons: 'motivi',
+          auditCause: 'Causa',
+          auditDuration: 'Durata',
+          auditReporter: 'Segnalato da',
+          auditWhen: 'Quando',
+          auditOpAdded: 'Operazione aggiunta',
+          auditCauseAdded: 'Causa aggiunta',
+          auditOpRemoved: 'Operazione tolta',
+          auditCauseRemoved: 'Causa tolta',
+          auditReworkOptions: 'Motivi di rework',
+          auditRenamed: 'Rinominato',
+          auditRemoved: 'Tolto',
+          auditAdded: 'Aggiunto',
+          auditFromDate: 'Valido dal',
+          auditRole: 'Ruolo',
+          auditNoChanges: 'nessun campo cambiato',
           auditLogin: 'Accesso',
           auditEdit: 'Modifica dato',
           auditDelete: 'Eliminazione dato',
@@ -5031,7 +5136,53 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           noUsers: 'No users yet.',
           loadingUsers: 'Loading users…',
           userListError: 'Could not load users.',
-          auditLog: 'Log',
+          auditLog: 'Activity log',
+          auditLogout: 'Sign out',
+          auditEntryCreate: 'Day entered',
+          auditEntryUpdate: 'Day edited',
+          auditEntryDelete: 'Day deleted',
+          auditStoppageCreate: 'Stoppage logged',
+          auditStoppageUpdate: 'Stoppage edited',
+          auditStoppageDelete: 'Stoppage deleted',
+          auditTaskCreate: 'Activity created',
+          auditTaskUpdate: 'Activity edited',
+          auditTaskMove: 'Activity moved',
+          auditTaskDelete: 'Activity deleted',
+          auditOeeUpdate: 'Minutes and target changed',
+          auditStoppageConfig: 'Stoppage settings changed',
+          auditReworkUpdate: 'Rework reasons changed',
+          auditUserCreate: 'User created',
+          auditUserRevoke: 'Access revoked',
+          auditExportPdf: 'PDF exported',
+          auditExportCsv: 'CSV exported',
+          auditExportTasksPdf: 'Activities PDF exported',
+          auditExportTasksExcel: 'Activities Excel exported',
+          auditGroupAll: 'All actions',
+          auditGroupAccess: 'Sign-ins',
+          auditGroupData: 'Production data',
+          auditGroupStoppages: 'Line stoppages',
+          auditGroupTasks: 'Activities',
+          auditGroupSettings: 'Settings',
+          auditGroupUsers: 'Users',
+          auditGroupExports: 'Exports',
+          auditAllUsers: 'All users',
+          auditRowsCount: '{n} entries',
+          auditReasons: 'reasons',
+          auditCause: 'Cause',
+          auditDuration: 'Duration',
+          auditReporter: 'Reported by',
+          auditWhen: 'When',
+          auditOpAdded: 'Operation added',
+          auditCauseAdded: 'Cause added',
+          auditOpRemoved: 'Operation removed',
+          auditCauseRemoved: 'Cause removed',
+          auditReworkOptions: 'Rework reasons',
+          auditRenamed: 'Renamed',
+          auditRemoved: 'Removed',
+          auditAdded: 'Added',
+          auditFromDate: 'Valid from',
+          auditRole: 'Role',
+          auditNoChanges: 'no field changed',
           auditLogin: 'Sign in',
           auditEdit: 'Data edit',
           auditDelete: 'Data delete',
@@ -5368,7 +5519,53 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           noUsers: 'Henüz kullanıcı yok.',
           loadingUsers: 'Kullanıcılar yükleniyor…',
           userListError: 'Kullanıcılar yüklenemedi.',
-          auditLog: 'Kayıt',
+          auditLog: 'Etkinlik kaydı',
+          auditLogout: 'Çıkış',
+          auditEntryCreate: 'Gün girildi',
+          auditEntryUpdate: 'Gün düzenlendi',
+          auditEntryDelete: 'Gün silindi',
+          auditStoppageCreate: 'Duruş kaydedildi',
+          auditStoppageUpdate: 'Duruş düzenlendi',
+          auditStoppageDelete: 'Duruş silindi',
+          auditTaskCreate: 'Faaliyet oluşturuldu',
+          auditTaskUpdate: 'Faaliyet düzenlendi',
+          auditTaskMove: 'Faaliyet taşındı',
+          auditTaskDelete: 'Faaliyet silindi',
+          auditOeeUpdate: 'Dakika ve hedef değişti',
+          auditStoppageConfig: 'Duruş ayarları değişti',
+          auditReworkUpdate: 'Rework nedenleri değişti',
+          auditUserCreate: 'Kullanıcı oluşturuldu',
+          auditUserRevoke: 'Erişim kaldırıldı',
+          auditExportPdf: 'PDF dışa aktarıldı',
+          auditExportCsv: 'CSV dışa aktarıldı',
+          auditExportTasksPdf: 'Faaliyet PDF dışa aktarıldı',
+          auditExportTasksExcel: 'Faaliyet Excel dışa aktarıldı',
+          auditGroupAll: 'Tüm işlemler',
+          auditGroupAccess: 'Girişler',
+          auditGroupData: 'Üretim verileri',
+          auditGroupStoppages: 'Hat duruşları',
+          auditGroupTasks: 'Faaliyetler',
+          auditGroupSettings: 'Ayarlar',
+          auditGroupUsers: 'Kullanıcılar',
+          auditGroupExports: 'Dışa aktarmalar',
+          auditAllUsers: 'Tüm kullanıcılar',
+          auditRowsCount: '{n} kayıt',
+          auditReasons: 'nedenler',
+          auditCause: 'Neden',
+          auditDuration: 'Süre',
+          auditReporter: 'Bildiren',
+          auditWhen: 'Ne zaman',
+          auditOpAdded: 'İşlem eklendi',
+          auditCauseAdded: 'Neden eklendi',
+          auditOpRemoved: 'İşlem kaldırıldı',
+          auditCauseRemoved: 'Neden kaldırıldı',
+          auditReworkOptions: 'Rework nedenleri',
+          auditRenamed: 'Yeniden adlandırıldı',
+          auditRemoved: 'Kaldırıldı',
+          auditAdded: 'Eklendi',
+          auditFromDate: 'Geçerlilik',
+          auditRole: 'Rol',
+          auditNoChanges: 'değişen alan yok',
           auditLogin: 'Giriş',
           auditEdit: 'Veri düzenleme',
           auditDelete: 'Veri silme',
@@ -6243,17 +6440,98 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
       }
 
-      function logAuditEvent(type, usernameOverride, detail) {
-        // Registro (solo configAdmin puo' leggerlo): traccia login e modifiche dati,
-        // con nome utente e orario, per il controllo di chi ha fatto cosa.
-        if (!db) return;
-        const username = usernameOverride || state.authUsername || '?';
-        db.collection('auditLog').add({
-          type: type,
-          username: username,
-          detail: detail ? String(detail) : null,
+      /* ---- Registro attivita' ----
+         Lo legge solo chi ha ruolo configAdmin. Ogni azione di un utente lascia
+         una riga: chi, cosa, su cosa e, dove ha senso, quali campi sono
+         cambiati e da quale valore a quale. La riga porta anche l'uid, cosi' le
+         regole Firestore possono impedire di scrivere a nome di un altro. */
+      function currentUid() {
+        return (auth && auth.currentUser && auth.currentUser.uid) || (state.authUser && state.authUser.uid) || null;
+      }
+
+      function auditValue(v) {
+        if (v === undefined || v === null || v === '') return null;
+        if (Array.isArray(v)) {
+          const parts = v.map((x) => (x && typeof x === 'object')
+            ? (x.reason ? x.reason + (isNumber(x.count) ? ' (' + x.count + ')' : '') : JSON.stringify(x))
+            : String(x)).filter(Boolean);
+          return parts.length ? parts.join(', ') : null;
+        }
+        if (typeof v === 'object') return JSON.stringify(v);
+        if (typeof v === 'number') return formatNumber(v, Number.isInteger(v) ? 0 : 2);
+        return String(v);
+      }
+
+      function sameAuditValue(a, b) {
+        return JSON.stringify(auditValue(a)) === JSON.stringify(auditValue(b));
+      }
+
+      function logAudit(action, target, changes) {
+        if (!db) return Promise.resolve();
+        const uid = currentUid();
+        const list = Array.isArray(changes)
+          ? changes.filter((c) => c && !sameAuditValue(c.from, c.to)).slice(0, 60).map((c) => ({
+              field: String(c.field),
+              from: auditValue(c.from),
+              to: auditValue(c.to)
+            }))
+          : [];
+        return db.collection('auditLog').add({
+          type: action,
+          username: state.authUsername || '?',
+          uid: uid,
+          detail: target ? String(target).slice(0, 300) : null,
+          changes: list.length ? list : null,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(() => {});
+      }
+
+      // Compatibilita' con le chiamate di prima (login, dove il nome utente non
+      // e' ancora nello stato quando la riga parte).
+      function logAuditEvent(type, usernameOverride, detail) {
+        if (!db) return Promise.resolve();
+        return db.collection('auditLog').add({
+          type: type,
+          username: usernameOverride || state.authUsername || '?',
+          uid: currentUid(),
+          detail: detail ? String(detail) : null,
+          changes: null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(() => {});
+      }
+
+      // Differenze fra due giornate di produzione, campo per campo.
+      const AUDIT_SHIFT_FIELDS = {
+        front: 'frontLine', rear: 'rearLine', stellantisCars: 'Stellantis', convocati: 'convocati',
+        presence: 'presence', absent: 'absent', rework: 'rework', overtimePct: 'overtime',
+        dummy: 'dummySeats', coda: 'coda', efficiency: 'efficiency', note: 'note',
+        firstSeqMartur: 'seqMarturFirst', lastSeqMartur: 'seqMarturLast',
+        firstSeqStellantis: 'seqStellFirst', lastSeqStellantis: 'seqStellLast',
+        topReworks: 'rework'
+      };
+      function auditFieldLabel(key) {
+        const tk = AUDIT_SHIFT_FIELDS[key];
+        if (!tk) return key;
+        if (key === 'topReworks') return t('rework') + ' (' + t('auditReasons') + ')';
+        return tk === 'Stellantis' ? 'Stellantis' : t(tk);
+      }
+      function entryAuditChanges(before, after) {
+        const out = [];
+        ['shift1', 'shift2'].forEach((sk) => {
+          const a = (before && before[sk]) || {};
+          const b = (after && after[sk]) || {};
+          const keys = new Set(Object.keys(a).concat(Object.keys(b)));
+          keys.forEach((k) => {
+            // l'efficienza si ricalcola da sola dagli altri campi: nel registro
+            // conta quello che l'utente ha scritto, non il risultato
+            if (k === 'updatedAt' || k === 'efficiency') return;
+            out.push({ field: t(sk) + ' · ' + auditFieldLabel(k), from: a[k], to: b[k] });
+          });
+        });
+        out.push({ field: t('absentOperators'), from: before && before.absentOperators, to: after && after.absentOperators });
+        out.push({ field: t('effectiveMinLabel'), from: before && before.plannedMinPerShift, to: after && after.plannedMinPerShift });
+        out.push({ field: t('targetKitLabel'), from: before && before.targetKitPerShift, to: after && after.targetKitPerShift });
+        return out;
       }
 
       function pushEntryToCloud(row) {
@@ -6355,16 +6633,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         db.collection('stoppages').doc(String(record.id)).set(record).catch(() => {});
       }
 
+      // Nel registro un fermo si riconosce da linea, operazione e orario.
+      function stoppageAuditName(rec) {
+        if (!rec) return '';
+        let when = '';
+        try {
+          when = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+            .format(new Date(rec.timestamp));
+        } catch (e) {}
+        return [rec.line || rec.lineId, rec.op, when].filter(Boolean).join(' · ');
+      }
+      function stoppageAuditChanges(before, after) {
+        const b = before || {}, a = after || {};
+        const minuti = (v) => isNumber(v) ? v + ' min' : null;
+        return [
+          { field: t('auditCause'), from: b.cause || auditValue(b.causes), to: a.cause || auditValue(a.causes) },
+          { field: t('auditDuration'), from: minuti(b.durationMin), to: minuti(a.durationMin) },
+          { field: t('auditReporter'), from: b.reporter, to: a.reporter },
+          { field: t('note'), from: b.note, to: a.note },
+          { field: t('auditWhen'), from: before ? stoppageAuditName({ timestamp: b.timestamp }) : null, to: after ? stoppageAuditName({ timestamp: a.timestamp }) : null }
+        ];
+      }
+
       function addStoppage(record) {
         state.stoppages.push(record);
         persistStoppages();
         saveStoppageDoc(record);
+        logAudit('stoppage.create', stoppageAuditName(record), stoppageAuditChanges(null, record));
       }
 
       function deleteStoppage(id) {
+        const gone = state.stoppages.find((item) => item.id === id) || null;
         state.stoppages = state.stoppages.filter((item) => item.id !== id);
         persistStoppages();
         if (db) db.collection('stoppages').doc(String(id)).delete().catch(() => {});
+        if (gone) logAudit('stoppage.delete', stoppageAuditName(gone), stoppageAuditChanges(gone, null));
       }
 
       let stoppagesUnsub = null;
@@ -6542,15 +6845,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             const idx = Number(input.dataset.index);
             const val = input.value.trim();
             if (!val) { renderReworkAdmin(); return; }
+            const old = state.reworkOptions[idx];
             state.reworkOptions[idx] = val;
             persistReworkOptions();
+            logAudit('rework.update', t('auditReworkOptions'), [{ field: t('auditRenamed'), from: old, to: val }]);
             renderReworkOptions();
           });
         });
         el.reworkAdmin.querySelectorAll('.mod-rework-del').forEach((button) => {
           button.addEventListener('click', () => {
-            state.reworkOptions.splice(Number(button.dataset.index), 1);
+            const removed = state.reworkOptions.splice(Number(button.dataset.index), 1)[0];
             persistReworkOptions();
+            logAudit('rework.update', t('auditReworkOptions'), [{ field: t('auditRemoved'), from: removed, to: null }]);
             renderReworkOptions();
             renderReworkAdmin();
           });
@@ -6562,6 +6868,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (!val || state.reworkOptions.includes(val)) { addInput.value = ''; return; }
           state.reworkOptions.push(val);
           persistReworkOptions();
+          logAudit('rework.update', t('auditReworkOptions'), [{ field: t('auditAdded'), from: null, to: val }]);
           renderReworkOptions();
           renderReworkAdmin();
         };
@@ -7957,11 +8264,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.manualBody.querySelectorAll('.mod-delete-entry').forEach((button) => {
           button.addEventListener('click', () => {
             if (!window.confirm(t('confirmDelete'))) return;
+            const gone = state.manual.find((row) => row.date === button.dataset.date) || null;
             state.manual = state.manual.filter((row) => row.date !== button.dataset.date);
             if (state.editingDate === button.dataset.date) resetEntry(button.dataset.date);
             persistManual();
             deleteEntryFromCloud(button.dataset.date);
-            logAuditEvent('delete', null, button.dataset.date);
+            // Si registra cosa c'era, cosi' una giornata cancellata per errore
+            // si puo' ricostruire dal registro.
+            logAudit('entry.delete', formatDateNumeric(button.dataset.date), entryAuditChanges(gone, null));
             renderAll();
             el.entryMessage.textContent = t('deleted');
           });
@@ -8247,9 +8557,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
 
         // Aggiornamento subito a schermo: la conferma dal database arriva dopo.
+        const before = Object.assign({}, task);
         Object.assign(task, patch);
         renderSummaryBoard();
-        if (db) db.collection('tasks').doc(taskId).set(patch, { merge: true }).catch(() => {});
+        if (db) {
+          db.collection('tasks').doc(taskId).set(patch, { merge: true }).catch(() => {});
+          logAudit('task.move', taskAuditName(task), taskAuditChanges(before, task));
+        }
       }
 
       function fillTaskSelect(node, list, selected) {
@@ -8410,6 +8724,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function exportTasksPdf() {
+        logAudit('export.tasksPdf', t('summaryTitle'));
         // Stampa da un iframe nascosto: niente finestre bloccate dal browser.
         const frame = document.createElement('iframe');
         frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
@@ -8429,6 +8744,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function exportTasksExcel() {
+        logAudit('export.tasksExcel', t('summaryTitle'));
         const blob = new Blob(['﻿' + taskReportHtml(true)], { type: 'application/vnd.ms-excel;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -8479,20 +8795,53 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           updatedAt: new Date().toISOString(),
           updatedBy: state.authUsername || ''
         };
+        const before = taskEditingId ? (state.tasks || []).find((x) => x.id === taskEditingId) : null;
         const ref = taskEditingId
           ? db.collection('tasks').doc(taskEditingId)
           : db.collection('tasks').doc(String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8));
         ref.set(payload, { merge: true })
-          .then(() => { el.taskDialog.close(); })
+          .then(() => {
+            el.taskDialog.close();
+            logAudit(before ? 'task.update' : 'task.create', taskAuditName(payload), taskAuditChanges(before, payload));
+          })
           .catch(() => { el.taskError.textContent = t('taskSaveError'); el.taskError.hidden = false; });
       }
 
       function deleteTask() {
         if (!db || !taskEditingId) return;
         if (!window.confirm(t('taskConfirmDelete'))) return;
+        const gone = (state.tasks || []).find((x) => x.id === taskEditingId) || null;
         db.collection('tasks').doc(taskEditingId).delete()
-          .then(() => { el.taskDialog.close(); })
+          .then(() => {
+            el.taskDialog.close();
+            logAudit('task.delete', taskAuditName(gone), taskAuditChanges(gone, null));
+          })
           .catch(() => {});
+      }
+
+      // Nel registro le attivita' si riconoscono da persone e inizio descrizione;
+      // categoria, priorita' e stato si scrivono con le parole della bacheca.
+      function taskAuditName(task) {
+        if (!task) return '';
+        const desc = (task.description || '').trim();
+        return (task.people || t('taskNoPeople')) + (desc ? ' — ' + (desc.length > 60 ? desc.slice(0, 60) + '…' : desc) : '');
+      }
+      function taskAuditLabel(list, id) {
+        const found = list.find((x) => x.id === id);
+        return found ? t(found.key) : (id || null);
+      }
+      function taskAuditChanges(before, after) {
+        const b = before || {}, a = after || {};
+        const dt = (v) => v ? formatDateNumeric(v) : null;
+        return [
+          { field: t('taskPeople'), from: b.people, to: a.people },
+          { field: t('taskDescription'), from: b.description, to: a.description },
+          { field: t('taskCategory'), from: before ? taskAuditLabel(TASK_CATEGORIES, normalizeTaskCategory(b.category)) : null, to: after ? taskAuditLabel(TASK_CATEGORIES, a.category) : null },
+          { field: t('taskPriority'), from: before ? taskAuditLabel(TASK_PRIORITIES, b.priority) : null, to: after ? taskAuditLabel(TASK_PRIORITIES, a.priority) : null },
+          { field: t('taskStatus'), from: before ? taskAuditLabel(TASK_STATUSES, b.status) : null, to: after ? taskAuditLabel(TASK_STATUSES, a.status) : null },
+          { field: t('taskOpenedAt'), from: dt(b.openedAt), to: dt(a.openedAt) },
+          { field: t('taskClosedAt'), from: dt(b.closedAt), to: dt(a.closedAt) }
+        ];
       }
 
       function subscribeChat() {
@@ -8843,9 +9192,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           state.stoppageEditingIds.forEach((id) => {
             const rec = state.stoppages.find((s) => s.id === id);
             if (rec) {
+              const before = Object.assign({}, rec);
               rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin;
               rec.reporter = reporter; rec.note = note; rec.timestamp = timestamp;
               saveStoppageDoc(rec);
+              logAudit('stoppage.update', stoppageAuditName(rec), stoppageAuditChanges(before, rec));
             }
           });
           persistStoppages();
@@ -9231,36 +9582,96 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       }
 
+      // Catalogo delle azioni: etichetta leggibile e famiglia per il filtro.
+      // Le voci "edit" e "delete" sono quelle scritte prima di questo registro.
+      const AUDIT_ACTIONS = {
+        'login': ['auditLogin', 'access'], 'logout': ['auditLogout', 'access'],
+        'entry.create': ['auditEntryCreate', 'data'], 'entry.update': ['auditEntryUpdate', 'data'],
+        'entry.delete': ['auditEntryDelete', 'data'], 'edit': ['auditEdit', 'data'], 'delete': ['auditDelete', 'data'],
+        'stoppage.create': ['auditStoppageCreate', 'stoppages'], 'stoppage.update': ['auditStoppageUpdate', 'stoppages'],
+        'stoppage.delete': ['auditStoppageDelete', 'stoppages'],
+        'task.create': ['auditTaskCreate', 'tasks'], 'task.update': ['auditTaskUpdate', 'tasks'],
+        'task.move': ['auditTaskMove', 'tasks'], 'task.delete': ['auditTaskDelete', 'tasks'],
+        'oee.update': ['auditOeeUpdate', 'settings'], 'stoppageConfig.update': ['auditStoppageConfig', 'settings'],
+        'rework.update': ['auditReworkUpdate', 'settings'],
+        'user.create': ['auditUserCreate', 'users'], 'user.revoke': ['auditUserRevoke', 'users'],
+        'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
+        'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports']
+      };
+      const AUDIT_GROUPS = {
+        access: 'auditGroupAccess', data: 'auditGroupData', stoppages: 'auditGroupStoppages',
+        tasks: 'auditGroupTasks', settings: 'auditGroupSettings', users: 'auditGroupUsers', exports: 'auditGroupExports'
+      };
+      const auditInfo = (type) => AUDIT_ACTIONS[type] || [null, 'data'];
+      let auditRows = [];
+      const auditFilter = { user: '', group: '' };
+
       function renderAuditLog() {
         if (!state.isConfigAdmin || !db) { el.auditLog.innerHTML = ''; return; }
         el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div><div class="text-small text-muted">' + escapeHtml(t('loadingUsers')) + '</div>';
-        db.collection('auditLog').orderBy('createdAt', 'desc').limit(150).get().then((snap) => {
-          const rows = [];
+        db.collection('auditLog').orderBy('createdAt', 'desc').limit(500).get().then((snap) => {
+          auditRows = [];
           snap.forEach((doc) => {
             const d = doc.data();
-            rows.push({
+            auditRows.push({
               type: d.type,
               username: d.username || '?',
               detail: d.detail || '',
+              changes: Array.isArray(d.changes) ? d.changes : [],
               when: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null
             });
           });
-          const typeLabel = (type) => type === 'login' ? t('auditLogin') : type === 'delete' ? t('auditDelete') : t('auditEdit');
-          const fmt = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-          const listHtml = rows.length
-            ? rows.map((row) =>
-                '<div class="mod-cfg-line">' +
-                  '<span class="mod-cfg-line-name">' + escapeHtml(row.username) +
-                    '<span class="text-small text-muted"> · ' + escapeHtml(typeLabel(row.type)) + (row.detail ? ' (' + escapeHtml(row.detail) + ')' : '') + '</span>' +
-                  '</span>' +
-                  '<span class="text-small text-muted">' + (row.when ? escapeHtml(fmt.format(row.when)) : '—') + '</span>' +
-                '</div>'
-              ).join('')
-            : '<div class="text-small text-muted">' + escapeHtml(t('auditLogEmpty')) + '</div>';
-          el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div>' + listHtml;
+          drawAuditLog();
         }).catch(() => {
           el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div><div class="text-small mod-negative">' + escapeHtml(t('userListError')) + '</div>';
         });
+      }
+
+      function drawAuditLog() {
+        const users = Array.from(new Set(auditRows.map((r) => r.username))).sort((a, b) => a.localeCompare(b));
+        const rows = auditRows.filter((r) =>
+          (!auditFilter.user || r.username === auditFilter.user) &&
+          (!auditFilter.group || auditInfo(r.type)[1] === auditFilter.group));
+        const fmt = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const val = (v) => (v === null || v === undefined || v === '') ? '—' : escapeHtml(v);
+
+        const filtri =
+          '<div class="mod-audit-filters">' +
+            '<select id="mod-audit-user" class="form-select" aria-label="' + escapeHtml(t('auditAllUsers')) + '">' +
+              '<option value="">' + escapeHtml(t('auditAllUsers')) + '</option>' +
+              users.map((u) => '<option value="' + escapeHtml(u) + '"' + (u === auditFilter.user ? ' selected' : '') + '>' + escapeHtml(u) + '</option>').join('') +
+            '</select>' +
+            '<select id="mod-audit-group" class="form-select" aria-label="' + escapeHtml(t('auditGroupAll')) + '">' +
+              '<option value="">' + escapeHtml(t('auditGroupAll')) + '</option>' +
+              Object.keys(AUDIT_GROUPS).map((g) => '<option value="' + g + '"' + (g === auditFilter.group ? ' selected' : '') + '>' + escapeHtml(t(AUDIT_GROUPS[g])) + '</option>').join('') +
+            '</select>' +
+            '<span class="text-small text-muted">' + escapeHtml(t('auditRowsCount').replace('{n}', rows.length)) + '</span>' +
+          '</div>';
+
+        const lista = rows.length ? rows.map((r) => {
+          const info = auditInfo(r.type);
+          const cambi = r.changes.length
+            ? '<ul class="mod-audit-changes">' + r.changes.map((c) =>
+                '<li><span class="mod-audit-field">' + escapeHtml(c.field) + '</span> ' +
+                  (c.from !== null && c.from !== undefined && c.from !== '' ? '<span class="mod-audit-from">' + val(c.from) + '</span> → ' : '') +
+                  '<span class="mod-audit-to">' + val(c.to) + '</span></li>'
+              ).join('') + '</ul>'
+            : '';
+          return '<div class="mod-audit-row mod-audit-g-' + info[1] + '">' +
+            '<span class="mod-audit-when">' + (r.when ? escapeHtml(fmt.format(r.when)) : '—') + '</span>' +
+            '<div class="mod-audit-main">' +
+              '<div><b>' + escapeHtml(r.username) + '</b> <span class="mod-audit-action">' +
+                escapeHtml(info[0] ? t(info[0]) : r.type) + '</span>' +
+                (r.detail ? ' <span class="mod-audit-target">' + escapeHtml(r.detail) + '</span>' : '') + '</div>' +
+              cambi +
+            '</div>' +
+          '</div>';
+        }).join('') : '<div class="text-small text-muted">' + escapeHtml(t('auditLogEmpty')) + '</div>';
+
+        el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div>' + filtri +
+          '<div class="mod-audit-list">' + lista + '</div>';
+        el.auditLog.querySelector('#mod-audit-user').addEventListener('change', (e) => { auditFilter.user = e.target.value; drawAuditLog(); });
+        el.auditLog.querySelector('#mod-audit-group').addEventListener('change', (e) => { auditFilter.group = e.target.value; drawAuditLog(); });
       }
 
       function renderUserAdminList(rows) {
@@ -9315,7 +9726,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           .then((cred) => db.collection('users').doc(cred.user.uid).set({ username, role }))
           .then(() => secondaryAuth.signOut())
           .then(() => secondaryApp.delete())
-          .then(() => { renderUserAdmin(); })
+          .then(() => { renderUserAdmin(); logAudit('user.create', username, [{ field: t('auditRole'), from: null, to: role }]); })
           .catch((error) => {
             errorBox.textContent = error && error.code === 'auth/email-already-in-use' ? t('userAlreadyExists') : t('userCreateError');
             errorBox.hidden = false;
@@ -9328,6 +9739,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!window.confirm(t('confirmRevokeUser') + ' "' + username + '"?')) return;
         db.collection('users').doc(uid).delete().then(() => {
           renderUserAdmin();
+          return logAudit('user.revoke', username);
+        }).then(() => {
           if (state.authUser && state.authUser.uid === uid) auth.signOut();
         });
       }
@@ -9365,6 +9778,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             if (value && !lineOps(button.dataset.line).includes(value)) {
               state.stoppageConfig.ops[button.dataset.line].push(value);
               persistStoppageConfig();
+              logAudit('stoppageConfig.update', stoppageLineName(button.dataset.line), [{ field: t('auditOpAdded'), from: null, to: value }]);
               renderStoppages();
             }
           });
@@ -9376,6 +9790,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             if (value && !lineCauses(button.dataset.line).includes(value)) {
               state.stoppageConfig.causes[button.dataset.line].push(value);
               persistStoppageConfig();
+              logAudit('stoppageConfig.update', stoppageLineName(button.dataset.line), [{ field: t('auditCauseAdded'), from: null, to: value }]);
               renderStoppages();
             }
           });
@@ -9388,6 +9803,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               state.stoppageConfig.causes[button.dataset.line] = lineCauses(button.dataset.line).filter((c) => c !== button.dataset.value);
             }
             persistStoppageConfig();
+            logAudit('stoppageConfig.update', stoppageLineName(button.dataset.line),
+              [{ field: t(button.dataset.kind === 'op' ? 'auditOpRemoved' : 'auditCauseRemoved'), from: button.dataset.value, to: null }]);
             renderStoppages();
           });
         });
@@ -9408,6 +9825,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function exportStoppagesCsv() {
+        logAudit('export.csv', t('stoppages'));
         const list = getFilteredStoppages().slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp));
         const csv = '﻿' + stoppagesToCsv(list);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
@@ -9684,7 +10102,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       el.adminLock.addEventListener('click', () => {
         if (state.isAdmin) {
-          if (auth) auth.signOut();
+          // L'uscita si registra prima di disconnettere: dopo, il database
+          // rifiuterebbe la scrittura. Si aspetta al massimo un secondo e mezzo.
+          const esci = () => { if (auth) auth.signOut(); };
+          Promise.race([logAudit('logout'), new Promise((r) => setTimeout(r, 1500))]).then(esci, esci);
           return;
         }
         promptAdminLogin();
@@ -9737,6 +10158,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!Number.isFinite(planned) || planned <= 0 || !Number.isFinite(target) || target <= 0) return;
         const today = isoDate(new Date());
         const latest = state.oeeConfigHistory[state.oeeConfigHistory.length - 1];
+        logAudit('oee.update', t('auditFromDate') + ' ' + formatDateNumeric(today), [
+          { field: t('effectiveMinLabel'), from: latest ? latest.plannedMinPerShift : null, to: Math.round(planned) },
+          { field: t('targetKitLabel'), from: latest ? latest.targetKitPerShift : null, to: Math.round(target) }
+        ]);
         if (latest && latest.effectiveFrom === today) {
           latest.plannedMinPerShift = Math.round(planned);
           latest.targetKitPerShift = Math.round(target);
@@ -9799,6 +10224,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         navigateTo('daily');
       });
       el.exportPdf.addEventListener('click', () => {
+        logAudit('export.pdf', t(viewMeta().title) + ' · ' + selectedPeriodLabel());
         window.print();
       });
       el.chatSend.addEventListener('click', sendChatMessage);
@@ -9960,6 +10386,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.reworkSelectionMessage2.textContent = '';
         el.reworkSelectionMessage2.classList.remove('text-destructive');
         const wasExisting = state.manual.some((row) => row.date === entry.date);
+        const beforeRow = state.manual.find((row) => row.date === entry.date) || null;
         const storedEntry = {
           date: entry.date,
           shift1: entry.shift1,
@@ -9976,7 +10403,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.manual.sort((a, b) => a.date.localeCompare(b.date));
         const persisted = persistManual();
         pushEntryToCloud(storedEntry);
-        logAuditEvent('edit', null, entry.date);
+        logAudit(wasExisting ? 'entry.update' : 'entry.create',
+          formatDateNumeric(entry.date), entryAuditChanges(beforeRow, storedEntry));
         setEntryMode(entry.date);
         el.entryMessage.classList.toggle('text-destructive', !persisted);
         el.entryMessage.textContent = persisted ? t(wasExisting ? 'entryUpdated' : 'saved') : t('storageUnavailable');
