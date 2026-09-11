@@ -1557,19 +1557,35 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-variant-numeric: tabular-nums;
       color: var(--muted-foreground);
     }
+    /* ---- Card attivita': scheda a caselle ----
+       Ogni informazione ha un colore suo. Stato e priorita' non condividono
+       piu' lo stesso verde: lo stato ha una tavolozza propria. */
+    #martur-operations-dashboard .mod-summary-screen {
+      --task-card-bg: light-dark(rgb(250 250 251), rgb(38 38 42));
+      --task-ink-soft: light-dark(rgb(63 68 77), rgb(188 192 200));
+      --task-ink-faint: light-dark(rgb(115 120 132), rgb(140 145 155));
+      --task-p-high: light-dark(rgb(200 54 59), rgb(248 113 113));
+      --task-p-medium: light-dark(rgb(161 92 7), rgb(251 191 36));
+      --task-p-low: light-dark(rgb(21 128 61), rgb(74 222 128));
+      --task-s-open: light-dark(rgb(47 111 235), rgb(126 166 245));
+      --task-s-doing: light-dark(rgb(14 116 144), rgb(34 211 238));
+      --task-s-closed: light-dark(rgb(71 85 105), rgb(167 179 196));
+    }
     #martur-operations-dashboard .mod-task-card {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 12px;
+      gap: 10px;
+      padding: 14px 14px 0;
       border: 1px solid var(--border);
-      border-left: 4px solid var(--prio-color, var(--border));
       border-radius: var(--radius);
-      background: var(--card);
+      background: var(--task-card-bg);
+      color: var(--foreground);
       cursor: pointer;
       text-align: left;
       width: 100%;
       min-width: 0;
+      overflow: hidden;
+      font: inherit;
     }
     #martur-operations-dashboard .mod-task-card:hover { border-color: var(--primary); }
     /* Trascinamento fra colonne */
@@ -1583,42 +1599,93 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       outline-offset: 2px;
       background: var(--card);
     }
-    /* Nome e descrizione si leggono da lontano: maiuscolo per entrambi, con
-       il nome un gradino sopra la descrizione. */
+    #martur-operations-dashboard .mod-task-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    #martur-operations-dashboard .mod-task-who {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+    /* Nome un gradino sopra la descrizione, entrambi in maiuscolo. */
     #martur-operations-dashboard .mod-task-people {
       font-size: calc(var(--font-size-base) * 1.3);
-      font-weight: 700;
-      line-height: 1.25;
+      font-weight: 800;
+      line-height: 1.2;
       text-transform: uppercase;
       overflow-wrap: anywhere;
     }
+    #martur-operations-dashboard .mod-task-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: calc(var(--font-size-base) * 0.86);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #martur-operations-dashboard .mod-task-state-open { color: var(--task-s-open); }
+    #martur-operations-dashboard .mod-task-state-doing { color: var(--task-s-doing); }
+    #martur-operations-dashboard .mod-task-state-closed { color: var(--task-s-closed); }
+    #martur-operations-dashboard .mod-task-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      flex: none;
+    }
+    /* Priorita' come bandierina in alto a destra. */
+    #martur-operations-dashboard .mod-task-flag {
+      flex: none;
+      font-size: calc(var(--font-size-base) * 0.86);
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      line-height: 1.2;
+      padding-left: 8px;
+      border-left: 3px solid currentColor;
+      white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-task-flag-high { color: var(--task-p-high); }
+    #martur-operations-dashboard .mod-task-flag-medium { color: var(--task-p-medium); }
+    #martur-operations-dashboard .mod-task-flag-low { color: var(--task-p-low); }
     #martur-operations-dashboard .mod-task-desc {
       font-size: calc(var(--font-size-base) * 1.1);
       font-weight: 600;
       line-height: 1.3;
       text-transform: uppercase;
-      color: var(--foreground);
+      color: var(--task-ink-soft);
       overflow-wrap: anywhere;
     }
-    #martur-operations-dashboard .mod-task-tags {
+    /* Tre caselle fisse in fondo, sempre nello stesso punto. */
+    #martur-operations-dashboard .mod-task-cells {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 2px -14px 0;
+      border-top: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-task-cell {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
+      flex-direction: column;
+      gap: 2px;
+      padding: 9px 12px 11px;
+      min-width: 0;
     }
-    #martur-operations-dashboard .mod-task-tag {
-      font-size: calc(var(--font-size-small) - 1px);
+    #martur-operations-dashboard .mod-task-cell + .mod-task-cell { border-left: 1px solid var(--border); }
+    #martur-operations-dashboard .mod-task-cell-label {
+      font-size: calc(var(--font-size-base) * 0.75);
       font-weight: 700;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      white-space: nowrap;
-      color: #10131a;
+      color: var(--task-ink-faint);
     }
-    #martur-operations-dashboard .mod-task-dates {
-      font-size: calc(var(--font-size-small) - 1px);
-      color: var(--muted-foreground);
+    #martur-operations-dashboard .mod-task-cell-value {
+      font-size: var(--font-size-base);
+      font-weight: 800;
       font-variant-numeric: tabular-nums;
     }
     #martur-operations-dashboard .mod-task-empty {
@@ -4741,6 +4808,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskClosedAt: 'Data chiusura',
           taskOpenedShort: 'Aperta',
           taskClosedShort: 'Chiusa',
+          taskDaysShort: 'Giorni',
           taskDelete: 'Elimina',
           taskConfirmDelete: 'Eliminare questa attività?',
           taskFormInvalid: 'Inserisci almeno le persone o una descrizione.',
@@ -5077,6 +5145,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskClosedAt: 'Closed on',
           taskOpenedShort: 'Opened',
           taskClosedShort: 'Closed',
+          taskDaysShort: 'Days',
           taskDelete: 'Delete',
           taskConfirmDelete: 'Delete this activity?',
           taskFormInvalid: 'Enter at least the people or a description.',
@@ -5413,6 +5482,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskClosedAt: 'Kapanis tarihi',
           taskOpenedShort: 'Acildi',
           taskClosedShort: 'Kapandi',
+          taskDaysShort: 'Gun',
           taskDelete: 'Sil',
           taskConfirmDelete: 'Bu faaliyet silinsin mi?',
           taskFormInvalid: 'En az kisi veya aciklama girin.',
@@ -8042,9 +8112,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         { id: 'high',   key: 'taskPrioHigh',   color: '#f87171' }
       ];
       const TASK_STATUSES = [
-        { id: 'open',   key: 'taskStatusOpen',   color: '#38bdf8' },
-        { id: 'doing',  key: 'taskStatusDoing',  color: '#fbbf24' },
-        { id: 'closed', key: 'taskStatusClosed', color: '#34d399' }
+        { id: 'open',   key: 'taskStatusOpen',   color: '#93c5fd' },
+        { id: 'doing',  key: 'taskStatusDoing',  color: '#67e8f9' },
+        { id: 'closed', key: 'taskStatusClosed', color: '#cbd5e1' }
       ];
       const findBy = (list, id, fallback) => list.find((x) => x.id === id) || (fallback ? list[0] : null);
 
@@ -8075,27 +8145,39 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }, () => {});
       }
 
-      function taskTag(entry) {
-        return '<span class="mod-task-tag" style="background:' + entry.color + '">' + escapeHtml(t(entry.key)) + '</span>';
-      }
-
       function renderSummaryBoard() {
         if (!el.summaryBoard) return;
         const tasks = Array.isArray(state.tasks) ? state.tasks : [];
         el.summaryBoard.innerHTML = TASK_CATEGORIES.map((cat) => {
           const items = tasks.filter((task) => (task.category || 'todo') === cat.id);
+          // Scheda a caselle: nome con lo stato sotto e la priorita' in alto a
+          // destra, descrizione, e in fondo tre caselle fisse (aperta, chiusa,
+          // giorni) sempre nello stesso punto su ogni card.
+          const dm = (iso) => iso ? escapeHtml(String(iso).slice(8, 10) + '/' + String(iso).slice(5, 7)) : '—';
           const cards = items.map((task) => {
             const prio = findBy(TASK_PRIORITIES, task.priority, true);
             const status = findBy(TASK_STATUSES, task.status, true);
-            const dates = [
-              task.openedAt ? escapeHtml(t('taskOpenedShort')) + ' ' + escapeHtml(formatDateNumeric(task.openedAt)) : '',
-              task.closedAt ? escapeHtml(t('taskClosedShort')) + ' ' + escapeHtml(formatDateNumeric(task.closedAt)) : ''
-            ].filter(Boolean).join(' · ');
-            return '<button type="button" class="mod-task-card" draggable="true" data-task-id="' + escapeHtml(task.id) + '" style="--prio-color:' + prio.color + '">' +
-              '<span class="mod-task-people">' + (task.people ? escapeHtml(task.people) : escapeHtml(t('taskNoPeople'))) + '</span>' +
+            const days = taskDaysOpen(task);
+            const cell = (label, value) =>
+              '<span class="mod-task-cell"><span class="mod-task-cell-label">' + escapeHtml(label) + '</span>' +
+              '<span class="mod-task-cell-value">' + value + '</span></span>';
+            return '<button type="button" class="mod-task-card" draggable="true" data-task-id="' + escapeHtml(task.id) + '">' +
+              '<span class="mod-task-top">' +
+                '<span class="mod-task-who">' +
+                  '<span class="mod-task-people">' + (task.people ? escapeHtml(task.people) : escapeHtml(t('taskNoPeople'))) + '</span>' +
+                  '<span class="mod-task-state mod-task-state-' + status.id + '">' +
+                    (status.id === 'closed' ? '<span>✓</span>' : '<span class="mod-task-dot"></span>') +
+                    '<span>' + escapeHtml(t(status.key)) + '</span>' +
+                  '</span>' +
+                '</span>' +
+                '<span class="mod-task-flag mod-task-flag-' + prio.id + '">' + escapeHtml(t(prio.key)) + '</span>' +
+              '</span>' +
               (task.description ? '<span class="mod-task-desc">' + escapeHtml(task.description) + '</span>' : '') +
-              '<span class="mod-task-tags">' + taskTag(prio) + taskTag(status) + '</span>' +
-              (dates ? '<span class="mod-task-dates">' + dates + '</span>' : '') +
+              '<span class="mod-task-cells">' +
+                cell(t('taskOpenedShort'), dm(task.openedAt)) +
+                cell(t('taskClosedShort'), dm(task.closedAt)) +
+                cell(t('taskDaysShort'), days === null ? '—' : String(days)) +
+              '</span>' +
             '</button>';
           }).join('');
           return '<div class="mod-task-col" data-cat-id="' + escapeHtml(cat.id) + '" style="--col-color:' + cat.color + '">' +
