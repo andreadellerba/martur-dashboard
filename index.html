@@ -1612,6 +1612,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-audit-field { color: var(--muted-foreground); }
     #martur-operations-dashboard .mod-audit-from { text-decoration: line-through; color: var(--muted-foreground); }
     #martur-operations-dashboard .mod-audit-to { font-weight: 700; }
+    #martur-operations-dashboard .mod-audit-legacy {
+      margin-top: 3px;
+      font-style: italic;
+      color: var(--muted-foreground);
+    }
     @media (max-width: 640px) {
       #martur-operations-dashboard .mod-audit-row { grid-template-columns: 1fr; gap: 2px; }
     }
@@ -4800,6 +4805,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditFromDate: 'Valido dal',
           auditRole: 'Ruolo',
           auditNoChanges: 'nessun campo cambiato',
+          auditLegacyNote: 'Voce registrata prima del registro dettagliato: i campi cambiati non erano stati salvati.',
           auditLogin: 'Accesso',
           auditEdit: 'Modifica dato',
           auditDelete: 'Eliminazione dato',
@@ -5183,6 +5189,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditFromDate: 'Valid from',
           auditRole: 'Role',
           auditNoChanges: 'no field changed',
+          auditLegacyNote: 'Logged before the detailed log: the changed fields were not saved.',
           auditLogin: 'Sign in',
           auditEdit: 'Data edit',
           auditDelete: 'Data delete',
@@ -5566,6 +5573,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditFromDate: 'Geçerlilik',
           auditRole: 'Rol',
           auditNoChanges: 'değişen alan yok',
+          auditLegacyNote: 'Ayrıntılı kayıttan önce: değişen alanlar kaydedilmemişti.',
           auditLogin: 'Giriş',
           auditEdit: 'Veri düzenleme',
           auditDelete: 'Veri silme',
@@ -9650,19 +9658,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
         const lista = rows.length ? rows.map((r) => {
           const info = auditInfo(r.type);
+          // Le voci "edit"/"delete" sono di prima del registro dettagliato: i
+          // campi cambiati non erano stati salvati e non si possono ricostruire.
+          const legacy = r.type === 'edit' || r.type === 'delete';
           const cambi = r.changes.length
             ? '<ul class="mod-audit-changes">' + r.changes.map((c) =>
                 '<li><span class="mod-audit-field">' + escapeHtml(c.field) + '</span> ' +
                   (c.from !== null && c.from !== undefined && c.from !== '' ? '<span class="mod-audit-from">' + val(c.from) + '</span> → ' : '') +
                   '<span class="mod-audit-to">' + val(c.to) + '</span></li>'
               ).join('') + '</ul>'
-            : '';
+            : (legacy ? '<div class="mod-audit-legacy">' + escapeHtml(t('auditLegacyNote')) + '</div>' : '');
           return '<div class="mod-audit-row mod-audit-g-' + info[1] + '">' +
             '<span class="mod-audit-when">' + (r.when ? escapeHtml(fmt.format(r.when)) : '—') + '</span>' +
             '<div class="mod-audit-main">' +
               '<div><b>' + escapeHtml(r.username) + '</b> <span class="mod-audit-action">' +
                 escapeHtml(info[0] ? t(info[0]) : r.type) + '</span>' +
-                (r.detail ? ' <span class="mod-audit-target">' + escapeHtml(r.detail) + '</span>' : '') + '</div>' +
+                (r.detail ? ' <span class="mod-audit-target">' +
+                  escapeHtml(/^\d{4}-\d{2}-\d{2}$/.test(r.detail) ? formatDateNumeric(r.detail) : r.detail) + '</span>' : '') + '</div>' +
               cambi +
             '</div>' +
           '</div>';
