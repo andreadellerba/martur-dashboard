@@ -7325,9 +7325,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (!singleShift && isNumber(shift.coda)) {
             codaCls = shift.coda <= 45 ? 'mod-metric-good' : shift.coda <= 70 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
+          // Delta a segno, non a soglia: rosso appena e' negativo, verde se
+          // positivo, e lo zero resta com'era (verde). Vale anche nei giorni a
+          // turno unico, perche' il segno ha senso a prescindere dai turni.
           let gapCls = '';
-          if (!singleShift && isNumber(gap)) {
-            gapCls = gap >= 0 ? 'mod-metric-good' : gap >= -15 ? 'mod-metric-yellow' : 'mod-metric-bad';
+          if (isNumber(gap)) {
+            gapCls = gap < 0 ? 'mod-metric-bad' : 'mod-metric-good';
           }
           let effCls = '';
           if (!singleShift && isNumber(shift.efficiency)) {
