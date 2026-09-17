@@ -48,13 +48,15 @@ service cloud.firestore {
     }
 
     match /tasks/{id} {
-      // Riepilogo attivita': si legge e si scrive solo da autenticati.
-      allow read, write: if isSignedIn();
+      // Riepilogo attivita': la vede chi e' autenticato, la modifica solo un admin.
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }
 
     match /anomalies/{id} {
-      // Report anomalie (schede anomalia): come le attivita', solo da autenticati.
-      allow read, write: if isSignedIn();
+      // Report anomalie (schede anomalia): come le attivita'.
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }
 
     match /auditLog/{id} {

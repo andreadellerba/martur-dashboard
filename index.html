@@ -1645,14 +1645,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border-radius: var(--radius);
       background: var(--task-card-bg);
       color: var(--foreground);
-      cursor: pointer;
+      cursor: default;
       text-align: left;
       width: 100%;
       min-width: 0;
       overflow: hidden;
       font: inherit;
     }
-    #martur-operations-dashboard .mod-task-card:hover { border-color: var(--primary); }
+    /* Le card si aprono e si trascinano solo con la matita accesa (admin). */
+    #martur-operations-dashboard .mod-summary-editing .mod-task-card { cursor: pointer; }
+    #martur-operations-dashboard .mod-summary-editing .mod-task-card:hover { border-color: var(--primary); }
     /* Trascinamento fra colonne */
     #martur-operations-dashboard .mod-task-card[draggable="true"] { cursor: grab; }
     #martur-operations-dashboard .mod-task-card.mod-task-dragging {
@@ -1779,14 +1781,67 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-summary-head .mod-subnav { grid-column: 2; grid-row: 1; order: 0; }
     #martur-operations-dashboard .mod-summary-head .mod-summary-count { grid-column: 1; grid-row: 1; }
-    #martur-operations-dashboard .mod-summary-head .mod-summary-actions { grid-column: 3; grid-row: 1; }
+    #martur-operations-dashboard .mod-summary-head .mod-summary-tools { grid-column: 3; grid-row: 1; }
     @media (max-width: 900px) {
       #martur-operations-dashboard .mod-summary-head { display: flex; flex-direction: column; align-items: stretch; }
       #martur-operations-dashboard .mod-summary-head .mod-subnav { width: 100%; height: auto; justify-content: center; }
       #martur-operations-dashboard .mod-summary-head .mod-subnav .mod-nav-tab { flex: 1 1 0; }
-      #martur-operations-dashboard .mod-summary-head .mod-summary-actions { order: 1; }
+      #martur-operations-dashboard .mod-summary-head .mod-summary-tools { order: 1; }
       #martur-operations-dashboard .mod-summary-head .mod-summary-count { order: 2; }
     }
+    #martur-operations-dashboard .mod-summary-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-summary-tools .mod-summary-actions { align-items: center; }
+    #martur-operations-dashboard .mod-task-sort .form-select { width: auto; min-width: 0; text-transform: uppercase; }
+    /* Matita accesa: stesso oro della pillola attiva. */
+    #martur-operations-dashboard .mod-summary-edit {
+      flex: none;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-full);
+    }
+    #martur-operations-dashboard .mod-summary-edit[aria-pressed="true"] {
+      background: var(--gold);
+      color: var(--gold-foreground);
+    }
+    @media (max-width: 900px) {
+      #martur-operations-dashboard .mod-summary-tools { justify-content: center; flex-wrap: wrap; }
+    }
+
+    /* Intestazioni della tabella anomalie: ogni colonna si ordina col clic,
+       la freccia dice il verso. */
+    #martur-operations-dashboard .mod-sort-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      cursor: pointer;
+    }
+    #martur-operations-dashboard .mod-sort-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+    #martur-operations-dashboard .mod-sort-ind { flex: none; width: 0.8em; font-size: 0.95em; opacity: 0.35; }
+    #martur-operations-dashboard .mod-sort-ind::before { content: "↕"; }
+    #martur-operations-dashboard th[aria-sort] .mod-sort-ind { opacity: 1; }
+    #martur-operations-dashboard th[aria-sort="ascending"] .mod-sort-ind::before { content: "▲"; }
+    #martur-operations-dashboard th[aria-sort="descending"] .mod-sort-ind::before { content: "▼"; }
+
     /* Tutta la sezione in maiuscolo, anche quello che si scrive in minuscolo:
        schermo e caselle delle schede di inserimento. Lo stesso per tutte le
        note: turni, giornate inserite e fermi linea. */
@@ -1880,9 +1935,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       white-space: nowrap;
       background: light-dark(color-mix(in srgb, var(--gold) 86%, black), color-mix(in srgb, var(--gold) 84%, white));
     }
-    #martur-operations-dashboard .mod-anomaly-table tbody tr { cursor: pointer; }
+    #martur-operations-dashboard .mod-summary-editing .mod-anomaly-table tbody tr[data-anomaly-id] { cursor: pointer; }
     #martur-operations-dashboard .mod-anomaly-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--muted) 60%, transparent); }
-    #martur-operations-dashboard .mod-anomaly-table tbody tr:hover td { background: color-mix(in srgb, var(--primary) 9%, transparent); }
+    #martur-operations-dashboard .mod-summary-editing .mod-anomaly-table tbody tr[data-anomaly-id]:hover td { background: color-mix(in srgb, var(--primary) 9%, transparent); }
     #martur-operations-dashboard .mod-anomaly-table tbody tr:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
     /* N. scheda stretta al minimo. */
     #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-num {
@@ -4519,7 +4574,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-nav-tab mod-summary-tab" data-summary-tab="anomalies" aria-pressed="false" data-i18n="summaryAnomalyTab">REPORT ANOMALIE</button>
       </nav>
       <span id="mod-anomaly-count" class="mod-summary-count text-small text-muted" hidden></span>
+      <div class="mod-summary-tools">
       <div id="mod-task-actions" class="mod-summary-actions">
+        <label class="mod-task-sort">
+          <span class="sr-only" data-i18n="sortBy">Ordina per</span>
+          <select id="mod-task-sort" class="form-select"></select>
+        </label>
         <button id="mod-task-pdf" type="button" class="btn btn-ghost">
           <i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="taskExportPdf">PDF</span>
         </button>
@@ -4536,6 +4596,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <i data-lucide="table" aria-hidden="true"></i><span data-i18n="taskExportExcel">Excel</span>
         </button>
         <button id="mod-anomaly-add" type="button" class="btn btn-primary" data-i18n="anomalyAdd">+ Nuova scheda</button>
+      </div>
+      <!-- Matita: solo per gli admin, accende la modifica di schede e attivita'. -->
+      <button id="mod-summary-edit" type="button" class="btn btn-ghost mod-pill-icon mod-summary-edit" aria-pressed="false" title="Modifica" data-i18n-title="summaryEdit" hidden>
+        <i data-lucide="pencil" aria-hidden="true"></i>
+      </button>
       </div>
     </div>
     <div id="mod-summary-board" class="mod-summary-board"></div>
@@ -4556,21 +4621,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <table class="mod-anomaly-table">
           <thead>
             <tr>
-              <th rowspan="2" class="mod-anomaly-num" data-i18n="anomalyNumber">N. scheda</th>
-              <th rowspan="2" data-i18n="anomalyReporter">Nome e cognome</th>
-              <th rowspan="2" data-i18n="anomalyMachine">N. macchina</th>
-              <th rowspan="2" data-i18n="anomalyOpenedAt">Data apertura</th>
-              <th rowspan="2" class="mod-anomaly-text" data-i18n="anomalyDescription">Descrizione dell'anomalia</th>
-              <th rowspan="2" class="mod-anomaly-text" data-i18n="anomalyAction">Azione da intraprendere / eseguita</th>
-              <th rowspan="2" data-i18n="anomalyDueAt">Data prevista</th>
+              <th rowspan="2" class="mod-anomaly-num" data-sort="number"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyNumber">N. scheda</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="reporter"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyReporter">Nome e cognome</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="machine"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyMachine">N. macchina</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="openedAt"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyOpenedAt">Data apertura</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" class="mod-anomaly-text" data-sort="description"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyDescription">Descrizione dell'anomalia</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" class="mod-anomaly-text" data-sort="action"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyAction">Azione da intraprendere / eseguita</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="dueAt"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyDueAt">Data prevista</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
               <th colspan="3" class="mod-anomaly-group" data-i18n="anomalyOwnerGroup">Persona responsabile dell'azione</th>
-              <th rowspan="2" data-i18n="anomalyClosedAt">Data chiusura</th>
-              <th rowspan="2" data-i18n="anomalyStatus">Stato</th>
+              <th rowspan="2" data-sort="closedAt"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyClosedAt">Data chiusura</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="status"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyStatus">Stato</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
             </tr>
             <tr>
-              <th data-i18n="anomalyReporter">Nome e cognome</th>
-              <th class="mod-anomaly-check" data-i18n="anomalyRoleOperator">Operatore</th>
-              <th class="mod-anomaly-check" data-i18n="anomalyRoleMaintainer">Manutentore</th>
+              <th data-sort="owner"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyReporter">Nome e cognome</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th class="mod-anomaly-check" data-sort="operator"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyRoleOperator">Operatore</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th class="mod-anomaly-check" data-sort="maintainer"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyRoleMaintainer">Manutentore</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
             </tr>
           </thead>
           <tbody id="mod-anomaly-body"></tbody>
@@ -5262,6 +5327,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Chiuse',
           reportDaysOpen: 'Giorni aperta',
           summaryPlanTab: 'PIANIFICAZIONE',
+          summaryEdit: 'Modifica attività e schede',
+          sortBy: 'Ordina per',
+          taskSortOpened: 'Più recenti',
+          taskSortOldest: 'Meno recenti',
+          taskSortPriority: 'Priorità',
+          taskSortPeople: 'Persone A-Z',
+          taskSortDays: 'Giorni aperta',
           summaryAnomalyTab: 'REPORT ANOMALIE',
           anomalyTitle: 'Elenco di monitoraggio delle schede anomalia',
           anomalyDocIssued: 'Data di emissione',
@@ -5685,6 +5757,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Closed',
           reportDaysOpen: 'Days open',
           summaryPlanTab: 'PLANNING',
+          summaryEdit: 'Edit activities and reports',
+          sortBy: 'Sort by',
+          taskSortOpened: 'Newest',
+          taskSortOldest: 'Oldest',
+          taskSortPriority: 'Priority',
+          taskSortPeople: 'People A-Z',
+          taskSortDays: 'Days open',
           summaryAnomalyTab: 'ANOMALY REPORT',
           anomalyTitle: 'Anomaly report monitoring list',
           anomalyDocIssued: 'Issue date',
@@ -6108,6 +6187,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Kapali',
           reportDaysOpen: 'Acik gun',
           summaryPlanTab: 'PLANLAMA',
+          summaryEdit: 'Faaliyetleri ve kartları düzenle',
+          sortBy: 'Sırala',
+          taskSortOpened: 'En yeni',
+          taskSortOldest: 'En eski',
+          taskSortPriority: 'Öncelik',
+          taskSortPeople: 'Kişiler A-Z',
+          taskSortDays: 'Açık gün',
           summaryAnomalyTab: 'ANOMALİ RAPORU',
           anomalyTitle: 'Anomali kartları izleme listesi',
           anomalyDocIssued: 'Yayın tarihi',
@@ -6298,6 +6384,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         tasks: [],
         anomalies: [],
         summaryTab: 'plan',
+        summaryEdit: false,
+        taskSort: 'opened',
+        anomalySort: { key: 'number', dir: 'desc' },
         chatMessages: [],
         chatUsers: [],
         chatUnsub: null,
@@ -6470,6 +6559,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         taskCancel: root.querySelector('#mod-task-cancel'),
         summaryTabs: root.querySelectorAll('.mod-summary-tab'),
         anomalyPanel: root.querySelector('#mod-anomaly-panel'),
+        summaryEdit: root.querySelector('#mod-summary-edit'),
+        taskSort: root.querySelector('#mod-task-sort'),
         taskActions: root.querySelector('#mod-task-actions'),
         anomalyActions: root.querySelector('#mod-anomaly-actions'),
         anomalyCount: root.querySelector('#mod-anomaly-count'),
@@ -8771,6 +8862,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function applyAuthRole(role) {
         state.authRole = role;
         state.isAdmin = role === 'admin' || role === 'configAdmin';
+        // La matita delle attivita' resta accesa solo per gli admin.
+        if (!state.isAdmin) state.summaryEdit = false;
         state.isConfigAdmin = role === 'configAdmin';
       }
 
@@ -8816,6 +8909,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             unsubscribeAnomalies();
             if (el.anomalyDialog.open) el.anomalyDialog.close();
             state.summaryTab = 'plan';
+            state.summaryEdit = false;
             unsubscribeOeeConfig();
             unsubscribeStoppages();
             unsubscribeStoppageConfig();
@@ -8897,6 +8991,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       ];
       const findBy = (list, id, fallback) => list.find((x) => x.id === id) || (fallback ? list[0] : null);
 
+      // Ordine delle card dentro ogni colonna della bacheca.
+      const TASK_SORTS = [
+        { id: 'opened',   key: 'taskSortOpened' },
+        { id: 'oldest',   key: 'taskSortOldest' },
+        { id: 'priority', key: 'taskSortPriority' },
+        { id: 'people',   key: 'taskSortPeople' },
+        { id: 'days',     key: 'taskSortDays' }
+      ];
+      function sortTasksForBoard(list) {
+        const byOpened = (a, b) => String(b.openedAt || '').localeCompare(String(a.openedAt || ''));
+        const prio = { high: 0, medium: 1, low: 2 };
+        const compare = {
+          opened: byOpened,
+          oldest: (a, b) => -byOpened(a, b),
+          priority: (a, b) => ((prio[a.priority] ?? 9) - (prio[b.priority] ?? 9)) || byOpened(a, b),
+          people: (a, b) => String(a.people || '￿').localeCompare(String(b.people || '￿'), locale(), { sensitivity: 'base' }) || byOpened(a, b),
+          days: (a, b) => ((taskDaysOpen(b) ?? -1) - (taskDaysOpen(a) ?? -1)) || byOpened(a, b)
+        }[state.taskSort] || byOpened;
+        return list.slice().sort(compare);
+      }
+
       let tasksUnsub = null;
       function unsubscribeTasks() {
         if (tasksUnsub) { try { tasksUnsub(); } catch (e) {} tasksUnsub = null; }
@@ -8928,7 +9043,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!el.summaryBoard) return;
         const tasks = Array.isArray(state.tasks) ? state.tasks : [];
         el.summaryBoard.innerHTML = TASK_CATEGORIES.map((cat) => {
-          const items = tasks.filter((task) => (task.category || 'todo') === cat.id);
+          const items = sortTasksForBoard(tasks.filter((task) => (task.category || 'todo') === cat.id));
           // Scheda a caselle: nome con lo stato sotto e la priorita' in alto a
           // destra, descrizione, e in fondo tre caselle fisse (aperta, chiusa,
           // giorni) sempre nello stesso punto su ogni card.
@@ -8940,7 +9055,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             const cell = (label, value) =>
               '<span class="mod-task-cell"><span class="mod-task-cell-label">' + escapeHtml(label) + '</span>' +
               '<span class="mod-task-cell-value">' + value + '</span></span>';
-            return '<button type="button" class="mod-task-card" draggable="true" data-task-id="' + escapeHtml(task.id) + '">' +
+            return '<button type="button" class="mod-task-card" draggable="' + String(canEditSummary()) + '" data-task-id="' + escapeHtml(task.id) + '">' +
               '<span class="mod-task-top">' +
                 '<span class="mod-task-who">' +
                   '<span class="mod-task-people">' + (task.people ? escapeHtml(task.people) : escapeHtml(t('taskNoPeople'))) + '</span>' +
@@ -8966,7 +9081,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '</div>';
         }).join('');
         el.summaryBoard.querySelectorAll('.mod-task-card').forEach((card) => {
-          card.addEventListener('click', () => { if (!draggingTaskId) openTaskDialog(card.dataset.taskId); });
+          card.addEventListener('click', () => { if (!draggingTaskId && canEditSummary()) openTaskDialog(card.dataset.taskId); });
           card.addEventListener('dragstart', (event) => {
             draggingTaskId = card.dataset.taskId;
             card.classList.add('mod-task-dragging');
@@ -8986,7 +9101,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
         el.summaryBoard.querySelectorAll('.mod-task-col').forEach((col) => {
           col.addEventListener('dragover', (event) => {
-            if (!draggingTaskId) return;
+            if (!draggingTaskId || !canEditSummary()) return;
             event.preventDefault();
             event.dataTransfer.dropEffect = 'move';
             col.classList.add('mod-task-col-over');
@@ -9002,7 +9117,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             moveTaskToCategory(id, col.dataset.catId);
           });
         });
-        if (el.taskAdd) el.taskAdd.hidden = !state.authUser;
+        if (el.taskAdd) el.taskAdd.hidden = !canEditSummary();
       }
 
       let draggingTaskId = null;
@@ -9012,7 +9127,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // se non c'era; uscendo da li' torna in corso e la data si toglie,
       // altrimenti resterebbe una chiusura senza senso.
       function moveTaskToCategory(taskId, categoryId) {
-        if (!taskId || !categoryId || !state.authUser) return;
+        if (!taskId || !categoryId || !canEditSummary()) return;
         const task = (state.tasks || []).find((x) => x.id === taskId);
         if (!task || task.category === categoryId) return;
 
@@ -9235,7 +9350,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       let taskEditingId = null;
       function openTaskDialog(taskId) {
-        if (!state.authUser) return;
+        if (!canEditSummary()) return;
         const task = taskId ? (state.tasks || []).find((x) => x.id === taskId) : null;
         taskEditingId = task ? task.id : null;
         el.taskDialogTitle.textContent = t(task ? 'taskEdit' : 'taskNew');
@@ -9253,7 +9368,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function saveTask() {
-        if (!db || !state.authUser) return;
+        if (!db || !state.isAdmin) return;
         const people = el.taskPeople.value.trim();
         const description = el.taskDescription.value.trim();
         if (!people && !description) {
@@ -9285,7 +9400,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function deleteTask() {
-        if (!db || !taskEditingId) return;
+        if (!db || !taskEditingId || !state.isAdmin) return;
         if (!window.confirm(t('taskConfirmDelete'))) return;
         const gone = (state.tasks || []).find((x) => x.id === taskEditingId) || null;
         db.collection('tasks').doc(taskEditingId).delete()
@@ -9345,9 +9460,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         anomaliesUnsub = db.collection('anomalies').onSnapshot((snap) => {
           const list = [];
           snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
-          // A schermo le schede piu' recenti in cima.
-          list.sort((a, b) => (Number(b.number) || 0) - (Number(a.number) || 0) ||
-            String(b.openedAt || '').localeCompare(String(a.openedAt || '')));
           state.anomalies = list;
           if (anomaliesOnScreen()) renderAnomalies();
         }, () => {});
@@ -9357,14 +9469,59 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return !!item.dueAt && item.status !== 'closed' && item.dueAt < isoDate(new Date());
       }
 
+      // Ordinamento della tabella: una chiave per colonna. I vuoti vanno
+      // sempre in fondo, in qualunque verso; a parita' decide il numero scheda.
+      const ANOMALY_STATUS_ORDER = { open: 0, doing: 1, closed: 2 };
+      const anomalySortValue = {
+        number: (x) => Number(x.number) || null,
+        reporter: (x) => x.reporter || null,
+        machine: (x) => x.machine || null,
+        openedAt: (x) => x.openedAt || null,
+        description: (x) => x.description || null,
+        action: (x) => x.action || null,
+        dueAt: (x) => x.dueAt || null,
+        owner: (x) => x.owner || null,
+        operator: (x) => x.ownerRole === 'operator' ? 0 : null,
+        maintainer: (x) => x.ownerRole === 'maintainer' ? 0 : null,
+        closedAt: (x) => x.closedAt || null,
+        status: (x) => ANOMALY_STATUS_ORDER[x.status] === undefined ? 0 : ANOMALY_STATUS_ORDER[x.status]
+      };
+      function compareSortValues(a, b) {
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return String(a).localeCompare(String(b), locale(), { numeric: true, sensitivity: 'base' });
+      }
+      function anomaliesSorted() {
+        const { key, dir } = state.anomalySort;
+        const value = anomalySortValue[key] || anomalySortValue.number;
+        const sign = dir === 'asc' ? 1 : -1;
+        return (state.anomalies || []).slice().sort((a, b) => {
+          const va = value(a), vb = value(b);
+          if (va === null || vb === null) {
+            if (va !== vb) return va === null ? 1 : -1;
+          } else {
+            const diff = compareSortValues(va, vb);
+            if (diff) return diff * sign;
+          }
+          return (Number(b.number) || 0) - (Number(a.number) || 0);
+        });
+      }
+
       function renderAnomalies() {
-        const list = state.anomalies || [];
+        const list = anomaliesSorted();
+        const editable = canEditSummary();
         const notClosed = list.filter((x) => x.status !== 'closed').length;
         el.anomalyCount.textContent = t('anomalyCount').replace('{n}', list.length).replace('{open}', notClosed);
+        el.anomalyPanel.querySelectorAll('th[data-sort]').forEach((th) => {
+          if (th.dataset.sort === state.anomalySort.key) {
+            th.setAttribute('aria-sort', state.anomalySort.dir === 'asc' ? 'ascending' : 'descending');
+          } else {
+            th.removeAttribute('aria-sort');
+          }
+        });
         const date = (iso) => iso ? escapeHtml(formatDateNumeric(iso)) : '—';
         el.anomalyBody.innerHTML = list.length ? list.map((item) => {
           const st = findBy(ANOMALY_STATUSES, item.status, true);
-          return '<tr tabindex="0" data-anomaly-id="' + escapeHtml(item.id) + '">' +
+          return '<tr' + (editable ? ' tabindex="0"' : '') + ' data-anomaly-id="' + escapeHtml(item.id) + '">' +
             '<td class="mod-anomaly-num">' + escapeHtml(item.number || '—') + '</td>' +
             '<td class="mod-anomaly-name">' + escapeHtml(item.reporter || '—') + '</td>' +
             '<td class="mod-anomaly-num">' + escapeHtml(item.machine || '—') + '</td>' +
@@ -9379,7 +9536,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<td><span class="mod-anomaly-status mod-anomaly-status-' + st.id + '">' + escapeHtml(t(st.key)) + '</span></td>' +
           '</tr>';
         }).join('') : '<tr><td colspan="12" class="mod-anomaly-empty">' + escapeHtml(t('anomalyNone')) + '</td></tr>';
-        el.anomalyBody.querySelectorAll('tr[data-anomaly-id]').forEach((row) => {
+        if (editable) el.anomalyBody.querySelectorAll('tr[data-anomaly-id]').forEach((row) => {
           row.addEventListener('click', () => openAnomalyDialog(row.dataset.anomalyId));
           row.addEventListener('keydown', (event) => {
             if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -9387,7 +9544,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             openAnomalyDialog(row.dataset.anomalyId);
           });
         });
-        el.anomalyAdd.hidden = !state.authUser;
+        el.anomalyAdd.hidden = !canEditSummary();
       }
 
       function anomaliesOnScreen() {
@@ -9396,11 +9553,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       // Sottomenu di ATTIVITA': le due sezioni stanno nella stessa pagina,
       // cambia solo cosa si vede sotto le pillole e quali pulsanti.
+      // Aggiungere, modificare, spostare ed eliminare: solo admin, e solo con
+      // la matita accesa. Gli altri vedono e ordinano, ma non toccano nulla.
+      function canEditSummary() {
+        return Boolean(state.isAdmin && state.summaryEdit);
+      }
+
       function applySummaryTab() {
         const anomalies = state.summaryTab === 'anomalies';
+        if (!state.isAdmin) state.summaryEdit = false;
+        el.summaryEdit.hidden = !state.isAdmin;
+        el.summaryEdit.setAttribute('aria-pressed', String(canEditSummary()));
+        el.summaryScreen.classList.toggle('mod-summary-editing', canEditSummary());
         el.summaryTabs.forEach((button) => {
           button.setAttribute('aria-pressed', String(button.dataset.summaryTab === state.summaryTab));
         });
+        el.taskSort.innerHTML = TASK_SORTS.map((s) =>
+          '<option value="' + s.id + '"' + (s.id === state.taskSort ? ' selected' : '') + '>' + escapeHtml(t(s.key)) + '</option>'
+        ).join('');
         el.summaryBoard.hidden = anomalies;
         el.taskActions.hidden = anomalies;
         el.anomalyPanel.hidden = !anomalies;
@@ -9416,7 +9586,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function openAnomalyDialog(id) {
-        if (!state.authUser) return;
+        if (!canEditSummary()) return;
         const item = id ? (state.anomalies || []).find((x) => x.id === id) : null;
         anomalyEditingId = item ? item.id : null;
         const v = (field) => item ? (item[field] || '') : '';
@@ -9441,7 +9611,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function saveAnomaly() {
-        if (!db || !state.authUser) return;
+        if (!db || !state.isAdmin) return;
         const description = el.anomalyDescription.value.trim();
         if (!description) {
           el.anomalyError.textContent = t('anomalyFormInvalid');
@@ -9479,7 +9649,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function deleteAnomaly() {
-        if (!db || !anomalyEditingId) return;
+        if (!db || !anomalyEditingId || !state.isAdmin) return;
         if (!window.confirm(t('anomalyConfirmDelete'))) return;
         const gone = (state.anomalies || []).find((x) => x.id === anomalyEditingId) || null;
         db.collection('anomalies').doc(anomalyEditingId).delete()
@@ -9517,7 +9687,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // Stampa ed Excel ricalcano il modulo: logo, fascia dorata col titolo,
       // dati del documento a destra, schede in ordine di numero.
       function anomalyReportHtml(forExcel) {
-        const list = (state.anomalies || []).slice().sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0));
+        // Stesso ordine scelto a schermo.
+        const list = anomaliesSorted();
         const stamp = new Intl.DateTimeFormat(locale(), {
           day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
         }).format(new Date());
@@ -10877,6 +11048,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (state.summaryTab === button.dataset.summaryTab) return;
           state.summaryTab = button.dataset.summaryTab;
           applySummaryTab();
+        });
+      });
+      el.summaryEdit.addEventListener('click', () => {
+        if (!state.isAdmin) return;
+        state.summaryEdit = !state.summaryEdit;
+        applySummaryTab();
+      });
+      el.taskSort.addEventListener('change', () => {
+        state.taskSort = el.taskSort.value;
+        renderSummaryBoard();
+      });
+      // Clic sull'intestazione: prima volta crescente, poi si inverte.
+      el.anomalyPanel.querySelectorAll('th[data-sort] .mod-sort-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.closest('th').dataset.sort;
+          const current = state.anomalySort;
+          state.anomalySort = { key, dir: current.key === key && current.dir === 'asc' ? 'desc' : 'asc' };
+          renderAnomalies();
         });
       });
       el.anomalyAdd.addEventListener('click', () => openAnomalyDialog(null));
