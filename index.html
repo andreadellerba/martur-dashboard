@@ -1789,18 +1789,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
        pagina: resta visibile solo una striscia della bacheca dietro. */
     #martur-operations-dashboard .mod-sheet {
       position: fixed;
-      inset: 0 0 0 auto;
-      width: min(1480px, calc(100vw - 48px));
+      inset: 0;
+      width: 100vw;
       max-width: none;
       height: 100dvh;
       max-height: none;
       margin: 0;
       padding: 0;
       border: 0;
-      border-left: 1px solid var(--gold);
       background: var(--background);
       color: var(--foreground);
-      box-shadow: -18px 0 48px rgb(0 0 0 / 0.28);
       overflow: hidden;
     }
     #martur-operations-dashboard .mod-sheet[open] { animation: mod-sheet-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -1832,7 +1830,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding-bottom: 14px;
       border-bottom: 3px solid var(--gold);
     }
-    #martur-operations-dashboard .mod-sheet-back { flex: none; }
+    /* Chiusura: X rossa in alto a destra, come le finestre. */
+    #martur-operations-dashboard .mod-sheet-close {
+      --sheet-close-c: light-dark(rgb(220 38 38), rgb(248 113 113));
+      flex: none;
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 2px solid var(--sheet-close-c);
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--sheet-close-c);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    #martur-operations-dashboard .mod-sheet-close svg { width: 24px; height: 24px; stroke-width: 2.6; }
+    #martur-operations-dashboard .mod-sheet-close:hover { background: var(--sheet-close-c); color: var(--background); }
+    #martur-operations-dashboard .mod-sheet-close:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
     #martur-operations-dashboard .mod-sheet-titles { display: grid; gap: 2px; min-width: 0; flex: 1 1 auto; }
     #martur-operations-dashboard .mod-sheet-title {
       margin: 0;
@@ -1868,16 +1886,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border-radius: var(--radius);
     }
     @media (max-width: 900px) {
-      #martur-operations-dashboard .mod-sheet { width: 100vw; border-left: 0; }
       #martur-operations-dashboard .mod-sheet-shell { padding: 14px 16px 16px; }
-      #martur-operations-dashboard .mod-sheet-head { flex-wrap: wrap; gap: 10px 14px; }
-      #martur-operations-dashboard .mod-sheet-titles { flex-basis: 60%; }
+      #martur-operations-dashboard .mod-sheet-head { gap: 10px 14px; }
       #martur-operations-dashboard .mod-sheet-meta { display: none; }
       #martur-operations-dashboard .mod-sheet-title { font-size: calc(var(--font-size-base) * 1.1); }
     }
 
-    /* Tabella come il modulo cartaceo: intestazione blu scuro, gruppo del
-       responsabile su due righe, caselle Operatore/Manutentore spuntate. */
+    /* Tabella come il modulo cartaceo: intestazione dorata come il logo
+       (scritte bianche in chiaro, nere in scuro), gruppo del responsabile su
+       due righe, caselle Operatore/Manutentore spuntate. */
     #martur-operations-dashboard .mod-anomaly-table {
       min-width: 1320px;
       border-collapse: separate;
@@ -1899,9 +1916,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-anomaly-table thead th {
       position: sticky;
       z-index: 1;
-      background: light-dark(rgb(21 42 94), rgb(28 46 92));
-      color: rgb(255 255 255);
-      border-color: rgb(255 255 255 / 0.16);
+      background: var(--gold);
+      color: light-dark(rgb(255 255 255), rgb(0 0 0));
+      border-color: light-dark(rgb(255 255 255 / 0.3), rgb(0 0 0 / 0.2));
       font-size: calc(var(--font-size-base) * 0.74);
       font-weight: 700;
       letter-spacing: 0.05em;
@@ -1914,7 +1931,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-anomaly-table thead tr:first-child th { top: 0; }
     #martur-operations-dashboard .mod-anomaly-table thead tr:last-child th { top: var(--anomaly-head-1, 34px); }
     #martur-operations-dashboard .mod-anomaly-table thead th[rowspan] { top: 0; }
-    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-group { background: light-dark(rgb(33 60 128), rgb(40 64 122)); }
+    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-group {
+      background: light-dark(color-mix(in srgb, var(--gold) 86%, black), color-mix(in srgb, var(--gold) 84%, white));
+    }
     #martur-operations-dashboard .mod-anomaly-table tbody tr { cursor: pointer; }
     #martur-operations-dashboard .mod-anomaly-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--muted) 60%, transparent); }
     #martur-operations-dashboard .mod-anomaly-table tbody tr:hover td { background: color-mix(in srgb, var(--primary) 9%, transparent); }
@@ -4559,9 +4578,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <dialog id="mod-anomaly-sheet" class="mod-sheet" aria-labelledby="mod-anomaly-title">
     <div class="mod-sheet-shell">
       <header class="mod-sheet-head">
-        <button type="button" id="mod-anomaly-sheet-close" class="btn btn-ghost mod-sheet-back">
-          <i data-lucide="arrow-left" aria-hidden="true"></i><span data-i18n="close">Chiudi</span>
-        </button>
         <div class="mod-sheet-titles">
           <div class="mod-section-label" data-i18n="summaryAnomalyTab">REPORT ANOMALIE</div>
           <h2 id="mod-anomaly-title" class="mod-sheet-title" data-i18n="anomalyTitle">Elenco di monitoraggio delle schede anomalia</h2>
@@ -4573,6 +4589,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <div><dt data-i18n="anomalyDocClass">Riservatezza</dt><dd>L2</dd></div>
           <div><dt data-i18n="anomalyDocNumber">N. documento</dt><dd>S16-P1TSF4</dd></div>
         </dl>
+        <button type="button" id="mod-anomaly-sheet-close" class="mod-sheet-close" title="Chiudi" aria-label="Chiudi" data-i18n-title="close">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
       </header>
       <div class="mod-sheet-toolbar">
         <span id="mod-anomaly-count" class="text-small text-muted"></span>
@@ -9561,7 +9580,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ];
       }
 
-      // Stampa ed Excel ricalcano il modulo: logo, fascia blu col titolo,
+      // Stampa ed Excel ricalcano il modulo: logo, fascia dorata col titolo,
       // dati del documento a destra, schede in ordine di numero.
       function anomalyReportHtml(forExcel) {
         const list = (state.anomalies || []).slice().sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0));
@@ -9594,18 +9613,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const stile =
           'body{font-family:Arial,Helvetica,sans-serif;color:#14171f;margin:0;padding:22px 26px;}' +
           'table.testa{border-collapse:collapse;width:100%;margin-bottom:12px;}' +
-          'table.testa td{border:1px solid #1f2a44;vertical-align:middle;}' +
+          'table.testa td{border:1px solid #a88c50;vertical-align:middle;}' +
           '.logo-cell{width:18%;text-align:center;padding:8px;font-weight:700;}' +
           '.logo{max-height:40px;max-width:100%;}' +
-          '.tit-cell{background:#152a5e;color:#fff;text-align:center;font-size:19px;font-weight:700;padding:14px;}' +
+          '.tit-cell{background:#a88c50;color:#fff;text-align:center;font-size:19px;font-weight:700;padding:14px;}' +
           '.meta-cell{width:24%;padding:0;}' +
           '.meta{border-collapse:collapse;width:100%;font-size:10px;}' +
           '.meta td{border:0;border-bottom:1px solid #d8dce4;padding:3px 6px;}' +
           '.meta-k{text-align:right;color:#5c6373;font-weight:700;}' +
           '.meta-v{font-weight:700;text-align:center;}' +
           'table.dati{border-collapse:collapse;width:100%;font-size:10px;}' +
-          'table.dati th{background:#152a5e;color:#fff;padding:6px 5px;font-size:9px;text-transform:uppercase;' +
-            'letter-spacing:.04em;border:1px solid #3a4a74;text-align:center;}' +
+          'table.dati th{background:#a88c50;color:#fff;padding:6px 5px;font-size:9px;text-transform:uppercase;' +
+            'letter-spacing:.04em;border:1px solid #c7b184;text-align:center;}' +
           'table.dati td{border:1px solid #c9ced8;padding:5px;vertical-align:top;}' +
           'table.dati tr:nth-child(even) td{background:#f5f6f9;}' +
           '.c{text-align:center;white-space:nowrap;}' +
