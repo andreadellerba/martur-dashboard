@@ -1788,11 +1788,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-summary-head .mod-summary-count { order: 2; }
     }
     /* Tutta la sezione in maiuscolo, anche quello che si scrive in minuscolo:
-       schermo e caselle delle schede di inserimento. */
+       schermo e caselle delle schede di inserimento. Lo stesso per tutte le
+       note: turni, giornate inserite e fermi linea. */
     #martur-operations-dashboard .mod-summary-screen,
     #martur-operations-dashboard #mod-task-form .form-control,
     #martur-operations-dashboard #mod-anomaly-form .form-control,
-    #martur-operations-dashboard .mod-summary-screen .btn {
+    #martur-operations-dashboard .mod-summary-screen .btn,
+    #martur-operations-dashboard .mod-shift-note-text,
+    #martur-operations-dashboard .mod-note-cell,
+    #martur-operations-dashboard .mod-note-col,
+    #martur-operations-dashboard #mod-s1-note,
+    #martur-operations-dashboard #mod-s2-note,
+    #martur-operations-dashboard #mod-stoppage-note {
       text-transform: uppercase;
     }
 
@@ -10590,7 +10597,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           formatStoppageClock(s.timestamp),
           formatStoppageEndClock(s.timestamp, s.durationMin),
           s.line || stoppageLineName(s.lineId),
-          s.op, stoppageCauseText(s), s.reporter, s.note || ''
+          s.op, stoppageCauseText(s), s.reporter, (s.note || '').toUpperCase()
         ].map(esc).join(';'));
         return [header.map(esc).join(';')].concat(lines).join('\r\n');
       }
