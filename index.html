@@ -1769,134 +1769,79 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-task-delete { margin-right: auto; color: var(--destructive); }
 
     /* ---- Sottomenu di ATTIVITA' ----
-       Pillole centrate come il menu principale, pulsanti a destra. */
+       Pillole centrate come il menu principale; a sinistra il conteggio,
+       a destra i pulsanti della sezione aperta. */
     #martur-operations-dashboard .mod-summary-head {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: center;
       gap: 12px;
     }
-    #martur-operations-dashboard .mod-summary-head .mod-subnav { grid-column: 2; order: 0; }
-    #martur-operations-dashboard .mod-summary-head .mod-summary-actions { grid-column: 3; }
+    #martur-operations-dashboard .mod-summary-head .mod-subnav { grid-column: 2; grid-row: 1; order: 0; }
+    #martur-operations-dashboard .mod-summary-head .mod-summary-count { grid-column: 1; grid-row: 1; }
+    #martur-operations-dashboard .mod-summary-head .mod-summary-actions { grid-column: 3; grid-row: 1; }
     @media (max-width: 900px) {
       #martur-operations-dashboard .mod-summary-head { display: flex; flex-direction: column; align-items: stretch; }
       #martur-operations-dashboard .mod-summary-head .mod-subnav { width: 100%; height: auto; justify-content: center; }
       #martur-operations-dashboard .mod-summary-head .mod-subnav .mod-nav-tab { flex: 1 1 0; }
+      #martur-operations-dashboard .mod-summary-head .mod-summary-actions { order: 1; }
+      #martur-operations-dashboard .mod-summary-head .mod-summary-count { order: 2; }
+    }
+    /* Tutta la sezione in maiuscolo, anche quello che si scrive in minuscolo:
+       schermo e caselle delle schede di inserimento. */
+    #martur-operations-dashboard .mod-summary-screen,
+    #martur-operations-dashboard #mod-task-form .form-control,
+    #martur-operations-dashboard #mod-anomaly-form .form-control,
+    #martur-operations-dashboard .mod-summary-screen .btn {
+      text-transform: uppercase;
     }
 
-    /* ---- Report anomalie: pagina a scomparsa ----
-       Un dialog a tutta altezza che entra da destra e copre quasi tutta la
-       pagina: resta visibile solo una striscia della bacheca dietro. */
-    #martur-operations-dashboard .mod-sheet {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      max-width: none;
-      height: 100dvh;
-      max-height: none;
-      margin: 0;
-      padding: 0;
-      border: 0;
-      background: var(--background);
-      color: var(--foreground);
-      overflow: hidden;
-    }
-    #martur-operations-dashboard .mod-sheet[open] { animation: mod-sheet-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1); }
-    #martur-operations-dashboard .mod-sheet.mod-sheet-closing { animation: mod-sheet-out 0.22s ease-in forwards; }
-    #martur-operations-dashboard .mod-sheet::backdrop {
-      background: color-mix(in srgb, black 45%, transparent);
-      animation: mod-sheet-fade 0.32s ease-out;
-    }
-    #martur-operations-dashboard .mod-sheet.mod-sheet-closing::backdrop { animation: mod-sheet-fade 0.22s ease-in reverse forwards; }
-    @keyframes mod-sheet-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
-    @keyframes mod-sheet-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
-    @keyframes mod-sheet-fade { from { opacity: 0; } to { opacity: 1; } }
-    @media (prefers-reduced-motion: reduce) {
-      #martur-operations-dashboard .mod-sheet[open],
-      #martur-operations-dashboard .mod-sheet.mod-sheet-closing,
-      #martur-operations-dashboard .mod-sheet::backdrop { animation: none; }
-    }
-    #martur-operations-dashboard .mod-sheet-shell {
+    /* ---- Report anomalie ----
+       Nella pagina, sotto il sottomenu: titolo e dati del modulo, poi la
+       tabella. */
+    #martur-operations-dashboard .mod-anomaly-panel {
       display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr);
-      gap: 14px;
-      height: 100%;
-      padding: 20px 24px 24px;
+      gap: 12px;
+      min-width: 0;
     }
-    #martur-operations-dashboard .mod-sheet-head {
+    #martur-operations-dashboard .mod-anomaly-head {
       display: flex;
-      align-items: center;
-      gap: 18px;
-      padding-bottom: 14px;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px 24px;
+      padding-bottom: 10px;
       border-bottom: 3px solid var(--gold);
     }
-    /* Chiusura: X rossa in alto a destra, come le finestre. */
-    #martur-operations-dashboard .mod-sheet-close {
-      --sheet-close-c: light-dark(rgb(220 38 38), rgb(248 113 113));
-      flex: none;
-      align-self: flex-start;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      border: 2px solid var(--sheet-close-c);
-      border-radius: var(--radius-full);
-      background: transparent;
-      color: var(--sheet-close-c);
-      cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-    #martur-operations-dashboard .mod-sheet-close svg { width: 24px; height: 24px; stroke-width: 2.6; }
-    #martur-operations-dashboard .mod-sheet-close:hover { background: var(--sheet-close-c); color: var(--background); }
-    #martur-operations-dashboard .mod-sheet-close:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-    #martur-operations-dashboard .mod-sheet-titles { display: grid; gap: 2px; min-width: 0; flex: 1 1 auto; }
-    #martur-operations-dashboard .mod-sheet-title {
+    #martur-operations-dashboard .mod-anomaly-title {
       margin: 0;
-      font-size: calc(var(--font-size-base) * 1.45);
+      font-size: calc(var(--font-size-base) * 1.2);
       font-weight: 800;
       line-height: 1.2;
-      text-transform: uppercase;
       letter-spacing: 0.02em;
     }
-    #martur-operations-dashboard .mod-sheet-meta {
-      flex: none;
-      display: grid;
-      grid-template-columns: auto auto;
-      gap: 1px 12px;
+    #martur-operations-dashboard .mod-anomaly-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 18px;
       margin: 0;
       font-size: calc(var(--font-size-base) * 0.78);
     }
-    #martur-operations-dashboard .mod-sheet-meta > div { display: contents; }
-    #martur-operations-dashboard .mod-sheet-meta dt { color: var(--muted-foreground); text-align: right; }
-    #martur-operations-dashboard .mod-sheet-meta dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
-    #martur-operations-dashboard .mod-sheet-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    #martur-operations-dashboard .mod-sheet-body:focus { outline: none; }
-    #martur-operations-dashboard .mod-sheet-body {
-      min-height: 0;
-      overflow: auto;
+    #martur-operations-dashboard .mod-anomaly-meta > div { display: flex; gap: 6px; }
+    #martur-operations-dashboard .mod-anomaly-meta dt { color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-anomaly-meta dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+    #martur-operations-dashboard .mod-anomaly-wrap {
       border: 1px solid var(--border);
       border-radius: var(--radius);
-    }
-    @media (max-width: 900px) {
-      #martur-operations-dashboard .mod-sheet-shell { padding: 14px 16px 16px; }
-      #martur-operations-dashboard .mod-sheet-head { gap: 10px 14px; }
-      #martur-operations-dashboard .mod-sheet-meta { display: none; }
-      #martur-operations-dashboard .mod-sheet-title { font-size: calc(var(--font-size-base) * 1.1); }
     }
 
     /* Tabella come il modulo cartaceo: intestazione dorata come il logo
        (scritte bianche in chiaro, nere in scuro), gruppo del responsabile su
-       due righe, caselle Operatore/Manutentore spuntate. */
+       due righe. Tutto centrato in verticale, cosi' se una riga cresce le
+       altre celle restano a meta'. Le colonne corte non vanno a capo: lo
+       spazio che avanza va a descrizione e azione. */
     #martur-operations-dashboard .mod-anomaly-table {
-      min-width: 1320px;
+      min-width: 1180px;
       border-collapse: separate;
       border-spacing: 0;
       font-size: var(--font-size-small);
@@ -1904,45 +1849,50 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-anomaly-table th,
     #martur-operations-dashboard .mod-anomaly-table td {
       padding: 9px 10px;
-      text-align: left;
-      vertical-align: top;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
       border-bottom: 1px solid var(--border);
       border-right: 1px solid var(--border);
     }
     #martur-operations-dashboard .mod-anomaly-table th:last-child,
     #martur-operations-dashboard .mod-anomaly-table td:last-child { border-right: 0; padding-right: 10px; }
     #martur-operations-dashboard .mod-anomaly-table th:first-child,
-    #martur-operations-dashboard .mod-anomaly-table td:first-child { padding-left: 10px; }
+    #martur-operations-dashboard .mod-anomaly-table td:first-child { padding-left: 6px; text-align: center; }
     #martur-operations-dashboard .mod-anomaly-table thead th {
-      position: sticky;
-      z-index: 1;
       background: var(--gold);
       color: light-dark(rgb(255 255 255), rgb(0 0 0));
       border-color: light-dark(rgb(255 255 255 / 0.3), rgb(0 0 0 / 0.2));
       font-size: calc(var(--font-size-base) * 0.74);
       font-weight: 700;
       letter-spacing: 0.05em;
-      text-transform: uppercase;
-      text-align: center;
-      vertical-align: middle;
       line-height: 1.25;
+      white-space: normal;
     }
-    /* Due righe di intestazione ferme in cima mentre la tabella scorre. */
-    #martur-operations-dashboard .mod-anomaly-table thead tr:first-child th { top: 0; }
-    #martur-operations-dashboard .mod-anomaly-table thead tr:last-child th { top: var(--anomaly-head-1, 34px); }
-    #martur-operations-dashboard .mod-anomaly-table thead th[rowspan] { top: 0; }
     #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-group {
+      white-space: nowrap;
       background: light-dark(color-mix(in srgb, var(--gold) 86%, black), color-mix(in srgb, var(--gold) 84%, white));
     }
     #martur-operations-dashboard .mod-anomaly-table tbody tr { cursor: pointer; }
     #martur-operations-dashboard .mod-anomaly-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--muted) 60%, transparent); }
     #martur-operations-dashboard .mod-anomaly-table tbody tr:hover td { background: color-mix(in srgb, var(--primary) 9%, transparent); }
     #martur-operations-dashboard .mod-anomaly-table tbody tr:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
-    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-num { font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
-    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-date { white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; }
-    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-name { font-weight: 700; text-transform: uppercase; }
-    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-text { min-width: 220px; white-space: pre-wrap; overflow-wrap: anywhere; }
-    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-check { width: 64px; text-align: center; }
+    /* N. scheda stretta al minimo. */
+    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-num {
+      width: 1%;
+      padding-inline: 6px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-date { font-variant-numeric: tabular-nums; }
+    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-name { font-weight: 700; }
+    #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-text {
+      min-width: 220px;
+      text-align: left;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-check { width: 1%; }
     #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-check { font-weight: 800; color: var(--primary); }
     #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-late { color: var(--destructive); font-weight: 800; }
     #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-empty {
@@ -4559,9 +4509,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <!-- Sottomenu di ATTIVITA': stesse pillole del menu principale. -->
       <nav class="mod-pillnav mod-subnav" aria-label="Attività">
         <button type="button" class="mod-nav-tab mod-summary-tab" data-summary-tab="plan" aria-pressed="true" data-i18n="summaryPlanTab">PIANIFICAZIONE</button>
-        <button type="button" class="mod-nav-tab mod-summary-tab" data-summary-tab="anomalies" aria-pressed="false" aria-haspopup="dialog" data-i18n="summaryAnomalyTab">REPORT ANOMALIE</button>
+        <button type="button" class="mod-nav-tab mod-summary-tab" data-summary-tab="anomalies" aria-pressed="false" data-i18n="summaryAnomalyTab">REPORT ANOMALIE</button>
       </nav>
-      <div class="mod-summary-actions">
+      <span id="mod-anomaly-count" class="mod-summary-count text-small text-muted" hidden></span>
+      <div id="mod-task-actions" class="mod-summary-actions">
         <button id="mod-task-pdf" type="button" class="btn btn-ghost">
           <i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="taskExportPdf">PDF</span>
         </button>
@@ -4570,51 +4521,40 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </button>
         <button id="mod-task-add" type="button" class="btn btn-primary" data-i18n="taskAdd">+ Nuova attività</button>
       </div>
+      <div id="mod-anomaly-actions" class="mod-summary-actions" hidden>
+        <button id="mod-anomaly-pdf" type="button" class="btn btn-ghost">
+          <i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="taskExportPdf">PDF</span>
+        </button>
+        <button id="mod-anomaly-excel" type="button" class="btn btn-ghost">
+          <i data-lucide="table" aria-hidden="true"></i><span data-i18n="taskExportExcel">Excel</span>
+        </button>
+        <button id="mod-anomaly-add" type="button" class="btn btn-primary" data-i18n="anomalyAdd">+ Nuova scheda</button>
+      </div>
     </div>
     <div id="mod-summary-board" class="mod-summary-board"></div>
-  </section>
 
-  <!-- Report anomalie: pagina a parte che scorre dentro da destra. -->
-  <dialog id="mod-anomaly-sheet" class="mod-sheet" aria-labelledby="mod-anomaly-title">
-    <div class="mod-sheet-shell">
-      <header class="mod-sheet-head">
-        <div class="mod-sheet-titles">
-          <div class="mod-section-label" data-i18n="summaryAnomalyTab">REPORT ANOMALIE</div>
-          <h2 id="mod-anomaly-title" class="mod-sheet-title" data-i18n="anomalyTitle">Elenco di monitoraggio delle schede anomalia</h2>
-        </div>
-        <dl class="mod-sheet-meta">
+    <!-- Report anomalie: stessa pagina, sotto il sottomenu, come Pianificazione. -->
+    <div id="mod-anomaly-panel" class="mod-anomaly-panel" hidden>
+      <header class="mod-anomaly-head">
+        <h2 class="mod-anomaly-title" data-i18n="anomalyTitle">Elenco di monitoraggio delle schede anomalia</h2>
+        <dl class="mod-anomaly-meta">
           <div><dt data-i18n="anomalyDocIssued">Data di emissione</dt><dd>29/12/2011</dd></div>
           <div><dt data-i18n="anomalyDocRevised">Data di revisione</dt><dd>07/09/2026</dd></div>
           <div><dt data-i18n="anomalyDocRevision">N. revisione</dt><dd>1</dd></div>
           <div><dt data-i18n="anomalyDocClass">Riservatezza</dt><dd>L2</dd></div>
           <div><dt data-i18n="anomalyDocNumber">N. documento</dt><dd>S16-P1TSF4</dd></div>
         </dl>
-        <button type="button" id="mod-anomaly-sheet-close" class="mod-sheet-close" title="Chiudi" aria-label="Chiudi" data-i18n-title="close">
-          <i data-lucide="x" aria-hidden="true"></i>
-        </button>
       </header>
-      <div class="mod-sheet-toolbar">
-        <span id="mod-anomaly-count" class="text-small text-muted"></span>
-        <div class="mod-summary-actions">
-          <button id="mod-anomaly-pdf" type="button" class="btn btn-ghost">
-            <i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="taskExportPdf">PDF</span>
-          </button>
-          <button id="mod-anomaly-excel" type="button" class="btn btn-ghost">
-            <i data-lucide="table" aria-hidden="true"></i><span data-i18n="taskExportExcel">Excel</span>
-          </button>
-          <button id="mod-anomaly-add" type="button" class="btn btn-primary" data-i18n="anomalyAdd">+ Nuova scheda</button>
-        </div>
-      </div>
-      <div class="mod-sheet-body mod-table-wrap" tabindex="-1" autofocus>
+      <div class="mod-table-wrap mod-anomaly-wrap">
         <table class="mod-anomaly-table">
           <thead>
             <tr>
-              <th rowspan="2" data-i18n="anomalyNumber">N. scheda</th>
+              <th rowspan="2" class="mod-anomaly-num" data-i18n="anomalyNumber">N. scheda</th>
               <th rowspan="2" data-i18n="anomalyReporter">Nome e cognome</th>
               <th rowspan="2" data-i18n="anomalyMachine">N. macchina</th>
               <th rowspan="2" data-i18n="anomalyOpenedAt">Data apertura</th>
-              <th rowspan="2" data-i18n="anomalyDescription">Descrizione dell'anomalia</th>
-              <th rowspan="2" data-i18n="anomalyAction">Azione da intraprendere / eseguita</th>
+              <th rowspan="2" class="mod-anomaly-text" data-i18n="anomalyDescription">Descrizione dell'anomalia</th>
+              <th rowspan="2" class="mod-anomaly-text" data-i18n="anomalyAction">Azione da intraprendere / eseguita</th>
               <th rowspan="2" data-i18n="anomalyDueAt">Data prevista</th>
               <th colspan="3" class="mod-anomaly-group" data-i18n="anomalyOwnerGroup">Persona responsabile dell'azione</th>
               <th rowspan="2" data-i18n="anomalyClosedAt">Data chiusura</th>
@@ -4630,7 +4570,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </table>
       </div>
     </div>
-  </dialog>
+  </section>
 
   <dialog id="mod-anomaly-dialog" class="card mod-selection-dialog" aria-labelledby="mod-anomaly-dialog-title">
     <div class="mod-dialog-shell">
@@ -6350,6 +6290,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         authUsername: null,
         tasks: [],
         anomalies: [],
+        summaryTab: 'plan',
         chatMessages: [],
         chatUsers: [],
         chatUnsub: null,
@@ -6521,8 +6462,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         taskClose: root.querySelector('#mod-task-close'),
         taskCancel: root.querySelector('#mod-task-cancel'),
         summaryTabs: root.querySelectorAll('.mod-summary-tab'),
-        anomalySheet: root.querySelector('#mod-anomaly-sheet'),
-        anomalySheetClose: root.querySelector('#mod-anomaly-sheet-close'),
+        anomalyPanel: root.querySelector('#mod-anomaly-panel'),
+        taskActions: root.querySelector('#mod-task-actions'),
+        anomalyActions: root.querySelector('#mod-anomaly-actions'),
         anomalyCount: root.querySelector('#mod-anomaly-count'),
         anomalyBody: root.querySelector('#mod-anomaly-body'),
         anomalyAdd: root.querySelector('#mod-anomaly-add'),
@@ -8865,8 +8807,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             unsubscribeEntries();
             unsubscribeTasks();
             unsubscribeAnomalies();
-            [el.anomalyDialog, el.anomalySheet].forEach((dlg) => { if (dlg.open) dlg.close(); });
-            setSummaryTab('plan');
+            if (el.anomalyDialog.open) el.anomalyDialog.close();
+            state.summaryTab = 'plan';
             unsubscribeOeeConfig();
             unsubscribeStoppages();
             unsubscribeStoppageConfig();
@@ -9400,7 +9342,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           list.sort((a, b) => (Number(b.number) || 0) - (Number(a.number) || 0) ||
             String(b.openedAt || '').localeCompare(String(a.openedAt || '')));
           state.anomalies = list;
-          if (el.anomalySheet.open) renderAnomalies();
+          if (anomaliesOnScreen()) renderAnomalies();
         }, () => {});
       }
 
@@ -9438,42 +9380,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             openAnomalyDialog(row.dataset.anomalyId);
           });
         });
-        // La seconda riga d'intestazione resta ferma sotto la prima, che puo'
-        // andare a capo: la sua altezza si misura invece di indovinarla.
-        const group = el.anomalySheet.querySelector('.mod-anomaly-group');
-        if (group && group.offsetHeight) el.anomalySheet.style.setProperty('--anomaly-head-1', group.offsetHeight + 'px');
         el.anomalyAdd.hidden = !state.authUser;
       }
 
-      function setSummaryTab(tab) {
+      function anomaliesOnScreen() {
+        return state.view === 'summary' && state.summaryTab === 'anomalies';
+      }
+
+      // Sottomenu di ATTIVITA': le due sezioni stanno nella stessa pagina,
+      // cambia solo cosa si vede sotto le pillole e quali pulsanti.
+      function applySummaryTab() {
+        const anomalies = state.summaryTab === 'anomalies';
         el.summaryTabs.forEach((button) => {
-          button.setAttribute('aria-pressed', String(button.dataset.summaryTab === tab));
+          button.setAttribute('aria-pressed', String(button.dataset.summaryTab === state.summaryTab));
         });
-      }
-
-      function openAnomalySheet() {
-        const sheet = el.anomalySheet;
-        if (!state.authUser || sheet.open) return;
-        setSummaryTab('anomalies');
-        sheet.classList.remove('mod-sheet-closing');
-        sheet.showModal();
-        // Dopo l'apertura: da chiuso il dialog non ha misure.
-        renderAnomalies();
-        sheet.querySelector('.mod-sheet-body').scrollTop = 0;
-      }
-
-      // Chiusura con la stessa corsa dell'apertura, al contrario.
-      function closeAnomalySheet() {
-        const sheet = el.anomalySheet;
-        if (!sheet.open || sheet.classList.contains('mod-sheet-closing')) return;
-        const finish = () => {
-          if (sheet.open) sheet.close();
-          sheet.classList.remove('mod-sheet-closing');
-          setSummaryTab('plan');
-        };
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
-        sheet.classList.add('mod-sheet-closing');
-        setTimeout(finish, 220);
+        el.summaryBoard.hidden = anomalies;
+        el.taskActions.hidden = anomalies;
+        el.anomalyPanel.hidden = !anomalies;
+        el.anomalyActions.hidden = !anomalies;
+        el.anomalyCount.hidden = !anomalies;
+        if (anomalies) renderAnomalies();
+        else renderSummaryBoard();
       }
 
       let anomalyEditingId = null;
@@ -9587,22 +9514,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const stamp = new Intl.DateTimeFormat(locale(), {
           day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
         }).format(new Date());
-        const meta = Array.from(el.anomalySheet.querySelectorAll('.mod-sheet-meta > div')).map((row) =>
+        const meta = Array.from(el.anomalyPanel.querySelectorAll('.mod-anomaly-meta > div')).map((row) =>
           '<tr><td class="meta-k">' + escapeHtml(row.querySelector('dt').textContent) + ':</td>' +
           '<td class="meta-v">' + escapeHtml(row.querySelector('dd').textContent) + '</td></tr>'
         ).join('');
         const date = (iso) => iso ? escapeHtml(formatDateNumeric(iso)) : '';
+        // Come a schermo: tutto in maiuscolo, anche quanto scritto in minuscolo.
+        const up = (v) => escapeHtml(String(v || '').toUpperCase());
         const righe = list.length ? list.map((item) => {
           const st = findBy(ANOMALY_STATUSES, item.status, true);
           return '<tr>' +
             '<td class="c forte">' + escapeHtml(item.number || '') + '</td>' +
-            '<td class="forte">' + escapeHtml(item.reporter || '') + '</td>' +
-            '<td class="c">' + escapeHtml(item.machine || '') + '</td>' +
+            '<td class="forte">' + up(item.reporter) + '</td>' +
+            '<td class="c">' + up(item.machine) + '</td>' +
             '<td class="c">' + date(item.openedAt) + '</td>' +
-            '<td>' + escapeHtml(item.description || '') + '</td>' +
-            '<td>' + escapeHtml(item.action || '') + '</td>' +
+            '<td>' + up(item.description) + '</td>' +
+            '<td>' + up(item.action) + '</td>' +
             '<td class="c' + (anomalyIsLate(item) ? ' tardi' : '') + '">' + date(item.dueAt) + '</td>' +
-            '<td class="forte">' + escapeHtml(item.owner || '') + '</td>' +
+            '<td class="forte">' + up(item.owner) + '</td>' +
             '<td class="c forte">' + (item.ownerRole === 'operator' ? 'X' : '') + '</td>' +
             '<td class="c forte">' + (item.ownerRole === 'maintainer' ? 'X' : '') + '</td>' +
             '<td class="c">' + date(item.closedAt) + '</td>' +
@@ -10815,8 +10744,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dmcScreen.hidden = !isDmc;
         el.chatScreen.hidden = !isChat;
         el.summaryScreen.hidden = !isSummary;
-        if (isSummary) renderSummaryBoard();
-        if (el.anomalySheet.open) renderAnomalies();
+        if (isSummary) applySummaryTab();
         el.tvScreen.hidden = !isTv;
         // Il calendario resta sempre visibile: header identico in ogni pagina
         // (prima spariva in "+"/Comunicazioni/ecc. e il resto del gruppo si ricentrava).
@@ -10937,17 +10865,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.taskCancel.addEventListener('click', () => el.taskDialog.close());
       el.taskDelete.addEventListener('click', deleteTask);
       el.taskForm.addEventListener('submit', (event) => { event.preventDefault(); saveTask(); });
-
       el.summaryTabs.forEach((button) => {
         button.addEventListener('click', () => {
-          if (button.dataset.summaryTab === 'anomalies') openAnomalySheet();
-          else closeAnomalySheet();
+          if (state.summaryTab === button.dataset.summaryTab) return;
+          state.summaryTab = button.dataset.summaryTab;
+          applySummaryTab();
         });
       });
-      el.anomalySheetClose.addEventListener('click', closeAnomalySheet);
-      // Esc e clic sullo sfondo chiudono con l'animazione, non di colpo.
-      el.anomalySheet.addEventListener('cancel', (event) => { event.preventDefault(); closeAnomalySheet(); });
-      el.anomalySheet.addEventListener('click', (event) => { if (event.target === el.anomalySheet) closeAnomalySheet(); });
       el.anomalyAdd.addEventListener('click', () => openAnomalyDialog(null));
       el.anomalyPdf.addEventListener('click', exportAnomaliesPdf);
       el.anomalyExcel.addEventListener('click', exportAnomaliesExcel);
