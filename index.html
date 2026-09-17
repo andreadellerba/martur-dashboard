@@ -2888,6 +2888,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 700;
       font-size: var(--font-size-normal);
     }
+    /* Rework per turno: etichetta del turno sopra ogni riga di tre. */
+    #martur-operations-dashboard .mod-rework-shifts {
+      display: grid;
+      gap: 14px;
+    }
+    #martur-operations-dashboard .mod-rework-shift-label {
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
     #martur-operations-dashboard .mod-rework-ranking-name {
       min-width: 0;
       overflow-wrap: anywhere;
@@ -4278,7 +4290,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <div id="mod-daily-rework-title" class="mod-section-label" data-i18n="dailyTopReworks">I 3 rework più frequenti del giorno</div>
         </div>
       </div>
-      <ol id="mod-daily-rework-list" class="mod-rework-ranking"></ol>
+      <!-- Una riga per turno, stesso stile: 1° turno sopra, 2° turno sotto. -->
+      <div id="mod-daily-rework-list" class="mod-rework-shifts"></div>
     </section>
 
     <div class="mod-two-col mod-oee-fermi-row">
@@ -8589,11 +8602,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           : '<tr><td colspan="4" class="mod-empty">' + t('noAbsenceLog') + '</td></tr>';
       }
 
+      // I 3 rework maggiori, una riga per turno. Le giornate di prima, che
+      // hanno solo la classifica unica senza turni, restano su una riga sola.
       function renderDailyTopReworks(row) {
-        const topReworks = normalizeTopReworks(row.topReworks);
-        el.dailyReworkList.innerHTML = topReworks.length
-          ? topReworks.map((item, index) => '<li><span class="mod-rework-rank-badge">' + (index + 1) + '</span><span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span>' + (isNumber(item.count) ? '<span class="mod-rework-ranking-count">' + formatNumber(item.count) + ' ' + t('cases') + '</span>' : '') + '</li>').join('')
+        const items = (list) => list.length
+          ? list.map((item, index) => '<li><span class="mod-rework-rank-badge">' + (index + 1) + '</span><span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span>' + (isNumber(item.count) ? '<span class="mod-rework-ranking-count">' + formatNumber(item.count) + ' ' + t('cases') + '</span>' : '') + '</li>').join('')
           : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
+        const shift1 = normalizeTopReworks(row.shift1 && row.shift1.topReworks);
+        const shift2 = normalizeTopReworks(row.shift2 && row.shift2.topReworks);
+        if (!shift1.length && !shift2.length) {
+          el.dailyReworkList.innerHTML = '<ol class="mod-rework-ranking">' + items(normalizeTopReworks(row.topReworks)) + '</ol>';
+          return;
+        }
+        el.dailyReworkList.innerHTML = [['shift1', shift1], ['shift2', shift2]].map(([key, list]) =>
+          '<div class="mod-rework-shift">' +
+            '<div class="mod-rework-shift-label">' + escapeHtml(t(key)) + '</div>' +
+            '<ol class="mod-rework-ranking">' + items(list) + '</ol>' +
+          '</div>'
+        ).join('');
       }
 
       function shiftTeamInfo(shiftKey, dateStr) {
