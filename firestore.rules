@@ -52,6 +52,11 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
+    match /anomalies/{id} {
+      // Report anomalie (schede anomalia): come le attivita', solo da autenticati.
+      allow read, write: if isSignedIn();
+    }
+
     match /auditLog/{id} {
       // Ogni utente autenticato puo' registrare un proprio evento (login/modifica);
       // il registro si legge/elimina solo con ruolo configAdmin.
