@@ -53,28 +53,62 @@ service cloud.firestore {
       allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }
 
+    function isAdmin() {
+      return isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
+    }
+
     match /anomalies/{id} {
       // Report anomalie (schede anomalia): come le attivita'.
       allow read: if isSignedIn();
-      allow update, delete: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
+      allow update, delete: if isAdmin();
       // Il QR in linea permette a chiunque, anche senza accesso, di aprire una
-      // scheda nuova: solo questi campi, stato aperto, testi di lunghezza
-      // limitata e ora del server. Leggere o toccare le altre resta vietato.
-      allow create: if (isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin'))
-        || isQrReport();
+      // scheda nuova col numero successivo del contatore: solo i campi del
+      // modulo, testi di lunghezza limitata e ora del server. Leggere o
+      // toccare le altre schede resta vietato.
+      allow create: if isAdmin() || isQrReport(id);
     }
 
-    function isQrReport() {
+    match /anomalySettings/{doc} {
+      // "main": nomi delle colonne e dati documento predefiniti, letti anche
+      // dal modulo QR. "counter": ultimo N. scheda usato.
+      allow read: if true;
+      allow write: if isAdmin();
+      // Dal QR il contatore puo' solo salire di uno, insieme alla scheda nuova
+      // che prende quel numero.
+      allow update: if doc == 'counter'
+        && request.resource.data.keys().hasOnly(['last'])
+        && request.resource.data.last == resource.data.last + 1
+        && existsAfter(/databases/$(database)/documents/anomalies/$('n-' + string(request.resource.data.last)));
+    }
+
+    function optText(d, key, max) {
+      return !d.keys().hasAny([key]) || (d[key] is string && d[key].size() <= max);
+    }
+    function optDate(d, key) {
+      return !d.keys().hasAny([key]) || d[key] == null || (d[key] is string && d[key].size() == 10);
+    }
+
+    function isQrReport(id) {
       let d = request.resource.data;
-      return d.keys().hasOnly(['reporter', 'machine', 'description', 'openedAt', 'status', 'source', 'createdAt'])
-        && d.keys().hasAll(['reporter', 'machine', 'description', 'openedAt', 'status', 'source', 'createdAt'])
+      let counter = /databases/$(database)/documents/anomalySettings/counter;
+      return d.keys().hasOnly(['number', 'reporter', 'machine', 'openedAt', 'description', 'action',
+          'dueAt', 'owner', 'ownerRole', 'closedAt', 'status', 'source', 'createdAt',
+          'docIssued', 'docRevised', 'docRevision', 'docClass', 'docNumber'])
         && d.source == 'qr'
-        && d.status == 'open'
+        && d.createdAt == request.time
+        && d.number is int
+        && id == 'n-' + string(d.number)
+        && d.number == get(counter).data.last + 1
+        && getAfter(counter).data.last == d.number
         && d.reporter is string && d.reporter.size() > 0 && d.reporter.size() <= 80
-        && d.machine is string && d.machine.size() <= 40
         && d.description is string && d.description.size() > 0 && d.description.size() <= 800
         && d.openedAt is string && d.openedAt.size() == 10
-        && d.createdAt == request.time;
+        && d.status in ['open', 'doing', 'closed']
+        && (!d.keys().hasAny(['ownerRole']) || d.ownerRole == null || d.ownerRole in ['operator', 'maintainer'])
+        && optText(d, 'machine', 40) && optText(d, 'action', 800) && optText(d, 'owner', 80)
+        && optDate(d, 'dueAt') && optDate(d, 'closedAt')
+        && optText(d, 'docIssued', 40) && optText(d, 'docRevised', 40) && optText(d, 'docRevision', 40)
+        && optText(d, 'docClass', 40) && optText(d, 'docNumber', 40);
     }
 
     match /auditLog/{id} {

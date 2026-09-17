@@ -2038,16 +2038,51 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-check { width: 1%; }
     #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-check { font-weight: 800; color: var(--primary); }
     #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-late { color: var(--destructive); font-weight: 800; }
-    /* Scheda arrivata dal QR e non ancora numerata. */
-    #martur-operations-dashboard .mod-anomaly-qr {
-      display: inline-block;
-      padding: 2px 6px;
+    /* N. scheda cliccabile: seleziona la riga e porta i suoi dati documento
+       nell'intestazione. */
+    #martur-operations-dashboard .mod-anomaly-pick {
+      min-width: 32px;
+      padding: 3px 8px;
+      border: 1px solid var(--gold);
       border-radius: var(--radius-full);
-      background: var(--gold);
-      color: var(--gold-foreground);
-      font-size: calc(var(--font-size-base) * 0.72);
+      background: transparent;
+      color: inherit;
+      font: inherit;
       font-weight: 800;
-      letter-spacing: 0.05em;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+    }
+    #martur-operations-dashboard .mod-anomaly-pick:hover { background: color-mix(in srgb, var(--gold) 20%, transparent); }
+    #martur-operations-dashboard .mod-anomaly-pick[aria-pressed="true"] { background: var(--gold); color: var(--gold-foreground); }
+    #martur-operations-dashboard .mod-anomaly-table tbody tr.mod-anomaly-row-selected td {
+      background: color-mix(in srgb, var(--gold) 16%, transparent);
+    }
+    #martur-operations-dashboard .mod-anomaly-titles { display: grid; gap: 2px; min-width: 0; }
+    #martur-operations-dashboard .mod-anomaly-selected { font-size: var(--font-size-small); color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-anomaly-selected.mod-anomaly-selected-on { color: var(--gold); font-weight: 800; }
+    #martur-operations-dashboard .mod-anomaly-doc-row,
+    #martur-operations-dashboard .mod-anomaly-settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px 12px;
+    }
+    #martur-operations-dashboard .mod-anomaly-settings-grid .mod-field > span { font-size: var(--font-size-small); color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-report-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    #martur-operations-dashboard .mod-report-owner {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 10px 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    #martur-operations-dashboard .mod-report-owner legend { padding-inline: 4px; font-weight: 700; }
+    @media (max-width: 420px) {
+      #martur-operations-dashboard .mod-report-row { grid-template-columns: 1fr; }
     }
     #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-empty {
       text-align: center;
@@ -4669,23 +4704,62 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <p class="mod-report-hint" data-i18n="reportFormHint">Compila i campi e premi Invia: la scheda arriva subito ai responsabili.</p>
         </div>
         <label class="mod-field">
-          <span data-i18n="anomalyReporterLong">Nome e cognome (chi apre la scheda)</span>
+          <span data-anomaly-label="number">N. scheda</span>
+          <input type="text" class="form-control" data-i18n-placeholder="anomalyNumberAuto" placeholder="Assegnato all'invio" disabled>
+        </label>
+        <label class="mod-field">
+          <span data-anomaly-label="reporter">Nome e cognome</span>
           <input id="mod-report-reporter" type="text" class="form-control" maxlength="80" autocomplete="name" required>
         </label>
+        <div class="mod-report-row">
+          <label class="mod-field">
+            <span data-anomaly-label="machine">N. macchina</span>
+            <input id="mod-report-machine" type="text" class="form-control" maxlength="40">
+          </label>
+          <label class="mod-field">
+            <span data-anomaly-label="openedAt">Data apertura</span>
+            <input id="mod-report-opened" type="date" class="form-control" required>
+          </label>
+        </div>
         <label class="mod-field">
-          <span data-i18n="anomalyMachine">N. macchina</span>
-          <input id="mod-report-machine" type="text" class="form-control" maxlength="40" inputmode="numeric">
+          <span data-anomaly-label="description">Descrizione dell'anomalia</span>
+          <textarea id="mod-report-description" class="form-control" rows="4" maxlength="800" required></textarea>
         </label>
         <label class="mod-field">
-          <span data-i18n="anomalyDescription">Descrizione dell'anomalia</span>
-          <textarea id="mod-report-description" class="form-control" rows="5" maxlength="800" required></textarea>
+          <span data-anomaly-label="action">Azione da intraprendere / eseguita</span>
+          <textarea id="mod-report-action" class="form-control" rows="3" maxlength="800"></textarea>
         </label>
+        <label class="mod-field">
+          <span data-anomaly-label="dueAt">Data prevista</span>
+          <input id="mod-report-due" type="date" class="form-control">
+        </label>
+        <fieldset class="mod-report-owner">
+          <legend data-anomaly-label="ownerGroup">Persona responsabile dell'azione</legend>
+          <label class="mod-field">
+            <span data-anomaly-label="owner">Nome e cognome</span>
+            <input id="mod-report-owner" type="text" class="form-control" maxlength="80">
+          </label>
+          <label class="mod-field">
+            <span data-i18n="anomalyRole">Ruolo</span>
+            <select id="mod-report-role" class="form-control"></select>
+          </label>
+        </fieldset>
+        <div class="mod-report-row">
+          <label class="mod-field">
+            <span data-anomaly-label="status">Stato</span>
+            <select id="mod-report-status" class="form-control"></select>
+          </label>
+          <label class="mod-field">
+            <span data-anomaly-label="closedAt">Data chiusura</span>
+            <input id="mod-report-closed" type="date" class="form-control">
+          </label>
+        </div>
         <div id="mod-report-error" class="text-small mod-negative" role="alert" hidden></div>
         <button id="mod-report-send" type="submit" class="btn btn-primary mod-report-send" data-i18n="reportFormSend">Invia anomalia</button>
       </form>
       <div id="mod-report-done" class="mod-report-done" role="status" hidden>
         <div class="mod-report-done-icon" aria-hidden="true">✓</div>
-        <h1 class="mod-report-title" data-i18n="reportDoneTitle">Anomalia inviata correttamente</h1>
+        <h1 id="mod-report-done-title" class="mod-report-title">Anomalia inviata correttamente</h1>
         <p class="mod-report-hint" data-i18n="reportDoneHint">Grazie, la segnalazione è stata registrata. Puoi chiudere questa pagina.</p>
       </div>
     </div>
@@ -4735,6 +4809,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button id="mod-task-add" type="button" class="btn btn-primary" data-i18n="taskAdd">+ Nuova attività</button>
       </div>
       <div id="mod-anomaly-actions" class="mod-summary-actions" hidden>
+        <button id="mod-anomaly-settings" type="button" class="btn btn-ghost" hidden>
+          <i data-lucide="heading" aria-hidden="true"></i><span data-i18n="anomalySettingsBtn">Intestazioni</span>
+        </button>
         <button id="mod-anomaly-qr" type="button" class="btn btn-ghost" hidden>
           <i data-lucide="qr-code" aria-hidden="true"></i><span>QR</span>
         </button>
@@ -4757,34 +4834,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     <!-- Report anomalie: stessa pagina, sotto il sottomenu, come Pianificazione. -->
     <div id="mod-anomaly-panel" class="mod-anomaly-panel" hidden>
       <header class="mod-anomaly-head">
-        <h2 class="mod-anomaly-title" data-i18n="anomalyTitle">Elenco di monitoraggio delle schede anomalia</h2>
-        <dl class="mod-anomaly-meta">
-          <div><dt data-i18n="anomalyDocIssued">Data di emissione</dt><dd>29/12/2011</dd></div>
-          <div><dt data-i18n="anomalyDocRevised">Data di revisione</dt><dd>07/09/2026</dd></div>
-          <div><dt data-i18n="anomalyDocRevision">N. revisione</dt><dd>1</dd></div>
-          <div><dt data-i18n="anomalyDocClass">Riservatezza</dt><dd>L2</dd></div>
-          <div><dt data-i18n="anomalyDocNumber">N. documento</dt><dd>S16-P1TSF4</dd></div>
-        </dl>
+        <div class="mod-anomaly-titles">
+          <h2 class="mod-anomaly-title" data-anomaly-label="title">Elenco di monitoraggio delle schede anomalia</h2>
+          <span id="mod-anomaly-selected" class="mod-anomaly-selected"></span>
+        </div>
+        <!-- Dati documento della scheda selezionata (o i predefiniti). -->
+        <dl id="mod-anomaly-meta" class="mod-anomaly-meta"></dl>
       </header>
       <div class="mod-table-wrap mod-anomaly-wrap">
         <table class="mod-anomaly-table">
           <thead>
             <tr>
-              <th rowspan="2" class="mod-anomaly-num" data-sort="number"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyNumber">N. scheda</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th rowspan="2" data-sort="reporter"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyReporter">Nome e cognome</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th rowspan="2" data-sort="machine"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyMachine">N. macchina</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th rowspan="2" data-sort="openedAt"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyOpenedAt">Data apertura</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th rowspan="2" class="mod-anomaly-text" data-sort="description"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyDescription">Descrizione dell'anomalia</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th rowspan="2" class="mod-anomaly-text" data-sort="action"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyAction">Azione da intraprendere / eseguita</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th rowspan="2" data-sort="dueAt"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyDueAt">Data prevista</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th colspan="3" class="mod-anomaly-group" data-i18n="anomalyOwnerGroup">Persona responsabile dell'azione</th>
-              <th rowspan="2" data-sort="closedAt"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyClosedAt">Data chiusura</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th rowspan="2" data-sort="status"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyStatus">Stato</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" class="mod-anomaly-num" data-sort="number"><button type="button" class="mod-sort-btn"><span data-anomaly-label="number">N. scheda</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="reporter"><button type="button" class="mod-sort-btn"><span data-anomaly-label="reporter">Nome e cognome</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="machine"><button type="button" class="mod-sort-btn"><span data-anomaly-label="machine">N. macchina</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="openedAt"><button type="button" class="mod-sort-btn"><span data-anomaly-label="openedAt">Data apertura</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" class="mod-anomaly-text" data-sort="description"><button type="button" class="mod-sort-btn"><span data-anomaly-label="description">Descrizione dell'anomalia</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" class="mod-anomaly-text" data-sort="action"><button type="button" class="mod-sort-btn"><span data-anomaly-label="action">Azione da intraprendere / eseguita</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="dueAt"><button type="button" class="mod-sort-btn"><span data-anomaly-label="dueAt">Data prevista</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th colspan="3" class="mod-anomaly-group" data-anomaly-label="ownerGroup">Persona responsabile dell'azione</th>
+              <th rowspan="2" data-sort="closedAt"><button type="button" class="mod-sort-btn"><span data-anomaly-label="closedAt">Data chiusura</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th rowspan="2" data-sort="status"><button type="button" class="mod-sort-btn"><span data-anomaly-label="status">Stato</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
             </tr>
             <tr>
-              <th data-sort="owner"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyReporter">Nome e cognome</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th class="mod-anomaly-check" data-sort="operator"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyRoleOperator">Operatore</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
-              <th class="mod-anomaly-check" data-sort="maintainer"><button type="button" class="mod-sort-btn"><span data-i18n="anomalyRoleMaintainer">Manutentore</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th data-sort="owner"><button type="button" class="mod-sort-btn"><span data-anomaly-label="owner">Nome e cognome</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th class="mod-anomaly-check" data-sort="operator"><button type="button" class="mod-sort-btn"><span data-anomaly-label="operator">Operatore</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
+              <th class="mod-anomaly-check" data-sort="maintainer"><button type="button" class="mod-sort-btn"><span data-anomaly-label="maintainer">Manutentore</span><span class="mod-sort-ind" aria-hidden="true"></span></button></th>
             </tr>
           </thead>
           <tbody id="mod-anomaly-body"></tbody>
@@ -4804,35 +4879,35 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <form id="mod-anomaly-form" class="mod-anomaly-form">
         <div class="mod-task-form-row">
           <label class="mod-field">
-            <span data-i18n="anomalyNumber">N. scheda</span>
+            <span data-anomaly-label="number">N. scheda</span>
             <input id="mod-anomaly-number" type="number" min="1" step="1" class="form-control">
           </label>
           <label class="mod-field">
-            <span data-i18n="anomalyOpenedAt">Data apertura</span>
+            <span data-anomaly-label="openedAt">Data apertura</span>
             <input id="mod-anomaly-opened" type="date" class="form-control">
           </label>
           <label class="mod-field">
-            <span data-i18n="anomalyMachine">N. macchina</span>
+            <span data-anomaly-label="machine">N. macchina</span>
             <input id="mod-anomaly-machine" type="text" class="form-control" maxlength="40">
           </label>
         </div>
         <label class="mod-field">
-          <span data-i18n="anomalyReporterLong">Nome e cognome (chi apre la scheda)</span>
+          <span data-anomaly-label="reporter">Nome e cognome</span>
           <input id="mod-anomaly-reporter" type="text" class="form-control" maxlength="80">
         </label>
         <label class="mod-field">
-          <span data-i18n="anomalyDescription">Descrizione dell'anomalia</span>
+          <span data-anomaly-label="description">Descrizione dell'anomalia</span>
           <textarea id="mod-anomaly-description" class="form-control" rows="3" maxlength="800"></textarea>
         </label>
         <label class="mod-field">
-          <span data-i18n="anomalyAction">Azione da intraprendere / eseguita</span>
+          <span data-anomaly-label="action">Azione da intraprendere / eseguita</span>
           <textarea id="mod-anomaly-action" class="form-control" rows="3" maxlength="800"></textarea>
         </label>
         <fieldset class="mod-anomaly-owner">
-          <legend class="mod-section-label" data-i18n="anomalyOwnerGroup">Persona responsabile dell'azione</legend>
+          <legend class="mod-section-label" data-anomaly-label="ownerGroup">Persona responsabile dell'azione</legend>
           <div class="mod-task-form-row mod-anomaly-owner-row">
             <label class="mod-field">
-              <span data-i18n="anomalyReporter">Nome e cognome</span>
+              <span data-anomaly-label="owner">Nome e cognome</span>
               <input id="mod-anomaly-owner" type="text" class="form-control" maxlength="80">
             </label>
             <label class="mod-field">
@@ -4843,22 +4918,73 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </fieldset>
         <div class="mod-task-form-row">
           <label class="mod-field">
-            <span data-i18n="anomalyDueAt">Data prevista</span>
+            <span data-anomaly-label="dueAt">Data prevista</span>
             <input id="mod-anomaly-due" type="date" class="form-control">
           </label>
           <label class="mod-field">
-            <span data-i18n="anomalyStatus">Stato</span>
+            <span data-anomaly-label="status">Stato</span>
             <select id="mod-anomaly-status" class="form-control"></select>
           </label>
           <label class="mod-field">
-            <span data-i18n="anomalyClosedAt">Data chiusura</span>
+            <span data-anomaly-label="closedAt">Data chiusura</span>
             <input id="mod-anomaly-closed" type="date" class="form-control">
           </label>
         </div>
+        <!-- Dati documento propri di questa scheda. -->
+        <fieldset class="mod-anomaly-owner">
+          <legend class="mod-section-label" data-i18n="anomalyDocGroup">Dati documento</legend>
+          <div class="mod-anomaly-doc-row">
+            <label class="mod-field">
+              <span data-anomaly-label="docIssued">Data di emissione</span>
+              <input type="date" class="form-control" data-meta-key="docIssued">
+            </label>
+            <label class="mod-field">
+              <span data-anomaly-label="docRevised">Data di revisione</span>
+              <input type="date" class="form-control" data-meta-key="docRevised">
+            </label>
+            <label class="mod-field">
+              <span data-anomaly-label="docRevision">N. revisione</span>
+              <input type="text" class="form-control" maxlength="40" data-meta-key="docRevision">
+            </label>
+            <label class="mod-field">
+              <span data-anomaly-label="docClass">Riservatezza</span>
+              <input type="text" class="form-control" maxlength="40" data-meta-key="docClass">
+            </label>
+            <label class="mod-field">
+              <span data-anomaly-label="docNumber">N. documento</span>
+              <input type="text" class="form-control" maxlength="40" data-meta-key="docNumber">
+            </label>
+          </div>
+        </fieldset>
         <div id="mod-anomaly-error" class="text-small mod-negative" hidden></div>
         <div class="mod-dialog-actions">
           <button type="button" id="mod-anomaly-delete" class="btn btn-ghost mod-task-delete" data-i18n="taskDelete">Elimina</button>
           <button type="button" id="mod-anomaly-cancel" class="btn" data-i18n="cancel">Annulla</button>
+          <button type="submit" class="btn btn-primary" data-i18n="save">Salva</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Intestazioni del report anomalie: nomi di titolo e colonne, dati
+       documento predefiniti per le schede nuove. Solo admin. -->
+  <dialog id="mod-anomaly-settings-dialog" class="card mod-selection-dialog" aria-labelledby="mod-anomaly-settings-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-anomaly-settings-title" class="mod-dialog-title" data-i18n="anomalySettingsTitle">Intestazioni del report anomalie</h2>
+        </div>
+        <button type="button" class="btn btn-ghost mod-dialog-close" id="mod-anomaly-settings-close" aria-label="X">✕</button>
+      </div>
+      <form id="mod-anomaly-settings-form" class="mod-anomaly-form">
+        <div class="mod-section-label" data-i18n="anomalySettingsLabelsTitle">Nomi di titolo e colonne</div>
+        <div class="text-small text-muted" data-i18n="anomalySettingsLabelsHint">Lascia vuoto per usare il nome standard.</div>
+        <div id="mod-anomaly-settings-labels" class="mod-anomaly-settings-grid"></div>
+        <div class="mod-section-label" data-i18n="anomalySettingsMetaTitle">Dati documento predefiniti per le schede nuove</div>
+        <div id="mod-anomaly-settings-meta" class="mod-anomaly-settings-grid"></div>
+        <div id="mod-anomaly-settings-error" class="text-small mod-negative" hidden></div>
+        <div class="mod-dialog-actions">
+          <button type="button" id="mod-anomaly-settings-cancel" class="btn" data-i18n="cancel">Annulla</button>
           <button type="submit" class="btn btn-primary" data-i18n="save">Salva</button>
         </div>
       </form>
@@ -5476,20 +5602,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Chiuse',
           reportDaysOpen: 'Giorni aperta',
           summaryPlanTab: 'PIANIFICAZIONE',
+          anomalyOwner: 'Nome e cognome',
+          anomalySelectHint: 'Clic su N. scheda per vedere i dati documento di quella scheda',
+          anomalySelected: 'Scheda n. {n}',
+          anomalySelectRow: 'Seleziona questa scheda',
+          anomalyNumberAuto: 'Assegnato in automatico',
+          anomalyDocGroup: 'Dati documento',
+          anomalySettingsBtn: 'Intestazioni',
+          anomalySettingsTitle: 'Intestazioni del report anomalie',
+          anomalySettingsLabelsTitle: 'Nomi di titolo e colonne',
+          anomalySettingsLabelsHint: 'Lascia vuoto per usare il nome standard.',
+          anomalySettingsMetaTitle: 'Dati documento predefiniti per le schede nuove',
+          auditAnomalySettings: 'Intestazioni anomalie cambiate',
           reportFormTitle: 'Segnala un\'anomalia',
           reportFormHint: 'Compila i campi e premi Invia: la scheda arriva subito ai responsabili.',
           reportFormSend: 'Invia anomalia',
           reportFormSending: 'Invio in corso…',
-          reportFormInvalid: 'Inserisci nome e cognome e la descrizione dell\'anomalia.',
+          reportFormInvalid: 'Inserisci nome e cognome, data apertura e descrizione dell\'anomalia.',
           reportFormError: 'Invio non riuscito. Controlla la connessione e riprova.',
-          reportDoneTitle: 'Anomalia inviata correttamente',
+          reportDoneTitle: 'Anomalia n. {n} inviata correttamente',
           reportDoneHint: 'Grazie, la segnalazione è stata registrata. Puoi chiudere questa pagina.',
           qrTitle: 'QR segnalazione anomalie',
           qrHint: 'Da appendere in linea: chi lo inquadra apre solo il modulo, senza accesso alla dashboard.',
           qrPrint: 'Stampa',
           qrPrintScan: 'Inquadra con la fotocamera del telefono',
           qrLoadError: 'Impossibile generare il QR. Controlla la connessione.',
-          anomalyFromQr: 'Da QR',
           summaryEdit: 'Modifica attività e schede',
           sortBy: 'Ordina per',
           taskSortOpened: 'Più recenti',
@@ -5920,20 +6057,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Closed',
           reportDaysOpen: 'Days open',
           summaryPlanTab: 'PLANNING',
+          anomalyOwner: 'Name and surname',
+          anomalySelectHint: 'Click a report no. to see its document data',
+          anomalySelected: 'Report no. {n}',
+          anomalySelectRow: 'Select this report',
+          anomalyNumberAuto: 'Assigned automatically',
+          anomalyDocGroup: 'Document data',
+          anomalySettingsBtn: 'Headings',
+          anomalySettingsTitle: 'Anomaly report headings',
+          anomalySettingsLabelsTitle: 'Title and column names',
+          anomalySettingsLabelsHint: 'Leave empty to use the standard name.',
+          anomalySettingsMetaTitle: 'Default document data for new reports',
+          auditAnomalySettings: 'Anomaly headings changed',
           reportFormTitle: 'Report an anomaly',
           reportFormHint: 'Fill in the fields and press Send: the report reaches the supervisors right away.',
           reportFormSend: 'Send anomaly',
           reportFormSending: 'Sending…',
-          reportFormInvalid: 'Enter your name and the anomaly description.',
+          reportFormInvalid: 'Enter your name, the opening date and the anomaly description.',
           reportFormError: 'Sending failed. Check the connection and try again.',
-          reportDoneTitle: 'Anomaly sent successfully',
+          reportDoneTitle: 'Anomaly no. {n} sent successfully',
           reportDoneHint: 'Thank you, the report has been recorded. You can close this page.',
           qrTitle: 'Anomaly report QR',
           qrHint: 'Post it on the line: whoever scans it opens only the form, with no access to the dashboard.',
           qrPrint: 'Print',
           qrPrintScan: 'Scan with your phone camera',
           qrLoadError: 'Could not generate the QR. Check the connection.',
-          anomalyFromQr: 'From QR',
           summaryEdit: 'Edit activities and reports',
           sortBy: 'Sort by',
           taskSortOpened: 'Newest',
@@ -6364,20 +6512,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Kapali',
           reportDaysOpen: 'Acik gun',
           summaryPlanTab: 'PLANLAMA',
+          anomalyOwner: 'Ad soyad',
+          anomalySelectHint: 'Kartın doküman bilgilerini görmek için kart no.ya tıklayın',
+          anomalySelected: 'Kart no. {n}',
+          anomalySelectRow: 'Bu kartı seç',
+          anomalyNumberAuto: 'Otomatik atanır',
+          anomalyDocGroup: 'Doküman bilgileri',
+          anomalySettingsBtn: 'Başlıklar',
+          anomalySettingsTitle: 'Anomali raporu başlıkları',
+          anomalySettingsLabelsTitle: 'Başlık ve sütun adları',
+          anomalySettingsLabelsHint: 'Standart adı kullanmak için boş bırakın.',
+          anomalySettingsMetaTitle: 'Yeni kartlar için varsayılan doküman bilgileri',
+          auditAnomalySettings: 'Anomali başlıkları değiştirildi',
           reportFormTitle: 'Anomali bildir',
           reportFormHint: 'Alanları doldurun ve Gönder\'e basın: kart hemen sorumlulara ulaşır.',
           reportFormSend: 'Anomaliyi gönder',
           reportFormSending: 'Gönderiliyor…',
-          reportFormInvalid: 'Adınızı ve anomali açıklamasını girin.',
+          reportFormInvalid: 'Adınızı, açılış tarihini ve anomali açıklamasını girin.',
           reportFormError: 'Gönderilemedi. Bağlantıyı kontrol edip tekrar deneyin.',
-          reportDoneTitle: 'Anomali başarıyla gönderildi',
+          reportDoneTitle: '{n} numaralı anomali başarıyla gönderildi',
           reportDoneHint: 'Teşekkürler, bildirim kaydedildi. Bu sayfayı kapatabilirsiniz.',
           qrTitle: 'Anomali bildirimi QR',
           qrHint: 'Hatta asın: okutan kişi yalnızca formu açar, panoya erişemez.',
           qrPrint: 'Yazdır',
           qrPrintScan: 'Telefon kamerasıyla okutun',
           qrLoadError: 'QR oluşturulamadı. Bağlantıyı kontrol edin.',
-          anomalyFromQr: 'QR\'dan',
           summaryEdit: 'Faaliyetleri ve kartları düzenle',
           sortBy: 'Sırala',
           taskSortOpened: 'En yeni',
@@ -6579,6 +6738,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         taskSort: 'opened',
         // Le piu' recenti in cima: le segnalazioni da QR non hanno ancora il numero.
         anomalySort: { key: 'openedAt', dir: 'desc' },
+        anomalySelectedId: null,
+        anomalySettings: {},
         chatMessages: [],
         chatUsers: [],
         chatUnsub: null,
@@ -6766,6 +6927,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         reportError: root.querySelector('#mod-report-error'),
         reportSend: root.querySelector('#mod-report-send'),
         reportDone: root.querySelector('#mod-report-done'),
+        reportDoneTitle: root.querySelector('#mod-report-done-title'),
+        reportOpened: root.querySelector('#mod-report-opened'),
+        reportAction: root.querySelector('#mod-report-action'),
+        reportDue: root.querySelector('#mod-report-due'),
+        reportOwner: root.querySelector('#mod-report-owner'),
+        reportRole: root.querySelector('#mod-report-role'),
+        reportStatus: root.querySelector('#mod-report-status'),
+        reportClosed: root.querySelector('#mod-report-closed'),
+        anomalySelected: root.querySelector('#mod-anomaly-selected'),
+        anomalyMeta: root.querySelector('#mod-anomaly-meta'),
+        anomalySettingsBtn: root.querySelector('#mod-anomaly-settings'),
+        anomalySettingsDialog: root.querySelector('#mod-anomaly-settings-dialog'),
+        anomalySettingsClose: root.querySelector('#mod-anomaly-settings-close'),
+        anomalySettingsCancel: root.querySelector('#mod-anomaly-settings-cancel'),
+        anomalySettingsForm: root.querySelector('#mod-anomaly-settings-form'),
+        anomalySettingsLabels: root.querySelector('#mod-anomaly-settings-labels'),
+        anomalySettingsMeta: root.querySelector('#mod-anomaly-settings-meta'),
+        anomalySettingsError: root.querySelector('#mod-anomaly-settings-error'),
         summaryEdit: root.querySelector('#mod-summary-edit'),
         taskSort: root.querySelector('#mod-task-sort'),
         taskActions: root.querySelector('#mod-task-actions'),
@@ -8162,6 +8341,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         root.querySelectorAll('.mod-theme').forEach((button) => {
           button.setAttribute('aria-pressed', String(button.dataset.themeChoice === state.themeChoice));
         });
+        // Nomi del report anomalie scelti dall'admin: sopra la traduzione.
+        applyAnomalyLabels();
       }
 
       function renderMainChart(periods) {
@@ -9117,6 +9298,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             if (el.anomalyDialog.open) el.anomalyDialog.close();
             state.summaryTab = 'plan';
             state.summaryEdit = false;
+            state.anomalySettings = {};
+            if (el.anomalySettingsDialog.open) el.anomalySettingsDialog.close();
             unsubscribeOeeConfig();
             unsubscribeStoppages();
             unsubscribeStoppageConfig();
@@ -9657,10 +9840,64 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         { id: 'maintainer', key: 'anomalyRoleMaintainer' }
       ];
 
+      // Nomi di titolo, colonne e dati documento. L'admin li puo' cambiare
+      // (valgono in tutte le lingue); se lasciati vuoti si usa la traduzione.
+      const ANOMALY_LABELS = {
+        title: 'anomalyTitle', number: 'anomalyNumber', reporter: 'anomalyReporter',
+        machine: 'anomalyMachine', openedAt: 'anomalyOpenedAt', description: 'anomalyDescription',
+        action: 'anomalyAction', dueAt: 'anomalyDueAt', ownerGroup: 'anomalyOwnerGroup',
+        owner: 'anomalyOwner', operator: 'anomalyRoleOperator', maintainer: 'anomalyRoleMaintainer',
+        closedAt: 'anomalyClosedAt', status: 'anomalyStatus',
+        docIssued: 'anomalyDocIssued', docRevised: 'anomalyDocRevised', docRevision: 'anomalyDocRevision',
+        docClass: 'anomalyDocClass', docNumber: 'anomalyDocNumber'
+      };
+      // Dati documento: ogni scheda ha i suoi. Le nuove partono dai
+      // predefiniti, che l'admin cambia dalle Intestazioni.
+      const ANOMALY_META = [
+        { key: 'docIssued', type: 'date' },
+        { key: 'docRevised', type: 'date' },
+        { key: 'docRevision', type: 'text' },
+        { key: 'docClass', type: 'text' },
+        { key: 'docNumber', type: 'text' }
+      ];
+      const ANOMALY_META_DEFAULTS = {
+        docIssued: '2011-12-29', docRevised: '2026-09-07', docRevision: '1', docClass: 'L2', docNumber: 'S16-P1TSF4'
+      };
+
+      function anomalyLabel(key) {
+        const custom = (state.anomalySettings.labels || {})[key];
+        return custom ? String(custom) : t(ANOMALY_LABELS[key]);
+      }
+      function applyAnomalyLabels() {
+        root.querySelectorAll('[data-anomaly-label]').forEach((node) => {
+          node.textContent = anomalyLabel(node.dataset.anomalyLabel);
+        });
+      }
+      function anomalyDefaultMeta() {
+        const saved = state.anomalySettings.meta || {};
+        const out = {};
+        ANOMALY_META.forEach(({ key }) => { out[key] = saved[key] ? String(saved[key]) : ANOMALY_META_DEFAULTS[key]; });
+        return out;
+      }
+      function anomalyMetaOf(item) {
+        const defaults = anomalyDefaultMeta();
+        const out = {};
+        ANOMALY_META.forEach(({ key }) => { out[key] = item && item[key] ? String(item[key]) : defaults[key]; });
+        return out;
+      }
+      function anomalyMetaText(key, value) {
+        const def = ANOMALY_META.find((m) => m.key === key);
+        return def && def.type === 'date' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? formatDateNumeric(value) : value;
+      }
+
       let anomaliesUnsub = null;
+      let anomalySettingsUnsub = null;
       function unsubscribeAnomalies() {
-        if (anomaliesUnsub) { try { anomaliesUnsub(); } catch (e) {} anomaliesUnsub = null; }
+        [anomaliesUnsub, anomalySettingsUnsub].forEach((stop) => { if (stop) { try { stop(); } catch (e) {} } });
+        anomaliesUnsub = null;
+        anomalySettingsUnsub = null;
         state.anomalies = [];
+        state.anomalySelectedId = null;
       }
       function subscribeAnomalies() {
         if (!db || anomaliesUnsub) return;
@@ -9668,8 +9905,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const list = [];
           snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
           state.anomalies = list;
+          if (state.anomalySelectedId && !list.some((x) => x.id === state.anomalySelectedId)) state.anomalySelectedId = null;
+          syncAnomalyCounter();
           if (anomaliesOnScreen()) renderAnomalies();
         }, () => {});
+        anomalySettingsUnsub = db.collection('anomalySettings').doc('main').onSnapshot((doc) => {
+          state.anomalySettings = doc.exists ? (doc.data() || {}) : {};
+          applyAnomalyLabels();
+          if (anomaliesOnScreen()) renderAnomalies();
+        }, () => {});
+      }
+
+      // Numero scheda progressivo: un contatore condiviso, aumentato nella
+      // stessa operazione che crea la scheda, cosi' due invii insieme non
+      // prendono mai lo stesso numero. Lo usano sia gli admin sia il QR.
+      const anomalyCounterRef = () => db.collection('anomalySettings').doc('counter');
+      function createNumberedAnomaly(data) {
+        return db.runTransaction((tx) => tx.get(anomalyCounterRef()).then((snap) => {
+          const number = (snap.exists ? Number(snap.data().last) || 0 : 0) + 1;
+          tx.set(anomalyCounterRef(), { last: number });
+          tx.set(db.collection('anomalies').doc('n-' + number), Object.assign({}, data, { number }));
+          return number;
+        }));
+      }
+      // Il contatore non deve restare indietro rispetto ai numeri gia' usati
+      // (schede di prima del contatore, numeri cambiati a mano): lo riallinea
+      // un admin ogni volta che la lista cambia.
+      let counterSyncBusy = false;
+      function syncAnomalyCounter() {
+        if (!db || !state.isAdmin || counterSyncBusy) return;
+        const max = (state.anomalies || []).reduce((m, x) => Math.max(m, Number(x.number) || 0), 0);
+        counterSyncBusy = true;
+        db.runTransaction((tx) => tx.get(anomalyCounterRef()).then((snap) => {
+          const last = snap.exists ? Number(snap.data().last) || 0 : 0;
+          if (!snap.exists || last < max) tx.set(anomalyCounterRef(), { last: Math.max(last, max) });
+        })).catch(() => {}).then(() => { counterSyncBusy = false; });
       }
 
       function anomalyIsLate(item) {
@@ -9709,11 +9979,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             const diff = compareSortValues(va, vb);
             if (diff) return diff * sign;
           }
-          // Le schede da QR ancora senza numero stanno davanti alle numerate.
-          const na = Number(a.number) || Number.MAX_SAFE_INTEGER;
-          const nb = Number(b.number) || Number.MAX_SAFE_INTEGER;
-          return nb - na;
+          return (Number(b.number) || 0) - (Number(a.number) || 0);
         });
+      }
+
+      function selectedAnomaly() {
+        return (state.anomalies || []).find((x) => x.id === state.anomalySelectedId) || null;
+      }
+
+      // Intestazione: titolo e dati documento della scheda selezionata
+      // cliccando il suo N. scheda; senza selezione, i predefiniti.
+      function renderAnomalyHead() {
+        const selected = selectedAnomaly();
+        const meta = anomalyMetaOf(selected);
+        el.anomalySelected.textContent = selected
+          ? t('anomalySelected').replace('{n}', selected.number || '—')
+          : t('anomalySelectHint');
+        el.anomalySelected.classList.toggle('mod-anomaly-selected-on', Boolean(selected));
+        el.anomalyMeta.innerHTML = ANOMALY_META.map(({ key }) =>
+          '<div><dt>' + escapeHtml(anomalyLabel(key)) + '</dt><dd>' + escapeHtml(anomalyMetaText(key, meta[key]) || '—') + '</dd></div>'
+        ).join('');
       }
 
       function renderAnomalies() {
@@ -9721,6 +10006,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const editable = canEditSummary();
         const notClosed = list.filter((x) => x.status !== 'closed').length;
         el.anomalyCount.textContent = t('anomalyCount').replace('{n}', list.length).replace('{open}', notClosed);
+        applyAnomalyLabels();
+        renderAnomalyHead();
         el.anomalyPanel.querySelectorAll('th[data-sort]').forEach((th) => {
           if (th.dataset.sort === state.anomalySort.key) {
             th.setAttribute('aria-sort', state.anomalySort.dir === 'asc' ? 'ascending' : 'descending');
@@ -9731,9 +10018,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const date = (iso) => iso ? escapeHtml(formatDateNumeric(iso)) : '—';
         el.anomalyBody.innerHTML = list.length ? list.map((item) => {
           const st = findBy(ANOMALY_STATUSES, item.status, true);
-          return '<tr' + (editable ? ' tabindex="0"' : '') + ' data-anomaly-id="' + escapeHtml(item.id) + '">' +
-            '<td class="mod-anomaly-num">' + (item.number ? escapeHtml(item.number)
-              : item.source === 'qr' ? '<span class="mod-anomaly-qr" title="' + escapeHtml(t('anomalyFromQr')) + '">QR</span>' : '—') + '</td>' +
+          const selected = item.id === state.anomalySelectedId;
+          return '<tr' + (editable ? ' tabindex="0"' : '') + (selected ? ' class="mod-anomaly-row-selected"' : '') +
+              ' data-anomaly-id="' + escapeHtml(item.id) + '">' +
+            '<td class="mod-anomaly-num"><button type="button" class="mod-anomaly-pick" aria-pressed="' + selected + '" title="' +
+              escapeHtml(t('anomalySelectRow')) + '">' + escapeHtml(item.number || '—') + '</button></td>' +
             '<td class="mod-anomaly-name">' + escapeHtml(item.reporter || '—') + '</td>' +
             '<td class="mod-anomaly-num">' + escapeHtml(item.machine || '—') + '</td>' +
             '<td class="mod-anomaly-date">' + date(item.openedAt) + '</td>' +
@@ -9747,15 +10036,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<td><span class="mod-anomaly-status mod-anomaly-status-' + st.id + '">' + escapeHtml(t(st.key)) + '</span></td>' +
           '</tr>';
         }).join('') : '<tr><td colspan="12" class="mod-anomaly-empty">' + escapeHtml(t('anomalyNone')) + '</td></tr>';
+        // Clic su N. scheda: seleziona (o toglie la selezione), per tutti.
+        el.anomalyBody.querySelectorAll('.mod-anomaly-pick').forEach((button) => {
+          button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const id = button.closest('tr').dataset.anomalyId;
+            state.anomalySelectedId = state.anomalySelectedId === id ? null : id;
+            renderAnomalies();
+          });
+        });
         if (editable) el.anomalyBody.querySelectorAll('tr[data-anomaly-id]').forEach((row) => {
           row.addEventListener('click', () => openAnomalyDialog(row.dataset.anomalyId));
           row.addEventListener('keydown', (event) => {
-            if (event.key !== 'Enter' && event.key !== ' ') return;
+            if (event.target !== row || (event.key !== 'Enter' && event.key !== ' ')) return;
             event.preventDefault();
             openAnomalyDialog(row.dataset.anomalyId);
           });
         });
-        el.anomalyAdd.hidden = !canEditSummary();
+        el.anomalyAdd.hidden = !editable;
+        el.anomalySettingsBtn.hidden = !editable;
       }
 
       function anomaliesOnScreen() {
@@ -9792,31 +10091,48 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         else renderSummaryBoard();
       }
 
-      let anomalyEditingId = null;
-      function nextAnomalyNumber() {
-        return (state.anomalies || []).reduce((max, x) => Math.max(max, Number(x.number) || 0), 0) + 1;
+      // Tendine di ruolo e stato, uguali nella scheda admin e nel modulo QR.
+      function fillAnomalyRoleSelect(node, selected) {
+        node.innerHTML = '<option value="">—</option>' + ANOMALY_ROLES.map((r) =>
+          '<option value="' + r.id + '"' + (selected === r.id ? ' selected' : '') + '>' + escapeHtml(anomalyLabel(r.id)) + '</option>'
+        ).join('');
+      }
+      // Stato e data di chiusura vanno insieme: chiudendo si mette la data di
+      // oggi, mettendo una data la scheda risulta chiusa.
+      function linkAnomalyStatusAndClosed(statusNode, closedNode) {
+        statusNode.addEventListener('change', () => {
+          if (statusNode.value === 'closed' && !closedNode.value) closedNode.value = isoDate(new Date());
+          if (statusNode.value !== 'closed') closedNode.value = '';
+        });
+        closedNode.addEventListener('change', () => {
+          if (closedNode.value) statusNode.value = 'closed';
+        });
       }
 
+      let anomalyEditingId = null;
       function openAnomalyDialog(id) {
         if (!canEditSummary()) return;
         const item = id ? (state.anomalies || []).find((x) => x.id === id) : null;
         anomalyEditingId = item ? item.id : null;
         const v = (field) => item ? (item[field] || '') : '';
+        applyAnomalyLabels();
         el.anomalyDialogTitle.textContent = t(item ? 'anomalyEdit' : 'anomalyNew');
-        // Le schede arrivate dal QR non hanno numero: glielo da' chi le apre.
-        el.anomalyNumber.value = item && item.number ? item.number : nextAnomalyNumber();
+        // Le schede nuove prendono il numero dal contatore al salvataggio.
+        el.anomalyNumber.value = item ? v('number') : '';
+        el.anomalyNumber.disabled = !item;
+        el.anomalyNumber.placeholder = item ? '' : t('anomalyNumberAuto');
         el.anomalyOpened.value = item ? v('openedAt') : isoDate(new Date());
         el.anomalyMachine.value = v('machine');
         el.anomalyReporter.value = item ? v('reporter') : (state.authUsername || '');
         el.anomalyDescription.value = v('description');
         el.anomalyAction.value = v('action');
         el.anomalyOwner.value = v('owner');
-        el.anomalyRole.innerHTML = '<option value="">—</option>' + ANOMALY_ROLES.map((r) =>
-          '<option value="' + r.id + '"' + (item && item.ownerRole === r.id ? ' selected' : '') + '>' + escapeHtml(t(r.key)) + '</option>'
-        ).join('');
+        fillAnomalyRoleSelect(el.anomalyRole, item ? item.ownerRole : '');
         el.anomalyDue.value = v('dueAt');
         fillTaskSelect(el.anomalyStatus, ANOMALY_STATUSES, item ? item.status : 'open');
         el.anomalyClosed.value = v('closedAt');
+        const meta = anomalyMetaOf(item);
+        el.anomalyForm.querySelectorAll('[data-meta-key]').forEach((input) => { input.value = meta[input.dataset.metaKey] || ''; });
         el.anomalyError.hidden = true;
         el.anomalyDelete.hidden = !item;
         el.anomalyDialog.showModal();
@@ -9831,9 +10147,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.anomalyError.hidden = false;
           return;
         }
-        const number = parseInt(el.anomalyNumber.value, 10);
         const payload = {
-          number: number > 0 ? number : nextAnomalyNumber(),
           openedAt: el.anomalyOpened.value || null,
           machine: el.anomalyMachine.value.trim(),
           reporter: el.anomalyReporter.value.trim(),
@@ -9847,18 +10161,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           updatedAt: new Date().toISOString(),
           updatedBy: state.authUsername || ''
         };
+        el.anomalyForm.querySelectorAll('[data-meta-key]').forEach((input) => { payload[input.dataset.metaKey] = input.value.trim(); });
         // Una scheda chiusa ha sempre la sua data di chiusura.
         if (payload.status === 'closed' && !payload.closedAt) payload.closedAt = isoDate(new Date());
         const before = anomalyEditingId ? (state.anomalies || []).find((x) => x.id === anomalyEditingId) : null;
-        const ref = anomalyEditingId
-          ? db.collection('anomalies').doc(anomalyEditingId)
-          : db.collection('anomalies').doc(String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8));
-        ref.set(payload, { merge: true })
-          .then(() => {
+        const fail = () => { el.anomalyError.textContent = t('taskSaveError'); el.anomalyError.hidden = false; };
+        if (before) {
+          const number = parseInt(el.anomalyNumber.value, 10);
+          payload.number = number > 0 ? number : (Number(before.number) || null);
+          db.collection('anomalies').doc(anomalyEditingId).set(payload, { merge: true })
+            .then(() => {
+              el.anomalyDialog.close();
+              logAudit('anomaly.update', anomalyAuditName(payload), anomalyAuditChanges(before, payload));
+            })
+            .catch(fail);
+          return;
+        }
+        createNumberedAnomaly(payload)
+          .then((number) => {
             el.anomalyDialog.close();
-            logAudit(before ? 'anomaly.update' : 'anomaly.create', anomalyAuditName(payload), anomalyAuditChanges(before, payload));
+            const created = Object.assign({}, payload, { number });
+            logAudit('anomaly.create', anomalyAuditName(created), anomalyAuditChanges(null, created));
           })
-          .catch(() => { el.anomalyError.textContent = t('taskSaveError'); el.anomalyError.hidden = false; });
+          .catch(fail);
       }
 
       function deleteAnomaly() {
@@ -9876,42 +10201,97 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function anomalyAuditName(item) {
         if (!item) return '';
         const desc = (item.description || '').trim();
-        return t('anomalyNumber') + ' ' + (item.number || '?') + (desc ? ' — ' + (desc.length > 60 ? desc.slice(0, 60) + '…' : desc) : '');
+        return anomalyLabel('number') + ' ' + (item.number || '?') + (desc ? ' — ' + (desc.length > 60 ? desc.slice(0, 60) + '…' : desc) : '');
       }
       function anomalyAuditChanges(before, after) {
         const b = before || {}, a = after || {};
         const dt = (v) => v ? formatDateNumeric(v) : null;
-        const role = (id) => taskAuditLabel(ANOMALY_ROLES, id);
+        const role = (id) => id ? anomalyLabel(id) : null;
         return [
-          { field: t('anomalyNumber'), from: b.number, to: a.number },
-          { field: t('anomalyOpenedAt'), from: dt(b.openedAt), to: dt(a.openedAt) },
-          { field: t('anomalyMachine'), from: b.machine, to: a.machine },
-          { field: t('anomalyReporter'), from: b.reporter, to: a.reporter },
-          { field: t('anomalyDescription'), from: b.description, to: a.description },
-          { field: t('anomalyAction'), from: b.action, to: a.action },
-          { field: t('anomalyOwnerGroup'), from: b.owner, to: a.owner },
-          { field: t('anomalyRole'), from: b.ownerRole ? role(b.ownerRole) : null, to: a.ownerRole ? role(a.ownerRole) : null },
-          { field: t('anomalyDueAt'), from: dt(b.dueAt), to: dt(a.dueAt) },
-          { field: t('anomalyStatus'), from: before ? taskAuditLabel(ANOMALY_STATUSES, b.status) : null, to: after ? taskAuditLabel(ANOMALY_STATUSES, a.status) : null },
-          { field: t('anomalyClosedAt'), from: dt(b.closedAt), to: dt(a.closedAt) }
-        ];
+          { field: anomalyLabel('number'), from: b.number, to: a.number },
+          { field: anomalyLabel('openedAt'), from: dt(b.openedAt), to: dt(a.openedAt) },
+          { field: anomalyLabel('machine'), from: b.machine, to: a.machine },
+          { field: anomalyLabel('reporter'), from: b.reporter, to: a.reporter },
+          { field: anomalyLabel('description'), from: b.description, to: a.description },
+          { field: anomalyLabel('action'), from: b.action, to: a.action },
+          { field: anomalyLabel('ownerGroup'), from: b.owner, to: a.owner },
+          { field: t('anomalyRole'), from: role(b.ownerRole), to: role(a.ownerRole) },
+          { field: anomalyLabel('dueAt'), from: dt(b.dueAt), to: dt(a.dueAt) },
+          { field: anomalyLabel('status'), from: before ? taskAuditLabel(ANOMALY_STATUSES, b.status) : null, to: after ? taskAuditLabel(ANOMALY_STATUSES, a.status) : null },
+          { field: anomalyLabel('closedAt'), from: dt(b.closedAt), to: dt(a.closedAt) }
+        ].concat(ANOMALY_META.map(({ key }) => ({
+          field: anomalyLabel(key),
+          from: b[key] ? anomalyMetaText(key, b[key]) : null,
+          to: a[key] ? anomalyMetaText(key, a[key]) : null
+        })));
+      }
+
+      // Intestazioni: nomi di titolo e colonne, dati documento predefiniti.
+      function openAnomalySettings() {
+        if (!canEditSummary()) return;
+        const labels = state.anomalySettings.labels || {};
+        const meta = anomalyDefaultMeta();
+        const field = (title, inputHtml) => '<label class="mod-field"><span>' + escapeHtml(title) + '</span>' + inputHtml + '</label>';
+        el.anomalySettingsLabels.innerHTML = Object.keys(ANOMALY_LABELS).map((key) =>
+          field(t(ANOMALY_LABELS[key]),
+            '<input type="text" class="form-control" maxlength="80" data-label-key="' + key + '" value="' +
+            escapeHtml(labels[key] || '') + '" placeholder="' + escapeHtml(t(ANOMALY_LABELS[key])) + '">')
+        ).join('');
+        el.anomalySettingsMeta.innerHTML = ANOMALY_META.map(({ key, type }) =>
+          field(anomalyLabel(key),
+            '<input type="' + type + '" class="form-control" maxlength="40" data-meta-default="' + key + '" value="' + escapeHtml(meta[key]) + '">')
+        ).join('');
+        el.anomalySettingsError.hidden = true;
+        el.anomalySettingsDialog.showModal();
+      }
+
+      function saveAnomalySettings() {
+        if (!db || !state.isAdmin) return;
+        const labels = {};
+        el.anomalySettingsLabels.querySelectorAll('[data-label-key]').forEach((input) => {
+          if (input.value.trim()) labels[input.dataset.labelKey] = input.value.trim();
+        });
+        const meta = {};
+        el.anomalySettingsMeta.querySelectorAll('[data-meta-default]').forEach((input) => {
+          meta[input.dataset.metaDefault] = input.value.trim();
+        });
+        const before = state.anomalySettings || {};
+        const beforeMeta = anomalyDefaultMeta();
+        db.collection('anomalySettings').doc('main').set({
+          labels, meta, updatedAt: new Date().toISOString(), updatedBy: state.authUsername || ''
+        }).then(() => {
+          el.anomalySettingsDialog.close();
+          const changes = Object.keys(ANOMALY_LABELS).map((key) => ({
+            field: t(ANOMALY_LABELS[key]), from: (before.labels || {})[key] || null, to: labels[key] || null
+          })).concat(ANOMALY_META.map(({ key }) => ({
+            field: t(ANOMALY_LABELS[key]), from: anomalyMetaText(key, beforeMeta[key]), to: anomalyMetaText(key, meta[key])
+          })));
+          logAudit('anomalySettings.update', t('anomalySettingsTitle'), changes);
+        }).catch(() => {
+          el.anomalySettingsError.textContent = t('taskSaveError');
+          el.anomalySettingsError.hidden = false;
+        });
       }
 
       // Stampa ed Excel ricalcano il modulo: logo, fascia dorata col titolo,
-      // dati del documento a destra, schede in ordine di numero.
+      // dati del documento a destra. Con una scheda selezionata si esporta
+      // quella sola, con i suoi dati documento; senza, tutte nell'ordine
+      // scelto a schermo con i dati predefiniti.
       function anomalyReportHtml(forExcel) {
-        // Stesso ordine scelto a schermo.
-        const list = anomaliesSorted();
+        const selected = selectedAnomaly();
+        const list = selected ? [selected] : anomaliesSorted();
+        const metaValues = anomalyMetaOf(selected);
         const stamp = new Intl.DateTimeFormat(locale(), {
           day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
         }).format(new Date());
-        const meta = Array.from(el.anomalyPanel.querySelectorAll('.mod-anomaly-meta > div')).map((row) =>
-          '<tr><td class="meta-k">' + escapeHtml(row.querySelector('dt').textContent) + ':</td>' +
-          '<td class="meta-v">' + escapeHtml(row.querySelector('dd').textContent) + '</td></tr>'
+        const meta = ANOMALY_META.map(({ key }) =>
+          '<tr><td class="meta-k">' + escapeHtml(anomalyLabel(key)) + ':</td>' +
+          '<td class="meta-v">' + escapeHtml(anomalyMetaText(key, metaValues[key])) + '</td></tr>'
         ).join('');
         const date = (iso) => iso ? escapeHtml(formatDateNumeric(iso)) : '';
         // Come a schermo: tutto in maiuscolo, anche quanto scritto in minuscolo.
         const up = (v) => escapeHtml(String(v || '').toUpperCase());
+        const L = (key) => escapeHtml(anomalyLabel(key));
         const righe = list.length ? list.map((item) => {
           const st = findBy(ANOMALY_STATUSES, item.status, true);
           return '<tr>' +
@@ -9958,51 +10338,59 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const testa =
           '<table class="testa"><tr>' +
             '<td class="logo-cell">' + (forExcel ? 'Martur Italy' : '<img class="logo" src="' + taskLogoSrc() + '" alt="Martur Italy">') + '</td>' +
-            '<td class="tit-cell">' + escapeHtml(t('anomalyTitle').toUpperCase()) + '</td>' +
+            '<td class="tit-cell">' + escapeHtml(anomalyLabel('title').toUpperCase()) + '</td>' +
             '<td class="meta-cell"><table class="meta">' + meta + '</table></td>' +
           '</tr></table>';
 
         const tabella =
           '<table class="dati"><thead><tr>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyNumber')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyReporter')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyMachine')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyOpenedAt')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyDescription')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyAction')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyDueAt')) + '</th>' +
-            '<th colspan="3">' + escapeHtml(t('anomalyOwnerGroup')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyClosedAt')) + '</th>' +
-            '<th rowspan="2">' + escapeHtml(t('anomalyStatus')) + '</th>' +
+            '<th rowspan="2">' + L('number') + '</th>' +
+            '<th rowspan="2">' + L('reporter') + '</th>' +
+            '<th rowspan="2">' + L('machine') + '</th>' +
+            '<th rowspan="2">' + L('openedAt') + '</th>' +
+            '<th rowspan="2">' + L('description') + '</th>' +
+            '<th rowspan="2">' + L('action') + '</th>' +
+            '<th rowspan="2">' + L('dueAt') + '</th>' +
+            '<th colspan="3">' + L('ownerGroup') + '</th>' +
+            '<th rowspan="2">' + L('closedAt') + '</th>' +
+            '<th rowspan="2">' + L('status') + '</th>' +
           '</tr><tr>' +
-            '<th>' + escapeHtml(t('anomalyReporter')) + '</th>' +
-            '<th>' + escapeHtml(t('anomalyRoleOperator')) + '</th>' +
-            '<th>' + escapeHtml(t('anomalyRoleMaintainer')) + '</th>' +
+            '<th>' + L('owner') + '</th>' +
+            '<th>' + L('operator') + '</th>' +
+            '<th>' + L('maintainer') + '</th>' +
           '</tr></thead><tbody>' + righe + '</tbody></table>';
 
         return '<!doctype html><html lang="' + state.lang + '"><head><meta charset="utf-8">' +
-          '<title>' + escapeHtml(t('anomalyTitle')) + '</title><style>' + stile + '</style></head><body>' +
+          '<title>' + escapeHtml(anomalyLabel('title')) + '</title><style>' + stile + '</style></head><body>' +
           testa + tabella +
           '<div class="piede">Martur Italy · ' + escapeHtml(t('reportGeneratedOn')) + ' ' + escapeHtml(stamp) +
             (state.authUsername ? ' · ' + escapeHtml(t('reportGeneratedBy')) + ' ' + escapeHtml(state.authUsername) : '') +
           '</div></body></html>';
       }
 
+      function anomalyExportName() {
+        const selected = selectedAnomaly();
+        return anomalyLabel('title') + (selected ? ' · ' + anomalyLabel('number') + ' ' + (selected.number || '') : '');
+      }
+
       function exportAnomaliesPdf() {
-        logAudit('export.anomaliesPdf', t('anomalyTitle'));
+        logAudit('export.anomaliesPdf', anomalyExportName());
         printReportHtml(anomalyReportHtml(false));
       }
 
       function exportAnomaliesExcel() {
-        logAudit('export.anomaliesExcel', t('anomalyTitle'));
-        downloadReportExcel(anomalyReportHtml(true), t('anomalyFileName') + '-' + isoDate(new Date()) + '.xls');
+        logAudit('export.anomaliesExcel', anomalyExportName());
+        const selected = selectedAnomaly();
+        downloadReportExcel(anomalyReportHtml(true),
+          t('anomalyFileName') + (selected ? '-n' + (selected.number || '') : '') + '-' + isoDate(new Date()) + '.xls');
       }
 
       /* ---- Segnalazione anomalia da QR ----
          Il QR apre l'indirizzo con ?anomalia. In quella modalita' non parte
-         l'accesso e non si carica nessun dato: si vede solo il modulo, che
-         scrive una scheda nuova (le regole del database accettano da chi non
-         ha fatto l'accesso solo schede nuove, aperte, con questi campi). */
+         l'accesso e non si caricano le schede: si vede solo il modulo, con gli
+         stessi campi della tabella, che crea una scheda numerata dal contatore.
+         Le regole del database accettano da chi non ha fatto l'accesso solo
+         questo: una scheda nuova, col numero successivo, con questi campi. */
       const REPORT_URL = 'https://andreadellerba.github.io/martur-dashboard/?anomalia';
       const REPORT_MODE = new URLSearchParams(window.location.search).has('anomalia');
 
@@ -10013,9 +10401,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const dark = document.documentElement.getAttribute('data-theme') === 'dark';
         const logo = root.querySelector(dark ? '.mod-brand-logo-dark' : '.mod-brand-logo-light');
         if (logo) el.reportLogo.src = logo.src;
+        el.reportOpened.value = isoDate(new Date());
+        fillAnomalyRoleSelect(el.reportRole, '');
+        fillTaskSelect(el.reportStatus, ANOMALY_STATUSES, 'open');
+        linkAnomalyStatusAndClosed(el.reportStatus, el.reportClosed);
         el.reportScreen.hidden = false;
         document.title = t('reportFormTitle') + ' · Martur Italy';
         el.reportForm.addEventListener('submit', (event) => { event.preventDefault(); sendReport(); });
+        // Nomi delle colonne e dati documento predefiniti: gli stessi della
+        // tabella. Se non arrivano restano quelli standard.
+        if (db) {
+          db.collection('anomalySettings').doc('main').get().then((doc) => {
+            state.anomalySettings = doc.exists ? (doc.data() || {}) : {};
+            applyAnomalyLabels();
+            fillAnomalyRoleSelect(el.reportRole, el.reportRole.value);
+          }).catch(() => {});
+        }
       }
 
       let reportSending = false;
@@ -10023,10 +10424,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (reportSending) return;
         const reporter = el.reportReporter.value.trim();
         const description = el.reportDescription.value.trim();
-        if (!reporter || !description) {
+        const openedAt = el.reportOpened.value;
+        if (!reporter || !description || !openedAt) {
           el.reportError.textContent = t('reportFormInvalid');
           el.reportError.hidden = false;
-          (reporter ? el.reportDescription : el.reportReporter).focus();
+          (!reporter ? el.reportReporter : !openedAt ? el.reportOpened : el.reportDescription).focus();
           return;
         }
         if (!db) {
@@ -10034,21 +10436,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.reportError.hidden = false;
           return;
         }
+        const payload = Object.assign({
+          reporter,
+          machine: el.reportMachine.value.trim(),
+          openedAt,
+          description,
+          action: el.reportAction.value.trim(),
+          dueAt: el.reportDue.value || null,
+          owner: el.reportOwner.value.trim(),
+          ownerRole: el.reportRole.value || null,
+          status: el.reportStatus.value,
+          closedAt: el.reportClosed.value || null,
+          source: 'qr',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, anomalyDefaultMeta());
+        if (payload.status === 'closed' && !payload.closedAt) payload.closedAt = isoDate(new Date());
         reportSending = true;
         el.reportError.hidden = true;
         el.reportSend.disabled = true;
         el.reportSend.textContent = t('reportFormSending');
-        db.collection('anomalies').add({
-          reporter,
-          machine: el.reportMachine.value.trim(),
-          description,
-          openedAt: isoDate(new Date()),
-          status: 'open',
-          source: 'qr',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
+        createNumberedAnomaly(payload).then((number) => {
           // Dopo l'invio resta solo la conferma: nessun pulsante, nessun link.
           el.reportForm.remove();
+          el.reportDoneTitle.textContent = t('reportDoneTitle').replace('{n}', number);
           el.reportDone.hidden = false;
         }).catch(() => {
           reportSending = false;
@@ -10873,7 +11283,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
         'anomaly.create': ['auditAnomalyCreate', 'anomalies'], 'anomaly.update': ['auditAnomalyUpdate', 'anomalies'],
-        'anomaly.delete': ['auditAnomalyDelete', 'anomalies'],
+        'anomaly.delete': ['auditAnomalyDelete', 'anomalies'], 'anomalySettings.update': ['auditAnomalySettings', 'anomalies'],
         'export.anomaliesPdf': ['auditExportAnomaliesPdf', 'exports'], 'export.anomaliesExcel': ['auditExportAnomaliesExcel', 'exports']
       };
       const AUDIT_GROUPS = {
@@ -11412,15 +11822,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.anomalyCancel.addEventListener('click', () => el.anomalyDialog.close());
       el.anomalyDelete.addEventListener('click', deleteAnomaly);
       el.anomalyForm.addEventListener('submit', (event) => { event.preventDefault(); saveAnomaly(); });
-      // Stato e data di chiusura vanno insieme: chiudendo si mette la data di
-      // oggi, mettendo una data la scheda risulta chiusa.
-      el.anomalyStatus.addEventListener('change', () => {
-        if (el.anomalyStatus.value === 'closed' && !el.anomalyClosed.value) el.anomalyClosed.value = isoDate(new Date());
-        if (el.anomalyStatus.value !== 'closed') el.anomalyClosed.value = '';
-      });
-      el.anomalyClosed.addEventListener('change', () => {
-        if (el.anomalyClosed.value) el.anomalyStatus.value = 'closed';
-      });
+      linkAnomalyStatusAndClosed(el.anomalyStatus, el.anomalyClosed);
+      el.anomalySettingsBtn.addEventListener('click', openAnomalySettings);
+      el.anomalySettingsClose.addEventListener('click', () => el.anomalySettingsDialog.close());
+      el.anomalySettingsCancel.addEventListener('click', () => el.anomalySettingsDialog.close());
+      el.anomalySettingsForm.addEventListener('submit', (event) => { event.preventDefault(); saveAnomalySettings(); });
 
       // La schermata di benvenuto non si chiude senza accesso: ne' con Esc,
       // ne' cliccando fuori. L'unica via avanti e' il login.
