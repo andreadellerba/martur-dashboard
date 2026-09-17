@@ -56,7 +56,25 @@ service cloud.firestore {
     match /anomalies/{id} {
       // Report anomalie (schede anomalia): come le attivita'.
       allow read: if isSignedIn();
-      allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
+      allow update, delete: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
+      // Il QR in linea permette a chiunque, anche senza accesso, di aprire una
+      // scheda nuova: solo questi campi, stato aperto, testi di lunghezza
+      // limitata e ora del server. Leggere o toccare le altre resta vietato.
+      allow create: if (isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin'))
+        || isQrReport();
+    }
+
+    function isQrReport() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['reporter', 'machine', 'description', 'openedAt', 'status', 'source', 'createdAt'])
+        && d.keys().hasAll(['reporter', 'machine', 'description', 'openedAt', 'status', 'source', 'createdAt'])
+        && d.source == 'qr'
+        && d.status == 'open'
+        && d.reporter is string && d.reporter.size() > 0 && d.reporter.size() <= 80
+        && d.machine is string && d.machine.size() <= 40
+        && d.description is string && d.description.size() > 0 && d.description.size() <= 800
+        && d.openedAt is string && d.openedAt.size() == 10
+        && d.createdAt == request.time;
     }
 
     match /auditLog/{id} {

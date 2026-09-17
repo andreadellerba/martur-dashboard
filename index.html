@@ -1848,6 +1848,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-summary-screen,
     #martur-operations-dashboard #mod-task-form .form-control,
     #martur-operations-dashboard #mod-anomaly-form .form-control,
+    #martur-operations-dashboard #mod-report-form .form-control,
     #martur-operations-dashboard .mod-summary-screen .btn,
     #martur-operations-dashboard .mod-shift-note-text,
     #martur-operations-dashboard .mod-note-cell,
@@ -1857,6 +1858,86 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard #mod-stoppage-note {
       text-transform: uppercase;
     }
+
+    /* ---- Segnalazione da QR ----
+       Con ?anomalia nell'indirizzo resta a schermo solo il modulo: tutto il
+       resto della dashboard, dialog compresi, non viene nemmeno disegnato. */
+    #martur-operations-dashboard.mod-report-mode > *:not(#mod-report-screen):not(script):not(style) {
+      display: none !important;
+    }
+    #martur-operations-dashboard .mod-report-screen {
+      display: grid;
+      place-items: start center;
+      padding-block: 24px;
+    }
+    #martur-operations-dashboard .mod-report-card {
+      width: min(560px, 100%);
+      display: grid;
+      gap: 20px;
+      padding: 24px 22px;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+    #martur-operations-dashboard .mod-report-logo {
+      height: 34px;
+      width: auto;
+      justify-self: center;
+    }
+    #martur-operations-dashboard .mod-report-form { display: grid; gap: 14px; }
+    #martur-operations-dashboard .mod-report-form .mod-field { display: grid; gap: 5px; font-weight: 600; }
+    #martur-operations-dashboard .mod-report-form .form-control { font-size: 16px; min-height: 44px; }
+    #martur-operations-dashboard .mod-report-titles { display: grid; gap: 4px; text-align: center; }
+    #martur-operations-dashboard .mod-report-title {
+      margin: 0;
+      font-size: calc(var(--font-size-base) * 1.5);
+      font-weight: 800;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+    #martur-operations-dashboard .mod-report-hint { margin: 0; color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-report-send {
+      width: 100%;
+      min-height: 48px;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--gold-foreground);
+    }
+    #martur-operations-dashboard .mod-report-done {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      padding-block: 16px;
+      text-align: center;
+    }
+    #martur-operations-dashboard .mod-report-done[hidden] { display: none !important; }
+    #martur-operations-dashboard .mod-report-done-icon {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: light-dark(rgb(21 128 61), rgb(74 222 128));
+      color: light-dark(rgb(255 255 255), rgb(0 0 0));
+      font-size: 40px;
+      font-weight: 800;
+    }
+
+    /* QR per gli admin: grande, su fondo bianco anche in tema scuro, se no i
+       telefoni faticano a leggerlo. */
+    #martur-operations-dashboard #mod-qr-dialog { max-width: 460px; }
+    #martur-operations-dashboard .mod-qr-body { display: grid; justify-items: center; gap: 10px; }
+    #martur-operations-dashboard .mod-qr-code {
+      width: min(300px, 70vw);
+      padding: 14px;
+      background: rgb(255 255 255);
+      border-radius: var(--radius);
+    }
+    #martur-operations-dashboard .mod-qr-code svg { display: block; width: 100%; height: auto; }
+    #martur-operations-dashboard .mod-qr-url { font-size: var(--font-size-small); overflow-wrap: anywhere; text-align: center; }
 
     /* ---- Report anomalie ----
        Nella pagina, sotto il sottomenu: titolo e dati del modulo, poi la
@@ -1957,6 +2038,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-check { width: 1%; }
     #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-check { font-weight: 800; color: var(--primary); }
     #martur-operations-dashboard .mod-anomaly-table .mod-anomaly-late { color: var(--destructive); font-weight: 800; }
+    /* Scheda arrivata dal QR e non ancora numerata. */
+    #martur-operations-dashboard .mod-anomaly-qr {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      background: var(--gold);
+      color: var(--gold-foreground);
+      font-size: calc(var(--font-size-base) * 0.72);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
     #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-empty {
       text-align: center;
       color: var(--muted-foreground);
@@ -4566,6 +4658,60 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </section>
 
+  <!-- Segnalazione anomalia da QR (?anomalia): unica cosa visibile, senza
+       login. Niente menu, niente link: solo il modulo e la conferma. -->
+  <section id="mod-report-screen" class="mod-report-screen" hidden>
+    <div class="mod-report-card">
+      <img id="mod-report-logo" class="mod-report-logo" alt="Martur Italy">
+      <form id="mod-report-form" class="mod-report-form" novalidate>
+        <div class="mod-report-titles">
+          <h1 class="mod-report-title" data-i18n="reportFormTitle">Segnala un'anomalia</h1>
+          <p class="mod-report-hint" data-i18n="reportFormHint">Compila i campi e premi Invia: la scheda arriva subito ai responsabili.</p>
+        </div>
+        <label class="mod-field">
+          <span data-i18n="anomalyReporterLong">Nome e cognome (chi apre la scheda)</span>
+          <input id="mod-report-reporter" type="text" class="form-control" maxlength="80" autocomplete="name" required>
+        </label>
+        <label class="mod-field">
+          <span data-i18n="anomalyMachine">N. macchina</span>
+          <input id="mod-report-machine" type="text" class="form-control" maxlength="40" inputmode="numeric">
+        </label>
+        <label class="mod-field">
+          <span data-i18n="anomalyDescription">Descrizione dell'anomalia</span>
+          <textarea id="mod-report-description" class="form-control" rows="5" maxlength="800" required></textarea>
+        </label>
+        <div id="mod-report-error" class="text-small mod-negative" role="alert" hidden></div>
+        <button id="mod-report-send" type="submit" class="btn btn-primary mod-report-send" data-i18n="reportFormSend">Invia anomalia</button>
+      </form>
+      <div id="mod-report-done" class="mod-report-done" role="status" hidden>
+        <div class="mod-report-done-icon" aria-hidden="true">✓</div>
+        <h1 class="mod-report-title" data-i18n="reportDoneTitle">Anomalia inviata correttamente</h1>
+        <p class="mod-report-hint" data-i18n="reportDoneHint">Grazie, la segnalazione è stata registrata. Puoi chiudere questa pagina.</p>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="mod-qr-dialog" class="card mod-selection-dialog" aria-labelledby="mod-qr-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-qr-title" class="mod-dialog-title" data-i18n="qrTitle">QR segnalazione anomalie</h2>
+          <span class="text-small text-muted" data-i18n="qrHint">Da appendere in linea: chi lo inquadra apre solo il modulo, senza accesso alla dashboard.</span>
+        </div>
+        <button type="button" class="btn btn-ghost mod-dialog-close" id="mod-qr-close" aria-label="X">✕</button>
+      </div>
+      <div class="mod-qr-body">
+        <div id="mod-qr-code" class="mod-qr-code"></div>
+        <code id="mod-qr-url" class="mod-qr-url"></code>
+      </div>
+      <div class="mod-dialog-actions">
+        <button type="button" id="mod-qr-print" class="btn btn-primary">
+          <i data-lucide="printer" aria-hidden="true"></i><span data-i18n="qrPrint">Stampa</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <section id="mod-summary-screen" class="mod-summary-screen" hidden>
     <div class="mod-summary-head">
       <!-- Sottomenu di ATTIVITA': stesse pillole del menu principale. -->
@@ -4589,6 +4735,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button id="mod-task-add" type="button" class="btn btn-primary" data-i18n="taskAdd">+ Nuova attività</button>
       </div>
       <div id="mod-anomaly-actions" class="mod-summary-actions" hidden>
+        <button id="mod-anomaly-qr" type="button" class="btn btn-ghost" hidden>
+          <i data-lucide="qr-code" aria-hidden="true"></i><span>QR</span>
+        </button>
         <button id="mod-anomaly-pdf" type="button" class="btn btn-ghost">
           <i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="taskExportPdf">PDF</span>
         </button>
@@ -5327,6 +5476,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Chiuse',
           reportDaysOpen: 'Giorni aperta',
           summaryPlanTab: 'PIANIFICAZIONE',
+          reportFormTitle: 'Segnala un\'anomalia',
+          reportFormHint: 'Compila i campi e premi Invia: la scheda arriva subito ai responsabili.',
+          reportFormSend: 'Invia anomalia',
+          reportFormSending: 'Invio in corso…',
+          reportFormInvalid: 'Inserisci nome e cognome e la descrizione dell\'anomalia.',
+          reportFormError: 'Invio non riuscito. Controlla la connessione e riprova.',
+          reportDoneTitle: 'Anomalia inviata correttamente',
+          reportDoneHint: 'Grazie, la segnalazione è stata registrata. Puoi chiudere questa pagina.',
+          qrTitle: 'QR segnalazione anomalie',
+          qrHint: 'Da appendere in linea: chi lo inquadra apre solo il modulo, senza accesso alla dashboard.',
+          qrPrint: 'Stampa',
+          qrPrintScan: 'Inquadra con la fotocamera del telefono',
+          qrLoadError: 'Impossibile generare il QR. Controlla la connessione.',
+          anomalyFromQr: 'Da QR',
           summaryEdit: 'Modifica attività e schede',
           sortBy: 'Ordina per',
           taskSortOpened: 'Più recenti',
@@ -5757,6 +5920,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Closed',
           reportDaysOpen: 'Days open',
           summaryPlanTab: 'PLANNING',
+          reportFormTitle: 'Report an anomaly',
+          reportFormHint: 'Fill in the fields and press Send: the report reaches the supervisors right away.',
+          reportFormSend: 'Send anomaly',
+          reportFormSending: 'Sending…',
+          reportFormInvalid: 'Enter your name and the anomaly description.',
+          reportFormError: 'Sending failed. Check the connection and try again.',
+          reportDoneTitle: 'Anomaly sent successfully',
+          reportDoneHint: 'Thank you, the report has been recorded. You can close this page.',
+          qrTitle: 'Anomaly report QR',
+          qrHint: 'Post it on the line: whoever scans it opens only the form, with no access to the dashboard.',
+          qrPrint: 'Print',
+          qrPrintScan: 'Scan with your phone camera',
+          qrLoadError: 'Could not generate the QR. Check the connection.',
+          anomalyFromQr: 'From QR',
           summaryEdit: 'Edit activities and reports',
           sortBy: 'Sort by',
           taskSortOpened: 'Newest',
@@ -6187,6 +6364,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportClosed: 'Kapali',
           reportDaysOpen: 'Acik gun',
           summaryPlanTab: 'PLANLAMA',
+          reportFormTitle: 'Anomali bildir',
+          reportFormHint: 'Alanları doldurun ve Gönder\'e basın: kart hemen sorumlulara ulaşır.',
+          reportFormSend: 'Anomaliyi gönder',
+          reportFormSending: 'Gönderiliyor…',
+          reportFormInvalid: 'Adınızı ve anomali açıklamasını girin.',
+          reportFormError: 'Gönderilemedi. Bağlantıyı kontrol edip tekrar deneyin.',
+          reportDoneTitle: 'Anomali başarıyla gönderildi',
+          reportDoneHint: 'Teşekkürler, bildirim kaydedildi. Bu sayfayı kapatabilirsiniz.',
+          qrTitle: 'Anomali bildirimi QR',
+          qrHint: 'Hatta asın: okutan kişi yalnızca formu açar, panoya erişemez.',
+          qrPrint: 'Yazdır',
+          qrPrintScan: 'Telefon kamerasıyla okutun',
+          qrLoadError: 'QR oluşturulamadı. Bağlantıyı kontrol edin.',
+          anomalyFromQr: 'QR\'dan',
           summaryEdit: 'Faaliyetleri ve kartları düzenle',
           sortBy: 'Sırala',
           taskSortOpened: 'En yeni',
@@ -6386,7 +6577,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         summaryTab: 'plan',
         summaryEdit: false,
         taskSort: 'opened',
-        anomalySort: { key: 'number', dir: 'desc' },
+        // Le piu' recenti in cima: le segnalazioni da QR non hanno ancora il numero.
+        anomalySort: { key: 'openedAt', dir: 'desc' },
         chatMessages: [],
         chatUsers: [],
         chatUnsub: null,
@@ -6559,6 +6751,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         taskCancel: root.querySelector('#mod-task-cancel'),
         summaryTabs: root.querySelectorAll('.mod-summary-tab'),
         anomalyPanel: root.querySelector('#mod-anomaly-panel'),
+        anomalyQr: root.querySelector('#mod-anomaly-qr'),
+        qrDialog: root.querySelector('#mod-qr-dialog'),
+        qrClose: root.querySelector('#mod-qr-close'),
+        qrCode: root.querySelector('#mod-qr-code'),
+        qrUrl: root.querySelector('#mod-qr-url'),
+        qrPrint: root.querySelector('#mod-qr-print'),
+        reportScreen: root.querySelector('#mod-report-screen'),
+        reportLogo: root.querySelector('#mod-report-logo'),
+        reportForm: root.querySelector('#mod-report-form'),
+        reportReporter: root.querySelector('#mod-report-reporter'),
+        reportMachine: root.querySelector('#mod-report-machine'),
+        reportDescription: root.querySelector('#mod-report-description'),
+        reportError: root.querySelector('#mod-report-error'),
+        reportSend: root.querySelector('#mod-report-send'),
+        reportDone: root.querySelector('#mod-report-done'),
         summaryEdit: root.querySelector('#mod-summary-edit'),
         taskSort: root.querySelector('#mod-task-sort'),
         taskActions: root.querySelector('#mod-task-actions'),
@@ -9502,7 +9709,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             const diff = compareSortValues(va, vb);
             if (diff) return diff * sign;
           }
-          return (Number(b.number) || 0) - (Number(a.number) || 0);
+          // Le schede da QR ancora senza numero stanno davanti alle numerate.
+          const na = Number(a.number) || Number.MAX_SAFE_INTEGER;
+          const nb = Number(b.number) || Number.MAX_SAFE_INTEGER;
+          return nb - na;
         });
       }
 
@@ -9522,7 +9732,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.anomalyBody.innerHTML = list.length ? list.map((item) => {
           const st = findBy(ANOMALY_STATUSES, item.status, true);
           return '<tr' + (editable ? ' tabindex="0"' : '') + ' data-anomaly-id="' + escapeHtml(item.id) + '">' +
-            '<td class="mod-anomaly-num">' + escapeHtml(item.number || '—') + '</td>' +
+            '<td class="mod-anomaly-num">' + (item.number ? escapeHtml(item.number)
+              : item.source === 'qr' ? '<span class="mod-anomaly-qr" title="' + escapeHtml(t('anomalyFromQr')) + '">QR</span>' : '—') + '</td>' +
             '<td class="mod-anomaly-name">' + escapeHtml(item.reporter || '—') + '</td>' +
             '<td class="mod-anomaly-num">' + escapeHtml(item.machine || '—') + '</td>' +
             '<td class="mod-anomaly-date">' + date(item.openedAt) + '</td>' +
@@ -9563,6 +9774,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const anomalies = state.summaryTab === 'anomalies';
         if (!state.isAdmin) state.summaryEdit = false;
         el.summaryEdit.hidden = !state.isAdmin;
+        el.anomalyQr.hidden = !state.isAdmin;
         el.summaryEdit.setAttribute('aria-pressed', String(canEditSummary()));
         el.summaryScreen.classList.toggle('mod-summary-editing', canEditSummary());
         el.summaryTabs.forEach((button) => {
@@ -9591,7 +9803,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         anomalyEditingId = item ? item.id : null;
         const v = (field) => item ? (item[field] || '') : '';
         el.anomalyDialogTitle.textContent = t(item ? 'anomalyEdit' : 'anomalyNew');
-        el.anomalyNumber.value = item ? v('number') : nextAnomalyNumber();
+        // Le schede arrivate dal QR non hanno numero: glielo da' chi le apre.
+        el.anomalyNumber.value = item && item.number ? item.number : nextAnomalyNumber();
         el.anomalyOpened.value = item ? v('openedAt') : isoDate(new Date());
         el.anomalyMachine.value = v('machine');
         el.anomalyReporter.value = item ? v('reporter') : (state.authUsername || '');
@@ -9783,6 +9996,127 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function exportAnomaliesExcel() {
         logAudit('export.anomaliesExcel', t('anomalyTitle'));
         downloadReportExcel(anomalyReportHtml(true), t('anomalyFileName') + '-' + isoDate(new Date()) + '.xls');
+      }
+
+      /* ---- Segnalazione anomalia da QR ----
+         Il QR apre l'indirizzo con ?anomalia. In quella modalita' non parte
+         l'accesso e non si carica nessun dato: si vede solo il modulo, che
+         scrive una scheda nuova (le regole del database accettano da chi non
+         ha fatto l'accesso solo schede nuove, aperte, con questi campi). */
+      const REPORT_URL = 'https://andreadellerba.github.io/martur-dashboard/?anomalia';
+      const REPORT_MODE = new URLSearchParams(window.location.search).has('anomalia');
+
+      function initReportMode() {
+        root.classList.remove('mod-locked');
+        root.classList.add('mod-report-mode');
+        setTranslations();
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const logo = root.querySelector(dark ? '.mod-brand-logo-dark' : '.mod-brand-logo-light');
+        if (logo) el.reportLogo.src = logo.src;
+        el.reportScreen.hidden = false;
+        document.title = t('reportFormTitle') + ' · Martur Italy';
+        el.reportForm.addEventListener('submit', (event) => { event.preventDefault(); sendReport(); });
+      }
+
+      let reportSending = false;
+      function sendReport() {
+        if (reportSending) return;
+        const reporter = el.reportReporter.value.trim();
+        const description = el.reportDescription.value.trim();
+        if (!reporter || !description) {
+          el.reportError.textContent = t('reportFormInvalid');
+          el.reportError.hidden = false;
+          (reporter ? el.reportDescription : el.reportReporter).focus();
+          return;
+        }
+        if (!db) {
+          el.reportError.textContent = t('reportFormError');
+          el.reportError.hidden = false;
+          return;
+        }
+        reportSending = true;
+        el.reportError.hidden = true;
+        el.reportSend.disabled = true;
+        el.reportSend.textContent = t('reportFormSending');
+        db.collection('anomalies').add({
+          reporter,
+          machine: el.reportMachine.value.trim(),
+          description,
+          openedAt: isoDate(new Date()),
+          status: 'open',
+          source: 'qr',
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          // Dopo l'invio resta solo la conferma: nessun pulsante, nessun link.
+          el.reportForm.remove();
+          el.reportDone.hidden = false;
+        }).catch(() => {
+          reportSending = false;
+          el.reportSend.disabled = false;
+          el.reportSend.textContent = t('reportFormSend');
+          el.reportError.textContent = t('reportFormError');
+          el.reportError.hidden = false;
+        });
+      }
+
+      // Libreria del QR caricata solo quando serve (e solo dagli admin).
+      let qrLibPromise = null;
+      function loadQrLib() {
+        if (globalThis.qrcode) return Promise.resolve(globalThis.qrcode);
+        if (!qrLibPromise) {
+          qrLibPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+            script.onload = () => globalThis.qrcode ? resolve(globalThis.qrcode) : reject(new Error('qrcode'));
+            script.onerror = () => { qrLibPromise = null; reject(new Error('qrcode')); };
+            document.head.appendChild(script);
+          });
+        }
+        return qrLibPromise;
+      }
+
+      function reportQrSvg(qrcode) {
+        const qr = qrcode(0, 'M');
+        qr.addData(REPORT_URL);
+        qr.make();
+        return qr.createSvgTag({ cellSize: 8, margin: 0, scalable: true });
+      }
+
+      function openQrDialog() {
+        if (!state.isAdmin) return;
+        el.qrUrl.textContent = REPORT_URL;
+        el.qrCode.textContent = '';
+        el.qrPrint.disabled = true;
+        el.qrDialog.showModal();
+        loadQrLib().then((qrcode) => {
+          el.qrCode.innerHTML = reportQrSvg(qrcode);
+          el.qrPrint.disabled = false;
+        }).catch(() => {
+          el.qrCode.textContent = t('qrLoadError');
+        });
+      }
+
+      // Foglio A4 da appendere: logo, titolo, QR grande, indicazione.
+      function printReportQr() {
+        loadQrLib().then((qrcode) => {
+          const stile =
+            'body{font-family:Arial,Helvetica,sans-serif;color:#14171f;margin:0;text-align:center;}' +
+            '.foglio{padding:30mm 20mm;}' +
+            '.logo{height:48px;margin-bottom:18mm;}' +
+            'h1{font-size:34px;margin:0 0 6mm;text-transform:uppercase;}' +
+            'p{font-size:18px;color:#5c6373;margin:0 0 14mm;}' +
+            '.qr{width:120mm;margin:0 auto;border:3px solid #a88c50;border-radius:12px;padding:8mm;}' +
+            '.qr svg{display:block;width:100%;height:auto;}' +
+            '.url{margin-top:8mm;font-size:12px;color:#5c6373;}' +
+            '@page{size:A4 portrait;margin:0;}';
+          printReportHtml('<!doctype html><html lang="' + state.lang + '"><head><meta charset="utf-8">' +
+            '<title>' + escapeHtml(t('reportFormTitle')) + '</title><style>' + stile + '</style></head><body>' +
+            '<div class="foglio"><img class="logo" src="' + taskLogoSrc() + '" alt="Martur Italy">' +
+            '<h1>' + escapeHtml(t('reportFormTitle')) + '</h1>' +
+            '<p>' + escapeHtml(t('qrPrintScan')) + '</p>' +
+            '<div class="qr">' + reportQrSvg(qrcode) + '</div>' +
+            '<div class="url">' + escapeHtml(REPORT_URL) + '</div></div></body></html>');
+        }).catch(() => {});
       }
 
       function subscribeChat() {
@@ -11070,6 +11404,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       el.anomalyAdd.addEventListener('click', () => openAnomalyDialog(null));
       el.anomalyPdf.addEventListener('click', exportAnomaliesPdf);
+      el.anomalyQr.addEventListener('click', openQrDialog);
+      el.qrClose.addEventListener('click', () => el.qrDialog.close());
+      el.qrPrint.addEventListener('click', printReportQr);
       el.anomalyExcel.addEventListener('click', exportAnomaliesExcel);
       el.anomalyDialogClose.addEventListener('click', () => el.anomalyDialog.close());
       el.anomalyCancel.addEventListener('click', () => el.anomalyDialog.close());
@@ -11441,8 +11778,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       loadOeeConfig();
       try { state.chatSeenTs = Number(window.localStorage.getItem(CHAT_SEEN_KEY)) || 0; } catch (e) {}
       clearForm();
-      renderAll();
-      initAuth();
+      if (REPORT_MODE) {
+        // Dal QR: solo il modulo, nessun accesso e nessun dato caricato.
+        initReportMode();
+      } else {
+        renderAll();
+        initAuth();
+      }
     })();
   </script>
 </div>
