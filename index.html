@@ -1518,14 +1518,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 8px;
       flex-wrap: wrap;
     }
+    /* Due colonne: In corso e Completata. */
     #martur-operations-dashboard .mod-summary-board {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
       align-items: start;
-    }
-    @media (max-width: 1100px) {
-      #martur-operations-dashboard .mod-summary-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 640px) {
       #martur-operations-dashboard .mod-summary-board { grid-template-columns: 1fr; }
@@ -5516,8 +5514,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskSaveError: 'Salvataggio non riuscito.',
           taskNone: 'Nessuna attività',
           taskNoPeople: 'Senza assegnatario',
-          taskCatTodo: 'Da fare',
-          taskCatDoing: 'In corso',
+          taskCatTodo: 'In corso',
           taskCatDone: 'Completata',
           taskPrioLow: 'Bassa',
           taskPrioMedium: 'Media',
@@ -5965,8 +5962,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskSaveError: 'Could not save.',
           taskNone: 'No activities',
           taskNoPeople: 'Unassigned',
-          taskCatTodo: 'To do',
-          taskCatDoing: 'In progress',
+          taskCatTodo: 'In progress',
           taskCatDone: 'Completed',
           taskPrioLow: 'Low',
           taskPrioMedium: 'Medium',
@@ -6414,8 +6410,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           taskSaveError: 'Kaydedilemedi.',
           taskNone: 'Faaliyet yok',
           taskNoPeople: 'Atanmamis',
-          taskCatTodo: 'Yapilacak',
-          taskCatDoing: 'Devam ediyor',
+          taskCatTodo: 'Devam ediyor',
           taskCatDone: 'Tamamlandi',
           taskPrioLow: 'Dusuk',
           taskPrioMedium: 'Orta',
@@ -9280,14 +9275,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // Le quattro colonne della bacheca e le due tendine (priorita' e stato)
       // hanno chiavi fisse: quelle finiscono nel database, l'etichetta e' tradotta.
       const TASK_CATEGORIES = [
-        { id: 'todo',     key: 'taskCatTodo',     color: '#94a3b8' },
-        { id: 'doing',    key: 'taskCatDoing',    color: '#38bdf8' },
+        { id: 'todo',     key: 'taskCatTodo',     color: '#38bdf8' },
         { id: 'done',     key: 'taskCatDone',     color: '#34d399' }
       ];
-      // "In revisione" e' stata tolta perche' coincideva con "In corso": le
-      // attivita' che ci stavano dentro ci finiscono, e la correzione viene
-      // riscritta sul database cosi' il travaso avviene una volta sola.
-      const TASK_CATEGORY_ALIASES = { review: 'doing' };
+      // Restano due colonne: "In corso" (era "Da fare") e "Completata". Le
+      // attivita' che stavano in "In revisione" o "In corso" finiscono nella
+      // prima, e la correzione viene riscritta sul database cosi' il travaso
+      // avviene una volta sola.
+      const TASK_CATEGORY_ALIASES = { review: 'todo', doing: 'todo' };
       function normalizeTaskCategory(id) {
         if (TASK_CATEGORY_ALIASES[id]) return TASK_CATEGORY_ALIASES[id];
         return TASK_CATEGORIES.some((c) => c.id === id) ? id : 'todo';
@@ -9338,16 +9333,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           snap.forEach((doc) => {
             const task = Object.assign({ id: doc.id }, doc.data());
             const nuova = normalizeTaskCategory(task.category);
-            if (nuova !== task.category) { task.category = nuova; daCorreggere.push(doc.id); }
+            if (nuova !== task.category) { task.category = nuova; daCorreggere.push({ id: doc.id, category: nuova }); }
             list.push(task);
           });
           list.sort((a, b) => String(b.openedAt || '').localeCompare(String(a.openedAt || '')));
           state.tasks = list;
           if (state.view === 'summary') renderSummaryBoard();
-          // Travaso delle vecchie "In revisione": una volta scritte restano
-          // cosi' e questo blocco non scatta piu'.
-          daCorreggere.forEach((id) => {
-            db.collection('tasks').doc(id).set({ category: 'doing' }, { merge: true }).catch(() => {});
+          // Travaso delle colonne non piu' esistenti: lo puo' scrivere solo un
+          // admin, e una volta scritto questo blocco non scatta piu'.
+          if (state.isAdmin) daCorreggere.forEach(({ id, category }) => {
+            db.collection('tasks').doc(id).set({ category }, { merge: true }).catch(() => {});
           });
         }, () => {});
       }
