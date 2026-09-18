@@ -3012,6 +3012,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 2px;
       margin-top: 4px;
     }
+    /* Le due card di DMC / Abarth alte uguali, con la nota del target
+       appoggiata in fondo. */
+    #martur-operations-dashboard .mod-sec-cards { align-items: stretch; }
+    #martur-operations-dashboard .mod-sec-cards .mod-daily-shift-card {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      height: 100%;
+    }
+    #martur-operations-dashboard .mod-sec-cards .mod-shift-note { margin-top: auto; }
+    /* Target nella nota della card DMC: si capisce che si puo' cambiare
+       passandoci sopra col mouse, e si scrive al suo posto. */
+    #martur-operations-dashboard .mod-target-value {
+      padding: 0 4px;
+      border: 0;
+      border-bottom: 2px dashed transparent;
+      background: none;
+      font: inherit;
+      color: var(--gold);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      cursor: text;
+    }
+    #martur-operations-dashboard button.mod-target-value:hover,
+    #martur-operations-dashboard button.mod-target-value:focus-visible {
+      border-bottom-color: var(--gold);
+      outline: none;
+    }
+    #martur-operations-dashboard .mod-target-input {
+      width: 5.5em;
+      padding: 2px 6px;
+      font: inherit;
+      font-weight: 800;
+      text-align: center;
+    }
     #martur-operations-dashboard .mod-sec-shift {
       display: flex;
       align-items: center;
@@ -4984,7 +5019,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="btn btn-primary mod-sec-add" data-section-page="abarth" title="Inserisci dati" data-i18n-title="secAddData" aria-label="Inserisci dati" hidden>+</button>
       </div>
     </div>
-    <div id="mod-abarth-cards" class="mod-daily-shift-grid"></div>
+    <div id="mod-abarth-cards" class="mod-daily-shift-grid mod-sec-cards"></div>
   </section>
 
   <section id="mod-dmc-screen" class="mod-section" hidden>
@@ -5640,6 +5675,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secAddData: '+ Inserisci dati',
           secEditTitle: 'Inserimento dati',
           secEditData: 'Modifica dati',
+          secTargetLabel: 'Target',
+          secTargetUnit: 'pezzi',
+          secTargetEdit: 'Clicca per cambiare il target',
           qgateFront: 'Q Gate anteriore',
           qgateRear: 'Q Gate posteriore',
           cpa: 'CPA',
@@ -6108,6 +6146,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secAddData: '+ Enter data',
           secEditTitle: 'Data entry',
           secEditData: 'Edit data',
+          secTargetLabel: 'Target',
+          secTargetUnit: 'pieces',
+          secTargetEdit: 'Click to change the target',
           qgateFront: 'Q Gate front',
           qgateRear: 'Q Gate rear',
           cpa: 'CPA',
@@ -6576,6 +6617,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secAddData: '+ Veri gir',
           secEditTitle: 'Veri girişi',
           secEditData: 'Veri düzenle',
+          secTargetLabel: 'Hedef',
+          secTargetUnit: 'parça',
+          secTargetEdit: 'Hedefi değiştirmek için tıklayın',
           qgateFront: 'Q Gate ön',
           qgateRear: 'Q Gate arka',
           cpa: 'CPA',
@@ -7082,7 +7126,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         anomalySelectedId: null,
         anomalySettings: {},
         sectionDoc: {},
-        sectionDoc: {},
+        dmcTargetHistory: [],
         chatMessages: [],
         chatUsers: [],
         chatUnsub: null,
@@ -9686,6 +9730,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             unsubscribeTasks();
             unsubscribeAnomalies();
             unsubscribeSection();
+            unsubscribeDmcTarget();
             if (el.sectionDialog.open) el.sectionDialog.close();
             if (el.anomalyDialog.open) el.anomalyDialog.close();
             state.summaryTab = 'plan';
@@ -10958,6 +11003,81 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           sectionMetric(t('secTotal'), sectionSum([base + '.shift1', base + '.shift2']), true) +
         '</div>');
 
+      /* Target DMC: una nota sotto la card, col numero modificabile passandoci
+         sopra. Vale dal giorno in cui lo si scrive in avanti, finche' non lo
+         si cambia di nuovo: percio' si tiene uno storico di date, come per i
+         parametri OEE, invece di un numero sul singolo giorno. */
+      const DMC_TARGET_DEFAULT = 400;
+      let dmcTargetUnsub = null;
+      function unsubscribeDmcTarget() {
+        if (dmcTargetUnsub) { try { dmcTargetUnsub(); } catch (e) {} }
+        dmcTargetUnsub = null;
+        state.dmcTargetHistory = [];
+      }
+      function subscribeDmcTarget() {
+        if (!db || dmcTargetUnsub) return;
+        dmcTargetUnsub = db.collection('config').doc('dmcTarget').onSnapshot((doc) => {
+          const data = doc.exists ? (doc.data() || {}) : {};
+          state.dmcTargetHistory = (Array.isArray(data.history) ? data.history : [])
+            .filter((entry) => entry && typeof entry.effectiveFrom === 'string' && isNumber(entry.value))
+            .sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+          if (state.view === 'abarth') renderAbarthDmc();
+        }, () => {});
+      }
+      function dmcTargetFor(date) {
+        let value = DMC_TARGET_DEFAULT;
+        (state.dmcTargetHistory || []).forEach((entry) => {
+          if (entry.effectiveFrom <= date) value = entry.value;
+        });
+        return value;
+      }
+      function saveDmcTarget(value) {
+        if (!db || !state.authUser || !isNumber(value) || value <= 0) return;
+        const date = state.selectedDate;
+        const before = dmcTargetFor(date);
+        const history = (state.dmcTargetHistory || [])
+          .filter((entry) => entry.effectiveFrom !== date)
+          .concat([{ effectiveFrom: date, value: Math.round(value) }])
+          .sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+        db.collection('config').doc('dmcTarget').set({
+          history, updatedAt: new Date().toISOString(), updatedBy: state.authUsername || ''
+        }, { merge: true }).then(() => {
+          logAudit('section.update', t('secDmc') + ' · ' + t('secTargetLabel') + ' · ' + formatDateNumeric(date), [
+            { field: t('secTargetLabel'), from: before, to: Math.round(value) }
+          ]);
+        }).catch(() => {});
+      }
+
+      // Il numero del target si modifica sul posto: clic, si scrive, Invio.
+      function bindDmcTargetEdit() {
+        const button = el.abarthCards.querySelector('[data-target-edit]');
+        if (!button) return;
+        button.addEventListener('click', () => {
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.min = '1';
+          input.step = '1';
+          input.className = 'form-control mod-target-input';
+          input.value = dmcTargetFor(state.selectedDate);
+          button.replaceWith(input);
+          input.focus();
+          input.select();
+          let closed = false;
+          const close = (save) => {
+            if (closed) return;
+            closed = true;
+            const value = Number(input.value);
+            if (save && isNumber(value) && value > 0) saveDmcTarget(value);
+            renderAbarthDmc();
+          };
+          input.addEventListener('blur', () => close(true));
+          input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') { event.preventDefault(); close(true); }
+            if (event.key === 'Escape') { event.preventDefault(); close(false); }
+          });
+        });
+      }
+
       let sectionUnsub = null;
       let sectionUnsubDate = null;
       function unsubscribeSection() {
@@ -11009,14 +11129,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               sectionSum(['abarth.shift1.schienali', 'abarth.shift2.schienali']),
               sectionSum(['abarth.shift1.kit', 'abarth.shift2.kit']), true) +
           '</div>';
+        // Nota sotto la card DMC, come quella dei turni nel Giornaliero: cosi'
+        // le due card restano della stessa altezza e il target e' sempre in
+        // vista.
+        const target = dmcTargetFor(state.selectedDate);
+        const targetNote =
+          '<div class="mod-shift-note"><span class="mod-shift-note-text">' +
+            escapeHtml(t('secTargetLabel')) + ': ' +
+            (state.authUser
+              ? '<button type="button" class="mod-target-value" data-target-edit title="' + escapeHtml(t('secTargetEdit')) + '">' + escapeHtml(formatNumber(target)) + '</button>'
+              : '<span class="mod-target-value">' + escapeHtml(formatNumber(target)) + '</span>') +
+            ' ' + escapeHtml(t('secTargetUnit')) +
+          '</span></div>';
         el.abarthCards.innerHTML =
           sectionCard(t('secDmc'),
             '<div class="mod-shift-grid-3col">' +
               sectionMetric(t('shift1'), sectionGet('dmc.shift1')) +
               sectionMetric(t('shift2'), sectionGet('dmc.shift2')) +
               sectionMetric(t('secProdTotal'), sectionSum(['dmc.shift1', 'dmc.shift2']), true) +
-            '</div>') +
+            '</div>' + targetNote) +
           sectionCard(t('secAbarth'), abarth);
+        bindDmcTargetEdit();
         syncSectionButtons();
       }
 
@@ -12252,6 +12385,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         else if (state.view === 'tv') renderTv();
         else if (state.view === 'abarth' || state.view === 'dmc') {
           subscribeSection(state.selectedDate);
+          subscribeDmcTarget();
           if (state.view === 'abarth') renderAbarthDmc(); else renderQGate();
         }
         else renderDashboard();
