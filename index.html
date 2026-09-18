@@ -4944,8 +4944,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <section id="mod-abarth-screen" class="mod-section" hidden>
     <div class="mod-section-head">
       <div>
-        <div class="mod-section-label" data-i18n="abarth">Abarth - DMC</div>
-        <div id="mod-abarth-date" class="text-small text-muted"></div>
         <div id="mod-abarth-shifts" class="mod-sec-shifts"></div>
       </div>
       <button type="button" class="btn btn-primary mod-sec-add" data-section-page="abarth" data-i18n="secAddData" hidden>+ Inserisci dati</button>
@@ -4956,8 +4954,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <section id="mod-dmc-screen" class="mod-section" hidden>
     <div class="mod-section-head">
       <div>
-        <div class="mod-section-label" data-i18n="dmcSection">Q Gate</div>
-        <div id="mod-dmc-date" class="text-small text-muted"></div>
         <div id="mod-dmc-shifts" class="mod-sec-shifts"></div>
       </div>
       <button type="button" class="btn btn-primary mod-sec-add" data-section-page="qgate" data-i18n="secAddData" hidden>+ Inserisci dati</button>
@@ -7114,10 +7110,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppagesScreen: root.querySelector('#mod-stoppages-screen'),
         abarthScreen: root.querySelector('#mod-abarth-screen'),
         abarthCards: root.querySelector('#mod-abarth-cards'),
-        abarthDate: root.querySelector('#mod-abarth-date'),
         abarthShifts: root.querySelector('#mod-abarth-shifts'),
         dmcCards: root.querySelector('#mod-dmc-cards'),
-        dmcDate: root.querySelector('#mod-dmc-date'),
         dmcShifts: root.querySelector('#mod-dmc-shifts'),
         sectionDialog: root.querySelector('#mod-section-dialog'),
         sectionDialogDate: root.querySelector('#mod-section-dialog-date'),
@@ -10958,7 +10952,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderAbarthDmc() {
-        el.abarthDate.textContent = formatDate(state.selectedDate);
         renderSectionShifts(el.abarthShifts);
         const cell = (value, total) =>
           '<div class="mod-sec-value' + (total ? ' mod-sec-total' : '') + '">' + escapeHtml(sectionText(value)) + '</div>';
@@ -10987,7 +10980,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderQGate() {
-        el.dmcDate.textContent = formatDate(state.selectedDate);
         renderSectionShifts(el.dmcShifts);
         el.dmcCards.innerHTML =
           sectionShiftCard(t('qgateFront'), 'qgateFront') +
