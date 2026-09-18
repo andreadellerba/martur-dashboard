@@ -1559,9 +1559,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-task-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       align-items: start;
+    }
+    @media (max-width: 1100px) {
+      #martur-operations-dashboard .mod-task-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 700px) {
+      #martur-operations-dashboard .mod-task-cards { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
       #martur-operations-dashboard .mod-summary-board { grid-template-columns: 1fr; }
@@ -2126,6 +2132,57 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-report-owner legend { padding-inline: 4px; font-weight: 700; }
     @media (max-width: 420px) {
       #martur-operations-dashboard .mod-report-row { grid-template-columns: 1fr; }
+    }
+    /* Su telefono la tabella non si scorre di lato: ogni scheda diventa un
+       riquadro con le etichette a sinistra e i valori a destra. */
+    @media (max-width: 700px) {
+      #martur-operations-dashboard .mod-anomaly-wrap { border: 0; }
+      #martur-operations-dashboard .mod-anomaly-table { min-width: 0; display: block; }
+      #martur-operations-dashboard .mod-anomaly-table thead { display: none; }
+      #martur-operations-dashboard .mod-anomaly-table tbody { display: grid; gap: 10px; }
+      #martur-operations-dashboard .mod-anomaly-table tbody tr {
+        display: grid;
+        gap: 2px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+      }
+      #martur-operations-dashboard .mod-anomaly-table tbody tr.mod-anomaly-row-selected {
+        border-color: var(--gold);
+      }
+      #martur-operations-dashboard .mod-anomaly-table tbody td {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        width: auto;
+        padding: 3px 0;
+        border: 0;
+        text-align: right;
+        white-space: normal;
+      }
+      #martur-operations-dashboard .mod-anomaly-table tbody td::before {
+        content: attr(data-label);
+        flex: none;
+        color: var(--muted-foreground);
+        font-size: var(--fs-label);
+        font-weight: 700;
+        text-align: left;
+      }
+      #martur-operations-dashboard .mod-anomaly-table tbody td.mod-anomaly-num:first-child {
+        justify-content: flex-start;
+        padding-bottom: 6px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--border);
+      }
+      #martur-operations-dashboard .mod-anomaly-table tbody td.mod-anomaly-num:not(:first-child) {
+        width: auto;
+        padding-inline: 0;
+      }
+      #martur-operations-dashboard .mod-anomaly-table tbody td.mod-anomaly-text { text-align: left; flex-direction: column; align-items: flex-start; gap: 2px; }
+      #martur-operations-dashboard .mod-anomaly-table tbody tr.mod-anomaly-row-selected td { background: none; }
+      #martur-operations-dashboard .mod-anomaly-table tbody tr:nth-child(even) td { background: none; }
     }
     #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-empty {
       text-align: center;
@@ -2825,7 +2882,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         font-size: calc(var(--font-size-normal) * 1.15);
       }
       #martur-operations-dashboard .mod-shift-metric strong {
-        font-size: calc(var(--font-size-normal) * 2.05);
+        font-size: calc(var(--fs-display) * 1.16);
       }
     }
     #martur-operations-dashboard .mod-shift-card-name,
@@ -2916,30 +2973,36 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-shift-metric strong {
       overflow-wrap: anywhere;
-      font-size: calc(var(--font-size-normal) * 1.7);
+      font-size: var(--fs-display);
       line-height: 1.2;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
       color: light-dark(rgb(20 20 22), #fff);
     }
     #martur-operations-dashboard .mod-shift-metric strong.mod-negative {
       color: var(--destructive);
     }
+    /* Le tre voci non occupano piu' un terzo di riga a testa: ognuna e' una
+       targhetta larga quanto il suo testo, cosi' il blocco resta stretto e il
+       nome del rework non viene tagliato. */
     #martur-operations-dashboard .mod-rework-ranking {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px 18px;
-      margin: 8px 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      margin: 6px 0 0;
       padding: 0;
       list-style: none;
     }
-    /* Piu' grandi di prima per leggerli da lontano, ma un gradino sotto le
-       note turno: sono tre voci affiancate e devono starci comode. */
     #martur-operations-dashboard .mod-rework-ranking li {
-      display: flex;
-      min-width: 0;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding-bottom: 7px;
-      border-bottom: 1px solid var(--border);
+      min-width: 0;
+      max-width: 100%;
+      padding: 5px 12px 5px 6px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background: var(--muted);
       font-size: var(--fs-title);
       line-height: 1.3;
       font-weight: 600;
@@ -2975,13 +3038,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       min-width: 0;
       overflow-wrap: anywhere;
     }
+    /* Il numero di casi sta attaccato al nome, non spinto a fine riga. */
     #martur-operations-dashboard .mod-rework-ranking-count {
-      margin-left: auto;
+      flex: none;
+      padding-left: 8px;
+      margin-left: 2px;
+      border-left: 1px solid var(--border);
       color: var(--muted-foreground);
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
     #martur-operations-dashboard .mod-rework-ranking .mod-empty {
-      grid-column: 1 / -1;
+      flex: 1 1 100%;
     }
     #martur-operations-dashboard .mod-chart-wrap {
       position: relative;
@@ -9530,10 +9598,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '<span class="mod-task-top">' +
                 '<span class="mod-task-who">' +
                   '<span class="mod-task-people">' + (task.people ? escapeHtml(task.people) : escapeHtml(t('taskNoPeople'))) + '</span>' +
-                  '<span class="mod-task-state mod-task-state-' + status.id + '">' +
-                    (status.id === 'closed' ? '<span>✓</span>' : '<span class="mod-task-dot"></span>') +
-                    '<span>' + escapeHtml(t(status.key)) + '</span>' +
-                  '</span>' +
+                  // "Aperto" non si scrive: in questa lista lo sono tutte.
+                  // Si mostra solo uno stato diverso da quello scontato.
+                  (status.id === 'open' ? '' :
+                    '<span class="mod-task-state mod-task-state-' + status.id + '">' +
+                      (status.id === 'closed' ? '<span>✓</span>' : '<span class="mod-task-dot"></span>') +
+                      '<span>' + escapeHtml(t(status.key)) + '</span>' +
+                    '</span>') +
                 '</span>' +
                 '<span class="mod-task-flag mod-task-flag-' + prio.id + '">' + escapeHtml(t(prio.key)) + '</span>' +
               '</span>' +
@@ -10074,15 +10145,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               ' data-anomaly-id="' + escapeHtml(item.id) + '">' +
             '<td class="mod-anomaly-num"><button type="button" class="mod-anomaly-pick" aria-pressed="' + selected + '" title="' +
               escapeHtml(t('anomalySelectRow')) + '">' + escapeHtml(numbers.get(item.id) || '—') + '</button></td>' +
-            '<td class="mod-anomaly-name">' + escapeHtml(item.reporter || '—') + '</td>' +
-            '<td class="mod-anomaly-num">' + escapeHtml(item.machine || '—') + '</td>' +
-            '<td class="mod-anomaly-date">' + date(item.openedAt) + '</td>' +
-            '<td class="mod-anomaly-text">' + escapeHtml(item.description || '—') + '</td>' +
-            '<td class="mod-anomaly-text">' + escapeHtml(item.action || '—') + '</td>' +
-            '<td class="mod-anomaly-name">' + escapeHtml(item.owner || '—') + '</td>' +
-            '<td>' + escapeHtml(departmentLabel(item.department) || '—') + '</td>' +
-            '<td class="mod-anomaly-date">' + date(item.closedAt) + '</td>' +
-            '<td><span class="mod-anomaly-status mod-anomaly-status-' + st.id + '">' + escapeHtml(t(st.key)) + '</span></td>' +
+            // data-label: su telefono la riga diventa una scheda e ogni valore
+            // si porta dietro il nome della sua colonna.
+            '<td class="mod-anomaly-name" data-label="' + escapeHtml(anomalyLabel('reporter')) + '">' + escapeHtml(item.reporter || '—') + '</td>' +
+            '<td class="mod-anomaly-num" data-label="' + escapeHtml(anomalyLabel('machine')) + '">' + escapeHtml(item.machine || '—') + '</td>' +
+            '<td class="mod-anomaly-date" data-label="' + escapeHtml(anomalyLabel('openedAt')) + '">' + date(item.openedAt) + '</td>' +
+            '<td class="mod-anomaly-text" data-label="' + escapeHtml(anomalyLabel('description')) + '">' + escapeHtml(item.description || '—') + '</td>' +
+            '<td class="mod-anomaly-text" data-label="' + escapeHtml(anomalyLabel('action')) + '">' + escapeHtml(item.action || '—') + '</td>' +
+            '<td class="mod-anomaly-name" data-label="' + escapeHtml(anomalyLabel('owner')) + '">' + escapeHtml(item.owner || '—') + '</td>' +
+            '<td data-label="' + escapeHtml(anomalyLabel('department')) + '">' + escapeHtml(departmentLabel(item.department) || '—') + '</td>' +
+            '<td class="mod-anomaly-date" data-label="' + escapeHtml(anomalyLabel('closedAt')) + '">' + date(item.closedAt) + '</td>' +
+            '<td data-label="' + escapeHtml(anomalyLabel('status')) + '"><span class="mod-anomaly-status mod-anomaly-status-' + st.id + '">' + escapeHtml(t(st.key)) + '</span></td>' +
           '</tr>';
         }).join('') : '<tr><td colspan="10" class="mod-anomaly-empty">' + escapeHtml(t('anomalyNone')) + '</td></tr>';
         // Clic su N. scheda: seleziona (o toglie la selezione), per tutti.
