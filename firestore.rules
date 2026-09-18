@@ -36,6 +36,12 @@ service cloud.firestore {
       allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
     }
 
+    match /sections/{date} {
+      // Numeri delle pagine ABARTH - DMC e Q GATE, un documento per data:
+      // li legge e li inserisce chiunque abbia l'accesso.
+      allow read, write: if isSignedIn();
+    }
+
     match /stoppages/{id} {
       // Microfermate: le registra e le corregge chiunque sia autenticato.
       allow read, write: if isSignedIn();

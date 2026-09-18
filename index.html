@@ -2946,6 +2946,82 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding-top: 11px;
       border-top: 1px solid var(--border);
     }
+    /* ---- ABARTH - DMC e Q GATE ----
+       Stesse card del Giornaliero: cambia solo quante colonne di numeri
+       hanno dentro. */
+    #martur-operations-dashboard .mod-shift-grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 10px;
+      row-gap: 10px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-shift-grid-1col {
+      display: grid;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+    }
+    /* Q Gate: quattro card, due per riga. */
+    #martur-operations-dashboard .mod-sec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      #martur-operations-dashboard .mod-sec-grid { grid-template-columns: 1fr; }
+    }
+    /* Abarth: righe per turno, colonne Schienali e Kit. */
+    #martur-operations-dashboard .mod-sec-table {
+      display: grid;
+      grid-template-columns: auto repeat(2, minmax(0, 1fr));
+      align-items: center;
+      column-gap: 10px;
+      row-gap: 8px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-sec-th {
+      font-size: var(--font-size-small);
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    #martur-operations-dashboard .mod-sec-rowlab {
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-sec-value {
+      font-size: calc(var(--fs-display) * 1.08);
+      line-height: 1.2;
+      font-weight: var(--font-weight-medium);
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      color: light-dark(rgb(20 20 22), #fff);
+    }
+    #martur-operations-dashboard .mod-sec-total .mod-sec-value,
+    #martur-operations-dashboard .mod-shift-metric.mod-sec-total strong { color: var(--gold); }
+    #martur-operations-dashboard .mod-sec-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px 12px;
+    }
+    #martur-operations-dashboard .mod-sec-fields .mod-field { display: grid; gap: 4px; min-width: 0; }
+    #martur-operations-dashboard .mod-sec-fields .mod-sec-group {
+      grid-column: 1 / -1;
+      margin-top: 4px;
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gold);
+    }
     #martur-operations-dashboard .mod-shift-metric {
       display: grid;
       gap: 1px;
@@ -4834,15 +4910,49 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </section>
   </section>
 
+  <!-- ABARTH - DMC e Q GATE: stesse card del Giornaliero, dati diversi.
+       I numeri si inseriscono col "+" e valgono per la data scelta in alto. -->
   <section id="mod-abarth-screen" class="mod-section" hidden>
-    <div class="mod-section-label" data-i18n="abarth">Abarth</div>
-    <div class="text-small text-muted" data-i18n="sectionComingSoon">Sezione in preparazione.</div>
+    <div class="mod-section-head">
+      <div>
+        <div class="mod-section-label" data-i18n="abarth">Abarth - DMC</div>
+        <div id="mod-abarth-date" class="text-small text-muted"></div>
+      </div>
+      <button type="button" class="btn btn-primary mod-sec-add" data-section-page="abarth" data-i18n="secAddData" hidden>+ Inserisci dati</button>
+    </div>
+    <div id="mod-abarth-cards" class="mod-daily-shift-grid"></div>
   </section>
 
   <section id="mod-dmc-screen" class="mod-section" hidden>
-    <div class="mod-section-label" data-i18n="dmcSection">DMC</div>
-    <div class="text-small text-muted" data-i18n="sectionComingSoon">Sezione in preparazione.</div>
+    <div class="mod-section-head">
+      <div>
+        <div class="mod-section-label" data-i18n="dmcSection">Q Gate</div>
+        <div id="mod-dmc-date" class="text-small text-muted"></div>
+      </div>
+      <button type="button" class="btn btn-primary mod-sec-add" data-section-page="qgate" data-i18n="secAddData" hidden>+ Inserisci dati</button>
+    </div>
+    <div id="mod-dmc-cards" class="mod-sec-grid"></div>
   </section>
+
+  <dialog id="mod-section-dialog" class="card mod-selection-dialog" aria-labelledby="mod-section-dialog-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-section-dialog-title" class="mod-dialog-title" data-i18n="secEditTitle">Inserimento dati</h2>
+          <span id="mod-section-dialog-date" class="text-small text-muted"></span>
+        </div>
+        <button type="button" class="btn btn-ghost mod-dialog-close" id="mod-section-close" aria-label="X">✕</button>
+      </div>
+      <form id="mod-section-form" class="mod-anomaly-form">
+        <div id="mod-section-fields" class="mod-sec-fields"></div>
+        <div id="mod-section-error" class="text-small mod-negative" hidden></div>
+        <div class="mod-dialog-actions">
+          <button type="button" id="mod-section-cancel" class="btn" data-i18n="cancel">Annulla</button>
+          <button type="submit" class="btn btn-primary" data-i18n="save">Salva</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
 
   <section id="mod-tv-screen" class="mod-tv-screen" hidden></section>
 
@@ -5456,8 +5566,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           wrongPassword: 'Nome utente o password errati.',
           enter: 'Entra',
           stoppages: 'Fermi linea',
-          abarth: 'Abarth',
-          dmcSection: 'DMC',
+          abarth: 'Abarth - DMC',
+          secDmc: 'DMC',
+          secAbarth: 'Abarth',
+          secSchienali: 'Schienali',
+          secKit: 'Kit',
+          secTotal: 'Totale',
+          secProdTotal: 'Produzione totale',
+          secAddData: '+ Inserisci dati',
+          secEditTitle: 'Inserimento dati',
+          qgateFront: 'Q Gate anteriore',
+          qgateRear: 'Q Gate posteriore',
+          cpa: 'CPA',
+          resident: 'Resident',
+          auditSectionUpdate: 'Dati sezione aggiornati',
+          dmcSection: 'Q Gate',
           sectionComingSoon: 'Sezione in preparazione.',
           stoppagesTitle: 'SCADA',
           stoppagesHint: 'Clicca una operazione per registrare un fermo.',
@@ -5910,8 +6033,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           wrongPassword: 'Wrong username or password.',
           enter: 'Enter',
           stoppages: 'Line stoppages',
-          abarth: 'Abarth',
-          dmcSection: 'DMC',
+          abarth: 'Abarth - DMC',
+          secDmc: 'DMC',
+          secAbarth: 'Abarth',
+          secSchienali: 'Backrests',
+          secKit: 'Kit',
+          secTotal: 'Total',
+          secProdTotal: 'Total production',
+          secAddData: '+ Enter data',
+          secEditTitle: 'Data entry',
+          qgateFront: 'Q Gate front',
+          qgateRear: 'Q Gate rear',
+          cpa: 'CPA',
+          resident: 'Resident',
+          auditSectionUpdate: 'Section data updated',
+          dmcSection: 'Q Gate',
           sectionComingSoon: 'Section coming soon.',
           stoppagesTitle: 'SCADA',
           stoppagesHint: 'Click an operation to log a stoppage.',
@@ -6364,8 +6500,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           wrongPassword: 'Kullanıcı adı veya şifre yanlış.',
           enter: 'Giriş',
           stoppages: 'Hat duruşları',
-          abarth: 'Abarth',
-          dmcSection: 'DMC',
+          abarth: 'Abarth - DMC',
+          secDmc: 'DMC',
+          secAbarth: 'Abarth',
+          secSchienali: 'Sırtlık',
+          secKit: 'Kit',
+          secTotal: 'Toplam',
+          secProdTotal: 'Toplam üretim',
+          secAddData: '+ Veri gir',
+          secEditTitle: 'Veri girişi',
+          qgateFront: 'Q Gate ön',
+          qgateRear: 'Q Gate arka',
+          cpa: 'CPA',
+          resident: 'Resident',
+          auditSectionUpdate: 'Bölüm verileri güncellendi',
+          dmcSection: 'Q Gate',
           sectionComingSoon: 'Bölüm hazırlanıyor.',
           stoppagesTitle: 'SCADA',
           stoppagesHint: 'Duruş kaydetmek için bir operasyona tıklayın.',
@@ -6865,6 +7014,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         anomalySort: { key: 'openedAt', dir: 'desc' },
         anomalySelectedId: null,
         anomalySettings: {},
+        sectionDoc: {},
+        sectionDoc: {},
         chatMessages: [],
         chatUsers: [],
         chatUnsub: null,
@@ -6929,6 +7080,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         entryScreen: root.querySelector('#mod-entry-screen'),
         stoppagesScreen: root.querySelector('#mod-stoppages-screen'),
         abarthScreen: root.querySelector('#mod-abarth-screen'),
+        abarthCards: root.querySelector('#mod-abarth-cards'),
+        abarthDate: root.querySelector('#mod-abarth-date'),
+        dmcCards: root.querySelector('#mod-dmc-cards'),
+        dmcDate: root.querySelector('#mod-dmc-date'),
+        sectionDialog: root.querySelector('#mod-section-dialog'),
+        sectionDialogDate: root.querySelector('#mod-section-dialog-date'),
+        sectionFields: root.querySelector('#mod-section-fields'),
+        sectionForm: root.querySelector('#mod-section-form'),
+        sectionError: root.querySelector('#mod-section-error'),
+        sectionClose: root.querySelector('#mod-section-close'),
+        sectionCancel: root.querySelector('#mod-section-cancel'),
+        abarthCards: root.querySelector('#mod-abarth-cards'),
+        abarthDate: root.querySelector('#mod-abarth-date'),
+        dmcCards: root.querySelector('#mod-dmc-cards'),
+        dmcDate: root.querySelector('#mod-dmc-date'),
+        sectionDialog: root.querySelector('#mod-section-dialog'),
+        sectionDialogDate: root.querySelector('#mod-section-dialog-date'),
+        sectionFields: root.querySelector('#mod-section-fields'),
+        sectionForm: root.querySelector('#mod-section-form'),
+        sectionError: root.querySelector('#mod-section-error'),
+        sectionClose: root.querySelector('#mod-section-close'),
+        sectionCancel: root.querySelector('#mod-section-cancel'),
         dmcScreen: root.querySelector('#mod-dmc-screen'),
         tvScreen: root.querySelector('#mod-tv-screen'),
         chatScreen: root.querySelector('#mod-chat-screen'),
@@ -9445,6 +9618,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             unsubscribeEntries();
             unsubscribeTasks();
             unsubscribeAnomalies();
+            unsubscribeSection();
+            if (el.sectionDialog.open) el.sectionDialog.close();
             if (el.anomalyDialog.open) el.anomalyDialog.close();
             state.summaryTab = 'plan';
             state.summaryEdit = false;
@@ -10634,6 +10809,188 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }).catch(() => {});
       }
 
+      /* ---- ABARTH - DMC e Q GATE ----
+         Due pagine con le stesse card del Giornaliero: cambiano solo i numeri
+         dentro. Stanno nella collezione "sections", un documento per data, e
+         si leggono solo quando si apre la pagina. I totali non si scrivono:
+         sono la somma dei turni. */
+      const SECTION_PAGES = {
+        abarth: {
+          title: 'abarth',
+          groups: [
+            { label: 'secDmc', fields: [
+              { path: 'dmc.shift1', label: 'shift1' },
+              { path: 'dmc.shift2', label: 'shift2' }
+            ] },
+            { label: 'secAbarth', fields: [
+              { path: 'abarth.shift1.schienali', label: 'shift1', extra: 'secSchienali' },
+              { path: 'abarth.shift1.kit', label: 'shift1', extra: 'secKit' },
+              { path: 'abarth.shift2.schienali', label: 'shift2', extra: 'secSchienali' },
+              { path: 'abarth.shift2.kit', label: 'shift2', extra: 'secKit' }
+            ] }
+          ]
+        },
+        qgate: {
+          title: 'dmcSection',
+          groups: [
+            { label: 'qgateFront', fields: [
+              { path: 'qgateFront.shift1', label: 'shift1' },
+              { path: 'qgateFront.shift2', label: 'shift2' }
+            ] },
+            { label: 'qgateRear', fields: [
+              { path: 'qgateRear.shift1', label: 'shift1' },
+              { path: 'qgateRear.shift2', label: 'shift2' }
+            ] },
+            { label: 'cpa', fields: [
+              { path: 'cpa', label: 'cpa' }
+            ] },
+            { label: 'resident', fields: [
+              { path: 'resident.shift1', label: 'shift1' },
+              { path: 'resident.shift2', label: 'shift2' }
+            ] }
+          ]
+        }
+      };
+
+      function sectionGet(path) {
+        const value = String(path).split('.').reduce((acc, key) => (acc && typeof acc === 'object') ? acc[key] : undefined, state.sectionDoc || {});
+        return isNumber(value) ? value : null;
+      }
+      function sectionSet(target, path, value) {
+        const keys = String(path).split('.');
+        const last = keys.pop();
+        const leaf = keys.reduce((acc, key) => {
+          if (!acc[key] || typeof acc[key] !== 'object') acc[key] = {};
+          return acc[key];
+        }, target);
+        leaf[last] = value;
+      }
+      function sectionSum(paths) {
+        const values = paths.map(sectionGet).filter(isNumber);
+        return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
+      }
+      const sectionText = (value) => isNumber(value) ? formatNumber(value) : '—';
+      const sectionMetric = (label, value, total) =>
+        '<div class="mod-shift-metric' + (total ? ' mod-sec-total' : '') + '">' +
+          '<span class="text-small text-muted">' + escapeHtml(label) + '</span>' +
+          '<strong>' + escapeHtml(sectionText(value)) + '</strong>' +
+        '</div>';
+      const sectionCard = (title, inner) =>
+        '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(title) + '">' +
+          '<div class="mod-shift-card-head"><span class="mod-shift-card-name">' + escapeHtml(title) + '</span></div>' +
+          inner +
+        '</article>';
+      // Card con 1° turno, 2° turno e totale calcolato: la usano DMC, i due
+      // Q Gate e Resident.
+      const sectionShiftCard = (title, base) => sectionCard(title,
+        '<div class="mod-shift-grid-3col">' +
+          sectionMetric(t('shift1'), sectionGet(base + '.shift1')) +
+          sectionMetric(t('shift2'), sectionGet(base + '.shift2')) +
+          sectionMetric(t('secTotal'), sectionSum([base + '.shift1', base + '.shift2']), true) +
+        '</div>');
+
+      let sectionUnsub = null;
+      let sectionUnsubDate = null;
+      function unsubscribeSection() {
+        if (sectionUnsub) { try { sectionUnsub(); } catch (e) {} }
+        sectionUnsub = null;
+        sectionUnsubDate = null;
+        state.sectionDoc = {};
+      }
+      function subscribeSection(date) {
+        if (!db || !date || sectionUnsubDate === date) return;
+        unsubscribeSection();
+        sectionUnsubDate = date;
+        sectionUnsub = db.collection('sections').doc(date).onSnapshot((doc) => {
+          state.sectionDoc = doc.exists ? (doc.data() || {}) : {};
+          if (state.view === 'abarth') renderAbarthDmc();
+          if (state.view === 'dmc') renderQGate();
+        }, () => {});
+      }
+
+      function renderAbarthDmc() {
+        el.abarthDate.textContent = formatDate(state.selectedDate);
+        const cell = (value, total) =>
+          '<div class="mod-sec-value' + (total ? ' mod-sec-total' : '') + '">' + escapeHtml(sectionText(value)) + '</div>';
+        const row = (label, schienali, kit, total) =>
+          '<div class="mod-sec-rowlab">' + escapeHtml(label) + '</div>' + cell(schienali, total) + cell(kit, total);
+        const abarth =
+          '<div class="mod-sec-table">' +
+            '<div></div>' +
+            '<div class="mod-sec-th">' + escapeHtml(t('secSchienali')) + '</div>' +
+            '<div class="mod-sec-th">' + escapeHtml(t('secKit')) + '</div>' +
+            row(t('shift1'), sectionGet('abarth.shift1.schienali'), sectionGet('abarth.shift1.kit')) +
+            row(t('shift2'), sectionGet('abarth.shift2.schienali'), sectionGet('abarth.shift2.kit')) +
+            row(t('secTotal'),
+              sectionSum(['abarth.shift1.schienali', 'abarth.shift2.schienali']),
+              sectionSum(['abarth.shift1.kit', 'abarth.shift2.kit']), true) +
+          '</div>';
+        el.abarthCards.innerHTML =
+          sectionCard(t('secDmc'),
+            '<div class="mod-shift-grid-3col">' +
+              sectionMetric(t('shift1'), sectionGet('dmc.shift1')) +
+              sectionMetric(t('shift2'), sectionGet('dmc.shift2')) +
+              sectionMetric(t('secProdTotal'), sectionSum(['dmc.shift1', 'dmc.shift2']), true) +
+            '</div>') +
+          sectionCard(t('secAbarth'), abarth);
+        syncSectionButtons();
+      }
+
+      function renderQGate() {
+        el.dmcDate.textContent = formatDate(state.selectedDate);
+        el.dmcCards.innerHTML =
+          sectionShiftCard(t('qgateFront'), 'qgateFront') +
+          sectionShiftCard(t('qgateRear'), 'qgateRear') +
+          sectionCard(t('cpa'),
+            '<div class="mod-shift-grid-1col">' + sectionMetric(t('cpa'), sectionGet('cpa')) + '</div>') +
+          sectionShiftCard(t('resident'), 'resident');
+        syncSectionButtons();
+      }
+
+      // Il "+" lo vede chiunque abbia l'accesso: questi numeri li inserisce
+      // chi sta in linea, non solo gli admin.
+      function syncSectionButtons() {
+        root.querySelectorAll('.mod-sec-add').forEach((button) => { button.hidden = !state.authUser; });
+      }
+
+      let sectionPage = null;
+      function openSectionDialog(page) {
+        if (!state.authUser || !SECTION_PAGES[page]) return;
+        sectionPage = page;
+        el.sectionDialogDate.textContent = formatDate(state.selectedDate);
+        el.sectionFields.innerHTML = SECTION_PAGES[page].groups.map((group) =>
+          '<div class="mod-sec-group">' + escapeHtml(t(group.label)) + '</div>' +
+          group.fields.map((field) => {
+            const value = sectionGet(field.path);
+            return '<label class="mod-field"><span>' +
+              escapeHtml(t(field.label) + (field.extra ? ' · ' + t(field.extra) : '')) + '</span>' +
+              '<input type="number" min="0" step="1" class="form-control" data-path="' + field.path + '" value="' +
+              (isNumber(value) ? value : '') + '"></label>';
+          }).join('')
+        ).join('');
+        el.sectionError.hidden = true;
+        el.sectionDialog.showModal();
+      }
+
+      function saveSection() {
+        if (!db || !state.authUser || !sectionPage) return;
+        const payload = { updatedAt: new Date().toISOString(), updatedBy: state.authUsername || '' };
+        el.sectionFields.querySelectorAll('[data-path]').forEach((input) => {
+          const raw = input.value.trim();
+          const value = raw === '' ? null : Number(raw);
+          sectionSet(payload, input.dataset.path, isNumber(value) ? value : null);
+        });
+        db.collection('sections').doc(state.selectedDate).set(payload, { merge: true })
+          .then(() => {
+            el.sectionDialog.close();
+            logAudit('section.update', t(SECTION_PAGES[sectionPage].title) + ' · ' + formatDateNumeric(state.selectedDate));
+          })
+          .catch(() => {
+            el.sectionError.textContent = t('taskSaveError');
+            el.sectionError.hidden = false;
+          });
+      }
+
       function subscribeChat() {
         if (!db || state.chatUnsub) return;
         state.chatUnsub = db.collection('messages').orderBy('createdAt', 'asc').limit(300).onSnapshot((snap) => {
@@ -11377,7 +11734,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const AUDIT_ACTIONS = {
         'login': ['auditLogin', 'access'], 'logout': ['auditLogout', 'access'],
         'entry.create': ['auditEntryCreate', 'data'], 'entry.update': ['auditEntryUpdate', 'data'],
-        'entry.delete': ['auditEntryDelete', 'data'], 'edit': ['auditEdit', 'data'], 'delete': ['auditDelete', 'data'],
+        'entry.delete': ['auditEntryDelete', 'data'], 'section.update': ['auditSectionUpdate', 'data'], 'edit': ['auditEdit', 'data'], 'delete': ['auditDelete', 'data'],
         'stoppage.create': ['auditStoppageCreate', 'stoppages'], 'stoppage.update': ['auditStoppageUpdate', 'stoppages'],
         'stoppage.delete': ['auditStoppageDelete', 'stoppages'],
         'task.create': ['auditTaskCreate', 'tasks'], 'task.update': ['auditTaskUpdate', 'tasks'],
@@ -11804,7 +12161,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         else if (state.view === 'stoppages') renderStoppages();
         else if (state.view === 'chat') renderChat();
         else if (state.view === 'tv') renderTv();
-        else if (state.view === 'abarth' || state.view === 'dmc') { /* placeholder, nothing to render */ }
+        else if (state.view === 'abarth' || state.view === 'dmc') {
+          subscribeSection(state.selectedDate);
+          if (state.view === 'abarth') renderAbarthDmc(); else renderQGate();
+        }
         else renderDashboard();
         if (globalThis.lucide) {
           globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
@@ -11903,6 +12263,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           applySummaryTab();
         });
       });
+      root.querySelectorAll('.mod-sec-add').forEach((button) => {
+        button.addEventListener('click', () => openSectionDialog(button.dataset.sectionPage));
+      });
+      el.sectionClose.addEventListener('click', () => el.sectionDialog.close());
+      el.sectionCancel.addEventListener('click', () => el.sectionDialog.close());
+      el.sectionForm.addEventListener('submit', (event) => { event.preventDefault(); saveSection(); });
       el.summaryEdit.addEventListener('click', () => {
         if (!state.isAdmin) return;
         state.summaryEdit = !state.summaryEdit;
