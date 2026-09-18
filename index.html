@@ -4443,8 +4443,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <div class="mod-app-menu-sec">
         <span class="mod-app-menu-label" data-i18n="density">Spaziatura</span>
         <div class="mod-app-menu-choices">
-          <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="comfort" aria-pressed="true" title="Normale" data-i18n-title="densityComfort"><i data-lucide="rows-2" aria-hidden="true"></i></button>
-          <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="compact" aria-pressed="false" title="Compatta" data-i18n-title="densityCompact"><i data-lucide="rows-4" aria-hidden="true"></i></button>
+          <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="comfort" aria-pressed="false" title="Normale" data-i18n-title="densityComfort"><i data-lucide="rows-2" aria-hidden="true"></i></button>
+          <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="compact" aria-pressed="true" title="Compatta" data-i18n-title="densityCompact"><i data-lucide="rows-4" aria-hidden="true"></i></button>
         </div>
       </div>
       <div class="mod-app-menu-sec">
@@ -7022,7 +7022,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         chatUsersLoaded: false,
         chatSeenTs: 0,
         themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
-        density: savedDensity === 'compact' ? 'compact' : 'comfort',
+        // Compatta di default per tutti: chi preferisce l'altra la sceglie
+        // dal menu impostazioni e resta memorizzata sul suo dispositivo.
+        density: savedDensity === 'comfort' ? 'comfort' : 'compact',
         view: 'daily',
         viewHistory: [],
         oeeConfig: Object.assign({}, OEE_DEFAULTS),
