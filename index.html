@@ -3063,6 +3063,42 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-sec-shift { font-size: calc(var(--font-size-normal) * 1.15); }
     }
     #martur-operations-dashboard .mod-sec-shift svg { flex: none; }
+    /* Titoli delle card di DMC / Abarth e Qualita' sempre in maiuscolo. */
+    #martur-operations-dashboard .mod-sec-cards .mod-shift-card-name,
+    #martur-operations-dashboard .mod-sec-grid .mod-shift-card-name {
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    /* Problemi riscontrati sotto i due Q Gate: titolo centrato, elenco a
+       sinistra, una riga per punto. */
+    #martur-operations-dashboard .mod-sec-notes {
+      margin-top: auto;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      gap: 4px;
+    }
+    #martur-operations-dashboard .mod-sec-notes-title {
+      text-align: center;
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    #martur-operations-dashboard .mod-sec-notes-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 2px;
+      font-size: var(--fs-body);
+      line-height: 1.3;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+    #martur-operations-dashboard .mod-sec-notes-num { color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-sec-field-wide { grid-column: 1 / -1; }
     /* Q Gate: quattro card, due per riga. */
     #martur-operations-dashboard .mod-sec-grid {
       display: grid;
@@ -5033,7 +5069,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="btn btn-primary mod-sec-add" data-section-page="qgate" title="Inserisci dati" data-i18n-title="secAddData" aria-label="Inserisci dati" hidden>+</button>
       </div>
     </div>
-    <div id="mod-dmc-cards" class="mod-sec-grid"></div>
+    <div id="mod-dmc-cards" class="mod-sec-grid mod-sec-cards"></div>
   </section>
 
   <dialog id="mod-section-dialog" class="card mod-selection-dialog" aria-labelledby="mod-section-dialog-title">
@@ -5681,6 +5717,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetLabel: 'Target',
           secTargetUnit: 'pezzi',
           secTargetEdit: 'Clicca per cambiare il target',
+          secIssuesTitle: 'Maggiori problemi riscontrati',
           qgateFront: 'Q Gate anteriore',
           qgateRear: 'Q Gate posteriore',
           cpa: 'CPA',
@@ -6152,6 +6189,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetLabel: 'Target',
           secTargetUnit: 'pieces',
           secTargetEdit: 'Click to change the target',
+          secIssuesTitle: 'Main issues found',
           qgateFront: 'Q Gate front',
           qgateRear: 'Q Gate rear',
           cpa: 'CPA',
@@ -6623,6 +6661,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetLabel: 'Hedef',
           secTargetUnit: 'parça',
           secTargetEdit: 'Hedefi değiştirmek için tıklayın',
+          secIssuesTitle: 'Tespit edilen başlıca sorunlar',
           qgateFront: 'Q Gate ön',
           qgateRear: 'Q Gate arka',
           cpa: 'CPA',
@@ -10953,11 +10992,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           groups: [
             { label: 'qgateFront', fields: [
               { path: 'qgateFront.shift1', label: 'shift1' },
-              { path: 'qgateFront.shift2', label: 'shift2' }
+              { path: 'qgateFront.shift2', label: 'shift2' },
+              { path: 'qgateFront.issue1', labelText: '1)', type: 'text' },
+              { path: 'qgateFront.issue2', labelText: '2)', type: 'text' },
+              { path: 'qgateFront.issue3', labelText: '3)', type: 'text' }
             ] },
             { label: 'qgateRear', fields: [
               { path: 'qgateRear.shift1', label: 'shift1' },
-              { path: 'qgateRear.shift2', label: 'shift2' }
+              { path: 'qgateRear.shift2', label: 'shift2' },
+              { path: 'qgateRear.issue1', labelText: '1)', type: 'text' },
+              { path: 'qgateRear.issue2', labelText: '2)', type: 'text' },
+              { path: 'qgateRear.issue3', labelText: '3)', type: 'text' }
             ] },
             { label: 'cpa', fields: [
               { path: 'cpa', label: 'cpa' }
@@ -10983,6 +11028,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }, target);
         leaf[last] = value;
       }
+      // Come sectionGet, ma per i campi di testo (i problemi riscontrati).
+      function sectionTextOf(path) {
+        const value = String(path).split('.').reduce((acc, key) => (acc && typeof acc === 'object') ? acc[key] : undefined, state.sectionDoc || {});
+        return typeof value === 'string' ? value : '';
+      }
       function sectionSum(paths) {
         const values = paths.map(sectionGet).filter(isNumber);
         return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
@@ -10999,13 +11049,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           inner +
         '</article>';
       // Card con 1° turno, 2° turno e totale calcolato: la usano DMC, i due
-      // Q Gate e Resident.
-      const sectionShiftCard = (title, base) => sectionCard(title,
+      // Q Gate e Resident. I Q Gate hanno sotto anche i problemi riscontrati.
+      const sectionIssues = (base) =>
+        '<div class="mod-sec-notes">' +
+          '<div class="mod-sec-notes-title">' + escapeHtml(t('secIssuesTitle')) + '</div>' +
+          '<ol class="mod-sec-notes-list">' +
+            [1, 2, 3].map((n) =>
+              '<li><span class="mod-sec-notes-num">' + n + ')</span> ' +
+              escapeHtml(sectionTextOf(base + '.issue' + n)) + '</li>').join('') +
+          '</ol>' +
+        '</div>';
+      const sectionShiftCard = (title, base, withIssues) => sectionCard(title,
         '<div class="mod-shift-grid-3col">' +
           sectionMetric(t('shift1'), sectionGet(base + '.shift1')) +
           sectionMetric(t('shift2'), sectionGet(base + '.shift2')) +
           sectionMetric(t('secTotal'), sectionSum([base + '.shift1', base + '.shift2']), true) +
-        '</div>');
+        '</div>' + (withIssues ? sectionIssues(base) : ''));
 
       /* Target DMC: una nota sotto la card, col numero modificabile passandoci
          sopra. Vale dal giorno in cui lo si scrive in avanti, finche' non lo
@@ -11160,8 +11219,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderQGate() {
         renderSectionShifts(el.dmcShifts);
         el.dmcCards.innerHTML =
-          sectionShiftCard(t('qgateFront'), 'qgateFront') +
-          sectionShiftCard(t('qgateRear'), 'qgateRear') +
+          sectionShiftCard(t('qgateFront'), 'qgateFront', true) +
+          sectionShiftCard(t('qgateRear'), 'qgateRear', true) +
           sectionCard(t('cpa'),
             '<div class="mod-shift-grid-1col">' + sectionMetric(t('cpa'), sectionGet('cpa')) + '</div>') +
           sectionShiftCard(t('resident'), 'resident');
@@ -11187,9 +11246,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.sectionFields.innerHTML = SECTION_PAGES[page].groups.map((group) =>
           '<div class="mod-sec-group">' + escapeHtml(t(group.label)) + '</div>' +
           group.fields.map((field) => {
+            const label = field.labelText || (t(field.label) + (field.extra ? ' · ' + t(field.extra) : ''));
+            if (field.type === 'text') {
+              return '<label class="mod-field mod-sec-field-wide"><span>' + escapeHtml(label) + '</span>' +
+                '<input type="text" maxlength="120" class="form-control" data-path="' + field.path + '" data-type="text" value="' +
+                escapeHtml(sectionTextOf(field.path)) + '"></label>';
+            }
             const value = sectionGet(field.path);
-            return '<label class="mod-field"><span>' +
-              escapeHtml(t(field.label) + (field.extra ? ' · ' + t(field.extra) : '')) + '</span>' +
+            return '<label class="mod-field"><span>' + escapeHtml(label) + '</span>' +
               '<input type="number" min="0" step="1" class="form-control" data-path="' + field.path + '" value="' +
               (isNumber(value) ? value : '') + '"></label>';
           }).join('')
@@ -11203,6 +11267,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const payload = { updatedAt: new Date().toISOString(), updatedBy: state.authUsername || '' };
         el.sectionFields.querySelectorAll('[data-path]').forEach((input) => {
           const raw = input.value.trim();
+          if (input.dataset.type === 'text') {
+            sectionSet(payload, input.dataset.path, raw);
+            return;
+          }
           const value = raw === '' ? null : Number(raw);
           sectionSet(payload, input.dataset.path, isNumber(value) ? value : null);
         });
