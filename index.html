@@ -2972,7 +2972,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding-top: 11px;
       border-top: 1px solid var(--border);
     }
-    /* Riga dei turni sotto il titolo delle pagine ABARTH - DMC e Q GATE. */
+    /* Riga dei turni in cima alle pagine DMC / Abarth e Qualita': centrata
+       nella pagina, col "+" fermo a destra. Le due colonne laterali hanno la
+       stessa larghezza, quindi il centro e' il centro dello schermo. */
+    #martur-operations-dashboard .mod-sec-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+    }
+    #martur-operations-dashboard .mod-sec-head .mod-sec-shifts { grid-column: 2; }
+    #martur-operations-dashboard .mod-sec-actions {
+      grid-column: 3;
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #martur-operations-dashboard .mod-sec-add,
+    #martur-operations-dashboard .mod-sec-edit {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-full);
+      line-height: 1;
+    }
+    #martur-operations-dashboard .mod-sec-add { font-size: calc(var(--font-size-normal) * 1.5); }
+    #martur-operations-dashboard .mod-sec-edit { border: 1px solid var(--gold); }
+    @media (max-width: 760px) {
+      #martur-operations-dashboard .mod-sec-head { grid-template-columns: minmax(0, 1fr) auto; }
+      #martur-operations-dashboard .mod-sec-head .mod-sec-shifts { grid-column: 1; }
+      #martur-operations-dashboard .mod-sec-actions { grid-column: 2; }
+    }
     #martur-operations-dashboard .mod-sec-shifts {
       display: grid;
       gap: 2px;
@@ -2981,6 +3015,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-sec-shift {
       display: flex;
       align-items: center;
+      justify-content: center;
       flex-wrap: wrap;
       gap: 4px;
       /* Stessa misura del titolo delle card turno nel Giornaliero. */
@@ -4942,21 +4977,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <!-- ABARTH - DMC e Q GATE: stesse card del Giornaliero, dati diversi.
        I numeri si inseriscono col "+" e valgono per la data scelta in alto. -->
   <section id="mod-abarth-screen" class="mod-section" hidden>
-    <div class="mod-section-head">
-      <div>
-        <div id="mod-abarth-shifts" class="mod-sec-shifts"></div>
+    <div class="mod-section-head mod-sec-head">
+      <div id="mod-abarth-shifts" class="mod-sec-shifts"></div>
+      <div class="mod-sec-actions">
+        <button type="button" class="btn btn-ghost mod-sec-edit" data-section-page="abarth" title="Modifica dati" data-i18n-title="secEditData" aria-label="Modifica dati" hidden><i data-lucide="pencil" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-primary mod-sec-add" data-section-page="abarth" title="Inserisci dati" data-i18n-title="secAddData" aria-label="Inserisci dati" hidden>+</button>
       </div>
-      <button type="button" class="btn btn-primary mod-sec-add" data-section-page="abarth" data-i18n="secAddData" hidden>+ Inserisci dati</button>
     </div>
     <div id="mod-abarth-cards" class="mod-daily-shift-grid"></div>
   </section>
 
   <section id="mod-dmc-screen" class="mod-section" hidden>
-    <div class="mod-section-head">
-      <div>
-        <div id="mod-dmc-shifts" class="mod-sec-shifts"></div>
+    <div class="mod-section-head mod-sec-head">
+      <div id="mod-dmc-shifts" class="mod-sec-shifts"></div>
+      <div class="mod-sec-actions">
+        <button type="button" class="btn btn-ghost mod-sec-edit" data-section-page="qgate" title="Modifica dati" data-i18n-title="secEditData" aria-label="Modifica dati" hidden><i data-lucide="pencil" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-primary mod-sec-add" data-section-page="qgate" title="Inserisci dati" data-i18n-title="secAddData" aria-label="Inserisci dati" hidden>+</button>
       </div>
-      <button type="button" class="btn btn-primary mod-sec-add" data-section-page="qgate" data-i18n="secAddData" hidden>+ Inserisci dati</button>
     </div>
     <div id="mod-dmc-cards" class="mod-sec-grid"></div>
   </section>
@@ -5602,6 +5639,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secProdTotal: 'Produzione totale',
           secAddData: '+ Inserisci dati',
           secEditTitle: 'Inserimento dati',
+          secEditData: 'Modifica dati',
           qgateFront: 'Q Gate anteriore',
           qgateRear: 'Q Gate posteriore',
           cpa: 'CPA',
@@ -6069,6 +6107,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secProdTotal: 'Total production',
           secAddData: '+ Enter data',
           secEditTitle: 'Data entry',
+          secEditData: 'Edit data',
           qgateFront: 'Q Gate front',
           qgateRear: 'Q Gate rear',
           cpa: 'CPA',
@@ -6536,6 +6575,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secProdTotal: 'Toplam üretim',
           secAddData: '+ Veri gir',
           secEditTitle: 'Veri girişi',
+          secEditData: 'Veri düzenle',
           qgateFront: 'Q Gate ön',
           qgateRear: 'Q Gate arka',
           cpa: 'CPA',
@@ -7114,6 +7154,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         dmcCards: root.querySelector('#mod-dmc-cards'),
         dmcShifts: root.querySelector('#mod-dmc-shifts'),
         sectionDialog: root.querySelector('#mod-section-dialog'),
+        sectionDialogTitle: root.querySelector('#mod-section-dialog-title'),
         sectionDialogDate: root.querySelector('#mod-section-dialog-date'),
         sectionFields: root.querySelector('#mod-section-fields'),
         sectionForm: root.querySelector('#mod-section-form'),
@@ -10991,15 +11032,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       // Il "+" lo vede chiunque abbia l'accesso: questi numeri li inserisce
-      // chi sta in linea, non solo gli admin.
+      // chi sta in linea, non solo gli admin. La matita compare solo quando
+      // per quel giorno c'e' gia' qualcosa da correggere.
+      function sectionHasData(page) {
+        const def = SECTION_PAGES[page];
+        return Boolean(def) && def.groups.some((group) => group.fields.some((field) => isNumber(sectionGet(field.path))));
+      }
       function syncSectionButtons() {
         root.querySelectorAll('.mod-sec-add').forEach((button) => { button.hidden = !state.authUser; });
+        root.querySelectorAll('.mod-sec-edit').forEach((button) => {
+          button.hidden = !state.authUser || !sectionHasData(button.dataset.sectionPage);
+        });
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
       let sectionPage = null;
-      function openSectionDialog(page) {
+      function openSectionDialog(page, mode) {
         if (!state.authUser || !SECTION_PAGES[page]) return;
         sectionPage = page;
+        el.sectionDialogTitle.textContent = t(mode === 'edit' ? 'secEditData' : 'secEditTitle');
         el.sectionDialogDate.textContent = formatDate(state.selectedDate);
         el.sectionFields.innerHTML = SECTION_PAGES[page].groups.map((group) =>
           '<div class="mod-sec-group">' + escapeHtml(t(group.label)) + '</div>' +
@@ -12307,7 +12358,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       });
       root.querySelectorAll('.mod-sec-add').forEach((button) => {
-        button.addEventListener('click', () => openSectionDialog(button.dataset.sectionPage));
+        button.addEventListener('click', () => openSectionDialog(button.dataset.sectionPage, 'add'));
+      });
+      root.querySelectorAll('.mod-sec-edit').forEach((button) => {
+        button.addEventListener('click', () => openSectionDialog(button.dataset.sectionPage, 'edit'));
       });
       el.sectionClose.addEventListener('click', () => el.sectionDialog.close());
       el.sectionCancel.addEventListener('click', () => el.sectionDialog.close());
