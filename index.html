@@ -2983,7 +2983,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       align-items: center;
       flex-wrap: wrap;
       gap: 4px;
-      font-size: var(--font-size-small);
+      /* Stessa misura del titolo delle card turno nel Giornaliero. */
+      font-size: calc(var(--font-size-normal) * 1.1);
+    }
+    #martur-operations-dashboard .mod-sec-shift-sep { padding-inline: 4px; }
+    @media (min-width: 901px) {
+      #martur-operations-dashboard .mod-sec-shift { font-size: calc(var(--font-size-normal) * 1.15); }
     }
     #martur-operations-dashboard .mod-sec-shift svg { flex: none; }
     /* Q Gate: quattro card, due per riga. */
@@ -10942,10 +10947,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // la riga cambia da sola col giorno scelto.
       function renderSectionShifts(node) {
         const date = state.selectedDate;
+        // Tutto su una riga sola: i due turni separati da un trattino.
         node.innerHTML = isSingleShiftDay(date)
           ? '<div class="mod-sec-shift"><i data-lucide="sun" aria-hidden="true"></i><span class="mod-shift-title-main">' + escapeHtml(t('uniqueShift')) + '</span></div>'
-          : ['shift1', 'shift2'].map((shiftKey, index) =>
-              '<div class="mod-sec-shift">' + shiftTitleHtml(shiftKey, index, date, false) + '</div>').join('');
+          : '<div class="mod-sec-shift">' +
+              ['shift1', 'shift2'].map((shiftKey, index) => shiftTitleHtml(shiftKey, index, date, false))
+                .join(' <span class="mod-shift-title-main mod-sec-shift-sep">—</span> ') +
+            '</div>';
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
