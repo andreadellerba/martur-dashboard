@@ -8648,8 +8648,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (isNumber(prev)) {
           const delta = cur - prev;
           const dir = delta === 0 ? 'flat' : (delta > 0 ? 'up' : 'down');
-          // Piu' dummy e' un peggioramento: il colore va al contrario della freccia.
-          const cls = dir === 'flat' ? 'mod-trend-flat' : (dir === 'up' ? 'mod-trend-down' : 'mod-trend-up');
+          // Il colore segue il segno, non il giudizio: in meno e' rosso, in
+          // piu' e' verde. Vale sia per la settimana sia per il mese.
+          const cls = 'mod-trend-' + dir;
           const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '▬';
           deltaHtml = '<span class="mod-period-note-delta mod-kpi-trend ' + cls + '">' + arrow + ' ' +
             escapeHtml(formatSigned(delta)) + '</span>' +
