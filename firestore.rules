@@ -58,27 +58,19 @@ service cloud.firestore {
     }
 
     match /anomalies/{id} {
-      // Report anomalie (schede anomalia): come le attivita'.
+      // Schede anomalia: le legge chi ha l'accesso, le modifica e le elimina
+      // solo un admin. Una scheda nuova puo' aprirla chiunque abbia l'accesso
+      // e anche chi arriva dal QR senza accesso: in quel caso valgono solo i
+      // campi del modulo, con testi di lunghezza limitata e ora del server.
       allow read: if isSignedIn();
       allow update, delete: if isAdmin();
-      // Il QR in linea permette a chiunque, anche senza accesso, di aprire una
-      // scheda nuova col numero successivo del contatore: solo i campi del
-      // modulo, testi di lunghezza limitata e ora del server. Leggere o
-      // toccare le altre schede resta vietato.
-      allow create: if isAdmin() || isQrReport(id);
+      allow create: if (isSignedIn() && isValidAnomaly()) || isQrReport();
     }
 
     match /anomalySettings/{doc} {
-      // "main": nomi delle colonne e dati documento predefiniti, letti anche
-      // dal modulo QR. "counter": ultimo N. scheda usato.
+      // "main": nomi di titolo e colonne, letti anche dal modulo QR.
       allow read: if true;
       allow write: if isAdmin();
-      // Dal QR il contatore puo' solo salire di uno, insieme alla scheda nuova
-      // che prende quel numero.
-      allow update: if doc == 'counter'
-        && request.resource.data.keys().hasOnly(['last'])
-        && request.resource.data.last == resource.data.last + 1
-        && existsAfter(/databases/$(database)/documents/anomalies/$('n-' + string(request.resource.data.last)));
     }
 
     function optText(d, key, max) {
@@ -87,28 +79,33 @@ service cloud.firestore {
     function optDate(d, key) {
       return !d.keys().hasAny([key]) || d[key] == null || (d[key] is string && d[key].size() == 10);
     }
-
-    function isQrReport(id) {
-      let d = request.resource.data;
-      let counter = /databases/$(database)/documents/anomalySettings/counter;
-      return d.keys().hasOnly(['number', 'reporter', 'machine', 'openedAt', 'description', 'action',
-          'dueAt', 'owner', 'ownerRole', 'closedAt', 'status', 'source', 'createdAt',
-          'docIssued', 'docRevised', 'docRevision', 'docClass', 'docNumber'])
-        && d.source == 'qr'
-        && d.createdAt == request.time
-        && d.number is int
-        && id == 'n-' + string(d.number)
-        && d.number == get(counter).data.last + 1
-        && getAfter(counter).data.last == d.number
-        && d.reporter is string && d.reporter.size() > 0 && d.reporter.size() <= 80
+    function anomalyFieldsOk(d) {
+      return d.reporter is string && d.reporter.size() <= 80
         && d.description is string && d.description.size() > 0 && d.description.size() <= 800
         && d.openedAt is string && d.openedAt.size() == 10
         && d.status in ['open', 'doing', 'closed']
-        && (!d.keys().hasAny(['ownerRole']) || d.ownerRole == null || d.ownerRole in ['operator', 'maintainer'])
+        && (!d.keys().hasAny(['department']) || d.department == null
+            || d.department in ['logistics', 'it', 'maintenance', 'production', 'quality', 'process'])
         && optText(d, 'machine', 40) && optText(d, 'action', 800) && optText(d, 'owner', 80)
-        && optDate(d, 'dueAt') && optDate(d, 'closedAt')
-        && optText(d, 'docIssued', 40) && optText(d, 'docRevised', 40) && optText(d, 'docRevision', 40)
-        && optText(d, 'docClass', 40) && optText(d, 'docNumber', 40);
+        && optDate(d, 'closedAt');
+    }
+    // Scheda aperta da dentro l'app, da un utente con accesso.
+    function isValidAnomaly() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['reporter', 'machine', 'openedAt', 'description', 'action',
+          'owner', 'department', 'closedAt', 'status', 'source', 'createdAt', 'updatedAt', 'updatedBy'])
+        && d.createdAt == request.time
+        && anomalyFieldsOk(d);
+    }
+    // Scheda aperta dal QR, senza accesso.
+    function isQrReport() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['reporter', 'machine', 'openedAt', 'description', 'action',
+          'owner', 'department', 'closedAt', 'status', 'source', 'createdAt'])
+        && d.source == 'qr'
+        && d.createdAt == request.time
+        && d.reporter.size() > 0
+        && anomalyFieldsOk(d);
     }
 
     match /auditLog/{id} {
