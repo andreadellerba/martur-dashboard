@@ -11031,17 +11031,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         syncSectionButtons();
       }
 
-      // Il "+" lo vede chiunque abbia l'accesso: questi numeri li inserisce
-      // chi sta in linea, non solo gli admin. La matita compare solo quando
-      // per quel giorno c'e' gia' qualcosa da correggere.
-      function sectionHasData(page) {
-        const def = SECTION_PAGES[page];
-        return Boolean(def) && def.groups.some((group) => group.fields.some((field) => isNumber(sectionGet(field.path))));
-      }
+      // "+" e matita li vede chiunque abbia l'accesso, su tutte e due le
+      // pagine: questi numeri li inserisce chi sta in linea, non solo gli
+      // admin. La matita resta sempre a disposizione, anche a giornata vuota.
       function syncSectionButtons() {
-        root.querySelectorAll('.mod-sec-add').forEach((button) => { button.hidden = !state.authUser; });
-        root.querySelectorAll('.mod-sec-edit').forEach((button) => {
-          button.hidden = !state.authUser || !sectionHasData(button.dataset.sectionPage);
+        root.querySelectorAll('.mod-sec-add, .mod-sec-edit').forEach((button) => {
+          button.hidden = !state.authUser;
         });
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
