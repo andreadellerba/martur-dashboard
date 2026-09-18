@@ -3022,6 +3022,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: 100%;
     }
     #martur-operations-dashboard .mod-sec-cards .mod-shift-note { margin-top: auto; }
+    /* La nota del target sta al centro della card. */
+    #martur-operations-dashboard .mod-sec-note {
+      justify-content: center;
+      text-align: center;
+    }
     /* Target nella nota della card DMC: si capisce che si puo' cambiare
        passandoci sopra col mouse, e si scrive al suo posto. */
     #martur-operations-dashboard .mod-target-value {
@@ -3031,7 +3036,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       background: none;
       font: inherit;
       color: var(--gold);
-      font-weight: 800;
+      font-weight: var(--font-weight-medium);
       font-variant-numeric: tabular-nums;
       cursor: text;
     }
@@ -3044,7 +3049,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       width: 5.5em;
       padding: 2px 6px;
       font: inherit;
-      font-weight: 800;
       text-align: center;
     }
     #martur-operations-dashboard .mod-sec-shift {
@@ -11134,7 +11138,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // vista.
         const target = dmcTargetFor(state.selectedDate);
         const targetNote =
-          '<div class="mod-shift-note"><span class="mod-shift-note-text">' +
+          '<div class="mod-shift-note mod-sec-note"><span class="mod-shift-note-text">' +
             escapeHtml(t('secTargetLabel')) + ': ' +
             (state.authUser
               ? '<button type="button" class="mod-target-value" data-target-edit title="' + escapeHtml(t('secTargetEdit')) + '">' + escapeHtml(formatNumber(target)) + '</button>'
