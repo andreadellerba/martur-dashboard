@@ -2929,9 +2929,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-transform: uppercase;
       height: 2.6em;
       /* Il testo sta al centro dello spazio delle due righe: con una riga
-         sola restava appiccicato in alto con il vuoto sotto. */
+         sola restava appiccicato in alto con il vuoto sotto. Ed e' centrato
+         anche in orizzontale, come la nota del target. */
       display: flex;
       align-items: center;
+      justify-content: center;
+      text-align: center;
       overflow: hidden;
     }
     #martur-operations-dashboard .mod-shift-note-text {
@@ -3022,11 +3025,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: 100%;
     }
     #martur-operations-dashboard .mod-sec-cards .mod-shift-note { margin-top: auto; }
-    /* La nota del target sta al centro della card. */
-    #martur-operations-dashboard .mod-sec-note {
-      justify-content: center;
-      text-align: center;
-    }
     /* Target nella nota della card DMC: si capisce che si puo' cambiare
        passandoci sopra col mouse, e si scrive al suo posto. */
     #martur-operations-dashboard .mod-target-value {
