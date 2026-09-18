@@ -3013,19 +3013,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      min-width: 24px;
-      height: 24px;
-      padding: 0 7px;
+      /* Ci deve stare un numero a due cifre senza stringersi. */
+      min-width: 34px;
+      height: 34px;
+      padding: 0 8px;
       border-radius: var(--radius-full);
       background: var(--gold);
       color: var(--gold-foreground);
-      font-weight: 700;
-      font-size: var(--font-size-normal);
+      font-weight: 800;
+      font-size: var(--fs-title);
+      font-variant-numeric: tabular-nums;
     }
-    /* Rework per turno: etichetta del turno sopra ogni riga di tre. */
+    /* Rework per turno: due colonne affiancate, stessa griglia delle card
+       turno qui sopra, cosi' il 1° turno resta sotto il 1° turno. */
     #martur-operations-dashboard .mod-rework-shifts {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      #martur-operations-dashboard .mod-rework-shifts { grid-template-columns: 1fr; }
     }
     #martur-operations-dashboard .mod-rework-shift-label {
       font-size: var(--font-size-small);
@@ -8717,8 +8725,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // I 3 rework maggiori, una riga per turno. Le giornate di prima, che
       // hanno solo la classifica unica senza turni, restano su una riga sola.
       function renderDailyTopReworks(row) {
+        // Nel cerchio ci va il numero di casi (un trattino se non si sa),
+        // non piu' la posizione in classifica: l'ordine si vede gia'.
         const items = (list) => list.length
-          ? list.map((item, index) => '<li><span class="mod-rework-rank-badge">' + (index + 1) + '</span><span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span>' + (isNumber(item.count) ? '<span class="mod-rework-ranking-count">' + formatNumber(item.count) + ' ' + t('cases') + '</span>' : '') + '</li>').join('')
+          ? list.map((item) => '<li><span class="mod-rework-rank-badge" title="' + escapeHtml(t('cases')) + '">' +
+              (isNumber(item.count) ? escapeHtml(formatNumber(item.count)) : '—') + '</span>' +
+              '<span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span></li>').join('')
           : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
         const shift1 = normalizeTopReworks(row.shift1 && row.shift1.topReworks);
         const shift2 = normalizeTopReworks(row.shift2 && row.shift2.topReworks);
