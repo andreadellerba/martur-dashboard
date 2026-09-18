@@ -48,9 +48,14 @@ service cloud.firestore {
     }
 
     match /tasks/{id} {
-      // Riepilogo attivita': la vede chi e' autenticato, la modifica solo un admin.
+      // Riepilogo attivita': la vede chi e' autenticato, la modifica solo un
+      // admin. Unica eccezione: spostare una card fra le colonne (categoria,
+      // stato e data di chiusura) lo puo' fare chiunque abbia l'accesso.
       allow read: if isSignedIn();
-      allow write: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
+      allow create, delete: if isSignedIn() && (myRole() == 'admin' || myRole() == 'configAdmin');
+      allow update: if isSignedIn() && ((myRole() == 'admin' || myRole() == 'configAdmin')
+        || request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['category', 'status', 'closedAt', 'updatedAt', 'updatedBy']));
     }
 
     function isAdmin() {

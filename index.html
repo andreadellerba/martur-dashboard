@@ -9363,7 +9363,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             const cell = (label, value) =>
               '<span class="mod-task-cell"><span class="mod-task-cell-label">' + escapeHtml(label) + '</span>' +
               '<span class="mod-task-cell-value">' + value + '</span></span>';
-            return '<button type="button" class="mod-task-card" draggable="' + String(canEditSummary()) + '" data-task-id="' + escapeHtml(task.id) + '">' +
+            return '<button type="button" class="mod-task-card" draggable="' + String(Boolean(state.authUser)) + '" data-task-id="' + escapeHtml(task.id) + '">' +
               '<span class="mod-task-top">' +
                 '<span class="mod-task-who">' +
                   '<span class="mod-task-people">' + (task.people ? escapeHtml(task.people) : escapeHtml(t('taskNoPeople'))) + '</span>' +
@@ -9409,7 +9409,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
         el.summaryBoard.querySelectorAll('.mod-task-col').forEach((col) => {
           col.addEventListener('dragover', (event) => {
-            if (!draggingTaskId || !canEditSummary()) return;
+            if (!draggingTaskId || !state.authUser) return;
             event.preventDefault();
             event.dataTransfer.dropEffect = 'move';
             col.classList.add('mod-task-col-over');
@@ -9435,7 +9435,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // se non c'era; uscendo da li' torna in corso e la data si toglie,
       // altrimenti resterebbe una chiusura senza senso.
       function moveTaskToCategory(taskId, categoryId) {
-        if (!taskId || !categoryId || !canEditSummary()) return;
+        if (!taskId || !categoryId || !state.authUser) return;
         const task = (state.tasks || []).find((x) => x.id === taskId);
         if (!task || task.category === categoryId) return;
 
