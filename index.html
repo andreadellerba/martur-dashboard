@@ -9217,55 +9217,50 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const reworkText = formatOptionalNumber(shift.rework) + (isNumber(reworkRate) ? ' \u00b7 ' + formatPercent(reworkRate) : '');
           const overtimeText = isNumber(shift.overtimePct) ? formatPercent(shift.overtimePct) : formatPercent(0);
           const noteText = (shift.note || '').trim();
-          // Colori a soglia sui valori: disattivi nelle giornate a turno unico (non
-          // paragonabili) dove tutto resta bianco.
-          const singleShift = isSingleShiftRow(row);
+          // Colori a soglia sui valori: stesse regole in tutte le giornate,
+          // turno unico compreso.
           let frontCls = '', stellCls = '';
-          if (!singleShift && isNumber(shift.front) && isNumber(shift.stellantisCars) && shift.front !== shift.stellantisCars) {
+          if (isNumber(shift.front) && isNumber(shift.stellantisCars) && shift.front !== shift.stellantisCars) {
             if (shift.front > shift.stellantisCars) { frontCls = 'mod-metric-good'; stellCls = 'mod-metric-bad'; }
             else { frontCls = 'mod-metric-bad'; stellCls = 'mod-metric-good'; }
           }
           let rearCls = '';
-          if (!singleShift && isNumber(shift.rear) && isNumber(shift.stellantisCars) && shift.rear !== shift.stellantisCars) {
+          if (isNumber(shift.rear) && isNumber(shift.stellantisCars) && shift.rear !== shift.stellantisCars) {
             rearCls = shift.rear > shift.stellantisCars ? 'mod-metric-good' : 'mod-metric-bad';
           }
           let reworkCls = '';
-          if (!singleShift && isNumber(reworkRate)) {
+          if (isNumber(reworkRate)) {
             reworkCls = reworkRate < 0.10 ? 'mod-metric-good' : reworkRate <= 0.20 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let absCls = '';
-          if (!singleShift && isNumber(absenteeism)) {
+          if (isNumber(absenteeism)) {
             absCls = absenteeism <= 0.12 ? 'mod-metric-good' : absenteeism <= 0.20 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let absentCls = '';
-          if (!singleShift && isNumber(shift.absent)) {
+          if (isNumber(shift.absent)) {
             absentCls = shift.absent <= 5 ? 'mod-metric-good' : shift.absent <= 8 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           let codaCls = '';
-          if (!singleShift && isNumber(shift.coda)) {
+          if (isNumber(shift.coda)) {
             codaCls = shift.coda <= 45 ? 'mod-metric-good' : shift.coda <= 70 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
           // Delta a segno, non a soglia: rosso appena e' negativo, verde se
-          // positivo, e lo zero resta com'era (verde). Vale anche nei giorni a
-          // turno unico, perche' il segno ha senso a prescindere dai turni.
+          // positivo, e lo zero resta com'era (verde).
           let gapCls = '';
           if (isNumber(gap)) {
             gapCls = gap < 0 ? 'mod-metric-bad' : 'mod-metric-good';
           }
           let effCls = '';
-          if (!singleShift && isNumber(shift.efficiency)) {
+          if (isNumber(shift.efficiency)) {
             effCls = shift.efficiency > 0.65 ? 'mod-metric-good' : shift.efficiency >= 0.50 ? 'mod-metric-yellow' : 'mod-metric-bad';
           }
-          let otCls = '';
-          if (!singleShift) {
-            const otValue = isNumber(shift.overtimePct) ? shift.overtimePct : 0;
-            otCls = otValue <= 0 ? 'mod-metric-good' : otValue <= 0.10 ? 'mod-metric-yellow' : 'mod-metric-bad';
-          }
+          const otValue = isNumber(shift.overtimePct) ? shift.overtimePct : 0;
+          const otCls = otValue <= 0 ? 'mod-metric-good' : otValue <= 0.10 ? 'mod-metric-yellow' : 'mod-metric-bad';
           let dummyCls = '';
-          if (!singleShift && isNumber(shift.dummy)) {
+          if (isNumber(shift.dummy)) {
             dummyCls = shift.dummy <= 30 ? 'mod-metric-bad' : shift.dummy <= 50 ? 'mod-metric-yellow' : 'mod-metric-good';
           }
-          const goldCls = singleShift ? '' : 'mod-metric-gold';
+          const goldCls = 'mod-metric-gold';
           const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
@@ -9295,8 +9290,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function positionKpiTiles(sideBySide) {
-        // Sabato (giornaliero): le 4 tile KPI si spostano a sx/dx della card turno unico,
-        // impilate a coppie. Negli altri casi restano nella loro griglia normale.
+        // Turno unico (giornaliero): le tile KPI si spostano a sx/dx della card,
+        // due per parte. Il Delta Martur / Stellantis qui non si mostra: serve
+        // solo a tenere le due colonne pari, il dato resta nei conti del
+        // settimanale e del mensile. Negli altri casi restano nella loro
+        // griglia normale, Delta compreso.
         if (sideBySide) {
           if (!el.kpiLeftSlot) {
             el.kpiLeftSlot = document.createElement('div');
@@ -9308,9 +9306,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.dailyShiftGrid.insertBefore(el.kpiLeftSlot, card);
           el.dailyShiftGrid.appendChild(el.kpiRightSlot);
           el.kpiLeftSlot.append(el.kpiTile1, el.kpiTile2);
-          el.kpiRightSlot.append(el.kpiTile4, el.kpiTile5, el.kpiTile3);
+          el.kpiRightSlot.append(el.kpiTile5, el.kpiTile3);
+          el.kpiGrid.append(el.kpiTile4);
+          el.kpiTile4.hidden = true;
           el.kpiGrid.hidden = true;
         } else {
+          el.kpiTile4.hidden = false;
           el.kpiGrid.hidden = false;
           el.kpiGrid.append(el.kpiTile1, el.kpiTile2, el.kpiTile4, el.kpiTile5, el.kpiTile3);
         }
