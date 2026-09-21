@@ -851,13 +851,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       min-width: 0;
     }
     #martur-operations-dashboard .mod-section-head > div:first-child > .mod-section-label {
-      flex: 0 0 auto;
+      /* Puo' stringersi (e andare a capo) sugli schermi piu' stretti, dove un
+         titolo lungo da solo non ci sta: altrimenti spingeva fuori la sezione. */
+      flex: 0 1 auto;
+      min-width: 0;
       margin-bottom: 0;
     }
     #martur-operations-dashboard .mod-section-head > div:first-child > .text-small {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      /* flex-basis 0 e non auto: cosi' il sottotitolo non fa da larghezza
+         minima all'intestazione. Con "auto" la riga non poteva stringersi sotto
+         la lunghezza del testo e su telefono la sezione usciva dallo schermo
+         invece di accorciare il sottotitolo con i puntini. */
+      flex: 1 1 0;
       min-width: 0;
       text-transform: uppercase;
     }
@@ -898,6 +906,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: var(--topbar-gap);
       width: 100%;
       min-height: 40px;
+    }
+    /* Sui telefoni piu' stretti il gruppo dell'header non ci sta con 20px di
+       respiro fra un elemento e l'altro: si stringe invece di uscire dallo
+       schermo. */
+    @media (max-width: 400px) {
+      #martur-operations-dashboard .mod-topbar-cluster { --topbar-gap: 10px; }
     }
     #martur-operations-dashboard .mod-topbar-left {
       display: flex;
@@ -1295,6 +1309,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       gap: 8px;
       min-width: 0;
     }
+    /* Colonna dichiarata come minmax(0, 1fr): senza, la colonna implicita si
+       allarga fino al contenuto piu' largo (di solito il sottotitolo lungo di
+       una sezione) e su telefono la sezione esce dallo schermo. Cosi' invece il
+       sottotitolo si accorcia con i puntini, come previsto. */
+    #martur-operations-dashboard .mod-section,
+    #martur-operations-dashboard .mod-entry-screen,
+    #martur-operations-dashboard .mod-entry-card,
+    #martur-operations-dashboard .mod-field-group {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    #martur-operations-dashboard .mod-section-head { min-width: 0; }
     #martur-operations-dashboard .mod-brand-copy {
       gap: 1px;
     }
@@ -1521,8 +1546,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       align-items: stretch;
     }
     @media (max-width: 900px) {
-      #martur-operations-dashboard .mod-oee-fermi-row {
-        grid-template-columns: 1fr;
+      /* Il selettore ripete .mod-two-col: senza, questa riga perdeva contro la
+         regola .mod-two-col piu' in basso nel foglio (stessa specificita',
+         vince l'ultima) e su tablet restavano due colonne strette. */
+      #martur-operations-dashboard .mod-two-col.mod-oee-fermi-row {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
     #martur-operations-dashboard .mod-oee-gauge-value {
@@ -2853,6 +2881,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-single-shift-side {
         flex-direction: row;
       }
+      /* Affiancate sono tile strette: l'icona in alto a destra finiva addosso
+         al titolo, e qui non aggiunge niente. */
+      #martur-operations-dashboard .mod-single-shift-side .mod-kpi-icon {
+        display: none;
+      }
     }
     #martur-operations-dashboard .mod-daily-shift-card {
       position: relative;
@@ -2862,6 +2895,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border: 2px solid var(--gold);
     }
     #martur-operations-dashboard .mod-shift-title-main { color: light-dark(rgb(20 20 22), #fff); }
+    /* "Quando" e "chi" restano ciascuno un blocco unico: vanno a capo insieme,
+       non in mezzo ai nomi. Il puntino di separazione fra i due c'e' solo
+       quando stanno sulla stessa riga. */
+    #martur-operations-dashboard .mod-shift-title-part {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2px 5px;
+    }
+    /* I singoli pezzi non si spezzano mai a meta': al massimo, sugli schermi
+       piu' stretti, va a capo un nome intero. */
+    #martur-operations-dashboard .mod-shift-title-part > * { white-space: nowrap; }
+    #martur-operations-dashboard .mod-shift-title-who::before {
+      content: '·';
+      color: light-dark(rgb(20 20 22), #fff);
+    }
+    @media (max-width: 600px) {
+      #martur-operations-dashboard .mod-shift-title-who::before { content: none; }
+    }
     #martur-operations-dashboard .mod-shift-lead { color: var(--gold); font-weight: var(--font-weight-medium); }
     #martur-operations-dashboard .mod-shift-crew { color: var(--crew-blue); font-weight: var(--font-weight-medium); }
     /* Capoturno e squadra in maiuscolo. La spaziatura serve: in maiuscolo
@@ -3012,6 +3065,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-sec-head .mod-sec-shifts { grid-column: 1; }
       #martur-operations-dashboard .mod-sec-actions { grid-column: 2; }
     }
+    /* Su telefono la riga dei turni si prende tutta la larghezza e i due tasti
+       vanno sopra, a destra: accanto ai tasti restava una colonna troppo
+       stretta e i nomi finivano tagliati. */
+    @media (max-width: 600px) {
+      #martur-operations-dashboard .mod-sec-head { grid-template-columns: minmax(0, 1fr); }
+      #martur-operations-dashboard .mod-sec-head .mod-sec-shifts { grid-column: 1; grid-row: 2; }
+      #martur-operations-dashboard .mod-sec-actions { grid-column: 1; grid-row: 1; }
+    }
     #martur-operations-dashboard .mod-sec-shifts {
       display: grid;
       gap: 2px;
@@ -3074,7 +3135,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       /* Stessa misura del titolo delle card turno nel Giornaliero. */
       font-size: calc(var(--font-size-normal) * 1.1);
     }
+    #martur-operations-dashboard .mod-sec-shift-item {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2px 6px;
+    }
     #martur-operations-dashboard .mod-sec-shift-sep { padding-inline: 4px; }
+    /* Su telefono i due turni stanno uno sotto l'altro: in riga diventavano
+       quattro righe spezzate a meta' dei nomi. */
+    @media (max-width: 600px) {
+      #martur-operations-dashboard .mod-sec-shift { flex-direction: column; gap: 2px; }
+      #martur-operations-dashboard .mod-sec-shift-sep { display: none; }
+    }
     @media (min-width: 901px) {
       #martur-operations-dashboard .mod-sec-shift { font-size: calc(var(--font-size-normal) * 1.15); }
     }
@@ -3182,11 +3256,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-shift-metric {
       display: grid;
+      grid-template-rows: 1fr auto;
       gap: 1px;
       min-width: 0;
       text-align: center;
       justify-items: center;
     }
+    /* L'etichetta si prende tutta l'altezza che le serve e il numero resta
+       appoggiato in basso: cosi' i numeri della stessa riga restano allineati
+       anche quando un'etichetta va a capo e quella accanto no. */
+    #martur-operations-dashboard .mod-shift-metric .text-small { align-self: end; }
     /* Etichette sopra i numeri: piu grandi e in bianco acceso invece del grigio.
        Il colore passa da light-dark perche' in tema chiaro il bianco sparirebbe:
        li' diventa quasi nero, che e' l'equivalente "acceso" su fondo chiaro. */
@@ -3204,6 +3283,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-kpi-tile > .text-muted:not(.text-small) {
       font-size: calc(var(--font-size-normal) * 1.2);
+      /* L'icona sta in alto a destra sopra la tile: il titolo le lascia posto
+         da tutti e due i lati (cosi' resta centrato) invece di finirci sotto,
+         come succedeva sulle tile strette del telefono. */
+      padding-inline: 22px;
     }
     #martur-operations-dashboard .mod-shift-metric strong {
       overflow-wrap: anywhere;
@@ -4415,12 +4498,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
     }
     @media (max-width: 600px) {
+      /* minmax(0, 1fr) e non 1fr: con "1fr" la colonna non scende sotto la
+         larghezza minima del contenuto, e su telefono grafici, OLE e moduli
+         uscivano dallo schermo a destra facendosi tagliare. */
       #martur-operations-dashboard .mod-two-col,
       #martur-operations-dashboard .mod-daily-shift-grid,
       #martur-operations-dashboard .mod-entry-groups,
       #martur-operations-dashboard .mod-entry-notes,
       #martur-operations-dashboard .mod-overtime-rows {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
       }
       #martur-operations-dashboard .mod-selection-dialog {
         width: calc(100vw - 16px);
@@ -4461,6 +4547,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       #martur-operations-dashboard .mod-detail {
         align-items: flex-start;
         flex-direction: column;
+      }
+      /* In colonna l'intestazione si dimensiona sul contenuto invece che sulla
+         larghezza disponibile: fissandola al 100% il sottotitolo lungo si
+         accorcia con i puntini invece di spingere la sezione fuori schermo. */
+      #martur-operations-dashboard .mod-section-head > div:first-child {
+        width: 100%;
       }
       #martur-operations-dashboard .mod-selection-actions,
       #martur-operations-dashboard .mod-selection-actions .btn,
@@ -9326,12 +9418,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const team = shiftTeamInfo(shiftKey, dateStr);
         const lead = team.names[0];
         const crew = team.names.slice(1);
-        return '<i data-lucide="' + icon + '" aria-hidden="true"></i>' +
-          (withDate ? '<span class="mod-shift-title-main mod-shift-date">' + escapeHtml(shortDate(dateStr)) + '</span> · ' : '') +
-          '<span class="mod-shift-title-main">' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')</span>' +
-          ' · <span class="mod-shift-title-main mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>' +
-          ' · <span class="mod-shift-lead">' + escapeHtml(lead) + '</span>' +
-          (crew.length ? ' <span class="mod-shift-title-main">/</span> ' + crew.map((name) => '<span class="mod-shift-crew">' + escapeHtml(name) + '</span>').join(' <span class="mod-shift-title-main">/</span> ') : '');
+        // Due blocchi: "quando" (turno, squadra, orario) e "chi" (i nomi). Cosi'
+        // su schermo stretto vanno a capo insieme, uno sotto l'altro, invece di
+        // spezzarsi in mezzo ai nomi lasciando un puntino appeso a fine riga.
+        return '<span class="mod-shift-title-part mod-shift-title-when">' +
+            '<i data-lucide="' + icon + '" aria-hidden="true"></i>' +
+            (withDate ? '<span class="mod-shift-title-main mod-shift-date">' + escapeHtml(shortDate(dateStr)) + '</span><span class="mod-shift-title-main mod-shift-title-dot">·</span>' : '') +
+            '<span class="mod-shift-title-main">' + escapeHtml(t(shiftKey)) + ' (' + team.letter + ')</span>' +
+            '<span class="mod-shift-title-main mod-shift-title-dot">·</span>' +
+            '<span class="mod-shift-title-main mod-shift-time">(' + SHIFT_TIMES[shiftKey] + ')</span>' +
+          '</span>' +
+          '<span class="mod-shift-title-part mod-shift-title-who">' +
+            '<span class="mod-shift-lead">' + escapeHtml(lead) + '</span>' +
+            (crew.length ? '<span class="mod-shift-title-main">/</span>' + crew.map((name) => '<span class="mod-shift-crew">' + escapeHtml(name) + '</span>').join('<span class="mod-shift-title-main">/</span>') : '') +
+          '</span>';
       }
 
       function renderDailyShiftCards(row) {
@@ -11345,8 +11445,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         node.innerHTML = isSingleShiftDay(date)
           ? '<div class="mod-sec-shift"><i data-lucide="sun" aria-hidden="true"></i><span class="mod-shift-title-main">' + escapeHtml(t('uniqueShift')) + '</span></div>'
           : '<div class="mod-sec-shift">' +
-              ['shift1', 'shift2'].map((shiftKey, index) => shiftTitleHtml(shiftKey, index, date, false))
-                .join(' <span class="mod-shift-title-main mod-sec-shift-sep">—</span> ') +
+              ['shift1', 'shift2']
+                .map((shiftKey, index) => '<span class="mod-sec-shift-item">' + shiftTitleHtml(shiftKey, index, date, false) + '</span>')
+                .join('<span class="mod-shift-title-main mod-sec-shift-sep">—</span>') +
             '</div>';
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
