@@ -2888,7 +2888,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-yellow { color: var(--metric-yellow); }
     #martur-operations-dashboard .mod-shift-metric strong.mod-metric-gold { color: var(--gold); }
     @media (min-width: 901px) {
-      #martur-operations-dashboard .mod-shift-card-name {
+      #martur-operations-dashboard .mod-shift-card-name,
+      #martur-operations-dashboard .mod-sec-card-names {
         font-size: calc(var(--font-size-normal) * 1.15);
       }
       #martur-operations-dashboard .mod-shift-metric strong {
@@ -2896,6 +2897,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
     }
     #martur-operations-dashboard .mod-shift-card-name,
+    #martur-operations-dashboard .mod-sec-card-names,
     #martur-operations-dashboard .mod-shift-summary-text {
       font-size: calc(var(--font-size-normal) * 1.1);
       font-weight: 500;
@@ -3025,6 +3027,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: 100%;
     }
     #martur-operations-dashboard .mod-sec-cards .mod-shift-note { margin-top: auto; }
+    /* Target e nota della card DMC: un blocco solo, cosi' l'aria in eccesso
+       finisce tutta sopra e non in mezzo alle due righe. */
+    #martur-operations-dashboard .mod-sec-note-stack {
+      margin-top: auto;
+      display: grid;
+      gap: 13px;
+    }
+    #martur-operations-dashboard .mod-sec-note-stack .mod-shift-note { margin-top: 0; }
+    /* Nomi accanto al titolo di CPA e Resident: stessa misura del titolo,
+       restano sulla riga dei nomi e non si spezzano a meta'. */
+    #martur-operations-dashboard .mod-sec-card-names {
+      font-weight: var(--font-weight-medium);
+      white-space: nowrap;
+    }
     /* Target nella nota della card DMC: si capisce che si puo' cambiare
        passandoci sopra col mouse, e si scrive al suo posto. */
     #martur-operations-dashboard .mod-target-value {
@@ -5779,6 +5795,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetUnit: 'pezzi',
           secTargetEdit: 'Clicca per cambiare il target',
           secIssuesTitle: 'Maggiori problemi riscontrati',
+          secNote: 'Nota',
           qgateFront: 'Q Gate anteriore',
           qgateRear: 'Q Gate posteriore',
           cpa: 'CPA',
@@ -6255,6 +6272,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetUnit: 'pieces',
           secTargetEdit: 'Click to change the target',
           secIssuesTitle: 'Main issues found',
+          secNote: 'Note',
           qgateFront: 'Q Gate front',
           qgateRear: 'Q Gate rear',
           cpa: 'CPA',
@@ -6731,6 +6749,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetUnit: 'parça',
           secTargetEdit: 'Hedefi değiştirmek için tıklayın',
           secIssuesTitle: 'Tespit edilen başlıca sorunlar',
+          secNote: 'Not',
           qgateFront: 'Q Gate ön',
           qgateRear: 'Q Gate arka',
           cpa: 'CPA',
@@ -7169,6 +7188,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // Le due squadre si alternano ogni settimana ISO tra 1 e 2 Turno.
       const SHIFT_TEAM_A = ['M. Lampis', 'D. Cristiano', 'A. Liotino'];
       const SHIFT_TEAM_B = ['S. Perna', 'P. Zotta', 'M. Colverde'];
+      // Qualita': i due Resident si alternano come le squadre (l'ordine si
+      // inverte ogni settimana ISO), il CPA invece e' sempre lo stesso.
+      const RESIDENT_TEAM = ['S. Bighiu', 'F. Falotico'];
+      const CPA_OPERATOR = 'M. Vizzari';
 
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyDsStEiIby8i_1RAc_rcHYHMqUpYo4LXw4',
@@ -11107,13 +11130,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           groups: [
             { label: 'secDmc', fields: [
               { path: 'dmc.shift1', label: 'shift1' },
-              { path: 'dmc.shift2', label: 'shift2' }
+              { path: 'dmc.shift2', label: 'shift2' },
+              { path: 'dmc.note', label: 'secNote', type: 'text' }
             ] },
             { label: 'secAbarth', fields: [
               { path: 'abarth.shift1.schienali', label: 'shift1', extra: 'secSchienali' },
               { path: 'abarth.shift1.kit', label: 'shift1', extra: 'secKit' },
               { path: 'abarth.shift2.schienali', label: 'shift2', extra: 'secSchienali' },
-              { path: 'abarth.shift2.kit', label: 'shift2', extra: 'secKit' }
+              { path: 'abarth.shift2.kit', label: 'shift2', extra: 'secKit' },
+              { path: 'abarth.note', label: 'secNote', type: 'text' }
             ] }
           ]
         },
@@ -11135,11 +11160,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               { path: 'qgateRear.issue3', labelText: '3)', type: 'text' }
             ] },
             { label: 'cpa', fields: [
-              { path: 'cpa', label: 'cpa' }
+              { path: 'cpa', label: 'cpa' },
+              { path: 'cpaNote', label: 'secNote', type: 'text' }
             ] },
             { label: 'resident', fields: [
               { path: 'resident.shift1', label: 'shift1' },
-              { path: 'resident.shift2', label: 'shift2' }
+              { path: 'resident.shift2', label: 'shift2' },
+              { path: 'resident.note', label: 'secNote', type: 'text' }
             ] }
           ]
         }
@@ -11173,11 +11200,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '<span class="text-small text-muted">' + escapeHtml(label) + '</span>' +
           '<strong>' + escapeHtml(sectionText(value)) + '</strong>' +
         '</div>';
-      const sectionCard = (title, inner) =>
+      const sectionCard = (title, inner, namesHtml) =>
         '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(title) + '">' +
-          '<div class="mod-shift-card-head"><span class="mod-shift-card-name">' + escapeHtml(title) + '</span></div>' +
+          '<div class="mod-shift-card-head"><span class="mod-shift-card-name">' + escapeHtml(title) + '</span>' +
+            (namesHtml || '') +
+          '</div>' +
           inner +
         '</article>';
+      // Nomi accanto al titolo di una card (CPA e Resident), scritti come la
+      // squadra nella riga dei turni: stesso colore e stesso maiuscolo.
+      const sectionNamesHtml = (names) =>
+        '<span class="mod-sec-card-names">' +
+          names.map((name) => '<span class="mod-shift-crew">' + escapeHtml(name) + '</span>')
+            .join('<span class="mod-shift-title-main"> / </span>') +
+        '</span>';
+      // I due Resident si alternano come le squadre: quando in 1° turno c'e' la
+      // squadra A l'ordine e' quello base, la settimana dopo si inverte.
+      const residentNames = (dateStr) => shiftTeamInfo('shift1', dateStr).letter === 'A'
+        ? RESIDENT_TEAM.slice()
+        : RESIDENT_TEAM.slice().reverse();
+      // Nota libera in fondo alla card, come quella dei turni nel Giornaliero.
+      const sectionNote = (path) =>
+        '<div class="mod-shift-note mod-sec-note"><span class="mod-shift-note-text">' +
+          escapeHtml(sectionTextOf(path).trim()) + '</span></div>';
       // Card con 1° turno, 2° turno e totale calcolato: la usano DMC, i due
       // Q Gate e Resident. I Q Gate hanno sotto anche i problemi riscontrati.
       const sectionIssues = (base) =>
@@ -11189,12 +11234,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               escapeHtml(sectionTextOf(base + '.issue' + n)) + '</li>').join('') +
           '</ol>' +
         '</div>';
-      const sectionShiftCard = (title, base, withIssues) => sectionCard(title,
+      const sectionShiftCard = (title, base, withIssues, extraHtml, namesHtml) => sectionCard(title,
         '<div class="mod-shift-grid-3col">' +
           sectionMetric(t('shift1'), sectionGet(base + '.shift1')) +
           sectionMetric(t('shift2'), sectionGet(base + '.shift2')) +
           sectionMetric(t('secTotal'), sectionSum([base + '.shift1', base + '.shift2']), true) +
-        '</div>' + (withIssues ? sectionIssues(base) : ''));
+        '</div>' + (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
 
       /* Target DMC: una nota sotto la card, col numero modificabile passandoci
          sopra. Vale dal giorno in cui lo si scrive in avanti, finche' non lo
@@ -11340,8 +11385,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               sectionMetric(t('shift1'), sectionGet('dmc.shift1')) +
               sectionMetric(t('shift2'), sectionGet('dmc.shift2')) +
               sectionMetric(t('secProdTotal'), sectionSum(['dmc.shift1', 'dmc.shift2']), true) +
-            '</div>' + targetNote) +
-          sectionCard(t('secAbarth'), abarth);
+            '</div>' +
+            // target e nota restano appaiati in fondo alla card
+            '<div class="mod-sec-note-stack">' + targetNote + sectionNote('dmc.note') + '</div>') +
+          sectionCard(t('secAbarth'), abarth + sectionNote('abarth.note'));
         bindDmcTargetEdit();
         syncSectionButtons();
       }
@@ -11352,8 +11399,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           sectionShiftCard(t('qgateFront'), 'qgateFront', true) +
           sectionShiftCard(t('qgateRear'), 'qgateRear', true) +
           sectionCard(t('cpa'),
-            '<div class="mod-shift-grid-1col">' + sectionMetric(t('cpa'), sectionGet('cpa')) + '</div>') +
-          sectionShiftCard(t('resident'), 'resident');
+            '<div class="mod-shift-grid-1col">' + sectionMetric(t('cpa'), sectionGet('cpa')) + '</div>' +
+            sectionNote('cpaNote'),
+            sectionNamesHtml([CPA_OPERATOR])) +
+          sectionShiftCard(t('resident'), 'resident', false,
+            sectionNote('resident.note'),
+            sectionNamesHtml(residentNames(state.selectedDate)));
         syncSectionButtons();
       }
 
