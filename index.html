@@ -2938,7 +2938,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     /* Numeri dei turni: stessi ruoli di colore ma molto piu accesi. Ridefinire i
        token QUI dentro (e non globalmente) tinge solo queste cifre e lascia in
        pace grafici, KPI e bordi, che con questi valori risulterebbero urlati. */
-    #martur-operations-dashboard .mod-shift-metric {
+    #martur-operations-dashboard .mod-shift-metric,
+    #martur-operations-dashboard .mod-sec-hero {
       --metric-good: light-dark(rgb(0 163 62), rgb(45 255 130));
       --metric-warn: light-dark(rgb(226 116 0), rgb(255 201 41));
       --metric-bad: light-dark(rgb(238 17 17), rgb(255 92 92));
@@ -2946,11 +2947,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       --gold: light-dark(rgb(178 133 28), rgb(255 209 122));
       --destructive: light-dark(rgb(238 17 17), rgb(255 92 92));
     }
-    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-good { color: var(--metric-good); }
-    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-warn { color: var(--metric-warn); }
-    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-bad { color: var(--metric-bad); }
-    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-yellow { color: var(--metric-yellow); }
-    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-gold { color: var(--gold); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-good,
+    #martur-operations-dashboard .mod-sec-hero-value.mod-metric-good { color: var(--metric-good); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-warn,
+    #martur-operations-dashboard .mod-sec-hero-value.mod-metric-warn { color: var(--metric-warn); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-bad,
+    #martur-operations-dashboard .mod-sec-hero-value.mod-metric-bad { color: var(--metric-bad); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-yellow,
+    #martur-operations-dashboard .mod-sec-hero-value.mod-metric-yellow { color: var(--metric-yellow); }
+    #martur-operations-dashboard .mod-shift-metric strong.mod-metric-gold,
+    #martur-operations-dashboard .mod-sec-hero-value.mod-metric-gold { color: var(--gold); }
     @media (min-width: 901px) {
       #martur-operations-dashboard .mod-shift-card-name,
       #martur-operations-dashboard .mod-sec-card-names {
@@ -3041,15 +3047,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       padding-top: 11px;
       border-top: 1px solid var(--border);
     }
-    /* Usata solo nel riepilogo immagine (Abarth 1o turno: schienali + kit). */
-    #martur-operations-dashboard .mod-shift-grid-2col {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 10px;
-      row-gap: 10px;
-      padding-top: 11px;
-      border-top: 1px solid var(--border);
-    }
     /* Riga dei turni in cima alle pagine DMC / Abarth e Qualita': centrata
        nella pagina, col "+" fermo a destra. Le due colonne laterali hanno la
        stessa larghezza, quindi il centro e' il centro dello schermo. */
@@ -3108,14 +3105,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: 100%;
     }
     #martur-operations-dashboard .mod-sec-cards .mod-shift-note { margin-top: auto; }
-    /* Target e nota della card DMC: un blocco solo, cosi' l'aria in eccesso
-       finisce tutta sopra e non in mezzo alle due righe. */
-    #martur-operations-dashboard .mod-sec-note-stack {
-      margin-top: auto;
-      display: grid;
-      gap: 13px;
-    }
-    #martur-operations-dashboard .mod-sec-note-stack .mod-shift-note { margin-top: 0; }
     /* Nomi accanto al titolo di CPA e Resident: stessa misura del titolo,
        restano sulla riga dei nomi e non si spezzano a meta'. */
     #martur-operations-dashboard .mod-sec-card-names {
@@ -3179,25 +3168,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-transform: uppercase;
       letter-spacing: 0.03em;
     }
-    /* Problemi riscontrati sotto i due Q Gate: titolo centrato, elenco a
-       sinistra, una riga per punto. */
+    /* Problemi riscontrati sotto i due Q Gate: il titolo fa da etichetta
+       piccola (non deve urlare quanto i problemi), l'elenco e' un blocco
+       centrato nella card con le righe allineate a sinistra fra loro. */
     #martur-operations-dashboard .mod-sec-notes {
       margin-top: auto;
       padding-top: 11px;
       border-top: 1px solid var(--border);
-      display: grid;
-      gap: 4px;
-    }
-    /* Titolo e punti con lo stesso trattamento delle note del Giornaliero:
-       stessa misura di testo e stesso colore, nero su chiaro e bianco su
-       scuro. */
-    #martur-operations-dashboard .mod-sec-notes-title {
       text-align: center;
-      font-size: var(--fs-lead);
-      font-weight: 600;
+    }
+    #martur-operations-dashboard .mod-sec-notes-title {
+      font-size: var(--font-size-small);
+      letter-spacing: 0.06em;
       line-height: 1.3;
       text-transform: uppercase;
-      color: light-dark(rgb(20 20 22), #fff);
+      color: var(--muted-foreground);
     }
     /* Intestazione del riepilogo generato dal tasto "Riepilogo": si vede solo
        nell'immagine fuori schermo che diventa la foto, mai nella pagina. */
@@ -3210,17 +3195,114 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       color: var(--gold);
     }
     #martur-operations-dashboard .mod-sec-notes-list {
-      margin: 0;
+      display: inline-block;
+      text-align: left;
+      margin: 8px 0 0;
       padding: 0;
       list-style: none;
-      display: grid;
-      gap: 2px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+    #martur-operations-dashboard .mod-sec-notes-list li {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+    }
+    /* Il numero d'ordine resta una cifra piccola in oro, di larghezza fissa,
+       cosi' i tre problemi si incolonnano. */
+    #martur-operations-dashboard .mod-sec-notes-num {
+      flex: 0 0 auto;
+      width: 15px;
+      text-align: right;
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      color: var(--gold);
+    }
+    #martur-operations-dashboard .mod-sec-notes-text {
       font-size: var(--fs-lead);
-      line-height: 1.3;
       font-weight: 600;
       text-transform: uppercase;
       color: light-dark(rgb(20 20 22), #fff);
-      overflow-wrap: anywhere;
+    }
+    /* ---- Card Qualita' (Q Gate, CPA, Resident) ----
+       Un numero solo comanda la card: il totale grande al centro, e sotto,
+       in piccolo, il dettaglio dei due turni. Serve a leggerle da lontano,
+       sul televisore in reparto. */
+    #martur-operations-dashboard .mod-sec-hero {
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    #martur-operations-dashboard .mod-sec-hero-value {
+      display: block;
+      font-size: calc(var(--fs-display) * 2);
+      font-weight: var(--font-weight-medium);
+      line-height: 1;
+    }
+    #martur-operations-dashboard .mod-sec-hero-label {
+      margin-top: 4px;
+      font-size: var(--font-size-small);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-sec-hero-split {
+      margin-top: 9px;
+      font-size: calc(var(--font-size-normal) * 1.15);
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-sec-hero-split strong {
+      font-weight: 600;
+      color: light-dark(rgb(20 20 22), #fff);
+    }
+    /* ---- Abarth (DMC / Abarth) ----
+       Schienali e Kit affiancati, ognuno coi suoi turni nel ritmo delle card
+       del Giornaliero: etichetta piccola sopra, numero grande sotto. */
+    #martur-operations-dashboard .mod-sec-abarth {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 28px;
+      row-gap: 10px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    #martur-operations-dashboard .mod-sec-abarth-head {
+      font-size: var(--font-size-small);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-sec-abarth-group {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+    #martur-operations-dashboard .mod-sec-abarth-group.mod-sec-abarth-one {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    /* Target DMC: una pastiglia sotto i numeri invece di una barra a tutta
+       larghezza. Il numero resta modificabile come prima. */
+    #martur-operations-dashboard .mod-sec-target-row {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+    #martur-operations-dashboard .mod-sec-target-pill {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 2px 9px;
+      border-radius: var(--radius-full);
+      background: color-mix(in srgb, var(--gold) 18%, transparent);
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: light-dark(rgb(118 94 40), rgb(233 209 164));
+    }
+    #martur-operations-dashboard .mod-sec-target-pill .mod-target-value {
+      padding: 0 2px;
+      color: inherit;
+      font-weight: 700;
     }
     #martur-operations-dashboard .mod-sec-field-wide { grid-column: 1 / -1; }
     /* Q Gate: quattro card, due per riga. */
@@ -11443,28 +11525,36 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '<div class="mod-sec-notes-title">' + escapeHtml(t('secIssuesTitle')) + '</div>' +
           '<ol class="mod-sec-notes-list">' +
             [1, 2, 3].map((n) =>
-              '<li><span class="mod-sec-notes-num">' + n + ')</span> ' +
-              escapeHtml(sectionTextOf(base + '.issue' + n)) + '</li>').join('') +
+              '<li><span class="mod-sec-notes-num">' + n + '</span>' +
+              '<span class="mod-sec-notes-text">' + escapeHtml(sectionTextOf(base + '.issue' + n)) + '</span></li>').join('') +
           '</ol>' +
         '</div>';
-      const sectionShiftCard = (title, base, withIssues, extraHtml, namesHtml) => sectionCard(title,
-        '<div class="mod-shift-grid-3col">' +
-          sectionMetric(t('shift1'), sectionGet(base + '.shift1')) +
-          sectionMetric(t('shift2'), sectionGet(base + '.shift2')) +
-          sectionMetric(t('secTotal'), sectionSum([base + '.shift1', base + '.shift2']), true) +
-        '</div>' + (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
-      /* Giornata a turno unico: al posto delle tre colonne 1° turno / 2° turno /
-         totale resta un numero solo, il totale della giornata. La card e' la
-         stessa (stessa larghezza, stesso titolo, stessi problemi riscontrati
-         sotto): cambia solo quanti numeri ci sono dentro. */
-      const sectionUniqueShiftCard = (title, base, withIssues, extraHtml, namesHtml) => sectionCard(title,
-        '<div class="mod-shift-grid-1col">' +
-          sectionMetric(t('uniqueShift'), sectionSum([base + '.shift1', base + '.shift2']), true) +
-        '</div>' + (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
-      // Quale delle due usare per la data scelta.
-      const sectionDayCard = (title, base, withIssues, extraHtml, namesHtml) =>
-        (isSingleShiftDay(state.selectedDate) ? sectionUniqueShiftCard : sectionShiftCard)(
-          title, base, withIssues, extraHtml, namesHtml);
+      /* Numero grande al centro con la sua etichetta, e sotto, in piccolo, il
+         dettaglio dei turni: e' il blocco che apre tutte le card della pagina
+         Qualita'. "splitHtml" e' la riga del dettaglio, assente quando non
+         serve (CPA, giornata a turno unico). */
+      const sectionHero = (value, label, splitHtml, cls) =>
+        '<div class="mod-sec-hero">' +
+          '<strong class="mod-sec-hero-value' + (cls ? ' ' + cls : '') + '">' + escapeHtml(sectionText(value)) + '</strong>' +
+          (label ? '<div class="mod-sec-hero-label">' + escapeHtml(label) + '</div>' : '') +
+          (splitHtml || '') +
+        '</div>';
+      const sectionHeroSplit = (base) =>
+        '<div class="mod-sec-hero-split">' +
+          escapeHtml(t('shift1')) + ' <strong>' + escapeHtml(sectionText(sectionGet(base + '.shift1'))) + '</strong>' +
+          ' &nbsp;·&nbsp; ' +
+          escapeHtml(t('shift2')) + ' <strong>' + escapeHtml(sectionText(sectionGet(base + '.shift2'))) + '</strong>' +
+        '</div>';
+      /* Giornata a turno unico: il numero grande resta, sparisce la riga del
+         dettaglio (c'e' un turno solo) e l'etichetta lo dice. La card e' la
+         stessa: stessa larghezza, stesso titolo, stessi problemi sotto. */
+      const sectionDayCard = (title, base, withIssues, extraHtml, namesHtml) => {
+        const single = isSingleShiftDay(state.selectedDate);
+        const total = sectionSum([base + '.shift1', base + '.shift2']);
+        return sectionCard(title,
+          sectionHero(total, single ? t('uniqueShift') : t('secTotal'), single ? '' : sectionHeroSplit(base), 'mod-metric-gold') +
+          (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
+      };
 
       /* ---- Tasto Riepilogo (ex Indietro) ----
          Un'immagine con il turno scelto (o entrambi) di Giornaliero, DMC e
@@ -11838,57 +11928,60 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderAbarthDmc() {
         renderSectionShifts(el.abarthShifts);
         const single = isSingleShiftDay(state.selectedDate);
-        const cell = (value, total) =>
-          '<div class="mod-sec-value' + (total ? ' mod-sec-total' : '') + '">' + escapeHtml(sectionText(value)) + '</div>';
-        const row = (label, schienali, kit, total) =>
-          '<div class="mod-sec-rowlab">' + escapeHtml(label) + '</div>' + cell(schienali, total) + cell(kit, total);
-        // Turno unico: la tabella resta la stessa (schienali | kit), ma con una
-        // riga sola col totale invece di 1° turno / 2° turno / totale.
-        const abarthRows = single
-          ? row(t('uniqueShift'),
-              sectionSum(['abarth.shift1.schienali', 'abarth.shift2.schienali']),
-              sectionSum(['abarth.shift1.kit', 'abarth.shift2.kit']), true)
-          : row(t('shift1'), sectionGet('abarth.shift1.schienali'), sectionGet('abarth.shift1.kit')) +
-            row(t('shift2'), sectionGet('abarth.shift2.schienali'), sectionGet('abarth.shift2.kit')) +
-            row(t('secTotal'),
-              sectionSum(['abarth.shift1.schienali', 'abarth.shift2.schienali']),
-              sectionSum(['abarth.shift1.kit', 'abarth.shift2.kit']), true);
-        const abarth =
-          '<div class="mod-sec-table">' +
-            '<div></div>' +
-            '<div class="mod-sec-th">' + escapeHtml(t('secSchienali')) + '</div>' +
-            '<div class="mod-sec-th">' + escapeHtml(t('secKit')) + '</div>' +
-            abarthRows +
+        /* Abarth: schienali e kit affiancati, ognuno coi suoi numeri nel ritmo
+           delle card del Giornaliero (etichetta piccola sopra, numero grande
+           sotto). Col turno unico ogni colonna ha un numero solo. */
+        const abarthGroup = (key) => {
+          const p1 = 'abarth.shift1.' + key;
+          const p2 = 'abarth.shift2.' + key;
+          if (single) {
+            return '<div class="mod-sec-abarth-group mod-sec-abarth-one">' +
+              sectionMetric(t('uniqueShift'), sectionSum([p1, p2]), true) +
+            '</div>';
+          }
+          return '<div class="mod-sec-abarth-group">' +
+            sectionMetric(t('shift1'), sectionGet(p1)) +
+            sectionMetric(t('shift2'), sectionGet(p2)) +
+            sectionMetric(t('secTotal'), sectionSum([p1, p2]), true) +
           '</div>';
-        // Nota sotto la card DMC, come quella dei turni nel Giornaliero: cosi'
-        // le due card restano della stessa altezza e il target e' sempre in
-        // vista.
+        };
+        const abarth =
+          '<div class="mod-sec-abarth">' +
+            '<div class="mod-sec-abarth-head">' + escapeHtml(t('secSchienali')) + '</div>' +
+            '<div class="mod-sec-abarth-head">' + escapeHtml(t('secKit')) + '</div>' +
+            abarthGroup('schienali') +
+            abarthGroup('kit') +
+          '</div>';
         const target = dmcTargetFor(state.selectedDate);
         const dmcTotal = sectionSum(['dmc.shift1', 'dmc.shift2']);
-        const targetNote =
-          '<div class="mod-shift-note mod-sec-note"><span class="mod-shift-note-text">' +
-            escapeHtml(t('secTargetLabel')) + ': ' +
+        /* Il target e' una pastiglia sotto i numeri, non piu' una barra a tutta
+           larghezza: cosi' in fondo alla card resta una riga sola, quella della
+           nota. Sta su una riga sua della griglia (non dentro una colonna)
+           perche' altrimenti allungherebbe quella colonna e le etichette dei
+           turni non sarebbero piu' in linea fra loro. Il numero si cambia
+           cliccandoci sopra esattamente come prima. */
+        const targetPill =
+          '<div class="mod-sec-target-row"><span class="mod-sec-target-pill">' +
+            escapeHtml(t('secTargetLabel')) + ' ' +
             (state.authUser
               ? '<button type="button" class="mod-target-value" data-target-edit title="' + escapeHtml(t('secTargetEdit')) + '">' + escapeHtml(formatNumber(target)) + '</button>'
               : '<span class="mod-target-value">' + escapeHtml(formatNumber(target)) + '</span>') +
-            ' ' + escapeHtml(t('secTargetUnit')) +
           '</span></div>';
         // Turno unico: una cifra sola (la produzione della giornata), colorata
         // sul target come il totale dei giorni a due turni.
         const dmcNumbers = single
           ? '<div class="mod-shift-grid-1col">' +
               sectionMetric(t('uniqueShift'), dmcTotal, true, dmcTotalCls(dmcTotal, target)) +
+              targetPill +
             '</div>'
           : '<div class="mod-shift-grid-3col">' +
               sectionMetric(t('shift1'), sectionGet('dmc.shift1')) +
               sectionMetric(t('shift2'), sectionGet('dmc.shift2')) +
               sectionMetric(t('secProdTotal'), dmcTotal, true, dmcTotalCls(dmcTotal, target)) +
+              targetPill +
             '</div>';
         el.abarthCards.innerHTML =
-          sectionCard(t('secDmc'),
-            dmcNumbers +
-            // target e nota restano appaiati in fondo alla card
-            '<div class="mod-sec-note-stack">' + targetNote + sectionNote('dmc.note') + '</div>') +
+          sectionCard(t('secDmc'), dmcNumbers + sectionNote('dmc.note')) +
           sectionCard(t('secAbarth'), abarth + sectionNote('abarth.note'));
         bindDmcTargetEdit();
         syncSectionButtons();
@@ -11900,8 +11993,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dmcCards.innerHTML =
           sectionDayCard(t('qgateFront'), 'qgateFront', true) +
           sectionDayCard(t('qgateRear'), 'qgateRear', true) +
+          // CPA: sotto al numero non si ripete la parola "CPA", la dice gia'
+          // il titolo della card.
           sectionCard(t('cpa'),
-            '<div class="mod-shift-grid-1col">' + sectionMetric(t('cpa'), sectionGet('cpa')) + '</div>' +
+            sectionHero(sectionGet('cpa'), '', '') +
             sectionNote('cpaNote'),
             sectionNamesHtml([CPA_OPERATOR])) +
           sectionDayCard(t('resident'), 'resident', false,
