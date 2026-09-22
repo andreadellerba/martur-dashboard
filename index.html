@@ -3211,12 +3211,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-sec-notes-list li {
       display: flex;
       gap: 7px;
-      align-items: baseline;
+      align-items: center;
     }
-    /* Il numero d'ordine resta una cifra piccola in oro davanti al problema. */
+    /* Il numero d'ordine sta davanti al problema, stessa misura del testo (solo
+       in oro) e centrato con esso. */
     #martur-operations-dashboard .mod-sec-notes-num {
       flex: 0 0 auto;
-      font-size: var(--font-size-small);
+      font-size: var(--fs-lead);
       font-weight: 600;
       color: var(--gold);
     }
@@ -3257,41 +3258,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 600;
       color: light-dark(rgb(20 20 22), #fff);
     }
-    /* ---- Abarth (DMC / Abarth) ----
-       Schienali e Kit affiancati, ognuno coi suoi turni nel ritmo delle card
-       del Giornaliero: etichetta piccola sopra, numero grande sotto. */
-    #martur-operations-dashboard .mod-sec-abarth {
+    /* Abarth ha due numeri, schienali e kit: due blocchi affiancati, ognuno
+       fatto come il numero grande dei Q Gate. */
+    #martur-operations-dashboard .mod-sec-hero-pair {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: 28px;
       row-gap: 10px;
-      padding-top: 11px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-    }
-    #martur-operations-dashboard .mod-sec-abarth-head {
-      font-size: var(--font-size-small);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-sec-abarth-group {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-    }
-    #martur-operations-dashboard .mod-sec-abarth-group.mod-sec-abarth-one {
-      grid-template-columns: minmax(0, 1fr);
     }
     /* Target DMC: una pastiglia sotto i numeri invece di una barra a tutta
        larghezza. Il numero resta modificabile come prima. */
     #martur-operations-dashboard .mod-sec-target-row {
-      grid-column: 1 / -1;
+      margin-top: 9px;
       text-align: center;
     }
     #martur-operations-dashboard .mod-sec-target-pill {
       display: inline-block;
-      margin-top: 5px;
       padding: 2px 9px;
       border-radius: var(--radius-full);
       background: color-mix(in srgb, var(--gold) 18%, transparent);
@@ -11544,11 +11526,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           (label ? '<div class="mod-sec-hero-label">' + escapeHtml(label) + '</div>' : '') +
           (splitHtml || '') +
         '</div>';
-      const sectionHeroSplit = (base) =>
+      const sectionHeroSplit = (path1, path2) =>
         '<div class="mod-sec-hero-split">' +
-          escapeHtml(t('shift1')) + ' <strong>' + escapeHtml(sectionText(sectionGet(base + '.shift1'))) + '</strong>' +
+          escapeHtml(t('shift1')) + ' <strong>' + escapeHtml(sectionText(sectionGet(path1))) + '</strong>' +
           ' &nbsp;·&nbsp; ' +
-          escapeHtml(t('shift2')) + ' <strong>' + escapeHtml(sectionText(sectionGet(base + '.shift2'))) + '</strong>' +
+          escapeHtml(t('shift2')) + ' <strong>' + escapeHtml(sectionText(sectionGet(path2))) + '</strong>' +
         '</div>';
       /* Giornata a turno unico: il numero grande resta, sparisce la riga del
          dettaglio (c'e' un turno solo) e l'etichetta lo dice. La card e' la
@@ -11557,7 +11539,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const single = isSingleShiftDay(state.selectedDate);
         const total = sectionSum([base + '.shift1', base + '.shift2']);
         return sectionCard(title,
-          sectionHero(total, single ? t('uniqueShift') : t('secTotal'), single ? '' : sectionHeroSplit(base), 'mod-metric-gold') +
+          sectionHero(total, single ? t('uniqueShift') : t('secTotal'),
+            single ? '' : sectionHeroSplit(base + '.shift1', base + '.shift2'), 'mod-metric-gold') +
           (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
       };
 
@@ -11932,39 +11915,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function renderAbarthDmc() {
         renderSectionShifts(el.abarthShifts);
+        /* Stessa grafica delle card Q Gate: il numero grande al centro con la
+           sua etichetta, e sotto, in piccolo, il dettaglio dei due turni. */
         const single = isSingleShiftDay(state.selectedDate);
-        /* Abarth: schienali e kit affiancati, ognuno coi suoi numeri nel ritmo
-           delle card del Giornaliero (etichetta piccola sopra, numero grande
-           sotto). Col turno unico ogni colonna ha un numero solo. */
-        const abarthGroup = (key) => {
-          const p1 = 'abarth.shift1.' + key;
-          const p2 = 'abarth.shift2.' + key;
-          if (single) {
-            return '<div class="mod-sec-abarth-group mod-sec-abarth-one">' +
-              sectionMetric(t('uniqueShift'), sectionSum([p1, p2]), true) +
-            '</div>';
-          }
-          return '<div class="mod-sec-abarth-group">' +
-            sectionMetric(t('shift1'), sectionGet(p1)) +
-            sectionMetric(t('shift2'), sectionGet(p2)) +
-            sectionMetric(t('secTotal'), sectionSum([p1, p2]), true) +
-          '</div>';
-        };
-        const abarth =
-          '<div class="mod-sec-abarth">' +
-            '<div class="mod-sec-abarth-head">' + escapeHtml(t('secSchienali')) + '</div>' +
-            '<div class="mod-sec-abarth-head">' + escapeHtml(t('secKit')) + '</div>' +
-            abarthGroup('schienali') +
-            abarthGroup('kit') +
-          '</div>';
         const target = dmcTargetFor(state.selectedDate);
         const dmcTotal = sectionSum(['dmc.shift1', 'dmc.shift2']);
-        /* Il target e' una pastiglia sotto i numeri, non piu' una barra a tutta
+        /* Il target e' una pastiglia sotto i numeri, non una barra a tutta
            larghezza: cosi' in fondo alla card resta una riga sola, quella della
-           nota. Sta su una riga sua della griglia (non dentro una colonna)
-           perche' altrimenti allungherebbe quella colonna e le etichette dei
-           turni non sarebbero piu' in linea fra loro. Il numero si cambia
-           cliccandoci sopra esattamente come prima. */
+           nota. Il numero si cambia cliccandoci sopra come prima. */
         const targetPill =
           '<div class="mod-sec-target-row"><span class="mod-sec-target-pill">' +
             escapeHtml(t('secTargetLabel')) + ' ' +
@@ -11972,22 +11930,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               ? '<button type="button" class="mod-target-value" data-target-edit title="' + escapeHtml(t('secTargetEdit')) + '">' + escapeHtml(formatNumber(target)) + '</button>'
               : '<span class="mod-target-value">' + escapeHtml(formatNumber(target)) + '</span>') +
           '</span></div>';
-        // Turno unico: una cifra sola (la produzione della giornata), colorata
-        // sul target come il totale dei giorni a due turni.
-        const dmcNumbers = single
-          ? '<div class="mod-shift-grid-1col">' +
-              sectionMetric(t('uniqueShift'), dmcTotal, true, dmcTotalCls(dmcTotal, target)) +
-              targetPill +
-            '</div>'
-          : '<div class="mod-shift-grid-3col">' +
-              sectionMetric(t('shift1'), sectionGet('dmc.shift1')) +
-              sectionMetric(t('shift2'), sectionGet('dmc.shift2')) +
-              sectionMetric(t('secProdTotal'), dmcTotal, true, dmcTotalCls(dmcTotal, target)) +
-              targetPill +
-            '</div>';
+        const dmcHero = sectionHero(dmcTotal,
+          single ? t('uniqueShift') : t('secProdTotal'),
+          (single ? '' : sectionHeroSplit('dmc.shift1', 'dmc.shift2')) + targetPill,
+          dmcTotalCls(dmcTotal, target));
+        /* Abarth ha due numeri, schienali e kit: due blocchi affiancati, ognuno
+           fatto come il numero grande dei Q Gate. */
+        const abarthCol = (label, key) => {
+          const p1 = 'abarth.shift1.' + key;
+          const p2 = 'abarth.shift2.' + key;
+          return '<div>' +
+            '<strong class="mod-sec-hero-value mod-metric-gold">' + escapeHtml(sectionText(sectionSum([p1, p2]))) + '</strong>' +
+            '<div class="mod-sec-hero-label">' + escapeHtml(label) + '</div>' +
+            (single ? '' : sectionHeroSplit(p1, p2)) +
+          '</div>';
+        };
+        const abarthHero =
+          '<div class="mod-sec-hero mod-sec-hero-pair">' +
+            abarthCol(t('secSchienali'), 'schienali') +
+            abarthCol(t('secKit'), 'kit') +
+          '</div>';
         el.abarthCards.innerHTML =
-          sectionCard(t('secDmc'), dmcNumbers + sectionNote('dmc.note')) +
-          sectionCard(t('secAbarth'), abarth + sectionNote('abarth.note'));
+          sectionCard(t('secDmc'), dmcHero + sectionNote('dmc.note')) +
+          sectionCard(t('secAbarth'), abarthHero + sectionNote('abarth.note'));
         bindDmcTargetEdit();
         syncSectionButtons();
       }
