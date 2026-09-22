@@ -7419,9 +7419,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const SHIFT_TEAM_A = ['M. Lampis', 'D. Cristiano', 'A. Liotino'];
       const SHIFT_TEAM_B = ['S. Perna', 'P. Zotta', 'M. Colverde'];
       // Qualita': i due Resident si alternano come le squadre (l'ordine si
-      // inverte ogni settimana ISO), il CPA invece e' sempre lo stesso.
+      // inverte ogni settimana ISO), il CPA invece e' sempre lo stesso e fa un
+      // turno unico suo, diverso da quelli della produzione.
       const RESIDENT_TEAM = ['S. Bighiu', 'F. Falotico'];
       const CPA_OPERATOR = 'M. Vizzari';
+      const CPA_SHIFT_TIME = '08:00 - 17:00';
 
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyDsStEiIby8i_1RAc_rcHYHMqUpYo4LXw4',
@@ -11897,10 +11899,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dmcCards.innerHTML =
           sectionDayCard(t('qgateFront'), 'qgateFront', true) +
           sectionDayCard(t('qgateRear'), 'qgateRear', true) +
-          // CPA: sotto al numero non si ripete la parola "CPA" (la dice gia' il
-          // titolo della card) ma cosa sono quei pezzi.
+          /* CPA: sotto al numero non si ripete la parola "CPA" (la dice gia' il
+             titolo della card) ma cosa sono quei pezzi, e sotto ancora l'orario
+             del CPA, che fa sempre lo stesso turno unico a prescindere da come
+             ha lavorato la produzione. */
           sectionCard(t('cpa'),
-            sectionHero(sectionGet('cpa'), t('cpaChecked'), '') +
+            sectionHero(sectionGet('cpa'), t('cpaChecked'),
+              '<div class="mod-sec-hero-split">' +
+                escapeHtml(t('uniqueShift')) + ' (' + escapeHtml(CPA_SHIFT_TIME) + ')' +
+              '</div>') +
             sectionNote('cpaNote'),
             sectionNamesHtml([CPA_OPERATOR])) +
           sectionDayCard(t('resident'), 'resident', false,
