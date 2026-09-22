@@ -3111,30 +3111,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: var(--font-weight-medium);
       white-space: nowrap;
     }
-    /* Target nella nota della card DMC: si capisce che si puo' cambiare
-       passandoci sopra col mouse, e si scrive al suo posto. */
-    #martur-operations-dashboard .mod-target-value {
-      padding: 0 4px;
-      border: 0;
-      border-bottom: 2px dashed transparent;
-      background: none;
-      font: inherit;
-      color: var(--gold);
-      font-weight: var(--font-weight-medium);
-      font-variant-numeric: tabular-nums;
-      cursor: text;
-    }
-    #martur-operations-dashboard button.mod-target-value:hover,
-    #martur-operations-dashboard button.mod-target-value:focus-visible {
-      border-bottom-color: var(--gold);
-      outline: none;
-    }
-    #martur-operations-dashboard .mod-target-input {
-      width: 5.5em;
-      padding: 2px 6px;
-      font: inherit;
-      text-align: center;
-    }
     #martur-operations-dashboard .mod-sec-shift {
       display: flex;
       align-items: center;
@@ -3236,6 +3212,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border-top: 1px solid var(--border);
       text-align: center;
     }
+    /* Il blocco dei numeri si prende lo spazio che avanza fra il titolo e la
+       nota e ci si centra dentro: le card di una riga sono alte uguali, e
+       senza questo i numeri restavano appiccicati in alto con il vuoto sotto. */
+    #martur-operations-dashboard .mod-sec-cards .mod-sec-hero {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #martur-operations-dashboard .mod-sec-cards .mod-sec-hero-pair {
+      display: grid;
+      align-content: center;
+    }
     #martur-operations-dashboard .mod-sec-hero-value {
       display: block;
       font-size: calc(var(--fs-display) * 2);
@@ -3265,28 +3254,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: 28px;
       row-gap: 10px;
-    }
-    /* Target DMC: una pastiglia sotto i numeri invece di una barra a tutta
-       larghezza. Il numero resta modificabile come prima. */
-    #martur-operations-dashboard .mod-sec-target-row {
-      margin-top: 9px;
-      text-align: center;
-    }
-    #martur-operations-dashboard .mod-sec-target-pill {
-      display: inline-block;
-      padding: 2px 9px;
-      border-radius: var(--radius-full);
-      background: color-mix(in srgb, var(--gold) 18%, transparent);
-      font-size: var(--font-size-small);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: light-dark(rgb(118 94 40), rgb(233 209 164));
-    }
-    #martur-operations-dashboard .mod-sec-target-pill .mod-target-value {
-      padding: 0 2px;
-      color: inherit;
-      font-weight: 700;
     }
     #martur-operations-dashboard .mod-sec-field-wide { grid-column: 1 / -1; }
     /* Q Gate: quattro card, due per riga. */
@@ -11406,6 +11373,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             { label: 'secDmc', fields: [
               { path: 'dmc.shift1', label: 'shift1' },
               { path: 'dmc.shift2', label: 'shift2' },
+              // Il target non sta nel documento della giornata ma nelle
+              // impostazioni (vale da questa data in avanti): si compila qui
+              // ma si salva per conto suo.
+              { path: 'dmcTarget', label: 'secTargetLabel', special: 'dmcTarget' },
               { path: 'dmc.note', label: 'secNote', type: 'text' }
             ] },
             { label: 'secAbarth', fields: [
@@ -11849,34 +11820,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       // Il numero del target si modifica sul posto: clic, si scrive, Invio.
-      function bindDmcTargetEdit() {
-        const button = el.abarthCards.querySelector('[data-target-edit]');
-        if (!button) return;
-        button.addEventListener('click', () => {
-          const input = document.createElement('input');
-          input.type = 'number';
-          input.min = '1';
-          input.step = '1';
-          input.className = 'form-control mod-target-input';
-          input.value = dmcTargetFor(state.selectedDate);
-          button.replaceWith(input);
-          input.focus();
-          input.select();
-          let closed = false;
-          const close = (save) => {
-            if (closed) return;
-            closed = true;
-            const value = Number(input.value);
-            if (save && isNumber(value) && value > 0) saveDmcTarget(value);
-            renderAbarthDmc();
-          };
-          input.addEventListener('blur', () => close(true));
-          input.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') { event.preventDefault(); close(true); }
-            if (event.key === 'Escape') { event.preventDefault(); close(false); }
-          });
-        });
-      }
 
       let sectionUnsub = null;
       let sectionUnsubDate = null;
@@ -11920,19 +11863,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const single = isSingleShiftDay(state.selectedDate);
         const target = dmcTargetFor(state.selectedDate);
         const dmcTotal = sectionSum(['dmc.shift1', 'dmc.shift2']);
-        /* Il target e' una pastiglia sotto i numeri, non una barra a tutta
-           larghezza: cosi' in fondo alla card resta una riga sola, quella della
-           nota. Il numero si cambia cliccandoci sopra come prima. */
-        const targetPill =
-          '<div class="mod-sec-target-row"><span class="mod-sec-target-pill">' +
-            escapeHtml(t('secTargetLabel')) + ' ' +
-            (state.authUser
-              ? '<button type="button" class="mod-target-value" data-target-edit title="' + escapeHtml(t('secTargetEdit')) + '">' + escapeHtml(formatNumber(target)) + '</button>'
-              : '<span class="mod-target-value">' + escapeHtml(formatNumber(target)) + '</span>') +
-          '</span></div>';
+        // Il target non si vede piu' sulla card: si imposta dal modulo (il "+"
+        // o la matita). Serve comunque qui per colorare la produzione totale.
         const dmcHero = sectionHero(dmcTotal,
           single ? t('uniqueShift') : t('secProdTotal'),
-          (single ? '' : sectionHeroSplit('dmc.shift1', 'dmc.shift2')) + targetPill,
+          single ? '' : sectionHeroSplit('dmc.shift1', 'dmc.shift2'),
           dmcTotalCls(dmcTotal, target));
         /* Abarth ha due numeri, schienali e kit: due blocchi affiancati, ognuno
            fatto come il numero grande dei Q Gate. */
@@ -11953,7 +11888,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.abarthCards.innerHTML =
           sectionCard(t('secDmc'), dmcHero + sectionNote('dmc.note')) +
           sectionCard(t('secAbarth'), abarthHero + sectionNote('abarth.note'));
-        bindDmcTargetEdit();
         syncSectionButtons();
       }
 
@@ -12005,6 +11939,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
                 '<input type="text" maxlength="120" class="form-control" data-path="' + field.path + '" data-type="text" value="' +
                 escapeHtml(sectionTextOf(field.path)) + '"></label>';
             }
+            if (field.special === 'dmcTarget') {
+              return '<label class="mod-field"><span>' + escapeHtml(label) + '</span>' +
+                '<input type="number" min="1" step="1" class="form-control" data-special="dmcTarget" value="' +
+                dmcTargetFor(state.selectedDate) + '"></label>';
+            }
             const value = sectionGet(field.path);
             return '<label class="mod-field"><span>' + escapeHtml(label) + '</span>' +
               '<input type="number" min="0" step="1" class="form-control" data-path="' + field.path + '" value="' +
@@ -12027,6 +11966,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const value = raw === '' ? null : Number(raw);
           sectionSet(payload, input.dataset.path, isNumber(value) ? value : null);
         });
+        // Il target ha una casa sua (le impostazioni, con lo storico per data):
+        // non entra nel documento della giornata.
+        const targetInput = el.sectionFields.querySelector('[data-special="dmcTarget"]');
+        if (targetInput) {
+          const targetValue = Number(targetInput.value.trim());
+          if (isNumber(targetValue) && targetValue > 0 && targetValue !== dmcTargetFor(state.selectedDate)) {
+            saveDmcTarget(targetValue);
+          }
+        }
         db.collection('sections').doc(state.selectedDate).set(payload, { merge: true })
           .then(() => {
             el.sectionDialog.close();
