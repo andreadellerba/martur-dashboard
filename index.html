@@ -11555,8 +11555,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           sectionsHtml = sectionCard(t('secDmc').toUpperCase() + ' / ' + t('secAbarth').toUpperCase(),
             '<div class="mod-shift-grid-3col">' +
               sectionMetric(t('secDmc'), oneOrTotal('dmc.shift1', 'dmc.shift2')) +
-              sectionMetric(t('secSchienali'), oneOrTotal('abarth.shift1.schienali', 'abarth.shift2.schienali')) +
-              sectionMetric(t('secKit'), oneOrTotal('abarth.shift1.kit', 'abarth.shift2.kit')) +
+              // Maiuscolo a mano: nella tabella Abarth ci pensa il CSS di
+              // ".mod-sec-th", ma qui sono etichette di metrica, che non lo hanno.
+              sectionMetric(t('secSchienali').toUpperCase(), oneOrTotal('abarth.shift1.schienali', 'abarth.shift2.schienali')) +
+              sectionMetric(t('secKit').toUpperCase(), oneOrTotal('abarth.shift1.kit', 'abarth.shift2.kit')) +
             '</div>');
           const longDate = new Intl.DateTimeFormat(locale(), {
             day: 'numeric', month: 'long', year: 'numeric'
@@ -11608,13 +11610,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px',
             background: 'var(--background)'
           });
-          // html2canvas non sa leggere i colori in spazio oklab: --card normalmente
-          // e' un color-mix(in oklab, ...) (vedi definizione in cima al foglio) e la
-          // libreria si pianta al primo elemento con quello sfondo. Qui si sovrascrive
-          // con l'equivalente in rgba, identico a vedersi, solo per questa copia
-          // fuori schermo: il resto dell'app non cambia.
-          const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
-          wrap.style.setProperty('--card', isDarkTheme ? 'rgb(26, 26, 28)' : 'rgba(8, 9, 11, 0.05)');
+          /* L'immagine esce sempre in chiaro, anche con l'app in tema scuro:
+             finisce in una mail, dove un fondo nero starebbe male.
+             "color-scheme: light" basta per tutti i colori scritti con
+             light-dark(), che qui dentro prendono il ramo chiaro. Restano da
+             riportare a mano i pochi che il tema scuro fissa di suo (--card,
+             --background, --destructive), perche' quelli non passano da
+             light-dark(). Su --card si usa l'equivalente in rgba del
+             color-mix originale: html2canvas non sa leggere lo spazio oklab e
+             si pianterebbe al primo elemento con quello sfondo.
+             Vale solo per questa copia fuori schermo: la pagina non cambia. */
+          wrap.style.colorScheme = 'light';
+          wrap.style.setProperty('--background', 'rgb(255, 255, 255)');
+          wrap.style.setProperty('--card', 'rgba(8, 9, 11, 0.05)');
+          wrap.style.setProperty('--destructive', 'rgb(198, 66, 0)');
           wrap.innerHTML = html;
           root.appendChild(wrap);
           if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
@@ -11623,10 +11632,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
           let blob;
           try {
-            // scale 1.25: le card restano larghe quanto nel Giornaliero (720px),
-            // ma l'immagine esce da 900px invece che da 1440, che incollata in
-            // Outlook veniva fuori troppo grande.
-            const canvas = await html2canvas(wrap, { scale: 1.25, backgroundColor: null });
+            // scale 1: l'immagine esce larga 720px, esattamente quanto le card
+            // a schermo. Le card restano della misura del Giornaliero, cambia
+            // solo l'ingrandimento: incollata in Outlook veniva troppo grande.
+            const canvas = await html2canvas(wrap, { scale: 1, backgroundColor: null });
             blob = await new Promise((resolve, reject) => {
               canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/png');
             });
