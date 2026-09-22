@@ -11504,67 +11504,67 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             sectionDoc = snap.exists ? (snap.data() || {}) : {};
           } catch (e) { /* offline o senza permessi: card DMC/Abarth vuote */ }
         }
-        // I titoli in maiuscolo: sulla pagina DMC/Abarth ci arrivano dal CSS
-        // di ".mod-sec-cards", che qui non c'e' (le card sono da sole, non in
-        // quella griglia). Si maiuscolizza il testo invece della classe.
-        let dmcCard, abarthCard;
+        /* DMC e Abarth stanno in una card sola: DMC, schienali e kit uno
+           accanto all'altro. Il turno non si ripete dentro la card, e' scritto
+           una volta nel titolo in cima all'immagine.
+           Il titolo va scritto maiuscolo a mano: l'automatismo del CSS e' quello
+           di ".mod-sec-cards", che qui non c'e' perche' le card sono da sole e
+           non dentro quella griglia. */
+        const sum2 = (a, b) => ((isNumber(a) || isNumber(b)) ? valueOrZero(a) + valueOrZero(b) : null);
+        const pick = (path) => summaryPick(sectionDoc, path);
+        let sectionsHtml;
+        let heading;
         if (choice === 'both') {
-          const dmcS1 = summaryPick(sectionDoc, 'dmc.shift1');
-          const dmcS2 = summaryPick(sectionDoc, 'dmc.shift2');
-          const dmcTotal = (isNumber(dmcS1) || isNumber(dmcS2)) ? valueOrZero(dmcS1) + valueOrZero(dmcS2) : null;
-          dmcCard = sectionCard(t('secDmc').toUpperCase(),
+          /* Con tutti e due i turni resta tutto com'era: DMC e Abarth in due
+             card separate, ognuna col suo 1° turno / 2° turno / totale, e il
+             titolo con la sola data (il turno e' gia' scritto in ogni card). */
+          const dmcS1 = pick('dmc.shift1');
+          const dmcS2 = pick('dmc.shift2');
+          const dmcCard = sectionCard(t('secDmc').toUpperCase(),
             '<div class="mod-shift-grid-3col">' +
               sectionMetric(t('shift1'), dmcS1) +
               sectionMetric(t('shift2'), dmcS2) +
-              sectionMetric(t('secProdTotal'), dmcTotal, true) +
+              sectionMetric(t('secProdTotal'), sum2(dmcS1, dmcS2), true) +
             '</div>');
-          const abS1Sc = summaryPick(sectionDoc, 'abarth.shift1.schienali');
-          const abS2Sc = summaryPick(sectionDoc, 'abarth.shift2.schienali');
-          const abS1Kit = summaryPick(sectionDoc, 'abarth.shift1.kit');
-          const abS2Kit = summaryPick(sectionDoc, 'abarth.shift2.kit');
           const cell = (v, total) => '<div class="mod-sec-value' + (total ? ' mod-sec-total' : '') + '">' + escapeHtml(sectionText(v)) + '</div>';
           const row = (label, sc, kit, total) => '<div class="mod-sec-rowlab">' + escapeHtml(label) + '</div>' + cell(sc, total) + cell(kit, total);
-          const abarthTable =
+          const abarthCard = sectionCard(t('secAbarth').toUpperCase(),
             '<div class="mod-sec-table">' +
               '<div></div>' +
               '<div class="mod-sec-th">' + escapeHtml(t('secSchienali')) + '</div>' +
               '<div class="mod-sec-th">' + escapeHtml(t('secKit')) + '</div>' +
-              row(t('shift1'), abS1Sc, abS1Kit) +
-              row(t('shift2'), abS2Sc, abS2Kit) +
+              row(t('shift1'), pick('abarth.shift1.schienali'), pick('abarth.shift1.kit')) +
+              row(t('shift2'), pick('abarth.shift2.schienali'), pick('abarth.shift2.kit')) +
               row(t('secTotal'),
-                (isNumber(abS1Sc) || isNumber(abS2Sc)) ? valueOrZero(abS1Sc) + valueOrZero(abS2Sc) : null,
-                (isNumber(abS1Kit) || isNumber(abS2Kit)) ? valueOrZero(abS1Kit) + valueOrZero(abS2Kit) : null, true) +
-            '</div>';
-          abarthCard = sectionCard(t('secAbarth').toUpperCase(), abarthTable);
+                sum2(pick('abarth.shift1.schienali'), pick('abarth.shift2.schienali')),
+                sum2(pick('abarth.shift1.kit'), pick('abarth.shift2.kit')), true) +
+            '</div>');
+          sectionsHtml = dmcCard + abarthCard;
+          heading = 'Martur Italy · ' + escapeHtml(formatDate(date));
         } else {
+          /* Un turno solo: DMC e Abarth stanno in una card sola, con DMC,
+             schienali e kit uno accanto all'altro. Dentro la card il turno non
+             si ripete: e' scritto una volta nel titolo in cima all'immagine.
+             Il titolo della card va maiuscolo a mano, perche' l'automatismo del
+             CSS e' quello di ".mod-sec-cards" e qui la card e' da sola, non
+             dentro quella griglia. */
           const key = choice === 'shift2' ? 'shift2' : 'shift1';
-          // Turno unico: etichetta "Turno unico" e totale della giornata, come
-          // si vede sulle pagine DMC/Abarth e Qualita'.
-          const sum2 = (a, b) => ((isNumber(a) || isNumber(b)) ? valueOrZero(a) + valueOrZero(b) : null);
-          const shiftLabel = single ? t('uniqueShift') : t(key);
-          const dmcValue = single
-            ? sum2(summaryPick(sectionDoc, 'dmc.shift1'), summaryPick(sectionDoc, 'dmc.shift2'))
-            : summaryPick(sectionDoc, 'dmc.' + key);
-          const abarthSchienali = single
-            ? sum2(summaryPick(sectionDoc, 'abarth.shift1.schienali'), summaryPick(sectionDoc, 'abarth.shift2.schienali'))
-            : summaryPick(sectionDoc, 'abarth.' + key + '.schienali');
-          const abarthKit = single
-            ? sum2(summaryPick(sectionDoc, 'abarth.shift1.kit'), summaryPick(sectionDoc, 'abarth.shift2.kit'))
-            : summaryPick(sectionDoc, 'abarth.' + key + '.kit');
-          dmcCard = sectionCard(t('secDmc').toUpperCase(),
-            '<div class="mod-shift-grid-1col">' +
-              sectionMetric(shiftLabel, dmcValue) +
+          // Turno unico: i numeri sono il totale della giornata, come si vede
+          // sulle pagine DMC/Abarth e Qualita'.
+          const oneOrTotal = (p1, p2) => (single ? sum2(pick(p1), pick(p2)) : pick(key === 'shift2' ? p2 : p1));
+          sectionsHtml = sectionCard(t('secDmc').toUpperCase() + ' / ' + t('secAbarth').toUpperCase(),
+            '<div class="mod-shift-grid-3col">' +
+              sectionMetric(t('secDmc'), oneOrTotal('dmc.shift1', 'dmc.shift2')) +
+              sectionMetric(t('secSchienali'), oneOrTotal('abarth.shift1.schienali', 'abarth.shift2.schienali')) +
+              sectionMetric(t('secKit'), oneOrTotal('abarth.shift1.kit', 'abarth.shift2.kit')) +
             '</div>');
-          abarthCard = sectionCard(t('secAbarth').toUpperCase(),
-            '<div class="mod-shift-grid-2col">' +
-              sectionMetric(t('secSchienali'), abarthSchienali) +
-              sectionMetric(t('secKit'), abarthKit) +
-            '</div>');
+          const longDate = new Intl.DateTimeFormat(locale(), {
+            day: 'numeric', month: 'long', year: 'numeric'
+          }).format(parseDate(date));
+          heading = 'Martur Italy · ' + escapeHtml(longDate) + ' · ' +
+            escapeHtml(single ? t('uniqueShift') : t(key));
         }
-        return (
-          '<div class="mod-summary-heading">Martur Italy · ' + escapeHtml(formatDate(date)) + '</div>' +
-          dailyCardsHtml + dmcCard + abarthCard
-        );
+        return '<div class="mod-summary-heading">' + heading + '</div>' + dailyCardsHtml + sectionsHtml;
       }
       let summaryToastEl = null;
       let summaryToastTimer = null;
@@ -11623,7 +11623,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
           let blob;
           try {
-            const canvas = await html2canvas(wrap, { scale: 2, backgroundColor: null });
+            // scale 1.25: le card restano larghe quanto nel Giornaliero (720px),
+            // ma l'immagine esce da 900px invece che da 1440, che incollata in
+            // Outlook veniva fuori troppo grande.
+            const canvas = await html2canvas(wrap, { scale: 1.25, backgroundColor: null });
             blob = await new Promise((resolve, reject) => {
               canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/png');
             });
