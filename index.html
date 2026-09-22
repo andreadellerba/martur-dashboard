@@ -5765,6 +5765,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </dialog>
 
+  <!-- Tasto Riepilogo: prima di generare l'immagine chiede quale turno usare
+       (nascosto/non aperto nelle giornate a turno unico, dove la scelta non ha senso). -->
+  <dialog id="mod-summary-dialog" class="card mod-selection-dialog" aria-labelledby="mod-summary-dialog-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-summary-dialog-title" class="mod-dialog-title" data-i18n="summaryDialogTitle">Riepilogo</h2>
+          <span class="text-small text-muted" data-i18n="summaryDialogHint">Quale turno metto nell'immagine?</span>
+        </div>
+        <button id="mod-close-summary-dialog" type="button" class="btn btn-ghost">
+          <i data-lucide="x" aria-hidden="true"></i>
+          <span data-i18n="close">Chiudi</span>
+        </button>
+      </div>
+      <div class="mod-shiftmode-options">
+        <label class="mod-shiftmode-opt">
+          <input type="radio" name="mod-summary-shift-radio" id="mod-summary-shift1" value="shift1" checked>
+          <span data-i18n="shift1">1° turno</span>
+        </label>
+        <label class="mod-shiftmode-opt">
+          <input type="radio" name="mod-summary-shift-radio" id="mod-summary-shift2" value="shift2">
+          <span data-i18n="shift2">2° turno</span>
+        </label>
+        <label class="mod-shiftmode-opt">
+          <input type="radio" name="mod-summary-shift-radio" id="mod-summary-shift-both" value="both">
+          <span data-i18n="summaryBothShifts">Entrambi</span>
+        </label>
+      </div>
+      <div class="mod-dialog-actions">
+        <button id="mod-cancel-summary-dialog" type="button" class="btn" data-i18n="cancel">Annulla</button>
+        <button id="mod-generate-summary-dialog" type="button" class="btn btn-primary" data-i18n="summaryGenerate">Genera</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="mod-admin-dialog" class="card mod-selection-dialog" aria-labelledby="mod-admin-dialog-title">
     <div class="mod-dialog-shell">
       <div class="mod-dialog-head">
@@ -5884,6 +5919,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           summaryImageCopied: 'Riepilogo copiato: incollalo in Outlook (Ctrl+V)',
           summaryImageError: 'Non riesco a creare il riepilogo',
           summaryImageNoData: 'Nessun dato per questa giornata',
+          summaryDialogTitle: 'Riepilogo',
+          summaryDialogHint: 'Quale turno metto nell\'immagine?',
+          summaryBothShifts: 'Entrambi',
+          summaryGenerate: 'Genera',
           greeting: 'Buongiorno',
           logout: 'Esci',
           chat: 'Comunicazioni',
@@ -6366,6 +6405,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           summaryImageCopied: 'Summary copied: paste it into Outlook (Ctrl+V)',
           summaryImageError: 'Could not build the summary',
           summaryImageNoData: 'No data for this day',
+          summaryDialogTitle: 'Summary',
+          summaryDialogHint: 'Which shift should go in the image?',
+          summaryBothShifts: 'Both',
+          summaryGenerate: 'Generate',
           greeting: 'Hello',
           logout: 'Log out',
           chat: 'Communications',
@@ -6848,6 +6891,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           summaryImageCopied: 'Özet kopyalandı: Outlook\'a yapıştırın (Ctrl+V)',
           summaryImageError: 'Özet oluşturulamadı',
           summaryImageNoData: 'Bu gün için veri yok',
+          summaryDialogTitle: 'Özet',
+          summaryDialogHint: 'Görsele hangi vardiya girsin?',
+          summaryBothShifts: 'Her ikisi',
+          summaryGenerate: 'Oluştur',
           greeting: 'Günaydın',
           logout: 'Çıkış',
           chat: 'İletişim',
@@ -7527,6 +7574,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         cancelStoppageDialog: root.querySelector('#mod-cancel-stoppage-dialog'),
         brandHome: root.querySelector('#mod-brand-home'),
         backBtn: root.querySelector('#mod-back-btn'),
+        summaryDialog: root.querySelector('#mod-summary-dialog'),
+        closeSummaryDialog: root.querySelector('#mod-close-summary-dialog'),
+        cancelSummaryDialog: root.querySelector('#mod-cancel-summary-dialog'),
+        generateSummaryDialog: root.querySelector('#mod-generate-summary-dialog'),
         calToggle: root.querySelector('#mod-cal-toggle'),
         topbarCluster: root.querySelector('.mod-topbar-cluster'),
         topbar: root.querySelector('.mod-topbar'),
@@ -11394,18 +11445,33 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         '</div>' + (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
 
       /* ---- Tasto Riepilogo (ex Indietro) ----
-         Un'immagine con il 1° turno di Giornaliero, DMC e Abarth della data
-         selezionata, una card sotto l'altra, messa negli appunti come
-         immagine (non come file): incollata in Outlook (Ctrl+V) entra nel
-         corpo del messaggio come una foto, non come allegato. */
+         Un'immagine con il turno scelto (o entrambi) di Giornaliero, DMC e
+         Abarth della data selezionata, una card sotto l'altra, messa negli
+         appunti come immagine (non come file): incollata in Outlook (Ctrl+V)
+         entra nel corpo del messaggio come una foto, non come allegato. */
       function summaryPick(doc, path) {
         const value = String(path).split('.').reduce((acc, key) => (acc && typeof acc === 'object') ? acc[key] : undefined, doc || {});
         return isNumber(value) ? value : null;
       }
-      async function buildSummaryHtml(date) {
+      async function buildSummaryHtml(date, shiftChoice) {
         const dailyRow = getDailyRows().find((r) => r.date === date) ||
           deriveRow({ date, shift1: emptyShift(), shift2: emptyShift() });
-        const dailyCard = shiftCardHtml(dailyRow, 'shift1', 0, shiftTitleHtml('shift1', 0, date, true));
+        // Turno unico: non c'e' scelta, la card e' sempre quella sola.
+        const single = isSingleShiftRow(dailyRow);
+        const choice = single ? 'shift1' : (shiftChoice || 'shift1');
+        let dailyCardsHtml;
+        if (single) {
+          const titleHtml = '<i data-lucide="sun" aria-hidden="true"></i>' + escapeHtml(t('uniqueShift'));
+          dailyCardsHtml = shiftCardHtml(dailyRow, 'shift1', 0, titleHtml);
+        } else if (choice === 'both') {
+          dailyCardsHtml =
+            shiftCardHtml(dailyRow, 'shift1', 0, shiftTitleHtml('shift1', 0, date, true)) +
+            shiftCardHtml(dailyRow, 'shift2', 1, shiftTitleHtml('shift2', 1, date, true));
+        } else {
+          const key = choice === 'shift2' ? 'shift2' : 'shift1';
+          const idx = key === 'shift2' ? 1 : 0;
+          dailyCardsHtml = shiftCardHtml(dailyRow, key, idx, shiftTitleHtml(key, idx, date, true));
+        }
         // DMC e Abarth si leggono una volta da Firestore, non dalla sottoscrizione
         // (che parte solo quando si apre quella pagina): cosi' il riepilogo e'
         // corretto anche premendo il tasto dal Giornaliero.
@@ -11419,18 +11485,50 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // I titoli in maiuscolo: sulla pagina DMC/Abarth ci arrivano dal CSS
         // di ".mod-sec-cards", che qui non c'e' (le card sono da sole, non in
         // quella griglia). Si maiuscolizza il testo invece della classe.
-        const dmcCard = sectionCard(t('secDmc').toUpperCase(),
-          '<div class="mod-shift-grid-1col">' +
-            sectionMetric(t('shift1'), summaryPick(sectionDoc, 'dmc.shift1')) +
-          '</div>');
-        const abarthCard = sectionCard(t('secAbarth').toUpperCase(),
-          '<div class="mod-shift-grid-2col">' +
-            sectionMetric(t('secSchienali'), summaryPick(sectionDoc, 'abarth.shift1.schienali')) +
-            sectionMetric(t('secKit'), summaryPick(sectionDoc, 'abarth.shift1.kit')) +
-          '</div>');
+        let dmcCard, abarthCard;
+        if (choice === 'both') {
+          const dmcS1 = summaryPick(sectionDoc, 'dmc.shift1');
+          const dmcS2 = summaryPick(sectionDoc, 'dmc.shift2');
+          const dmcTotal = (isNumber(dmcS1) || isNumber(dmcS2)) ? valueOrZero(dmcS1) + valueOrZero(dmcS2) : null;
+          dmcCard = sectionCard(t('secDmc').toUpperCase(),
+            '<div class="mod-shift-grid-3col">' +
+              sectionMetric(t('shift1'), dmcS1) +
+              sectionMetric(t('shift2'), dmcS2) +
+              sectionMetric(t('secProdTotal'), dmcTotal, true) +
+            '</div>');
+          const abS1Sc = summaryPick(sectionDoc, 'abarth.shift1.schienali');
+          const abS2Sc = summaryPick(sectionDoc, 'abarth.shift2.schienali');
+          const abS1Kit = summaryPick(sectionDoc, 'abarth.shift1.kit');
+          const abS2Kit = summaryPick(sectionDoc, 'abarth.shift2.kit');
+          const cell = (v, total) => '<div class="mod-sec-value' + (total ? ' mod-sec-total' : '') + '">' + escapeHtml(sectionText(v)) + '</div>';
+          const row = (label, sc, kit, total) => '<div class="mod-sec-rowlab">' + escapeHtml(label) + '</div>' + cell(sc, total) + cell(kit, total);
+          const abarthTable =
+            '<div class="mod-sec-table">' +
+              '<div></div>' +
+              '<div class="mod-sec-th">' + escapeHtml(t('secSchienali')) + '</div>' +
+              '<div class="mod-sec-th">' + escapeHtml(t('secKit')) + '</div>' +
+              row(t('shift1'), abS1Sc, abS1Kit) +
+              row(t('shift2'), abS2Sc, abS2Kit) +
+              row(t('secTotal'),
+                (isNumber(abS1Sc) || isNumber(abS2Sc)) ? valueOrZero(abS1Sc) + valueOrZero(abS2Sc) : null,
+                (isNumber(abS1Kit) || isNumber(abS2Kit)) ? valueOrZero(abS1Kit) + valueOrZero(abS2Kit) : null, true) +
+            '</div>';
+          abarthCard = sectionCard(t('secAbarth').toUpperCase(), abarthTable);
+        } else {
+          const key = choice === 'shift2' ? 'shift2' : 'shift1';
+          dmcCard = sectionCard(t('secDmc').toUpperCase(),
+            '<div class="mod-shift-grid-1col">' +
+              sectionMetric(t(key), summaryPick(sectionDoc, 'dmc.' + key)) +
+            '</div>');
+          abarthCard = sectionCard(t('secAbarth').toUpperCase(),
+            '<div class="mod-shift-grid-2col">' +
+              sectionMetric(t('secSchienali'), summaryPick(sectionDoc, 'abarth.' + key + '.schienali')) +
+              sectionMetric(t('secKit'), summaryPick(sectionDoc, 'abarth.' + key + '.kit')) +
+            '</div>');
+        }
         return (
           '<div class="mod-summary-heading">Martur Italy · ' + escapeHtml(formatDate(date)) + '</div>' +
-          dailyCard + dmcCard + abarthCard
+          dailyCardsHtml + dmcCard + abarthCard
         );
       }
       let summaryToastEl = null;
@@ -11460,9 +11558,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // di navigator.clipboard.write): e' il modo con cui i browser accettano
       // scritture negli appunti che richiedono un po' di lavoro asincrono nel
       // mezzo, mantenendo valido il gesto dell'utente che ha aperto il tutto.
-      function summaryImageBlob(date) {
+      function summaryImageBlob(date, shiftChoice) {
         return (async () => {
-          const html = await buildSummaryHtml(date);
+          const html = await buildSummaryHtml(date, shiftChoice);
           const wrap = document.createElement('div');
           wrap.setAttribute('aria-hidden', 'true');
           Object.assign(wrap.style, {
@@ -11495,7 +11593,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           return blob;
         })();
       }
-      function generateSummaryImage() {
+      function generateSummaryImage(shiftChoice) {
         if (state.summaryBusy) return;
         if (typeof html2canvas !== 'function' || !globalThis.ClipboardItem || !navigator.clipboard || !navigator.clipboard.write) {
           showSummaryToast(t('summaryImageError'));
@@ -11504,7 +11602,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         state.summaryBusy = true;
         el.backBtn.disabled = true;
         showSummaryToast(t('summaryImageBuilding'));
-        const item = new ClipboardItem({ 'image/png': summaryImageBlob(state.selectedDate) });
+        const item = new ClipboardItem({ 'image/png': summaryImageBlob(state.selectedDate, shiftChoice) });
         navigator.clipboard.write([item])
           .then(() => showSummaryToast(t('summaryImageCopied')))
           .catch(() => showSummaryToast(t('summaryImageError')))
@@ -11512,6 +11610,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             el.backBtn.disabled = false;
             state.summaryBusy = false;
           });
+      }
+      // Il tasto in alto: nei giorni a turno unico non c'e' scelta (si genera
+      // subito col turno unico), altrimenti si apre il popup per scegliere
+      // 1°, 2° o entrambi.
+      function openSummaryDialog() {
+        const date = state.selectedDate;
+        const dailyRow = getDailyRows().find((r) => r.date === date) ||
+          deriveRow({ date, shift1: emptyShift(), shift2: emptyShift() });
+        if (isSingleShiftRow(dailyRow)) {
+          generateSummaryImage('shift1');
+          return;
+        }
+        el.summaryDialog.showModal();
       }
 
       /* Target DMC: una nota sotto la card, col numero modificabile passandoci
@@ -13165,7 +13276,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.viewSelect.addEventListener('change', () => {
         navigateTo(el.viewSelect.value);
       });
-      el.backBtn.addEventListener('click', generateSummaryImage);
+      el.backBtn.addEventListener('click', openSummaryDialog);
+      el.closeSummaryDialog.addEventListener('click', () => el.summaryDialog.close());
+      el.cancelSummaryDialog.addEventListener('click', () => el.summaryDialog.close());
+      el.summaryDialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        el.summaryDialog.close();
+      });
+      el.generateSummaryDialog.addEventListener('click', () => {
+        const checked = root.querySelector('input[name="mod-summary-shift-radio"]:checked');
+        const choice = checked ? checked.value : 'shift1';
+        el.summaryDialog.close();
+        generateSummaryImage(choice);
+      });
       // Icona calendario (mobile): mostra/nasconde la barra data sotto il menu.
       el.calToggle.addEventListener('click', () => {
         const open = !el.topbarCluster.classList.contains('mod-cal-open');
