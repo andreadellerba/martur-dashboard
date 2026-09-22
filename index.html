@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'self' blob: data: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Martur Italy Operations Dashboard</title>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -3269,6 +3269,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     /* Il totale in oro, come la produzione totale nella card DMC. */
     #martur-operations-dashboard .mod-sec-value.mod-sec-total,
     #martur-operations-dashboard .mod-shift-metric.mod-sec-total strong { color: var(--gold); }
+    /* ...tranne quando il numero ha un colore suo, come la produzione DMC
+       sopra/sotto il target: quelle regole pesano quanto l'oro qui sopra, e a
+       parita' di peso vince l'ultima scritta, percio' vanno ripetute dopo. */
+    #martur-operations-dashboard .mod-shift-metric.mod-sec-total strong.mod-metric-good { color: var(--metric-good); }
+    #martur-operations-dashboard .mod-shift-metric.mod-sec-total strong.mod-metric-warn { color: var(--metric-warn); }
+    #martur-operations-dashboard .mod-shift-metric.mod-sec-total strong.mod-metric-bad { color: var(--metric-bad); }
+    #martur-operations-dashboard .mod-shift-metric.mod-sec-total strong.mod-metric-yellow { color: var(--metric-yellow); }
     #martur-operations-dashboard .mod-sec-fields {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -5923,6 +5930,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           summaryDialogHint: 'Quale turno metto nell\'immagine?',
           summaryBothShifts: 'Entrambi',
           summaryGenerate: 'Genera',
+          newVersionReload: '🔄 Nuova versione disponibile · tocca per aggiornare',
           greeting: 'Buongiorno',
           logout: 'Esci',
           chat: 'Comunicazioni',
@@ -6409,6 +6417,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           summaryDialogHint: 'Which shift should go in the image?',
           summaryBothShifts: 'Both',
           summaryGenerate: 'Generate',
+          newVersionReload: '🔄 New version available · tap to update',
           greeting: 'Hello',
           logout: 'Log out',
           chat: 'Communications',
@@ -6895,6 +6904,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           summaryDialogHint: 'Görsele hangi vardiya girsin?',
           summaryBothShifts: 'Her ikisi',
           summaryGenerate: 'Oluştur',
+          newVersionReload: '🔄 Yeni sürüm mevcut · güncellemek için dokunun',
           greeting: 'Günaydın',
           logout: 'Çıkış',
           chat: 'İletişim',
@@ -11443,6 +11453,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           sectionMetric(t('shift2'), sectionGet(base + '.shift2')) +
           sectionMetric(t('secTotal'), sectionSum([base + '.shift1', base + '.shift2']), true) +
         '</div>' + (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
+      /* Giornata a turno unico: al posto delle tre colonne 1° turno / 2° turno /
+         totale resta un numero solo, il totale della giornata. La card e' la
+         stessa (stessa larghezza, stesso titolo, stessi problemi riscontrati
+         sotto): cambia solo quanti numeri ci sono dentro. */
+      const sectionUniqueShiftCard = (title, base, withIssues, extraHtml, namesHtml) => sectionCard(title,
+        '<div class="mod-shift-grid-1col">' +
+          sectionMetric(t('uniqueShift'), sectionSum([base + '.shift1', base + '.shift2']), true) +
+        '</div>' + (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
+      // Quale delle due usare per la data scelta.
+      const sectionDayCard = (title, base, withIssues, extraHtml, namesHtml) =>
+        (isSingleShiftDay(state.selectedDate) ? sectionUniqueShiftCard : sectionShiftCard)(
+          title, base, withIssues, extraHtml, namesHtml);
 
       /* ---- Tasto Riepilogo (ex Indietro) ----
          Un'immagine con il turno scelto (o entrambi) di Giornaliero, DMC e
@@ -11516,14 +11538,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           abarthCard = sectionCard(t('secAbarth').toUpperCase(), abarthTable);
         } else {
           const key = choice === 'shift2' ? 'shift2' : 'shift1';
+          // Turno unico: etichetta "Turno unico" e totale della giornata, come
+          // si vede sulle pagine DMC/Abarth e Qualita'.
+          const sum2 = (a, b) => ((isNumber(a) || isNumber(b)) ? valueOrZero(a) + valueOrZero(b) : null);
+          const shiftLabel = single ? t('uniqueShift') : t(key);
+          const dmcValue = single
+            ? sum2(summaryPick(sectionDoc, 'dmc.shift1'), summaryPick(sectionDoc, 'dmc.shift2'))
+            : summaryPick(sectionDoc, 'dmc.' + key);
+          const abarthSchienali = single
+            ? sum2(summaryPick(sectionDoc, 'abarth.shift1.schienali'), summaryPick(sectionDoc, 'abarth.shift2.schienali'))
+            : summaryPick(sectionDoc, 'abarth.' + key + '.schienali');
+          const abarthKit = single
+            ? sum2(summaryPick(sectionDoc, 'abarth.shift1.kit'), summaryPick(sectionDoc, 'abarth.shift2.kit'))
+            : summaryPick(sectionDoc, 'abarth.' + key + '.kit');
           dmcCard = sectionCard(t('secDmc').toUpperCase(),
             '<div class="mod-shift-grid-1col">' +
-              sectionMetric(t(key), summaryPick(sectionDoc, 'dmc.' + key)) +
+              sectionMetric(shiftLabel, dmcValue) +
             '</div>');
           abarthCard = sectionCard(t('secAbarth').toUpperCase(),
             '<div class="mod-shift-grid-2col">' +
-              sectionMetric(t('secSchienali'), summaryPick(sectionDoc, 'abarth.' + key + '.schienali')) +
-              sectionMetric(t('secKit'), summaryPick(sectionDoc, 'abarth.' + key + '.kit')) +
+              sectionMetric(t('secSchienali'), abarthSchienali) +
+              sectionMetric(t('secKit'), abarthKit) +
             '</div>');
         }
         return (
@@ -11563,8 +11598,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const html = await buildSummaryHtml(date, shiftChoice);
           const wrap = document.createElement('div');
           wrap.setAttribute('aria-hidden', 'true');
+          // 720px = quanto e' larga una card turno nel Giornaliero su un
+          // monitor normale. Larghezza fissa (non quella della finestra) cosi'
+          // l'immagine viene sempre identica, e uguale a quella che si vede a
+          // schermo: alle misure piu' strette le etichette andavano a capo e le
+          // card non somigliavano piu' a quelle del Giornaliero.
           Object.assign(wrap.style, {
-            position: 'fixed', left: '-9999px', top: '0', width: '460px',
+            position: 'fixed', left: '-9999px', top: '0', width: '720px',
             padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px',
             background: 'var(--background)'
           });
@@ -11623,6 +11663,54 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           return;
         }
         el.summaryDialog.showModal();
+      }
+
+      /* ---- Avviso "nuova versione" ----
+         L'app e' un file solo e non ha un service worker: installata da Chrome
+         come applicazione, la finestra resta aperta per giorni e continua a
+         mostrare la copia scaricata la prima volta, quindi le novita' non si
+         vedono finche' non si ricarica a mano (ed e' il motivo per cui nella
+         app installata mancavano le ultime aggiunte).
+         Ogni tanto si chiede al server solo la data del file (una HEAD, non il
+         file intero): se e' piu' recente di quella della pagina aperta, compare
+         in basso un avviso da toccare per ricaricare. Niente si ricarica da
+         solo: chi sta inserendo dati non deve perdere quello che ha scritto. */
+      const pageLoadedAt = new Date(document.lastModified).getTime();
+      let newVersionSeen = false;
+      let lastVersionCheck = 0;
+      function showReloadBanner() {
+        const bar = document.createElement('button');
+        bar.type = 'button';
+        bar.textContent = t('newVersionReload');
+        Object.assign(bar.style, {
+          position: 'fixed', left: '50%', bottom: '28px', transform: 'translateX(-50%)',
+          background: 'light-dark(rgb(24 24 26), rgb(245 245 245))',
+          color: 'light-dark(#fff, #111)',
+          border: '0', padding: '11px 22px', borderRadius: '999px',
+          font: 'inherit', fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+          zIndex: '99999', boxShadow: '0 8px 24px -8px rgb(0 0 0 / 40%)',
+          maxWidth: 'calc(100vw - 32px)', textAlign: 'center'
+        });
+        bar.addEventListener('click', () => window.location.reload());
+        document.body.appendChild(bar);
+      }
+      function checkForNewVersion() {
+        if (newVersionSeen || !window.fetch || !isFinite(pageLoadedAt)) return;
+        const now = Date.now();
+        if (now - lastVersionCheck < 120000) return;
+        lastVersionCheck = now;
+        fetch(window.location.pathname, { method: 'HEAD', cache: 'no-store' })
+          .then((res) => {
+            const header = res.headers.get('last-modified');
+            if (!header) return;
+            const serverAt = new Date(header).getTime();
+            // Un minuto di margine: le date hanno la precisione del secondo e
+            // fra la copia in cache e il server ci puo' essere un minimo scarto.
+            if (!isFinite(serverAt) || serverAt <= pageLoadedAt + 60000) return;
+            newVersionSeen = true;
+            showReloadBanner();
+          })
+          .catch(() => { /* offline o file locale: si riprova alla prossima */ });
       }
 
       /* Target DMC: una nota sotto la card, col numero modificabile passandoci
@@ -11737,20 +11825,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function renderAbarthDmc() {
         renderSectionShifts(el.abarthShifts);
+        const single = isSingleShiftDay(state.selectedDate);
         const cell = (value, total) =>
           '<div class="mod-sec-value' + (total ? ' mod-sec-total' : '') + '">' + escapeHtml(sectionText(value)) + '</div>';
         const row = (label, schienali, kit, total) =>
           '<div class="mod-sec-rowlab">' + escapeHtml(label) + '</div>' + cell(schienali, total) + cell(kit, total);
+        // Turno unico: la tabella resta la stessa (schienali | kit), ma con una
+        // riga sola col totale invece di 1° turno / 2° turno / totale.
+        const abarthRows = single
+          ? row(t('uniqueShift'),
+              sectionSum(['abarth.shift1.schienali', 'abarth.shift2.schienali']),
+              sectionSum(['abarth.shift1.kit', 'abarth.shift2.kit']), true)
+          : row(t('shift1'), sectionGet('abarth.shift1.schienali'), sectionGet('abarth.shift1.kit')) +
+            row(t('shift2'), sectionGet('abarth.shift2.schienali'), sectionGet('abarth.shift2.kit')) +
+            row(t('secTotal'),
+              sectionSum(['abarth.shift1.schienali', 'abarth.shift2.schienali']),
+              sectionSum(['abarth.shift1.kit', 'abarth.shift2.kit']), true);
         const abarth =
           '<div class="mod-sec-table">' +
             '<div></div>' +
             '<div class="mod-sec-th">' + escapeHtml(t('secSchienali')) + '</div>' +
             '<div class="mod-sec-th">' + escapeHtml(t('secKit')) + '</div>' +
-            row(t('shift1'), sectionGet('abarth.shift1.schienali'), sectionGet('abarth.shift1.kit')) +
-            row(t('shift2'), sectionGet('abarth.shift2.schienali'), sectionGet('abarth.shift2.kit')) +
-            row(t('secTotal'),
-              sectionSum(['abarth.shift1.schienali', 'abarth.shift2.schienali']),
-              sectionSum(['abarth.shift1.kit', 'abarth.shift2.kit']), true) +
+            abarthRows +
           '</div>';
         // Nota sotto la card DMC, come quella dei turni nel Giornaliero: cosi'
         // le due card restano della stessa altezza e il target e' sempre in
@@ -11765,13 +11861,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               : '<span class="mod-target-value">' + escapeHtml(formatNumber(target)) + '</span>') +
             ' ' + escapeHtml(t('secTargetUnit')) +
           '</span></div>';
-        el.abarthCards.innerHTML =
-          sectionCard(t('secDmc'),
-            '<div class="mod-shift-grid-3col">' +
+        // Turno unico: una cifra sola (la produzione della giornata), colorata
+        // sul target come il totale dei giorni a due turni.
+        const dmcNumbers = single
+          ? '<div class="mod-shift-grid-1col">' +
+              sectionMetric(t('uniqueShift'), dmcTotal, true, dmcTotalCls(dmcTotal, target)) +
+            '</div>'
+          : '<div class="mod-shift-grid-3col">' +
               sectionMetric(t('shift1'), sectionGet('dmc.shift1')) +
               sectionMetric(t('shift2'), sectionGet('dmc.shift2')) +
               sectionMetric(t('secProdTotal'), dmcTotal, true, dmcTotalCls(dmcTotal, target)) +
-            '</div>' +
+            '</div>';
+        el.abarthCards.innerHTML =
+          sectionCard(t('secDmc'),
+            dmcNumbers +
             // target e nota restano appaiati in fondo alla card
             '<div class="mod-sec-note-stack">' + targetNote + sectionNote('dmc.note') + '</div>') +
           sectionCard(t('secAbarth'), abarth + sectionNote('abarth.note'));
@@ -11781,14 +11884,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       function renderQGate() {
         renderSectionShifts(el.dmcShifts);
+        // CPA e' gia' un numero solo: non cambia col turno unico.
         el.dmcCards.innerHTML =
-          sectionShiftCard(t('qgateFront'), 'qgateFront', true) +
-          sectionShiftCard(t('qgateRear'), 'qgateRear', true) +
+          sectionDayCard(t('qgateFront'), 'qgateFront', true) +
+          sectionDayCard(t('qgateRear'), 'qgateRear', true) +
           sectionCard(t('cpa'),
             '<div class="mod-shift-grid-1col">' + sectionMetric(t('cpa'), sectionGet('cpa')) + '</div>' +
             sectionNote('cpaNote'),
             sectionNamesHtml([CPA_OPERATOR])) +
-          sectionShiftCard(t('resident'), 'resident', false,
+          sectionDayCard(t('resident'), 'resident', false,
             sectionNote('resident.note'),
             sectionNamesHtml(residentNames(state.selectedDate)));
         syncSectionButtons();
@@ -11810,10 +11914,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         sectionPage = page;
         el.sectionDialogTitle.textContent = t(mode === 'edit' ? 'secEditData' : 'secEditTitle');
         el.sectionDialogDate.textContent = formatDate(state.selectedDate);
+        // Giornata a turno unico: si compila un turno solo. I campi del 2° turno
+        // spariscono e quelli del 1° prendono l'etichetta "Turno unico", come
+        // nel modulo del Giornaliero.
+        const single = isSingleShiftDay(state.selectedDate);
         el.sectionFields.innerHTML = SECTION_PAGES[page].groups.map((group) =>
           '<div class="mod-sec-group">' + escapeHtml(t(group.label)) + '</div>' +
-          group.fields.map((field) => {
-            const label = field.labelText || (t(field.label) + (field.extra ? ' · ' + t(field.extra) : ''));
+          group.fields.filter((field) => !(single && /(^|\.)shift2(\.|$)/.test(field.path))).map((field) => {
+            const labelKey = (single && field.label === 'shift1') ? 'uniqueShift' : field.label;
+            const label = field.labelText || (t(labelKey) + (field.extra ? ' · ' + t(field.extra) : ''));
             if (field.type === 'text') {
               return '<label class="mod-field mod-sec-field-wide"><span>' + escapeHtml(label) + '</span>' +
                 '<input type="text" maxlength="120" class="form-control" data-path="' + field.path + '" data-type="text" value="' +
@@ -13543,6 +13652,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       } else {
         renderAll();
         initAuth();
+        // Nuova versione pubblicata: si controlla poco dopo l'avvio, ogni
+        // quarto d'ora, e quando si torna sulla finestra (e' li' che se ne
+        // accorge chi tiene l'app installata sempre aperta).
+        window.setTimeout(checkForNewVersion, 20000);
+        window.setInterval(checkForNewVersion, 900000);
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) checkForNewVersion();
+        });
       }
     })();
   </script>
