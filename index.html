@@ -3194,26 +3194,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-transform: uppercase;
       color: var(--gold);
     }
+    /* I tre problemi uno accanto all'altro, centrati nella card come la nota.
+       Se non ci stanno in riga vanno a capo (schermi stretti), restando
+       centrati. */
     #martur-operations-dashboard .mod-sec-notes-list {
-      display: inline-block;
-      text-align: left;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px 20px;
       margin: 8px 0 0;
       padding: 0;
       list-style: none;
-      line-height: 1.45;
+      line-height: 1.3;
       overflow-wrap: anywhere;
     }
     #martur-operations-dashboard .mod-sec-notes-list li {
       display: flex;
-      gap: 10px;
+      gap: 7px;
       align-items: baseline;
     }
-    /* Il numero d'ordine resta una cifra piccola in oro, di larghezza fissa,
-       cosi' i tre problemi si incolonnano. */
+    /* Il numero d'ordine resta una cifra piccola in oro davanti al problema. */
     #martur-operations-dashboard .mod-sec-notes-num {
       flex: 0 0 auto;
-      width: 15px;
-      text-align: right;
       font-size: var(--font-size-small);
       font-weight: 600;
       color: var(--gold);
@@ -6055,6 +6057,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qgateFront: 'Q Gate anteriore',
           qgateRear: 'Q Gate posteriore',
           cpa: 'CPA',
+          cpaChecked: 'Kit controllati',
           resident: 'Resident',
           auditSectionUpdate: 'Dati sezione aggiornati',
           dmcSection: 'Qualità',
@@ -6542,6 +6545,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qgateFront: 'Q Gate front',
           qgateRear: 'Q Gate rear',
           cpa: 'CPA',
+          cpaChecked: 'Kits checked',
           resident: 'Resident',
           auditSectionUpdate: 'Section data updated',
           dmcSection: 'Quality',
@@ -7029,6 +7033,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qgateFront: 'Q Gate ön',
           qgateRear: 'Q Gate arka',
           cpa: 'CPA',
+          cpaChecked: 'Kontrol edilen kit',
           resident: 'Resident',
           auditSectionUpdate: 'Bölüm verileri güncellendi',
           dmcSection: 'Kalite',
@@ -11993,10 +11998,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.dmcCards.innerHTML =
           sectionDayCard(t('qgateFront'), 'qgateFront', true) +
           sectionDayCard(t('qgateRear'), 'qgateRear', true) +
-          // CPA: sotto al numero non si ripete la parola "CPA", la dice gia'
-          // il titolo della card.
+          // CPA: sotto al numero non si ripete la parola "CPA" (la dice gia' il
+          // titolo della card) ma cosa sono quei pezzi.
           sectionCard(t('cpa'),
-            sectionHero(sectionGet('cpa'), '', '') +
+            sectionHero(sectionGet('cpa'), t('cpaChecked'), '') +
             sectionNote('cpaNote'),
             sectionNamesHtml([CPA_OPERATOR])) +
           sectionDayCard(t('resident'), 'resident', false,
