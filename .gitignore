@@ -1,0 +1,5 @@
+# File di lavoro locali: non devono finire nel repo pubblico
+*.xlsx
+*.jpeg
+*.jpg
+ChatGPT Image*.png
