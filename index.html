@@ -1126,19 +1126,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: auto;
       border-radius: var(--radius-sm);
     }
-    @media (max-width: 1540px) {
+    @media (max-width: 1440px) {
       #martur-operations-dashboard .mod-brand-logo {
-        width: 215px;
+        width: 240px;
       }
     }
-    @media (max-width: 1400px) {
+    @media (max-width: 1360px) {
       #martur-operations-dashboard .mod-brand-logo {
-        width: 155px;
-      }
-    }
-    @media (max-width: 1310px) {
-      #martur-operations-dashboard .mod-brand-logo {
-        width: 130px;
+        width: 190px;
       }
     }
     /* Il logo ha il fondo trasparente, quindi ne basta uno solo per tutti e
@@ -4915,7 +4910,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               <button type="button" class="mod-nav-tab mod-summary-tab mod-nav-drop-item" role="menuitem" data-drop-group="summary" data-drop-target="anomalies" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="summaryAnomalyTab">Report anomalie</span></button>
             </div>
           </span>
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">Fermi linea</button>
           <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode" hidden>TV</button>
         </nav>
         <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
@@ -4923,7 +4917,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <option value="abarth" data-i18n="abarth">Abarth</option>
           <option value="dmc" data-i18n="dmcSection">DMC</option>
           <option value="summary" data-i18n="summaryTab">ATTIVITÀ</option>
-          <option value="stoppages" data-i18n="stoppages">Fermi linea</option>
         </select>
         <select id="mod-view-subselect" class="mod-view-select mod-view-subselect" aria-label="Sotto-vista" hidden></select>
         <span class="mod-pill-sep"></span>
@@ -5025,6 +5018,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
       <!-- Una riga per turno, stesso stile: 1° turno sopra, 2° turno sotto. -->
       <div id="mod-daily-rework-list" class="mod-rework-shifts"></div>
+    </section>
+
+    <section id="mod-daily-loss-section" class="mod-section" aria-labelledby="mod-daily-loss-title">
+      <div class="mod-section-head">
+        <div>
+          <div id="mod-daily-loss-title" class="mod-section-label" data-i18n="dailyTopLosses">Le 3 perdite più frequenti del giorno</div>
+        </div>
+      </div>
+      <!-- Stessa forma dei rework qui sopra, ma nel cerchio ci sono i minuti
+           di fermo invece del numero di casi. -->
+      <div id="mod-daily-loss-list" class="mod-rework-shifts"></div>
     </section>
 
     <div class="mod-two-col mod-oee-fermi-row">
@@ -6382,6 +6386,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkLimitReached: 'Puoi selezionare al massimo 3 motivi rework.',
           noReworkReasons: 'Nessun motivo rework disponibile.',
           cases: 'casi',
+          dailyTopLosses: 'Le 3 perdite più frequenti del giorno',
+          noLossReasons: 'Nessun fermo registrato.',
+          downtimeMinutes: 'minuti di fermo',
           overtime: 'Straordinario',
           overtimePct: 'Straordinario %',
           dummySeats: 'Dummy',
@@ -6874,6 +6881,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkLimitReached: 'You can select at most 3 rework reasons.',
           noReworkReasons: 'No rework reasons are available.',
           cases: 'cases',
+          dailyTopLosses: 'Top 3 losses for the day',
+          noLossReasons: 'No stoppages recorded.',
+          downtimeMinutes: 'minutes of downtime',
           overtime: 'Overtime',
           overtimePct: 'Overtime %',
           dummySeats: 'Dummy seats',
@@ -7366,6 +7376,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkLimitReached: 'En fazla 3 rework nedeni seçebilirsiniz.',
           noReworkReasons: 'Mevcut rework nedeni yok.',
           cases: 'vaka',
+          dailyTopLosses: 'Günün en büyük 3 kaybı',
+          noLossReasons: 'Kayitli duruş yok.',
+          downtimeMinutes: 'duruş dakikası',
           overtime: 'Fazla mesai',
           overtimePct: 'Fazla mesai %',
           dummySeats: 'Dummy koltuk',
@@ -7954,6 +7967,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         kpiAbsenteeismSpark: root.querySelector('#mod-kpi-absenteeism-spark'),
         dailyReworkSection: root.querySelector('#mod-daily-rework-section'),
         dailyReworkList: root.querySelector('#mod-daily-rework-list'),
+        dailyLossSection: root.querySelector('#mod-daily-loss-section'),
+        dailyLossList: root.querySelector('#mod-daily-loss-list'),
         mainChartSection: root.querySelector('#mod-main-chart-section'),
         mainSubtitle: root.querySelector('#mod-main-subtitle'),
         mainChartWrap: root.querySelector('#mod-main-chart-wrap'),
@@ -9669,6 +9684,64 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ).join('');
       }
 
+      /* Il turno di un fermo lo dice l'ora in cui e' stato segnato: dalle 6
+         alle 14 e' il 1° turno, il resto della giornata il 2°. L'orario
+         salvato e' in UTC, getHours() lo riporta all'ora locale, quella che
+         ha scritto chi ha registrato il fermo. */
+      function stoppageShiftKey(stoppage) {
+        const hour = new Date(stoppage.timestamp).getHours();
+        return hour >= 6 && hour < 14 ? 'shift1' : 'shift2';
+      }
+
+      /* Le 3 cause che hanno fermato di piu' la linea in giornata, in minuti.
+         Un fermo con piu' cause divide i suoi minuti fra quelle, cosi' la
+         somma della classifica resta il fermo vero della giornata e non
+         gonfia i numeri. */
+      function dailyLossRanking(dateIso, shiftKey) {
+        const map = new Map();
+        state.stoppages.forEach((stoppage) => {
+          if (String(stoppage.timestamp).slice(0, 10) !== dateIso) return;
+          if (shiftKey && stoppageShiftKey(stoppage) !== shiftKey) return;
+          const minutes = isNumber(stoppage.durationMin) ? stoppage.durationMin : 0;
+          if (minutes <= 0) return;
+          const causes = stoppageCauseList(stoppage)
+            .map((cause) => String(cause).trim())
+            .filter(Boolean);
+          if (!causes.length) return;
+          const share = minutes / causes.length;
+          causes.forEach((cause) => {
+            const key = cause.toUpperCase();
+            if (!map.has(key)) map.set(key, { reason: cause, minutes: 0 });
+            map.get(key).minutes += share;
+          });
+        });
+        return Array.from(map.values())
+          .map((item) => ({ reason: item.reason, minutes: Math.round(item.minutes) }))
+          .filter((item) => item.minutes > 0)
+          .sort((a, b) => b.minutes - a.minutes || a.reason.localeCompare(b.reason))
+          .slice(0, 3);
+      }
+
+      // Stessa forma dei 3 rework, una colonna per turno: nel cerchio i
+      // minuti di fermo al posto del numero di casi.
+      function renderDailyTopLosses(row) {
+        const items = (list) => list.length
+          ? list.map((item) => '<li><span class="mod-rework-rank-badge" title="' + escapeHtml(t('downtimeMinutes')) + '">' +
+              escapeHtml(formatNumber(item.minutes)) + '</span>' +
+              '<span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span></li>').join('')
+          : '<li class="mod-empty">' + t('noLossReasons') + '</li>';
+        if (isSingleShiftRow(row)) {
+          el.dailyLossList.innerHTML = '<ol class="mod-rework-ranking">' + items(dailyLossRanking(row.date, null)) + '</ol>';
+          return;
+        }
+        el.dailyLossList.innerHTML = ['shift1', 'shift2'].map((key) =>
+          '<div class="mod-rework-shift">' +
+            '<div class="mod-rework-shift-label">' + escapeHtml(t(key)) + '</div>' +
+            '<ol class="mod-rework-ranking">' + items(dailyLossRanking(row.date, key)) + '</ol>' +
+          '</div>'
+        ).join('');
+      }
+
       /* Le due squadre si alternano ogni settimana ISO fra 1° e 2° turno.
          "firstTeam" dice quale delle due e' in turno (quella di Lampis o
          quella di Perna) e non cambia mai; "letter" e' solo come la si chiama
@@ -9699,7 +9772,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             : null;
           const reworkText = formatOptionalNumber(shift.rework) + (isNumber(reworkRate) ? ' \u00b7 ' + formatPercent(reworkRate) : '');
           const overtimeText = isNumber(shift.overtimePct) ? formatPercent(shift.overtimePct) : formatPercent(0);
-          const noteText = (shift.note || '').trim();
           // Colori a soglia sui valori: stesse regole in tutte le giornate,
           // turno unico compreso.
           let frontCls = '', stellCls = '';
@@ -9767,8 +9839,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(t('overtime'), overtimeText, otCls) +
               metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
             '</div>' +
-            '<div class="mod-shift-note"><span class="mod-shift-note-text">' +
-              (noteText ? escapeHtml(noteText) : '') + '</span></div>' +
           '</article>';
       }
 
@@ -9888,6 +9958,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
         el.dailyShiftSection.hidden = state.view !== 'daily';
         el.dailyReworkSection.hidden = state.view !== 'daily';
+        el.dailyLossSection.hidden = state.view !== 'daily';
         el.periodShiftSection.hidden = state.view === 'daily';
         renderPeriodNote(rows);
 
@@ -9930,6 +10001,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         renderKpiTrends();
         renderDailyShiftCards(dailySummary);
         renderDailyTopReworks(dailySummary);
+        renderDailyTopLosses(dailySummary);
         renderShiftTables(overall, subtitle);
         const oeeDowntimeMin = getPeriodStoppages().reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
         const shiftsWorkedFor = (shiftRow) => {
@@ -13520,7 +13592,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const topLevelView = PRODUCTION_VIEWS.indexOf(state.view) >= 0
           ? 'daily'
           : QUALITY_VIEWS.indexOf(state.view) >= 0 ? 'dmc' : state.view;
-        if (el.viewSelect.value !== topLevelView && ['daily', 'abarth', 'dmc', 'summary', 'tv', 'stoppages'].includes(topLevelView)) {
+        if (el.viewSelect.value !== topLevelView && ['daily', 'abarth', 'dmc', 'summary'].includes(topLevelView)) {
           el.viewSelect.value = topLevelView;
         }
         updateBackButton();
