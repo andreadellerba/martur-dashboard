@@ -3120,45 +3120,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     /* Riga dei turni in cima alle pagine DMC / Abarth e Qualita': centrata
        nella pagina, col "+" fermo a destra. Le due colonne laterali hanno la
        stessa larghezza, quindi il centro e' il centro dello schermo. */
+    /* Senza piu' i tasti a destra resta la sola riga dei turni, centrata. */
     #martur-operations-dashboard .mod-sec-head {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-      align-items: center;
-      gap: 10px;
-    }
-    #martur-operations-dashboard .mod-sec-head .mod-sec-shifts { grid-column: 2; }
-    #martur-operations-dashboard .mod-sec-actions {
-      grid-column: 3;
-      justify-self: end;
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-    #martur-operations-dashboard .mod-sec-add,
-    #martur-operations-dashboard .mod-sec-edit {
-      width: 38px;
-      height: 38px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
       justify-content: center;
-      border-radius: var(--radius-full);
-      line-height: 1;
-    }
-    #martur-operations-dashboard .mod-sec-add { font-size: calc(var(--font-size-normal) * 1.5); }
-    #martur-operations-dashboard .mod-sec-edit { border: 1px solid var(--gold); }
-    @media (max-width: 760px) {
-      #martur-operations-dashboard .mod-sec-head { grid-template-columns: minmax(0, 1fr) auto; }
-      #martur-operations-dashboard .mod-sec-head .mod-sec-shifts { grid-column: 1; }
-      #martur-operations-dashboard .mod-sec-actions { grid-column: 2; }
-    }
-    /* Su telefono la riga dei turni si prende tutta la larghezza e i due tasti
-       vanno sopra, a destra: accanto ai tasti restava una colonna troppo
-       stretta e i nomi finivano tagliati. */
-    @media (max-width: 600px) {
-      #martur-operations-dashboard .mod-sec-head { grid-template-columns: minmax(0, 1fr); }
-      #martur-operations-dashboard .mod-sec-head .mod-sec-shifts { grid-column: 1; grid-row: 2; }
-      #martur-operations-dashboard .mod-sec-actions { grid-column: 1; grid-row: 1; }
+      gap: 10px;
     }
     #martur-operations-dashboard .mod-sec-shifts {
       display: grid;
@@ -5476,25 +5443,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <!-- ABARTH - DMC e Q GATE: stesse card del Giornaliero, dati diversi.
        I numeri si inseriscono col "+" e valgono per la data scelta in alto. -->
   <section id="mod-abarth-screen" class="mod-section" hidden>
+    <!-- "+" e matita stanno nel menu in alto e lavorano sulla pagina aperta:
+         qui dentro non ci sono, come nel Giornaliero. -->
     <div class="mod-section-head mod-sec-head">
       <div id="mod-abarth-shifts" class="mod-sec-shifts"></div>
-      <div class="mod-sec-actions">
-        <button type="button" class="btn btn-ghost mod-sec-edit" data-section-page="abarth" title="Modifica dati" data-i18n-title="secEditData" aria-label="Modifica dati" hidden><i data-lucide="pencil" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-primary mod-sec-add" data-section-page="abarth" title="Inserisci dati" data-i18n-title="secAddData" aria-label="Inserisci dati" hidden>+</button>
-      </div>
     </div>
     <div id="mod-abarth-cards" class="mod-daily-shift-grid mod-sec-cards"></div>
   </section>
 
   <section id="mod-dmc-screen" class="mod-section" hidden>
     <div id="mod-dmc-daily">
-      <div class="mod-section-head mod-sec-head">
-        <!-- Il turno ora e' scritto dentro ogni card, non piu' qui sopra. -->
-        <div class="mod-sec-actions">
-          <button type="button" class="btn btn-ghost mod-sec-edit" data-section-page="qgate" title="Modifica dati" data-i18n-title="secEditData" aria-label="Modifica dati" hidden><i data-lucide="pencil" aria-hidden="true"></i></button>
-          <button type="button" class="btn btn-primary mod-sec-add" data-section-page="qgate" title="Inserisci dati" data-i18n-title="secAddData" aria-label="Inserisci dati" hidden>+</button>
-        </div>
-      </div>
+      <!-- Niente riga sopra le card: il turno e' scritto in testa a ognuna e
+           "+" e matita stanno nel menu, come nel Giornaliero. -->
       <div id="mod-dmc-cards" class="mod-sec-grid mod-sec-cards"></div>
     </div>
     <div id="mod-quality-period" hidden>
@@ -10679,15 +10639,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         resetEntry(isoDate(new Date()));
       }
 
+      /* "+" e matita del menu lavorano sulla pagina aperta: nel Giornaliero
+         sulla giornata, in Qualita' e in DMC / Abarth sul modulo di quella
+         sezione. Le due sezioni le compila chiunque abbia l'accesso (sono
+         numeri che scrive chi sta in linea), la giornata solo gli admin. */
+      function sectionPageForView() {
+        if (QUALITY_VIEWS.indexOf(state.view) >= 0) return 'qgate';
+        if (state.view === 'abarth') return 'abarth';
+        return null;
+      }
+      function canUseEntryButtons() {
+        return sectionPageForView() ? Boolean(state.authUser) : state.isAdmin;
+      }
+
       function renderDailyAdminActions() {
-        const canEdit = state.isAdmin;
+        const canEdit = canUseEntryButtons();
         el.dailyAdminActions.hidden = !canEdit;
         if (!canEdit) { el.dailyAdminActions.innerHTML = ''; return; }
         // Il tasto Elimina e' stato tolto dal menu: per cancellare un dato si entra
         // in "+" (dove la cancellazione resta comunque disponibile).
         el.dailyAdminActions.innerHTML =
           '<button type="button" class="btn btn-ghost mod-icon-btn mod-daily-edit-btn" title="' + escapeHtml(t('edit')) + '" aria-label="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>';
-        el.dailyAdminActions.querySelector('.mod-daily-edit-btn').addEventListener('click', () => openShiftEditor(state.selectedDate));
+        el.dailyAdminActions.querySelector('.mod-daily-edit-btn').addEventListener('click', () => {
+          const page = sectionPageForView();
+          if (page) openSectionDialog(page, 'edit');
+          else openShiftEditor(state.selectedDate);
+        });
       }
 
       function openShiftEditor(date) {
@@ -10756,7 +10733,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function updateAdminUI() {
-        el.entryViewBtn.disabled = !state.isAdmin;
+        el.entryViewBtn.disabled = !canUseEntryButtons();
         root.classList.toggle('mod-admin-on', state.isAdmin);
         root.classList.toggle('mod-config-on', state.isConfigAdmin);
         root.classList.toggle('mod-editor-on', Boolean(state.authUser));
@@ -12786,13 +12763,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             sectionHero(bothSum('resident'), t('secDefects'), splitHtml('resident'), 'mod-metric-gold'));
       }
 
-      // "+" e matita li vede chiunque abbia l'accesso, su tutte e due le
-      // pagine: questi numeri li inserisce chi sta in linea, non solo gli
-      // admin. La matita resta sempre a disposizione, anche a giornata vuota.
+      // Le icone appena inserite nelle card vanno disegnate da lucide.
       function syncSectionButtons() {
-        root.querySelectorAll('.mod-sec-add, .mod-sec-edit').forEach((button) => {
-          button.hidden = !state.authUser;
-        });
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
@@ -14016,6 +13988,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.calToggle.hidden = false;
         // "+" (nuovo dato) e Modifica/Elimina restano sempre fissi nel menu, in qualsiasi pagina.
         el.entryViewBtn.hidden = false;
+        // Il "+" si spegne o si accende in base alla pagina aperta e a chi e'
+        // entrato: va aggiornato a ogni cambio di vista, non solo al login.
+        el.entryViewBtn.disabled = !canUseEntryButtons();
         renderDailyAdminActions();
         el.stoppageSettingsBtn.hidden = !state.authUser;
         root.classList.toggle('mod-tv-on', isTv);
@@ -14150,12 +14125,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.taskCancel.addEventListener('click', () => el.taskDialog.close());
       el.taskDelete.addEventListener('click', deleteTask);
       el.taskForm.addEventListener('submit', (event) => { event.preventDefault(); saveTask(); });
-      root.querySelectorAll('.mod-sec-add').forEach((button) => {
-        button.addEventListener('click', () => openSectionDialog(button.dataset.sectionPage, 'add'));
-      });
-      root.querySelectorAll('.mod-sec-edit').forEach((button) => {
-        button.addEventListener('click', () => openSectionDialog(button.dataset.sectionPage, 'edit'));
-      });
       el.sectionClose.addEventListener('click', () => el.sectionDialog.close());
       el.sectionCancel.addEventListener('click', () => el.sectionDialog.close());
       el.sectionForm.addEventListener('submit', (event) => { event.preventDefault(); saveSection(); });
@@ -14300,6 +14269,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (button.classList.contains('mod-nav-drop-btn')) return;
         button.addEventListener('click', () => {
           if (button.dataset.view === 'entry') {
+            // In Qualita' e in DMC / Abarth il "+" apre il modulo di quella
+            // sezione, non l'inserimento della giornata.
+            const page = sectionPageForView();
+            if (page) {
+              if (state.authUser) openSectionDialog(page, 'add');
+              return;
+            }
             if (!state.isAdmin) return;
             if (state.view !== 'entry') loadEntry(state.selectedDate);
           }
