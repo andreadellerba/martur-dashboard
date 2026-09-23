@@ -3189,19 +3189,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-sec-split > .mod-sec-split-col + .mod-sec-split-col {
       border-left: 1px solid var(--border);
     }
+    /* Titolo di mezza card (il turno col suo Resident): stesso font dei
+       titoli delle altre card, centrato. */
     #martur-operations-dashboard .mod-sec-split-title {
-      display: flex;
-      align-items: baseline;
       justify-content: center;
-      gap: 8px;
-      font-size: var(--font-size-small);
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-sec-split-name {
-      font-weight: 600;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      width: 100%;
     }
     /* Una parte sola (giornata a turno unico): niente colonna vuota a fianco. */
     #martur-operations-dashboard .mod-sec-split:has(> .mod-sec-split-col:only-child) {
@@ -5495,7 +5489,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <section id="mod-dmc-screen" class="mod-section" hidden>
     <div id="mod-dmc-daily">
       <div class="mod-section-head mod-sec-head">
-        <div id="mod-dmc-shifts" class="mod-sec-shifts"></div>
+        <!-- Il turno ora e' scritto dentro ogni card, non piu' qui sopra. -->
         <div class="mod-sec-actions">
           <button type="button" class="btn btn-ghost mod-sec-edit" data-section-page="qgate" title="Modifica dati" data-i18n-title="secEditData" aria-label="Modifica dati" hidden><i data-lucide="pencil" aria-hidden="true"></i></button>
           <button type="button" class="btn btn-primary mod-sec-add" data-section-page="qgate" title="Inserisci dati" data-i18n-title="secAddData" aria-label="Inserisci dati" hidden>+</button>
@@ -6230,7 +6224,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetLabel: 'Target',
           secTargetUnit: 'pezzi',
           secTargetEdit: 'Clicca per cambiare il target',
-          secIssuesTitle: 'Maggiori problemi riscontrati',
+          secIssuesTitle: 'Maggiori difetti riscontrati',
           secNote: 'Nota',
           qgateFront: 'Q Gate anteriore',
           qgateRear: 'Q Gate posteriore',
@@ -6736,7 +6730,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetLabel: 'Target',
           secTargetUnit: 'pieces',
           secTargetEdit: 'Click to change the target',
-          secIssuesTitle: 'Main issues found',
+          secIssuesTitle: 'Main defects found',
           secNote: 'Note',
           qgateFront: 'Q Gate front',
           qgateRear: 'Q Gate rear',
@@ -7242,7 +7236,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secTargetLabel: 'Hedef',
           secTargetUnit: 'parça',
           secTargetEdit: 'Hedefi değiştirmek için tıklayın',
-          secIssuesTitle: 'Tespit edilen başlıca sorunlar',
+          secIssuesTitle: 'Tespit edilen başlıca hatalar',
           secNote: 'Not',
           qgateFront: 'Q Gate ön',
           qgateRear: 'Q Gate arka',
@@ -7859,7 +7853,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         abarthCards: root.querySelector('#mod-abarth-cards'),
         abarthShifts: root.querySelector('#mod-abarth-shifts'),
         dmcCards: root.querySelector('#mod-dmc-cards'),
-        dmcShifts: root.querySelector('#mod-dmc-shifts'),
         dmcDaily: root.querySelector('#mod-dmc-daily'),
         qualityPeriod: root.querySelector('#mod-quality-period'),
         qualityPeriodCards: root.querySelector('#mod-quality-period-cards'),
@@ -12075,10 +12068,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               { path: 'cpa', label: 'cpa' },
               { path: 'cpaNote', label: 'secNote', type: 'text' }
             ] },
+            /* Anche il Resident ha i suoi 3 difetti, come i Q Gate: al posto
+               della nota libera di prima. */
             { label: 'resident', fields: [
               { path: 'resident.shift1', label: 'shift1' },
               { path: 'resident.shift2', label: 'shift2' },
-              { path: 'resident.note', label: 'secNote', type: 'text' }
+              { path: 'resident.issue1', labelText: '1)', type: 'text' },
+              { path: 'resident.issue2', labelText: '2)', type: 'text' },
+              { path: 'resident.issue3', labelText: '3)', type: 'text' }
             ] }
           ]
         }
@@ -12625,28 +12622,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const date = state.selectedDate;
         const single = isSingleShiftDay(date);
         const shiftKeys = single ? ['shift1'] : ['shift1', 'shift2'];
-        const half = (shiftKey, index) => {
-          const team = shiftTeamInfo(shiftKey, date);
-          return '<div class="mod-sec-split-col">' +
-            '<div class="mod-sec-split-title">' +
+        const half = (shiftKey) =>
+          '<div class="mod-sec-split-col">' +
+            '<div class="mod-shift-card-name mod-sec-split-title">' +
               (single ? escapeHtml(t('uniqueShift')) : escapeHtml(t(shiftKey))) +
-              '<span class="mod-shift-crew mod-sec-split-name">' + escapeHtml(residentFor(shiftKey, date)) + '</span>' +
+              '<span class="mod-shift-crew">' + escapeHtml(residentFor(shiftKey, date)) + '</span>' +
             '</div>' +
             sectionHero(sectionGet('resident.' + shiftKey), t('secDefects'), '', 'mod-metric-gold') +
           '</div>';
-        };
-        const total = sectionSum(['resident.shift1', 'resident.shift2']);
+        // Le note libere delle giornate gia' inserite restano visibili sotto.
         const note = sectionTextOf('resident.note').trim();
-        const totalText = t('secTotal').toUpperCase() + ' : ' + sectionText(total);
         return sectionCard(t('resident'),
           '<div class="mod-sec-split">' + shiftKeys.map(half).join('') + '</div>' +
-          '<div class="mod-shift-note mod-sec-note"><span class="mod-shift-note-text">' +
-            escapeHtml(note ? totalText + ' · ' + note : totalText) + '</span></div>',
-          sectionNamesHtml(residentNames(date)));
+          sectionIssues('resident') +
+          (note ? '<div class="mod-shift-note mod-sec-note"><span class="mod-shift-note-text">' +
+            escapeHtml(note) + '</span></div>' : ''));
       }
 
       function renderQGate() {
-        renderSectionShifts(el.dmcShifts);
+        // Niente riga dei turni qui: ogni card ha il suo turno in testa.
         const single = isSingleShiftDay(state.selectedDate);
         const shiftKeys = single ? ['shift1'] : ['shift1', 'shift2'];
         // CPA e' gia' un numero solo: non cambia col turno unico.
