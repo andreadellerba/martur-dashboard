@@ -899,7 +899,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
        con la STESSA distanza (--topbar-gap) tra un elemento e l'altro, e di
        conseguenza spazio vuoto uguale a sinistra e a destra del gruppo. */
     #martur-operations-dashboard .mod-topbar-cluster {
-      --topbar-gap: 20px;
+      --topbar-gap: 14px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -973,38 +973,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border-radius: var(--radius-full);
       padding: 3px;
     }
-    /* Giorno / settimana / mese vivono dentro la pillola del calendario.
-       Testo piu' piccolo e sfondo oro smorzato quando sono accesi: la scelta
-       del periodo resta un gradino sotto al menu principale, che usa l'oro
-       pieno. */
-    #martur-operations-dashboard .mod-period-seg {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      align-self: stretch;
-    }
-    #martur-operations-dashboard .mod-period-seg[hidden] {
-      display: none;
-    }
-    #martur-operations-dashboard .mod-datenav .mod-seg-tab {
-      padding: 6px 9px;
-      font-size: max(10px, calc(var(--font-size-base) - 3px));
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      border-radius: var(--radius-full);
-      color: var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-datenav .mod-seg-tab::after {
-      display: none;
-    }
-    #martur-operations-dashboard .mod-datenav .mod-seg-tab:hover {
-      color: var(--foreground);
-      background: color-mix(in srgb, var(--foreground) 8%, transparent);
-    }
-    #martur-operations-dashboard .mod-datenav .mod-seg-tab[aria-pressed="true"] {
-      color: var(--gold-foreground);
-      background: color-mix(in srgb, var(--gold) 72%, transparent);
-    }
     #martur-operations-dashboard .mod-datenav .mod-period-nav {
       border-radius: var(--radius-full);
       /* Dentro la pillola (sfondo muted) l'icona ghost muted-foreground si vedeva a malapena:
@@ -1044,8 +1012,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-pillnav {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 2px;
-      flex: 0 1 auto;
+      /* Cresce per occupare lo spazio che prima restava vuoto ai lati
+         dell'header (il blocco logo+menu+calendario era piu' stretto del
+         contenitore): il menu ne guadagna respiro invece di lasciarlo bianco. */
+      flex: 1 1 auto;
       min-width: 0;
       height: 43px;
       background: var(--muted);
@@ -1149,9 +1121,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-brand-logo {
       display: block;
-      width: 205px;
+      width: 188px;
       height: auto;
       border-radius: var(--radius-sm);
+    }
+    /* Sui laptop piu' stretti (1366px e simili, ancora comuni) il logo si
+       stringe un altro po': libera lo spazio che serve al menu, che a
+       quella larghezza e' gia' al minimo di respiro. */
+    @media (max-width: 1400px) {
+      #martur-operations-dashboard .mod-brand-logo {
+        width: 165px;
+      }
     }
     /* Il logo ha il fondo trasparente, quindi ne basta uno solo per tutti e
        due i temi: prima ce n'erano due, uno per tema, perche' l'immagine si
@@ -1166,6 +1146,104 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-view-select {
       display: none;
+    }
+    /* Sotto-vista sul telefono (Giornaliero/Settimanale/Mensile,
+       Pianificazione/Report anomalie): compare solo dove serve, la mostra/
+       nasconde e' via JS con lo style inline, ma questa regola vince comunque
+       sul display:block del breakpoint qui sotto. */
+    #martur-operations-dashboard .mod-view-subselect[hidden] {
+      display: none !important;
+    }
+    /* Voci di menu con piu' viste (Produzione, Qualita', Attivita'): il
+       pulsante scrive dove sei e apre una tendina con le scelte, invece di un
+       secondo sottomenu separato. */
+    #martur-operations-dashboard .mod-nav-drop {
+      position: relative;
+      display: flex;
+    }
+    #martur-operations-dashboard .mod-nav-drop-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    /* La sotto-vista ("· GIORNALIERO") si vede solo sulla voce accesa: le
+       altre due restano corte (solo etichetta e freccia), cosi' il menu ci
+       sta anche su schermi da laptop senza stringere il resto. */
+    #martur-operations-dashboard .mod-nav-drop-sep,
+    #martur-operations-dashboard .mod-nav-drop-sub {
+      display: none;
+    }
+    #martur-operations-dashboard .mod-nav-tab[aria-pressed="true"] .mod-nav-drop-sep,
+    #martur-operations-dashboard .mod-nav-tab[aria-pressed="true"] .mod-nav-drop-sub {
+      display: inline;
+    }
+    #martur-operations-dashboard .mod-nav-drop-sub {
+      font-weight: 700;
+    }
+    #martur-operations-dashboard .mod-nav-drop-chevron {
+      width: 13px;
+      height: 13px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: 0 0 auto;
+    }
+    #martur-operations-dashboard .mod-nav-drop-menu {
+      position: absolute;
+      top: calc(100% + 9px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 200px;
+      padding: 6px;
+      background: var(--popover);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 30px -12px rgb(0 0 0 / 40%);
+    }
+    #martur-operations-dashboard .mod-nav-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 10px;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: none;
+      color: var(--foreground);
+      font: inherit;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      text-align: left;
+      cursor: pointer;
+    }
+    #martur-operations-dashboard .mod-nav-drop-item:hover {
+      background: var(--muted);
+    }
+    #martur-operations-dashboard .mod-nav-drop-item[aria-pressed="true"] {
+      background: color-mix(in srgb, var(--gold) 22%, transparent);
+      font-weight: 700;
+    }
+    #martur-operations-dashboard .mod-nav-drop-check {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      color: var(--gold);
+      visibility: hidden;
+    }
+    #martur-operations-dashboard .mod-nav-drop-item[aria-pressed="true"] .mod-nav-drop-check {
+      visibility: visible;
     }
     #martur-operations-dashboard .mod-pillnav .mod-nav-tab-icon {
       flex: 0 0 auto;
@@ -1215,7 +1293,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       background: var(--primary);
     }
     #martur-operations-dashboard .mod-pillnav .mod-nav-tab {
-      padding: 7px 11px;
+      padding: 7px 9px;
       border-radius: var(--radius-full);
     }
     #martur-operations-dashboard .mod-pillnav .mod-nav-tab::after {
@@ -1235,7 +1313,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-nav-tab-icon {
       display: inline-flex;
       align-items: center;
-      padding-inline: 12px;
+      padding-inline: 10px;
     }
     #martur-operations-dashboard .mod-nav-tab-icon:disabled {
       opacity: 0.35;
@@ -1914,43 +1992,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-task-delete { margin-right: auto; color: var(--destructive); }
 
-    /* ---- Sottomenu di ATTIVITA' ----
-       Pillole centrate come il menu principale; a sinistra il conteggio,
-       a destra i pulsanti della sezione aperta. */
+    /* Testata di ATTIVITA': conteggio a sinistra, pulsanti della sezione
+       aperta a destra. Pianificazione/Report anomalie sono ora nel menu
+       principale (tendina sulla voce ATTIVITA'), non qui dentro. */
     #martur-operations-dashboard .mod-summary-head {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
     }
-    /* Sottomenu dentro una pagina (Produzione, Qualita'): centrato sopra al
-       contenuto. Dentro ATTIVITA' sta in una griglia sua, piu' sotto. */
-    #martur-operations-dashboard .mod-subnav {
-      justify-self: center;
-      max-width: 100%;
-    }
-    @media (max-width: 600px) {
-      /* Su telefono le tre voci ci stanno di misura: si stringe la spaziatura
-         invece di dividere la riga in parti uguali, altrimenti "Giornaliero" e
-         "Settimanale" venivano tagliate coi puntini. */
-      #martur-operations-dashboard .mod-subnav {
-        height: auto;
-        justify-content: center;
-      }
-      #martur-operations-dashboard .mod-subnav .mod-nav-tab {
-        padding: 7px 8px;
-        font-size: var(--font-size-small);
-      }
-    }
-    #martur-operations-dashboard .mod-summary-head .mod-subnav { grid-column: 2; grid-row: 1; order: 0; }
-    #martur-operations-dashboard .mod-summary-head .mod-summary-count { grid-column: 1; grid-row: 1; }
-    #martur-operations-dashboard .mod-summary-head .mod-summary-tools { grid-column: 3; grid-row: 1; }
     @media (max-width: 900px) {
-      #martur-operations-dashboard .mod-summary-head { display: flex; flex-direction: column; align-items: stretch; }
-      #martur-operations-dashboard .mod-summary-head .mod-subnav { width: 100%; height: auto; justify-content: center; }
-      #martur-operations-dashboard .mod-summary-head .mod-subnav .mod-nav-tab { flex: 1 1 0; }
-      #martur-operations-dashboard .mod-summary-head .mod-summary-tools { order: 1; }
-      #martur-operations-dashboard .mod-summary-head .mod-summary-count { order: 2; }
+      #martur-operations-dashboard .mod-summary-head { flex-direction: column; align-items: stretch; }
     }
     #martur-operations-dashboard .mod-summary-tools {
       display: flex;
@@ -4448,13 +4500,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         width: 100%;
         height: auto;
         justify-content: center;
+        flex-wrap: wrap;
         gap: 4px;
-      }
-      /* Il sottomenu dentro una pagina e' anche lui una .mod-pillnav, ma non
-         sta nell'header: senza questo l'"order" qui sopra lo spediva in fondo
-         alla pagina, sotto a tutto il resto. */
-      #martur-operations-dashboard .mod-subnav {
-        order: 0;
       }
       #martur-operations-dashboard .mod-pill-sep {
         display: none;
@@ -4474,6 +4521,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         background: none;
         border: 0;
       }
+      /* La sotto-vista (Giornaliero/Settimanale/Mensile, Pianificazione/
+         Report anomalie) sta su una riga tutta sua sotto la voce principale,
+         solo quando la pagina aperta ne ha una. */
+      #martur-operations-dashboard .mod-view-subselect {
+        flex-basis: 100%;
+        max-width: 100%;
+        border-top: 1px solid var(--border);
+        padding-top: 6px;
+        margin-top: 2px;
+      }
       #martur-operations-dashboard .mod-nav-tab-icon {
         flex: 0 0 auto;
       }
@@ -4481,32 +4538,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         order: 3;
         width: 100%;
         height: auto;
-        display: flex;
-        flex-wrap: wrap;
+        display: none;
         align-items: center;
-        justify-content: center;
         gap: 6px;
         margin-top: 2px;
       }
-      /* Su telefono giorno/settimana/mese stanno sempre in vista, su una riga
-         tutta loro; la data con le frecce resta nascosta finche' non si preme
-         il tasto calendario, come prima. */
-      #martur-operations-dashboard .mod-period-seg {
-        width: 100%;
-        justify-content: center;
-      }
-      #martur-operations-dashboard .mod-datenav .mod-seg-tab {
-        padding: 9px 12px;
-        font-size: var(--font-size-small);
-      }
-      #martur-operations-dashboard .mod-topbar-cluster:not(.mod-cal-open) .mod-datenav .mod-header-picker,
-      #martur-operations-dashboard .mod-topbar-cluster:not(.mod-cal-open) .mod-datenav .mod-period-nav {
-        display: none;
-      }
-      /* Nelle pagine senza le tre viste non resta niente da mostrare: la
-         pillola sparisce del tutto, come faceva prima. */
-      #martur-operations-dashboard .mod-topbar-cluster:not(.mod-cal-open) .mod-datenav.mod-datenav-bare {
-        display: none;
+      #martur-operations-dashboard .mod-topbar-cluster.mod-cal-open .mod-datenav {
+        display: flex;
       }
       #martur-operations-dashboard .mod-datenav .mod-header-picker {
         flex: 1 1 auto;
@@ -4818,17 +4856,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </button>
       </div>
       <div id="mod-context-bar" class="mod-datenav">
-        <!-- Giorno / settimana / mese stanno qui, dentro la pillola del
-             calendario: sono una scelta di periodo, la stessa cosa che fanno
-             le frecce e la data. Prima erano una seconda pillola dentro la
-             pagina, sotto il menu. Si nascondono nelle pagine che non hanno
-             le tre viste (DMC / Abarth, Attivita', ecc.). -->
-        <div id="mod-period-seg" class="mod-period-seg" role="group" aria-label="Periodo">
-          <button type="button" class="mod-nav-tab mod-seg-tab" data-period-mode="daily" aria-pressed="true" data-i18n="periodDay">Giorno</button>
-          <button type="button" class="mod-nav-tab mod-seg-tab" data-period-mode="weekly" aria-pressed="false" data-i18n="periodWeek">Settimana</button>
-          <button type="button" class="mod-nav-tab mod-seg-tab" data-period-mode="monthly" aria-pressed="false" data-i18n="periodMonth">Mese</button>
-          <span class="mod-pill-sep"></span>
-        </div>
         <button type="button" class="btn btn-ghost mod-pill-icon mod-period-nav" id="mod-period-prev" title="Precedente" data-i18n-title="previousPeriod">
           <i data-lucide="chevron-left" aria-hidden="true"></i>
         </button>
@@ -4856,13 +4883,40 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       <div class="mod-pillnav">
         <nav class="mod-main-nav" aria-label="Dashboard views">
-          <!-- Giornaliero, Settimanale e Mensile stanno nel sottomenu dentro la
-               pagina: qui resta la sola voce PRODUZIONE, accesa per tutte e tre. -->
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="daily" data-view-group="daily weekly monthly" aria-pressed="true" data-i18n="production">PRODUZIONE</button>
+          <!-- Le voci con piu' viste (Produzione, Qualita', Attivita') mostrano
+               dove sei ("PRODUZIONE · GIORNALIERO") e aprono le loro scelte in
+               una tendina, invece di un secondo sottomenu a parte. -->
+          <span class="mod-nav-drop" data-nav-drop="production">
+            <button type="button" class="mod-nav-tab mod-view-btn mod-nav-drop-btn" data-view="daily" data-view-group="daily weekly monthly" aria-pressed="true" aria-haspopup="true" aria-expanded="false">
+              <span data-i18n="production">PRODUZIONE</span><span class="mod-nav-drop-sep" aria-hidden="true">·</span><span id="mod-drop-sub-production" class="mod-nav-drop-sub"></span><svg class="mod-nav-drop-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="mod-nav-drop-menu" role="menu" aria-label="Produzione" hidden>
+              <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="production" data-drop-target="daily" aria-pressed="true"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="daily">Giornaliero</span></button>
+              <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="production" data-drop-target="weekly" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="weekly">Settimanale</span></button>
+              <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="production" data-drop-target="monthly" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="monthly">Mensile</span></button>
+            </div>
+          </span>
           <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" aria-pressed="false" data-i18n="abarth">Abarth</button>
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="dmc" data-view-group="dmc qualityWeekly qualityMonthly" aria-pressed="false" data-i18n="dmcSection">DMC</button>
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="summary" aria-pressed="false"><span data-i18n="summaryTab">ATTIVITÀ</span></button>
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages" hidden>Fermi linea</button>
+          <span class="mod-nav-drop" data-nav-drop="quality">
+            <button type="button" class="mod-nav-tab mod-view-btn mod-nav-drop-btn" data-view="dmc" data-view-group="dmc qualityWeekly qualityMonthly" aria-pressed="false" aria-haspopup="true" aria-expanded="false">
+              <span data-i18n="dmcSection">DMC</span><span class="mod-nav-drop-sep" aria-hidden="true">·</span><span id="mod-drop-sub-quality" class="mod-nav-drop-sub"></span><svg class="mod-nav-drop-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="mod-nav-drop-menu" role="menu" aria-label="Qualità" hidden>
+              <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="quality" data-drop-target="dmc" aria-pressed="true"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="daily">Giornaliero</span></button>
+              <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="quality" data-drop-target="qualityWeekly" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="weekly">Settimanale</span></button>
+              <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="quality" data-drop-target="qualityMonthly" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="monthly">Mensile</span></button>
+            </div>
+          </span>
+          <span class="mod-nav-drop" data-nav-drop="summary">
+            <button type="button" class="mod-nav-tab mod-view-btn mod-nav-drop-btn" data-view="summary" aria-pressed="false" aria-haspopup="true" aria-expanded="false">
+              <span data-i18n="summaryTab">ATTIVITÀ</span><span class="mod-nav-drop-sep" aria-hidden="true">·</span><span id="mod-drop-sub-summary" class="mod-nav-drop-sub"></span><svg class="mod-nav-drop-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="mod-nav-drop-menu" role="menu" aria-label="Attività" hidden>
+              <button type="button" class="mod-nav-tab mod-summary-tab mod-nav-drop-item" role="menuitem" data-drop-group="summary" data-drop-target="plan" aria-pressed="true"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="summaryPlanTab">Pianificazione</span></button>
+              <button type="button" class="mod-nav-tab mod-summary-tab mod-nav-drop-item" role="menuitem" data-drop-group="summary" data-drop-target="anomalies" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="summaryAnomalyTab">Report anomalie</span></button>
+            </div>
+          </span>
+          <button type="button" class="mod-nav-tab mod-view-btn" data-view="stoppages" aria-pressed="false" data-i18n="stoppages">Fermi linea</button>
           <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode" hidden>TV</button>
         </nav>
         <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
@@ -4870,7 +4924,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <option value="abarth" data-i18n="abarth">Abarth</option>
           <option value="dmc" data-i18n="dmcSection">DMC</option>
           <option value="summary" data-i18n="summaryTab">ATTIVITÀ</option>
+          <option value="stoppages" data-i18n="stoppages">Fermi linea</option>
         </select>
+        <select id="mod-view-subselect" class="mod-view-select mod-view-subselect" aria-label="Sotto-vista" hidden></select>
         <span class="mod-pill-sep"></span>
         <div id="mod-daily-admin-actions" class="mod-daily-admin-actions"></div>
         <button type="button" class="mod-nav-tab mod-nav-tab-icon mod-view-btn" id="mod-entry-view-btn" data-view="entry" aria-pressed="false" title="Inserimento dati" data-i18n-title="dataEntry" disabled>
@@ -5531,11 +5587,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
   <section id="mod-summary-screen" class="mod-summary-screen" hidden>
     <div class="mod-summary-head">
-      <!-- Sottomenu di ATTIVITA': stesse pillole del menu principale. -->
-      <nav class="mod-pillnav mod-subnav" aria-label="Attività">
-        <button type="button" class="mod-nav-tab mod-summary-tab" data-summary-tab="plan" aria-pressed="true" data-i18n="summaryPlanTab">PIANIFICAZIONE</button>
-        <button type="button" class="mod-nav-tab mod-summary-tab" data-summary-tab="anomalies" aria-pressed="false" data-i18n="summaryAnomalyTab">REPORT ANOMALIE</button>
-      </nav>
       <span id="mod-anomaly-count" class="mod-summary-count text-small text-muted" hidden></span>
       <div class="mod-summary-tools">
       <div id="mod-task-actions" class="mod-summary-actions">
@@ -6342,9 +6393,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           periodNoteClosedOn: 'chiuso il',
           summaryTab: 'ATTIVITÀ',
           production: 'PRODUZIONE',
-          periodDay: 'Giorno',
-          periodWeek: 'Settimana',
-          periodMonth: 'Mese',
           summaryTitle: 'Riepilogo attività',
           summaryHint: 'Le attività della squadra, divise per stato di avanzamento.',
           taskAdd: '+ Nuova attività',
@@ -6836,9 +6884,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           periodNoteNoPrev: 'No data in the previous period',
           periodNoteClosedOn: 'closed on',
           production: 'PRODUCTION',
-          periodDay: 'Day',
-          periodWeek: 'Week',
-          periodMonth: 'Month',
           summaryTab: 'ACTIVITIES',
           summaryTitle: 'Activity summary',
           summaryHint: 'Team activities, grouped by progress.',
@@ -7330,9 +7375,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           periodNotePrev: 'Onceki donem',
           periodNoteNoPrev: 'Onceki donemde veri yok',
           production: 'ÜRETİM',
-          periodDay: 'Gün',
-          periodWeek: 'Hafta',
-          periodMonth: 'Ay',
           periodNoteClosedOn: 'kapanis',
           summaryTab: 'FAALIYETLER',
           summaryTitle: 'Faaliyet ozeti',
@@ -7695,8 +7737,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         qualityPeriod: root.querySelector('#mod-quality-period'),
         qualityPeriodCards: root.querySelector('#mod-quality-period-cards'),
         qualityPeriodSubtitle: root.querySelector('#mod-quality-period-subtitle'),
-        periodSeg: root.querySelector('#mod-period-seg'),
-        segTabs: root.querySelectorAll('.mod-seg-tab'),
         sectionDialog: root.querySelector('#mod-section-dialog'),
         sectionDialogTitle: root.querySelector('#mod-section-dialog-title'),
         sectionDialogDate: root.querySelector('#mod-section-dialog-date'),
@@ -7715,6 +7755,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         chatHint: root.querySelector('#mod-chat-hint'),
         chatBadge: root.querySelector('#mod-chat-badge'),
         viewSelect: root.querySelector('#mod-view-select'),
+        viewSubselect: root.querySelector('#mod-view-subselect'),
+        dropSubProduction: root.querySelector('#mod-drop-sub-production'),
+        dropSubQuality: root.querySelector('#mod-drop-sub-quality'),
+        dropSubSummary: root.querySelector('#mod-drop-sub-summary'),
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
         stoppageAdmin: root.querySelector('#mod-stoppage-admin'),
         userAdmin: root.querySelector('#mod-user-admin'),
@@ -9051,6 +9095,56 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const QUALITY_VIEWS = ['dmc', 'qualityWeekly', 'qualityMonthly'];
       const PRODUCTION_VIEWS = ['daily', 'weekly', 'monthly'];
 
+      /* Etichetta secondaria sul pulsante ("PRODUZIONE · GIORNALIERO") e segno
+         di spunta sulla scelta attiva, per le voci di menu con tendina
+         (Produzione, Qualita', Attivita'). */
+      function updateNavDrops() {
+        const prodSubKey = state.productionTab === 'weekly' ? 'weekly' : state.productionTab === 'monthly' ? 'monthly' : 'daily';
+        const qualitySubKey = state.qualityTab === 'qualityWeekly' ? 'weekly' : state.qualityTab === 'qualityMonthly' ? 'monthly' : 'daily';
+        const summarySubKey = state.summaryTab === 'anomalies' ? 'summaryAnomalyTab' : 'summaryPlanTab';
+        if (el.dropSubProduction) el.dropSubProduction.textContent = t(prodSubKey);
+        if (el.dropSubQuality) el.dropSubQuality.textContent = t(qualitySubKey);
+        if (el.dropSubSummary) el.dropSubSummary.textContent = t(summarySubKey);
+        root.querySelectorAll('.mod-nav-drop-item[data-drop-group="production"]').forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.dropTarget === state.productionTab));
+        });
+        root.querySelectorAll('.mod-nav-drop-item[data-drop-group="quality"]').forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.dropTarget === state.qualityTab));
+        });
+        root.querySelectorAll('.mod-nav-drop-item[data-drop-group="summary"]').forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.dropTarget === state.summaryTab));
+        });
+      }
+
+      /* Sul telefono il menu principale e' un <select>: la sotto-vista (le
+         stesse scelte della tendina desktop) e' un secondo <select> che
+         compare solo quando la pagina aperta ne ha una. */
+      function updateViewSubselect() {
+        if (!el.viewSubselect) return;
+        let options = null;
+        let value = null;
+        if (PRODUCTION_VIEWS.indexOf(state.view) >= 0) {
+          options = [['daily', t('daily')], ['weekly', t('weekly')], ['monthly', t('monthly')]];
+          value = state.productionTab;
+        } else if (QUALITY_VIEWS.indexOf(state.view) >= 0) {
+          options = [['dmc', t('daily')], ['qualityWeekly', t('weekly')], ['qualityMonthly', t('monthly')]];
+          value = state.qualityTab;
+        } else if (state.view === 'summary') {
+          options = [['plan', t('summaryPlanTab')], ['anomalies', t('summaryAnomalyTab')]];
+          value = state.summaryTab;
+        }
+        if (!options) {
+          el.viewSubselect.hidden = true;
+          el.viewSubselect.innerHTML = '';
+          return;
+        }
+        el.viewSubselect.hidden = false;
+        el.viewSubselect.innerHTML = options.map(([v, label]) =>
+          '<option value="' + v + '"' + (v === value ? ' selected' : '') + '>' + escapeHtml(label) + '</option>'
+        ).join('');
+        el.viewSubselect.value = value;
+      }
+
       function getDailyPeriods(rows, selectedDate) {
         const map = new Map(rows.map((row) => [row.date, row]));
         const bucket = createBucket(selectedDate, formatDate(selectedDate), weekdayShort(selectedDate) + ' ' + formatDate(selectedDate, true));
@@ -9308,6 +9402,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             : button.dataset.view === state.view;
           button.setAttribute('aria-pressed', String(active));
         });
+        updateNavDrops();
+        updateViewSubselect();
         root.querySelectorAll('.mod-theme').forEach((button) => {
           button.setAttribute('aria-pressed', String(button.dataset.themeChoice === state.themeChoice));
         });
@@ -11103,7 +11199,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.summaryEdit.setAttribute('aria-pressed', String(canEditSummary()));
         el.summaryScreen.classList.toggle('mod-summary-editing', canEditSummary());
         el.summaryTabs.forEach((button) => {
-          button.setAttribute('aria-pressed', String(button.dataset.summaryTab === state.summaryTab));
+          button.setAttribute('aria-pressed', String(button.dataset.dropTarget === state.summaryTab));
         });
         el.taskSort.innerHTML = TASK_SORTS.map((s) =>
           '<option value="' + s.id + '"' + (s.id === state.taskSort ? ' selected' : '') + '>' + escapeHtml(t(s.key)) + '</option>'
@@ -13413,17 +13509,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const qualityDaily = state.view === 'dmc';
         el.dmcDaily.hidden = !isDmc || !qualityDaily;
         el.qualityPeriod.hidden = !isDmc || qualityDaily;
-        // Giorno / settimana / mese si vedono solo dove esistono le tre viste
-        // (Produzione e Qualita'); altrove nella pillola resta la sola data.
-        const hasPeriods = PRODUCTION_VIEWS.indexOf(state.view) >= 0 || QUALITY_VIEWS.indexOf(state.view) >= 0;
-        const segMode = periodMode();
-        el.periodSeg.hidden = !hasPeriods;
-        // Su telefono la pillola della data resta visibile per i tre tasti del
-        // periodo: quando non ci sono, non deve restare una pillola vuota.
-        el.contextBar.classList.toggle('mod-datenav-bare', !hasPeriods);
-        el.segTabs.forEach((button) => {
-          button.setAttribute('aria-pressed', String(hasPeriods && button.dataset.periodMode === segMode));
-        });
         el.chatScreen.hidden = !isChat;
         el.summaryScreen.hidden = !isSummary;
         if (isSummary) applySummaryTab();
@@ -13438,8 +13523,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.stoppageSettingsBtn.hidden = !state.authUser;
         root.classList.toggle('mod-tv-on', isTv);
         if (!isChat) updateChatBadge();
-        if (el.viewSelect.value !== state.view && ['daily', 'weekly', 'monthly', 'abarth', 'dmc', 'summary', 'tv', 'stoppages'].includes(state.view)) {
-          el.viewSelect.value = state.view;
+        // Il <select> del telefono ha solo le voci di testa (PRODUZIONE,
+        // Abarth, DMC, ATTIVITA', Fermi linea): settimanale/mensile e le tre
+        // viste di Qualita' ricadono sulla testa del loro gruppo, altrimenti
+        // il <select> resterebbe senza scelta corrispondente e apparirebbe vuoto.
+        const topLevelView = PRODUCTION_VIEWS.indexOf(state.view) >= 0
+          ? 'daily'
+          : QUALITY_VIEWS.indexOf(state.view) >= 0 ? 'dmc' : state.view;
+        if (el.viewSelect.value !== topLevelView && ['daily', 'abarth', 'dmc', 'summary', 'tv', 'stoppages'].includes(topLevelView)) {
+          el.viewSelect.value = topLevelView;
         }
         updateBackButton();
         if (isEntry) renderManualEntries();
@@ -13561,13 +13653,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.taskCancel.addEventListener('click', () => el.taskDialog.close());
       el.taskDelete.addEventListener('click', deleteTask);
       el.taskForm.addEventListener('submit', (event) => { event.preventDefault(); saveTask(); });
-      el.summaryTabs.forEach((button) => {
-        button.addEventListener('click', () => {
-          if (state.summaryTab === button.dataset.summaryTab) return;
-          state.summaryTab = button.dataset.summaryTab;
-          applySummaryTab();
-        });
-      });
       root.querySelectorAll('.mod-sec-add').forEach((button) => {
         button.addEventListener('click', () => openSectionDialog(button.dataset.sectionPage, 'add'));
       });
@@ -13712,37 +13797,89 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!state.summaryBusy) el.backBtn.disabled = false;
       }
       root.querySelectorAll('.mod-view-btn').forEach((button) => {
+        // Le voci con tendina (Produzione, Qualita', Attivita') non
+        // navigano al clic: aprono le loro scelte, gestite piu' sotto.
+        if (button.classList.contains('mod-nav-drop-btn')) return;
         button.addEventListener('click', () => {
           if (button.dataset.view === 'entry') {
             if (!state.isAdmin) return;
             if (state.view !== 'entry') loadEntry(state.selectedDate);
           }
-          // Le voci con sottomenu riaprono l'ultima delle loro pagine aperta.
-          const group = button.dataset.viewGroup;
-          let target = button.dataset.view;
-          if (group === 'daily weekly monthly') target = state.productionTab;
-          if (group === 'dmc qualityWeekly qualityMonthly') target = state.qualityTab;
-          navigateTo(target);
-        });
-      });
-      // Il segmento nella pillola della data cambia vista restando nella
-      // stessa sezione: da Produzione porta a giornaliero/settimanale/mensile,
-      // da Qualita' alle sue tre viste.
-      el.segTabs.forEach((button) => {
-        button.addEventListener('click', () => {
-          const mode = button.dataset.periodMode;
-          const quality = QUALITY_VIEWS.indexOf(state.view) >= 0;
-          let target;
-          if (quality) {
-            target = mode === 'weekly' ? 'qualityWeekly' : mode === 'monthly' ? 'qualityMonthly' : 'dmc';
-          } else {
-            target = mode === 'weekly' ? 'weekly' : mode === 'monthly' ? 'monthly' : 'daily';
-          }
-          navigateTo(target);
+          navigateTo(button.dataset.view);
         });
       });
       el.viewSelect.addEventListener('change', () => {
         navigateTo(el.viewSelect.value);
+      });
+      if (el.viewSubselect) {
+        el.viewSubselect.addEventListener('change', () => {
+          const view = state.view;
+          const value = el.viewSubselect.value;
+          if (PRODUCTION_VIEWS.indexOf(view) >= 0 || QUALITY_VIEWS.indexOf(view) >= 0) {
+            navigateTo(value);
+          } else if (view === 'summary' && state.summaryTab !== value) {
+            state.summaryTab = value;
+            applySummaryTab();
+          }
+        });
+      }
+      // Voci di menu con tendina: un pulsante solo puo' essere aperto alla
+      // volta; il clic fuori, Escape o la scelta di una voce lo chiudono.
+      const navDrops = Array.from(root.querySelectorAll('.mod-nav-drop'));
+      function closeNavDrops() {
+        navDrops.forEach((wrap) => {
+          const btn = wrap.querySelector('.mod-nav-drop-btn');
+          const menu = wrap.querySelector('.mod-nav-drop-menu');
+          if (menu && !menu.hidden) {
+            menu.hidden = true;
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+      navDrops.forEach((wrap) => {
+        const btn = wrap.querySelector('.mod-nav-drop-btn');
+        const menu = wrap.querySelector('.mod-nav-drop-menu');
+        btn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const show = menu.hidden;
+          closeNavDrops();
+          if (show) {
+            menu.hidden = false;
+            btn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+      document.addEventListener('click', (event) => {
+        if (navDrops.some((wrap) => wrap.contains(event.target))) return;
+        closeNavDrops();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeNavDrops();
+      });
+      root.querySelectorAll('.mod-nav-drop-item[data-drop-group="production"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          closeNavDrops();
+          navigateTo(button.dataset.dropTarget);
+        });
+      });
+      root.querySelectorAll('.mod-nav-drop-item[data-drop-group="quality"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          closeNavDrops();
+          navigateTo(button.dataset.dropTarget);
+        });
+      });
+      root.querySelectorAll('.mod-nav-drop-item[data-drop-group="summary"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          closeNavDrops();
+          const target = button.dataset.dropTarget;
+          if (state.view !== 'summary') {
+            state.summaryTab = target;
+            navigateTo('summary');
+          } else if (state.summaryTab !== target) {
+            state.summaryTab = target;
+            applySummaryTab();
+          }
+        });
       });
       el.backBtn.addEventListener('click', openSummaryDialog);
       el.closeSummaryDialog.addEventListener('click', () => el.summaryDialog.close());
