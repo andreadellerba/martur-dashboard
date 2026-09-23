@@ -1476,7 +1476,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard.mod-compact .mod-kpi-grid,
     #martur-operations-dashboard.mod-compact .mod-daily-shift-grid,
     #martur-operations-dashboard.mod-compact .mod-summary-board { gap: 8px; }
-    #martur-operations-dashboard.mod-compact .mod-daily-shift-card { padding: 8px 10px 15px; }
+    #martur-operations-dashboard.mod-compact .mod-daily-shift-card { padding: 8px 10px; }
     #martur-operations-dashboard.mod-compact .mod-task-card { padding: 9px 10px 0; gap: 6px; }
     #martur-operations-dashboard.mod-compact .mod-task-col { padding: 8px; gap: 7px; }
     #martur-operations-dashboard.mod-compact .mod-anomaly-table th,
@@ -2972,9 +2972,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       position: relative;
       display: grid;
       gap: 13px;
-      /* Piu' respiro in fondo: senza la barra della nota l'ultima riga di
-         numeri restava appiccicata al bordo della card. */
-      padding: 14px 14px 22px;
+      padding: 14px;
       border: 2px solid var(--gold);
     }
     #martur-operations-dashboard .mod-shift-title-main { color: light-dark(rgb(20 20 22), #fff); }
@@ -3177,6 +3175,38 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       height: 100%;
     }
     #martur-operations-dashboard .mod-sec-cards .mod-shift-note { margin-top: auto; }
+    /* Card divisa in due da una riga verticale: un turno per parte (Resident)
+       oppure anteriore e posteriore (i problemi delle giornate vecchie). */
+    #martur-operations-dashboard .mod-sec-split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+    #martur-operations-dashboard .mod-sec-split > .mod-sec-split-col {
+      min-width: 0;
+      padding-inline: 10px;
+    }
+    #martur-operations-dashboard .mod-sec-split > .mod-sec-split-col + .mod-sec-split-col {
+      border-left: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-sec-split-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      font-size: var(--font-size-small);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+    }
+    #martur-operations-dashboard .mod-sec-split-name {
+      font-weight: 600;
+    }
+    /* Una parte sola (giornata a turno unico): niente colonna vuota a fianco. */
+    #martur-operations-dashboard .mod-sec-split:has(> .mod-sec-split-col:only-child) {
+      grid-template-columns: minmax(0, 1fr);
+    }
     /* Nomi accanto al titolo di CPA e Resident: stessa misura del titolo,
        restano sulla riga dei nomi e non si spezzano a meta'. */
     #martur-operations-dashboard .mod-sec-card-names {
@@ -4651,7 +4681,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         word-break: break-word;
       }
       #martur-operations-dashboard .mod-daily-shift-card {
-        padding: 12px 6px 20px;
+        padding: 12px 6px;
       }
       #martur-operations-dashboard .mod-entry-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -6192,6 +6222,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secSchienali: 'Schienali',
           secKit: 'Kit',
           secTotal: 'Totale',
+          secDefects: 'Difetti riscontrati',
           secProdTotal: 'Produzione totale',
           secAddData: '+ Inserisci dati',
           secEditTitle: 'Inserimento dati',
@@ -6204,7 +6235,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qgateFront: 'Q Gate anteriore',
           qgateRear: 'Q Gate posteriore',
           cpa: 'CPA',
-          cpaChecked: 'Kit controllati',
+          cpaChecked: 'Difetti riscontrati',
           resident: 'Resident',
           auditSectionUpdate: 'Dati sezione aggiornati',
           dmcSection: 'Qualità',
@@ -6697,6 +6728,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secSchienali: 'Backrests',
           secKit: 'Kit',
           secTotal: 'Total',
+          secDefects: 'Defects found',
           secProdTotal: 'Total production',
           secAddData: '+ Enter data',
           secEditTitle: 'Data entry',
@@ -6709,7 +6741,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qgateFront: 'Q Gate front',
           qgateRear: 'Q Gate rear',
           cpa: 'CPA',
-          cpaChecked: 'Kits checked',
+          cpaChecked: 'Defects found',
           resident: 'Resident',
           auditSectionUpdate: 'Section data updated',
           dmcSection: 'Quality',
@@ -7202,6 +7234,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           secSchienali: 'Sırtlık',
           secKit: 'Kit',
           secTotal: 'Toplam',
+          secDefects: 'Tespit edilen hatalar',
           secProdTotal: 'Toplam üretim',
           secAddData: '+ Veri gir',
           secEditTitle: 'Veri girişi',
@@ -7214,7 +7247,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qgateFront: 'Q Gate ön',
           qgateRear: 'Q Gate arka',
           cpa: 'CPA',
-          cpaChecked: 'Kontrol edilen kit',
+          cpaChecked: 'Tespit edilen hatalar',
           resident: 'Resident',
           auditSectionUpdate: 'Bölüm verileri güncellendi',
           dmcSection: 'Kalite',
@@ -10045,6 +10078,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(t('overtime'), overtimeText, otCls) +
               metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
             '</div>' +
+            '<div class="mod-shift-note"><span class="mod-shift-note-text">' +
+              escapeHtml((shift.note || '').trim()) + '</span></div>' +
           '</article>';
       }
 
@@ -12019,19 +12054,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         qgate: {
           title: 'dmcSection',
           groups: [
-            { label: 'qgateFront', fields: [
-              { path: 'qgateFront.shift1', label: 'shift1' },
-              { path: 'qgateFront.shift2', label: 'shift2' },
-              { path: 'qgateFront.issue1', labelText: '1)', type: 'text' },
-              { path: 'qgateFront.issue2', labelText: '2)', type: 'text' },
-              { path: 'qgateFront.issue3', labelText: '3)', type: 'text' }
+            /* I Q Gate si inseriscono per turno: anteriore e posteriore di
+               quel turno, e i 3 problemi di quel turno (prima i problemi
+               stavano sul gate e non sul turno). */
+            { label: 'shift1', fields: [
+              { path: 'qgateFront.shift1', label: 'qgateFront' },
+              { path: 'qgateRear.shift1', label: 'qgateRear' },
+              { path: 'qgateIssues.shift1.issue1', labelText: '1)', type: 'text' },
+              { path: 'qgateIssues.shift1.issue2', labelText: '2)', type: 'text' },
+              { path: 'qgateIssues.shift1.issue3', labelText: '3)', type: 'text' }
             ] },
-            { label: 'qgateRear', fields: [
-              { path: 'qgateRear.shift1', label: 'shift1' },
-              { path: 'qgateRear.shift2', label: 'shift2' },
-              { path: 'qgateRear.issue1', labelText: '1)', type: 'text' },
-              { path: 'qgateRear.issue2', labelText: '2)', type: 'text' },
-              { path: 'qgateRear.issue3', labelText: '3)', type: 'text' }
+            { label: 'shift2', fields: [
+              { path: 'qgateFront.shift2', label: 'qgateFront' },
+              { path: 'qgateRear.shift2', label: 'qgateRear' },
+              { path: 'qgateIssues.shift2.issue1', labelText: '1)', type: 'text' },
+              { path: 'qgateIssues.shift2.issue2', labelText: '2)', type: 'text' },
+              { path: 'qgateIssues.shift2.issue3', labelText: '3)', type: 'text' }
             ] },
             { label: 'cpa', fields: [
               { path: 'cpa', label: 'cpa' },
@@ -12082,8 +12120,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return totalValue > target ? 'mod-metric-good' : 'mod-metric-bad';
       }
       const sectionCard = (title, inner, namesHtml) =>
-        '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(title) + '">' +
-          '<div class="mod-shift-card-head"><span class="mod-shift-card-name">' + escapeHtml(title) + '</span>' +
+        sectionCardHtml(escapeHtml(title), inner, namesHtml, title);
+      // Come sectionCard, ma il titolo e' gia' HTML: serve alle card dei Q
+      // Gate, che in testa hanno la stessa riga del turno del Giornaliero
+      // (turno, squadra, orario e nomi).
+      const sectionCardHtml = (titleHtml, inner, namesHtml, ariaLabel) =>
+        '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(ariaLabel || '') + '">' +
+          '<div class="mod-shift-card-head"><span class="mod-shift-card-name">' + titleHtml + '</span>' +
             (namesHtml || '') +
           '</div>' +
           inner +
@@ -12102,6 +12145,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const residentNames = (dateStr) => shiftTeamInfo('shift1', dateStr).firstTeam
         ? RESIDENT_TEAM.slice()
         : RESIDENT_TEAM.slice().reverse();
+      /* Il Resident di un turno: Falotico sta con la squadra di Lampis,
+         Bighiu con quella di Perna. Si guarda la squadra in turno, non la
+         lettera, cosi' la coppia non si sposta se un giorno si cambia come
+         si chiamano i turni. RESIDENT_TEAM e' [Bighiu, Falotico]. */
+      const residentFor = (shiftKey, dateStr) => shiftTeamInfo(shiftKey, dateStr).firstTeam
+        ? RESIDENT_TEAM[1]
+        : RESIDENT_TEAM[0];
       // Nota libera in fondo alla card, come quella dei turni nel Giornaliero.
       const sectionNote = (path) =>
         '<div class="mod-shift-note mod-sec-note"><span class="mod-shift-note-text">' +
@@ -12128,19 +12178,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           (splitHtml || '') +
         '</div>';
       const sectionHeroSplit = (path1, path2) =>
+        sectionSplitPair(t('shift1'), path1, t('shift2'), path2);
+      // La riga di dettaglio sotto il numero grande, con due voci a scelta:
+      // 1°/2° turno nelle card di DMC e Abarth, anteriore/posteriore in
+      // quelle dei Q Gate.
+      const sectionSplitPair = (label1, path1, label2, path2) =>
         '<div class="mod-sec-hero-split">' +
-          escapeHtml(t('shift1')) + ' <strong>' + escapeHtml(sectionText(sectionGet(path1))) + '</strong>' +
+          escapeHtml(label1) + ' <strong>' + escapeHtml(sectionText(sectionGet(path1))) + '</strong>' +
           ' &nbsp;·&nbsp; ' +
-          escapeHtml(t('shift2')) + ' <strong>' + escapeHtml(sectionText(sectionGet(path2))) + '</strong>' +
+          escapeHtml(label2) + ' <strong>' + escapeHtml(sectionText(sectionGet(path2))) + '</strong>' +
         '</div>';
       /* Giornata a turno unico: il numero grande resta, sparisce la riga del
          dettaglio (c'e' un turno solo) e l'etichetta lo dice. La card e' la
          stessa: stessa larghezza, stesso titolo, stessi problemi sotto. */
-      const sectionDayCard = (title, base, withIssues, extraHtml, namesHtml) => {
+      const sectionDayCard = (title, base, withIssues, extraHtml, namesHtml, totalLabel) => {
         const single = isSingleShiftDay(state.selectedDate);
         const total = sectionSum([base + '.shift1', base + '.shift2']);
         return sectionCard(title,
-          sectionHero(total, single ? t('uniqueShift') : t('secTotal'),
+          sectionHero(total, single ? t('uniqueShift') : (totalLabel || t('secTotal')),
             single ? '' : sectionHeroSplit(base + '.shift1', base + '.shift2'), 'mod-metric-gold') +
           (withIssues ? sectionIssues(base) : '') + (extraHtml || ''), namesHtml);
       };
@@ -12521,12 +12576,82 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         syncSectionButtons();
       }
 
+      /* Q Gate: una card per turno, con dentro anteriore e posteriore.
+         In testa la stessa riga del turno del Giornaliero (turno, squadra,
+         orario, nomi), poi il totale del turno e sotto il dettaglio dei due
+         gate, e infine i 3 problemi di quel turno. */
+      function qgateShiftCard(shiftKey, index, single) {
+        const date = state.selectedDate;
+        const titleHtml = single
+          ? '<i data-lucide="sun" aria-hidden="true"></i>' + escapeHtml(t('uniqueShift'))
+          : shiftTitleHtml(shiftKey, index, date, false);
+        const total = sectionSum(['qgateFront.' + shiftKey, 'qgateRear.' + shiftKey]);
+        return sectionCardHtml(titleHtml,
+          sectionHero(total, t('secTotal'),
+            sectionSplitPair(t('frontLabel'), 'qgateFront.' + shiftKey, t('rearLabel'), 'qgateRear.' + shiftKey),
+            'mod-metric-gold') +
+          sectionIssues('qgateIssues.' + shiftKey),
+          '', t('dmcSection') + ' ' + (single ? t('uniqueShift') : t(shiftKey)));
+      }
+
+      /* I problemi delle giornate vecchie stavano sull'anteriore e sul
+         posteriore, non sui turni: se un giorno ne ha e non ha quelli nuovi,
+         si continuano a vedere com'erano, in una card a parte. */
+      function legacyQGateIssuesCard() {
+        const hasNew = ['shift1', 'shift2'].some((shiftKey) =>
+          [1, 2, 3].some((n) => sectionTextOf('qgateIssues.' + shiftKey + '.issue' + n).trim()));
+        if (hasNew) return '';
+        const hasOld = ['qgateFront', 'qgateRear'].some((base) =>
+          [1, 2, 3].some((n) => sectionTextOf(base + '.issue' + n).trim()));
+        if (!hasOld) return '';
+        return sectionCard(t('secIssuesTitle'),
+          '<div class="mod-sec-split">' +
+            '<div class="mod-sec-split-col">' +
+              '<div class="mod-sec-split-title">' + escapeHtml(t('qgateFront')) + '</div>' +
+              sectionIssues('qgateFront') +
+            '</div>' +
+            '<div class="mod-sec-split-col">' +
+              '<div class="mod-sec-split-title">' + escapeHtml(t('qgateRear')) + '</div>' +
+              sectionIssues('qgateRear') +
+            '</div>' +
+          '</div>');
+      }
+
+      /* Resident: una card sola divisa in due da una riga verticale, un
+         turno per parte col suo Resident. Bighiu sta con la squadra di Perna
+         e Falotico con quella di Lampis, quindi la parte cambia da sola con
+         la settimana. Il totale sta in fondo, nella riga delle note. */
+      function residentCard() {
+        const date = state.selectedDate;
+        const single = isSingleShiftDay(date);
+        const shiftKeys = single ? ['shift1'] : ['shift1', 'shift2'];
+        const half = (shiftKey, index) => {
+          const team = shiftTeamInfo(shiftKey, date);
+          return '<div class="mod-sec-split-col">' +
+            '<div class="mod-sec-split-title">' +
+              (single ? escapeHtml(t('uniqueShift')) : escapeHtml(t(shiftKey))) +
+              '<span class="mod-shift-crew mod-sec-split-name">' + escapeHtml(residentFor(shiftKey, date)) + '</span>' +
+            '</div>' +
+            sectionHero(sectionGet('resident.' + shiftKey), t('secDefects'), '', 'mod-metric-gold') +
+          '</div>';
+        };
+        const total = sectionSum(['resident.shift1', 'resident.shift2']);
+        const note = sectionTextOf('resident.note').trim();
+        const totalText = t('secTotal').toUpperCase() + ' : ' + sectionText(total);
+        return sectionCard(t('resident'),
+          '<div class="mod-sec-split">' + shiftKeys.map(half).join('') + '</div>' +
+          '<div class="mod-shift-note mod-sec-note"><span class="mod-shift-note-text">' +
+            escapeHtml(note ? totalText + ' · ' + note : totalText) + '</span></div>',
+          sectionNamesHtml(residentNames(date)));
+      }
+
       function renderQGate() {
         renderSectionShifts(el.dmcShifts);
+        const single = isSingleShiftDay(state.selectedDate);
+        const shiftKeys = single ? ['shift1'] : ['shift1', 'shift2'];
         // CPA e' gia' un numero solo: non cambia col turno unico.
         el.dmcCards.innerHTML =
-          sectionDayCard(t('qgateFront'), 'qgateFront', true) +
-          sectionDayCard(t('qgateRear'), 'qgateRear', true) +
+          shiftKeys.map((shiftKey, index) => qgateShiftCard(shiftKey, index, single)).join('') +
           /* CPA: sotto al numero non si ripete la parola "CPA" (la dice gia' il
              titolo della card) ma cosa sono quei pezzi, e sotto ancora l'orario
              del CPA, che fa sempre lo stesso turno unico a prescindere da come
@@ -12538,9 +12663,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '</div>') +
             sectionNote('cpaNote'),
             sectionNamesHtml([CPA_OPERATOR])) +
-          sectionDayCard(t('resident'), 'resident', false,
-            sectionNote('resident.note'),
-            sectionNamesHtml(residentNames(state.selectedDate)));
+          residentCard() +
+          legacyQGateIssuesCard();
         syncSectionButtons();
       }
 
@@ -12625,15 +12749,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '</div>';
         /* I problemi piu' visti del periodo: si contano quante volte ognuno
            compare fra i tre di ogni giornata, e si tengono i primi tre. */
-        const topIssues = (base) => {
+        const topIssues = (bases) => {
           const counts = new Map();
+          const groupAt = (row, path) => String(path).split('.')
+            .reduce((acc, key) => (acc && typeof acc === 'object') ? acc[key] : undefined, row) || {};
           rows.forEach((row) => {
-            [1, 2, 3].forEach((n) => {
-              const group = row[base] || {};
-              const text = typeof group['issue' + n] === 'string' ? group['issue' + n].trim() : '';
-              if (!text) return;
-              const key = text.toUpperCase();
-              counts.set(key, (counts.get(key) || 0) + 1);
+            bases.forEach((base) => {
+              [1, 2, 3].forEach((n) => {
+                const group = groupAt(row, base);
+                const text = typeof group['issue' + n] === 'string' ? group['issue' + n].trim() : '';
+                if (!text) return;
+                const key = text.toUpperCase();
+                counts.set(key, (counts.get(key) || 0) + 1);
+              });
             });
           });
           const list = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3);
@@ -12648,15 +12776,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '</div>';
         };
         const gateCard = (title, base) => sectionCard(title,
-          sectionHero(bothSum(base), t('secTotal'), splitHtml(base), 'mod-metric-gold') + topIssues(base));
+          sectionHero(bothSum(base), t('secTotal'), splitHtml(base), 'mod-metric-gold'));
+        /* I problemi non stanno piu' sul gate ma sul turno: nel riepilogo del
+           periodo hanno una card loro, che conta anche quelli delle giornate
+           vecchie (quando stavano sull'anteriore e sul posteriore). */
         el.qualityPeriodCards.innerHTML =
           gateCard(t('qgateFront'), 'qgateFront') +
           gateCard(t('qgateRear'), 'qgateRear') +
+          sectionCard(t('secIssuesTitle'),
+            topIssues(['qgateIssues.shift1', 'qgateIssues.shift2', 'qgateFront', 'qgateRear'])) +
           sectionCard(t('cpa'),
             sectionHero(sum((row) => at(row, 'cpa')), t('cpaChecked'), ''),
             sectionNamesHtml([CPA_OPERATOR])) +
           sectionCard(t('resident'),
-            sectionHero(bothSum('resident'), t('secTotal'), splitHtml('resident'), 'mod-metric-gold'));
+            sectionHero(bothSum('resident'), t('secDefects'), splitHtml('resident'), 'mod-metric-gold'));
       }
 
       // "+" e matita li vede chiunque abbia l'accesso, su tutte e due le
