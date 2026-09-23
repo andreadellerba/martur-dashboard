@@ -1128,12 +1128,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     @media (max-width: 1440px) {
       #martur-operations-dashboard .mod-brand-logo {
-        width: 240px;
+        width: 225px;
       }
     }
     @media (max-width: 1360px) {
       #martur-operations-dashboard .mod-brand-logo {
-        width: 190px;
+        width: 165px;
       }
     }
     /* Il logo ha il fondo trasparente, quindi ne basta uno solo per tutti e
@@ -1439,7 +1439,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: flex;
     }
     #martur-operations-dashboard .mod-header-picker .mod-period-picker {
-      width: 190px;
+      width: 234px;
       margin-bottom: 0;
       position: relative;
       display: block;
@@ -1498,7 +1498,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard.mod-compact .mod-kpi-grid,
     #martur-operations-dashboard.mod-compact .mod-daily-shift-grid,
     #martur-operations-dashboard.mod-compact .mod-summary-board { gap: 8px; }
-    #martur-operations-dashboard.mod-compact .mod-daily-shift-card { padding: 8px 10px; }
+    #martur-operations-dashboard.mod-compact .mod-daily-shift-card { padding: 8px 10px 15px; }
     #martur-operations-dashboard.mod-compact .mod-task-card { padding: 9px 10px 0; gap: 6px; }
     #martur-operations-dashboard.mod-compact .mod-task-col { padding: 8px; gap: 7px; }
     #martur-operations-dashboard.mod-compact .mod-anomaly-table th,
@@ -2994,7 +2994,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       position: relative;
       display: grid;
       gap: 13px;
-      padding: 14px;
+      /* Piu' respiro in fondo: senza la barra della nota l'ultima riga di
+         numeri restava appiccicata al bordo della card. */
+      padding: 14px 14px 22px;
       border: 2px solid var(--gold);
     }
     #martur-operations-dashboard .mod-shift-title-main { color: light-dark(rgb(20 20 22), #fff); }
@@ -4316,6 +4318,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-rework-options .form-check-label {
       overflow-wrap: anywhere;
     }
+    /* Le cause di fermo sono frasi corte: due colonne piu' larghe e le parole
+       restano intere, invece di spezzarsi a meta' come i nomi lunghi dei
+       rework ("Proble / ma IT"). */
+    #martur-operations-dashboard .mod-loss-options {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #martur-operations-dashboard .mod-loss-options .form-check-label {
+      overflow-wrap: break-word;
+    }
     #martur-operations-dashboard .mod-rework-option-row {
       display: flex;
       align-items: flex-start;
@@ -4326,12 +4337,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       flex: 1 1 auto;
       min-width: 0;
     }
-    #martur-operations-dashboard .mod-rework-count-input {
+    #martur-operations-dashboard .mod-rework-count-input,
+    #martur-operations-dashboard .mod-loss-minutes-input {
       width: 56px;
       flex: 0 0 auto;
       min-height: 26px;
       padding: 0 4px;
       text-align: center;
+    }
+    /* I minuti possono essere di tre cifre: un filo piu' largo del contatore
+       dei rework. */
+    #martur-operations-dashboard .mod-loss-minutes-input {
+      width: 64px;
     }
     #martur-operations-dashboard .mod-operator-options {
       display: grid;
@@ -4665,7 +4682,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         word-break: break-word;
       }
       #martur-operations-dashboard .mod-daily-shift-card {
-        padding: 12px 6px;
+        padding: 12px 6px 20px;
       }
       #martur-operations-dashboard .mod-entry-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5286,6 +5303,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <div id="mod-rework-selection-preview-1" class="mod-selection-preview text-small text-muted" aria-live="polite"></div>
             <span id="mod-rework-selection-message-1" class="text-small mod-message" role="status" aria-live="polite"></span>
           </section>
+          <section class="mod-selection-launcher" aria-labelledby="mod-loss-selection-title-1">
+            <div class="mod-selection-head">
+              <div class="mod-selection-copy">
+                <div id="mod-loss-selection-title-1" class="mod-field-title" data-i18n="selectTop3Losses">Seleziona le 3 perdite principali</div>
+              </div>
+              <div class="mod-selection-actions">
+                <span id="mod-loss-selected-count-1" class="text-small text-muted" aria-live="polite"></span>
+                <button id="mod-open-loss-dialog-1" type="button" class="btn" data-shift="shift1">
+                  <i data-lucide="timer-off" aria-hidden="true"></i>
+                  <span data-i18n="chooseLosses">Seleziona perdite</span>
+                </button>
+              </div>
+            </div>
+            <div id="mod-loss-selection-preview-1" class="mod-selection-preview text-small text-muted" aria-live="polite"></div>
+          </section>
         </fieldset>
 
         <fieldset id="mod-entry-shift2-group" class="mod-field-group">
@@ -5327,6 +5359,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             </div>
             <div id="mod-rework-selection-preview-2" class="mod-selection-preview text-small text-muted" aria-live="polite"></div>
             <span id="mod-rework-selection-message-2" class="text-small mod-message" role="status" aria-live="polite"></span>
+          </section>
+          <section class="mod-selection-launcher" aria-labelledby="mod-loss-selection-title-2">
+            <div class="mod-selection-head">
+              <div class="mod-selection-copy">
+                <div id="mod-loss-selection-title-2" class="mod-field-title" data-i18n="selectTop3Losses">Seleziona le 3 perdite principali</div>
+              </div>
+              <div class="mod-selection-actions">
+                <span id="mod-loss-selected-count-2" class="text-small text-muted" aria-live="polite"></span>
+                <button id="mod-open-loss-dialog-2" type="button" class="btn" data-shift="shift2">
+                  <i data-lucide="timer-off" aria-hidden="true"></i>
+                  <span data-i18n="chooseLosses">Seleziona perdite</span>
+                </button>
+              </div>
+            </div>
+            <div id="mod-loss-selection-preview-2" class="mod-selection-preview text-small text-muted" aria-live="polite"></div>
           </section>
         </fieldset>
       </div>
@@ -5869,6 +5916,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </div>
         <div id="mod-stoppage-admin" class="mod-stoppage-admin"></div>
         <div id="mod-rework-admin" class="mod-stoppage-admin mod-cfg-section-first"></div>
+        <div id="mod-loss-admin" class="mod-stoppage-admin mod-cfg-section-first"></div>
         <div id="mod-audit-log" class="mod-stoppage-admin mod-cfg-section-first"></div>
       </div>
     </div>
@@ -6071,6 +6119,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </dialog>
 
+  <dialog id="mod-loss-dialog" class="card mod-selection-dialog" aria-labelledby="mod-loss-dialog-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-loss-dialog-title" class="mod-dialog-title" data-i18n="selectTop3Losses">Seleziona le 3 perdite principali</h2>
+          <span class="text-small text-muted" data-i18n="lossSelectionHint">Scegli fino a 3 cause di fermo e i minuti persi per ognuna.</span>
+        </div>
+        <button id="mod-close-loss-dialog" type="button" class="btn btn-ghost">
+          <i data-lucide="x" aria-hidden="true"></i>
+          <span data-i18n="close">Chiudi</span>
+        </button>
+      </div>
+      <div class="mod-dialog-result-row">
+        <span class="text-small text-muted" data-i18n="availableLossReasons">Cause di fermo disponibili</span>
+        <span id="mod-dialog-loss-selected-count" class="text-small text-muted" aria-live="polite"></span>
+      </div>
+      <div class="mod-dialog-scroll">
+        <div id="mod-loss-options" class="mod-rework-options mod-loss-options"></div>
+      </div>
+      <div class="mod-dialog-actions">
+        <button id="mod-cancel-loss-dialog" type="button" class="btn" data-i18n="cancel">Annulla</button>
+        <button id="mod-apply-loss-dialog" type="button" class="btn btn-primary" data-i18n="applySelection">Applica selezione</button>
+      </div>
+    </div>
+  </dialog>
+
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -6084,6 +6158,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const EXCEL_EFFICIENCY = {"2026-03-02":{"shift1":0.3732,"shift2":0.3005},"2026-03-03":{"shift1":0.4,"shift2":0.3538},"2026-03-04":{"shift1":0.4398,"shift2":0.3569},"2026-03-05":{"shift1":0.3282,"shift2":0.4176},"2026-03-06":{"shift1":0.4219,"shift2":0.3676},"2026-03-07":{"shift1":0.5024,"shift2":null},"2026-03-09":{"shift1":0.3899,"shift2":0.3544},"2026-03-10":{"shift1":0.3289,"shift2":0.377},"2026-03-11":{"shift1":0.3223,"shift2":0.3619},"2026-03-12":{"shift1":0.3805,"shift2":0.3996},"2026-03-13":{"shift1":0.4386,"shift2":0.3581},"2026-03-14":{"shift1":0.2932,"shift2":null},"2026-03-16":{"shift1":0.5067,"shift2":0.4852},"2026-03-17":{"shift1":0.5182,"shift2":0.4829},"2026-03-18":{"shift1":0.4644,"shift2":0.3694},"2026-03-19":{"shift1":0.549,"shift2":0.475},"2026-03-20":{"shift1":0.5217,"shift2":0.3958},"2026-03-21":{"shift1":0.4843,"shift2":0.353},"2026-03-23":{"shift1":0.4218,"shift2":0.4943},"2026-03-24":{"shift1":0.468,"shift2":0.6},"2026-03-25":{"shift1":0.5079,"shift2":0.6243},"2026-03-26":{"shift1":0.4969,"shift2":0.5911},"2026-03-27":{"shift1":0.4678,"shift2":0.4867},"2026-03-28":{"shift1":0.2153,"shift2":null},"2026-03-30":{"shift1":0.5539,"shift2":0.5851},"2026-03-31":{"shift1":0.5833,"shift2":0.5851},"2026-04-01":{"shift1":0.6394,"shift2":0.615},"2026-04-02":{"shift1":0.5911,"shift2":0.6641},"2026-04-03":{"shift1":0.6002,"shift2":0.5688},"2026-04-07":{"shift1":0.6269,"shift2":0.6463},"2026-04-08":{"shift1":0.6225,"shift2":0.685},"2026-04-09":{"shift1":0.478,"shift2":0.6819},"2026-04-10":{"shift1":0.5202,"shift2":0.6656},"2026-04-13":{"shift1":0.6048,"shift2":0.534},"2026-04-14":{"shift1":0.5567,"shift2":0.5549},"2026-04-15":{"shift1":0.5198,"shift2":0.4966},"2026-04-16":{"shift1":0.5761,"shift2":0.6062},"2026-04-17":{"shift1":0.5948,"shift2":0.62},"2026-04-20":{"shift1":0.567,"shift2":0.5761},"2026-04-21":{"shift1":0.6385,"shift2":0.5483},"2026-04-22":{"shift1":0.5746,"shift2":0.5863},"2026-04-23":{"shift1":0.4681,"shift2":0.5429},"2026-04-24":{"shift1":0.513,"shift2":0.5216},"2026-04-27":{"shift1":0.5721,"shift2":0.5955},"2026-04-28":{"shift1":0.6079,"shift2":0.5836},"2026-04-29":{"shift1":0.5955,"shift2":0.551},"2026-04-30":{"shift1":0.6343,"shift2":0.6092},"2026-05-04":{"shift1":0.5953,"shift2":0.5611},"2026-05-05":{"shift1":0.5535,"shift2":0.5588},"2026-05-06":{"shift1":0.5429,"shift2":0.5402},"2026-05-07":{"shift1":0.5127,"shift2":0.5455},"2026-05-08":{"shift1":0.4604,"shift2":0.5863},"2026-05-11":{"shift1":0.574,"shift2":0.507},"2026-05-12":{"shift1":0.5994,"shift2":0.5278},"2026-05-13":{"shift1":0.5655,"shift2":0.5298},"2026-05-14":{"shift1":0.5372,"shift2":0.5376},"2026-05-15":{"shift1":0.6079,"shift2":0.5298},"2026-05-18":{"shift1":0.5211,"shift2":0.507},"2026-05-19":{"shift1":0.522,"shift2":0.5403},"2026-05-20":{"shift1":0.5537,"shift2":0.5721},"2026-05-21":{"shift1":0.5824,"shift2":0.5272},"2026-05-22":{"shift1":0.535,"shift2":0.5505},"2026-05-25":{"shift1":0.5216,"shift2":0.3943},"2026-05-26":{"shift1":0.3609,"shift2":0.3817},"2026-05-27":{"shift1":0.3447,"shift2":0.5457},"2026-05-28":{"shift1":null,"shift2":0.4178},"2026-05-29":{"shift1":0.5547,"shift2":0.5076},"2026-06-03":{"shift1":0.4366,"shift2":0.5109},"2026-06-04":{"shift1":0.4986,"shift2":0.4994},"2026-06-05":{"shift1":0.4573,"shift2":0.5512},"2026-06-09":{"shift1":0.4573,"shift2":0.4661},"2026-06-10":{"shift1":0.5984,"shift2":0.534},"2026-06-11":{"shift1":0.6015,"shift2":0.4649},"2026-06-12":{"shift1":0.5151,"shift2":0.4354},"2026-06-15":{"shift1":0.5202,"shift2":0.5269},"2026-06-16":{"shift1":0.5344,"shift2":0.5655},"2026-06-17":{"shift1":0.5248,"shift2":0.5539},"2026-06-18":{"shift1":0.5274,"shift2":0.5842},"2026-06-19":{"shift1":0.5131,"shift2":0.6218},"2026-06-21":{"shift1":0.524,"shift2":0.5704},"2026-06-29":{"shift1":0.2449,"shift2":null},"2026-06-30":{"shift1":0.5429,"shift2":0.6456},"2026-07-01":{"shift1":0.5655,"shift2":0.6229},"2026-07-02":{"shift1":0.5536,"shift2":0.5893},"2026-07-03":{"shift1":0.5429,"shift2":0.6409},"2026-07-07":{"shift1":0.5286,"shift2":null},"2026-07-08":{"shift1":0.6333,"shift2":0.4829},"2026-07-09":{"shift1":0.5707,"shift2":0.4965},"2026-07-10":{"shift1":0.5893,"shift2":0.5191},"2026-07-13":{"shift1":0.5081,"shift2":null},"2026-07-14":{"shift1":0.515,"shift2":0.5607},"2026-07-15":{"shift1":0.5894,"shift2":0.5603},"2026-07-16":{"shift1":0.5081,"shift2":0.6409},"2026-07-20":{"shift1":0.4391,"shift2":null},"2026-07-21":{"shift1":0.5661,"shift2":0.492},"2026-07-22":{"shift1":0.5692,"shift2":0.6747},"2026-07-23":{"shift1":0.6861,"shift2":0.5504},"2026-07-24":{"shift1":0.7197,"shift2":0.5235}};
       const REWORK_TOP3_BY_DATE = {};
       const REWORK_OPTIONS_DEFAULT = ["Abarth Matching","Airbag Scanning","Airbag Tightening","Backrest Frame Scanning","Backrest Hogring Label Scanning","Buckle Camera","Buckle Scanning","Buckle Tightening","Cable Layout","Cushion Frame Scanning","Cushion Hogring Scanning","Easy Entry Camera","Electrical test (Airbag)","Electrical Test (Buckle hall)","Electrical test (Buckle pass)","Electrical test (SBR)","Electrical test (TPS)","Electrical Test(Heater)","Ham Lever Cup Missing","HAM Tightening","Headrest Camera","Internal Carter Missing","Isofix Missing","Marriage Scanning","Marriage Tightening","Q-gate","Recliner Cup Missing","Recliner Tightening","Robot Recliner NON Avviato","Scarpette","Test Socket Missing","Top Tether Check","Wire Harness Scanning"];
+      /* Cause di fermo di partenza: sono solo un punto d'avvio, la lista vera
+         la fa l'admin dalle impostazioni, come per i rework. */
+      const LOSS_OPTIONS_DEFAULT = ["Mancanza bilancelle","Problema IT","Cavo rotto","Guasto meccanico","Mancanza materiale","Manutenzione"];
       const OPERATORS = [{"id":"41507","name":"ALESSANDRO BOSCOLO"},{"id":"41877","name":"ALESSANDRO GABRIELE CHIRILA"},{"id":"42744","name":"ALESSANDRO ZERBINO"},{"id":"40996","name":"ALESSANDRO ZIZZARI"},{"id":"41704","name":"ALESSIO LIBERTI"},{"id":"42434","name":"ALESSIO MOLES"},{"id":"41819","name":"ALEX NEGRINI"},{"id":"26253","name":"ALFUSAINEY SAIDY"},{"id":"100148","name":"ANAMARIA TANASA"},{"id":"41811","name":"ANDREA BULLO"},{"id":"100202","name":"ANDREA CAMPANELLA"},{"id":"42294","name":"ANDREA GISONDI"},{"id":"100003","name":"ANDREA MAMMARELLA"},{"id":"100094","name":"Andrea Sansalone"},{"id":"100190","name":"ANGELO GALANTI"},{"id":"100199","name":"ANGELO RUMERE"},{"id":"100179","name":"ANNA IENOPOLI"},{"id":"41814","name":"BASIRU SECKSA"},{"id":"23208","name":"BAYE SERIGNE SARR"},{"id":"41300","name":"BOUBACAR DIENG"},{"id":"100005","name":"CESARE BARBATI"},{"id":"23206","name":"CHERIF BALDE"},{"id":"100191","name":"CHRISTIAN CALABRO'"},{"id":"100142","name":"CHRISTIAN GENOVESE"},{"id":"23373","name":"CLAUDIO NITTI"},{"id":"41941","name":"COSTEL DAVIDE ICHIM"},{"id":"100173","name":"DAMIANO SCIUTO"},{"id":"41298","name":"DANIELE GENESIO"},{"id":"100206","name":"DANIELE PINARD"},{"id":"41156","name":"DANILO FINOTTI"},{"id":"100167","name":"DIEGO BENEDETTI"},{"id":"41013","name":"DIEGO TALPO"},{"id":"100147","name":"DORIANO POLO"},{"id":"23286","name":"ELISA MILAZZO"},{"id":"41939","name":"ELISEO PISCIONERI"},{"id":"42202","name":"ERIK PERNUMIAN"},{"id":"41942","name":"FABIO LEONE"},{"id":"100134","name":"FEDERICO ANZANELLO"},{"id":"42302","name":"FEDERICO DELLE CAVE"},{"id":"23065","name":"FILOMENA DEMBECH"},{"id":"41707","name":"GABRIELE TAMMONE"},{"id":"40997","name":"GHEORGHE ROIBU"},{"id":"41381","name":"GIANLUCA MODICA"},{"id":"40507","name":"GIOELE CANTONE"},{"id":"42743","name":"GUGLIELMO ZAMBURRU"},{"id":"41705","name":"HASSAN ZIANI"},{"id":"41905","name":"Hussein Abdelgawad Abdelaal Nasr Ahmed"},{"id":"21492","name":"IGOR FALCO"},{"id":"100020","name":"IVAN LENTINI"},{"id":"23207","name":"LAURA DI GREGORIO"},{"id":"41907","name":"LORENZO PANETTA"},{"id":"100124","name":"LUCA CASTELLI"},{"id":"40220","name":"LUCA COLLA"},{"id":"41816","name":"LUCA GAGLIARDI"},{"id":"41876","name":"LUIGI ANGELO CAROZZO"},{"id":"41908","name":"LUIZ DAKAJ"},{"id":"40488","name":"MANUEL LOIZZI"},{"id":"41879","name":"MARCO CUTULI"},{"id":"42006","name":"MARCO ZANETTI"},{"id":"22803","name":"MARINELA MIHAELA PALADE"},{"id":"22970","name":"MARTA VILLA"},{"id":"40501","name":"MATTEO DURANDO"},{"id":"39746","name":"MATTEO LICITRA"},{"id":"39815","name":"MATTEO ZANELLATO"},{"id":"40506","name":"MATTIA BECCASIO"},{"id":"41380","name":"MAURO MAGGIORA"},{"id":"26277","name":"MIHAEL CLAUDIU COMAN"},{"id":"100018","name":"MOHAMED ANAS EL MANSOUR"},{"id":"41004","name":"MOHAMED CESAY"},{"id":"23205","name":"MONICA BRAMINI"},{"id":"42449","name":"MUHAMMAD JALLOW"},{"id":"41904","name":"NICHOLAS COLELLA"},{"id":"41818","name":"NICOLA CINQUE"},{"id":"100025","name":"NICOLAE DARJAN"},{"id":"23064","name":"NICOLAS MANICONE"},{"id":"22947","name":"OGUZHAN YUNAL"},{"id":"41297","name":"OMAR FAYE"},{"id":"22969","name":"PASQUALE APPELLA"},{"id":"41881","name":"PASQUALE LUPPINO"},{"id":"41504","name":"RADU SEBASTIAN ICHIM"},{"id":"100122","name":"RAFFAELE D'ABDON"},{"id":"41001","name":"REMO GATTABRIA"},{"id":"41817","name":"RICCARDO BENEDETTO DOLCETTA"},{"id":"42401","name":"Riccardo Maria Laterza"},{"id":"42297","name":"SAMI FAHMY"},{"id":"40999","name":"SAMIR MABCHOUR"},{"id":"100182","name":"VALENTINA VALENTI"},{"id":"43171","name":"VALERIO SHIMELES"},{"id":"41154","name":"VINCENZO ARAGONA"},{"id":"42109","name":"Vito Nicola Pedone"},{"id":"42750","name":"YASSIN NAOURAK"},{"id":"42096","name":"YOUSSEF EL HIRNOU"},{"id":"41506","name":"YOUSSEF WARID"},{"id":"42758","name":"YUNIOR ENMANUEL ROSA MENA"},{"id":"41906","name":"ZOUZOU YOUSSEF"}];
       const STORAGE_KEY = 'martur-operations-manual-v2';
       const OPERATOR_BY_ID = new Map(OPERATORS.map((operator) => [operator.id, operator]));
@@ -6382,6 +6459,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           noReworksSelected: 'Nessun motivo rework selezionato.',
           availableReworkReasons: 'Motivi rework disponibili',
           reworksSelected: 'selezionati',
+          selectTop3Losses: 'Seleziona le 3 perdite principali',
+          lossSelectionHint: 'Scegli fino a 3 cause di fermo e i minuti persi per ognuna.',
+          chooseLosses: 'Seleziona perdite',
+          noLossesSelected: 'Nessuna perdita selezionata.',
+          availableLossReasons: 'Cause di fermo disponibili',
+          lossesSelected: 'selezionate',
+          manageLosses: 'Elenco cause di fermo',
+          addLoss: 'Aggiungi',
+          addLossPlaceholder: 'Nuova causa di fermo',
+          auditLossOptions: 'Cause di fermo',
           reworkSelectionRequired: 'Con rilavorazioni presenti, seleziona esattamente 3 motivi rework.',
           reworkLimitReached: 'Puoi selezionare al massimo 3 motivi rework.',
           noReworkReasons: 'Nessun motivo rework disponibile.',
@@ -6877,6 +6964,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           noReworksSelected: 'No rework reason selected.',
           availableReworkReasons: 'Available rework reasons',
           reworksSelected: 'selected',
+          selectTop3Losses: 'Select the top 3 losses',
+          lossSelectionHint: 'Pick up to 3 stoppage reasons and the minutes lost for each.',
+          chooseLosses: 'Select losses',
+          noLossesSelected: 'No loss selected.',
+          availableLossReasons: 'Available stoppage reasons',
+          lossesSelected: 'selected',
+          manageLosses: 'Stoppage reason list',
+          addLoss: 'Add',
+          addLossPlaceholder: 'New stoppage reason',
+          auditLossOptions: 'Stoppage reasons',
           reworkSelectionRequired: 'When rework is present, select exactly 3 rework reasons.',
           reworkLimitReached: 'You can select at most 3 rework reasons.',
           noReworkReasons: 'No rework reasons are available.',
@@ -7372,6 +7469,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           noReworksSelected: 'Rework nedeni seçilmedi.',
           availableReworkReasons: 'Mevcut rework nedenleri',
           reworksSelected: 'seçildi',
+          selectTop3Losses: 'En büyük 3 kaybı seçin',
+          lossSelectionHint: 'En fazla 3 duruş nedeni ve her biri için kaybedilen dakikayı seçin.',
+          chooseLosses: 'Kayıp seç',
+          noLossesSelected: 'Kayıp seçilmedi.',
+          availableLossReasons: 'Mevcut duruş nedenleri',
+          lossesSelected: 'seçildi',
+          manageLosses: 'Duruş nedeni listesi',
+          addLoss: 'Ekle',
+          addLossPlaceholder: 'Yeni duruş nedeni',
+          auditLossOptions: 'Duruş nedenleri',
           reworkSelectionRequired: 'Rework mevcutken tam olarak 3 rework nedeni seçin.',
           reworkLimitReached: 'En fazla 3 rework nedeni seçebilirsiniz.',
           noReworkReasons: 'Mevcut rework nedeni yok.',
@@ -7627,6 +7734,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const OEE_CONFIG_KEY = 'martur-oee-config-v1';
       const CHAT_SEEN_KEY = 'martur-chat-seen-v1';
       const REWORK_STORAGE_KEY = 'martur-rework-options-v1';
+      const LOSS_STORAGE_KEY = 'martur-loss-options-v1';
       const OEE_DEFAULTS = { plannedMinPerShift: 450, targetKitPerShift: 170 };
       const THEME_STORAGE_KEY = 'martur-dashboard-theme';
       let savedTheme = null;
@@ -7689,12 +7797,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         oeeConfig: Object.assign({}, OEE_DEFAULTS),
         oeeConfigHistory: [],
         reworkOptions: REWORK_OPTIONS_DEFAULT.slice(),
+        lossOptions: LOSS_OPTIONS_DEFAULT.slice(),
         selectedDate: null,
         selectedMonth: null,
         editingDate: null,
         shift1TopReworks: [],
         shift2TopReworks: [],
         reworkTarget: null,
+        shift1TopLosses: [],
+        shift2TopLosses: [],
+        lossTarget: null,
         overtimeTarget: null,
         manual: [],
         stoppages: [],
@@ -8022,6 +8134,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         reworkSelectionPreview2: root.querySelector('#mod-rework-selection-preview-2'),
         reworkSelectionMessage1: root.querySelector('#mod-rework-selection-message-1'),
         reworkSelectionMessage2: root.querySelector('#mod-rework-selection-message-2'),
+        lossAdmin: root.querySelector('#mod-loss-admin'),
+        lossDialog: root.querySelector('#mod-loss-dialog'),
+        lossOptions: root.querySelector('#mod-loss-options'),
+        openLossDialog1: root.querySelector('#mod-open-loss-dialog-1'),
+        openLossDialog2: root.querySelector('#mod-open-loss-dialog-2'),
+        closeLossDialog: root.querySelector('#mod-close-loss-dialog'),
+        cancelLossDialog: root.querySelector('#mod-cancel-loss-dialog'),
+        applyLossDialog: root.querySelector('#mod-apply-loss-dialog'),
+        dialogLossSelectedCount: root.querySelector('#mod-dialog-loss-selected-count'),
+        lossSelectedCount1: root.querySelector('#mod-loss-selected-count-1'),
+        lossSelectedCount2: root.querySelector('#mod-loss-selected-count-2'),
+        lossSelectionPreview1: root.querySelector('#mod-loss-selection-preview-1'),
+        lossSelectionPreview2: root.querySelector('#mod-loss-selection-preview-2'),
         overtimeDialog: root.querySelector('#mod-overtime-dialog'),
         overtimeTarget: root.querySelector('#mod-overtime-target'),
         overtimeRows: root.querySelector('#mod-overtime-rows'),
@@ -8234,6 +8359,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }).filter((item) => item && item.reason).slice(0, 3);
       }
 
+      /* Le perdite di un turno: causa del fermo e minuti persi, al massimo 3.
+         Stessa forma dei rework, col minutaggio al posto del numero di casi. */
+      function normalizeTopLosses(values) {
+        if (!Array.isArray(values)) return [];
+        return values.map((item) => {
+          if (typeof item === 'string') return { reason: item, minutes: null };
+          return item && typeof item.reason === 'string'
+            ? { reason: item.reason, minutes: isNumber(item.minutes) ? item.minutes : null }
+            : null;
+        }).filter((item) => item && item.reason).slice(0, 3);
+      }
+
       function mergeShiftTopReworks(list1, list2) {
         const map = new Map();
         [].concat(list1 || [], list2 || []).forEach((item) => {
@@ -8304,6 +8441,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const shift2TopReworks = normalizeTopReworks(shift2.topReworks);
         shift1.topReworks = shift1TopReworks;
         shift2.topReworks = shift2TopReworks;
+        shift1.topLosses = normalizeTopLosses(shift1.topLosses);
+        shift2.topLosses = normalizeTopLosses(shift2.topLosses);
         const topReworks = (shift1TopReworks.length || shift2TopReworks.length)
           ? mergeShiftTopReworks(shift1TopReworks, shift2TopReworks)
           : normalizeTopReworks(Array.isArray(row.topReworks) ? row.topReworks : REWORK_TOP3_BY_DATE[row.date]);
@@ -8750,6 +8889,94 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         saveConfigDoc('rework', { options: state.reworkOptions });
       }
 
+      function loadLossOptions() {
+        let stored = null;
+        try { stored = JSON.parse(window.localStorage.getItem(LOSS_STORAGE_KEY)); } catch (error) {}
+        if (Array.isArray(stored) && stored.length) {
+          state.lossOptions = stored.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim());
+        } else {
+          state.lossOptions = LOSS_OPTIONS_DEFAULT.slice();
+        }
+      }
+
+      function persistLossOptions() {
+        try { window.localStorage.setItem(LOSS_STORAGE_KEY, JSON.stringify(state.lossOptions)); } catch (error) {}
+        saveConfigDoc('loss', { options: state.lossOptions });
+      }
+
+      let lossUnsub = null;
+      function unsubscribeLossOptions() {
+        if (lossUnsub) { try { lossUnsub(); } catch (e) {} lossUnsub = null; }
+      }
+      function subscribeLossOptions() {
+        if (!db || lossUnsub) return;
+        lossUnsub = db.collection('config').doc('loss').onSnapshot((doc) => {
+          const data = doc.exists ? doc.data() : null;
+          const list = data && Array.isArray(data.options)
+            ? data.options.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim())
+            : null;
+          if (!list || !list.length) return;
+          state.lossOptions = list;
+          try { window.localStorage.setItem(LOSS_STORAGE_KEY, JSON.stringify(state.lossOptions)); } catch (error) {}
+          renderLossOptions();
+          renderLossAdmin();
+        }, () => {});
+      }
+
+      // Gestione della lista cause di fermo dalle impostazioni: aggiungi,
+      // rinomina, elimina. Identica a quella dei rework.
+      function renderLossAdmin() {
+        if (!state.authUser) { el.lossAdmin.innerHTML = ''; return; }
+        const list = state.lossOptions.map((reason, i) =>
+          '<div class="mod-rework-admin-row">' +
+            '<input type="text" class="form-control mod-loss-edit" data-index="' + i + '" value="' + escapeHtml(reason) + '">' +
+            '<button type="button" class="btn btn-ghost mod-loss-del" data-index="' + i + '" title="' + escapeHtml(t('delete')) + '"><i data-lucide="trash-2" aria-hidden="true"></i></button>' +
+          '</div>'
+        ).join('');
+        el.lossAdmin.innerHTML =
+          '<div class="mod-section-label">' + escapeHtml(t('manageLosses')) + '</div>' +
+          '<div class="mod-rework-admin-list">' + list + '</div>' +
+          '<div class="mod-rework-admin-add">' +
+            '<input type="text" class="form-control mod-loss-new" placeholder="' + escapeHtml(t('addLossPlaceholder')) + '">' +
+            '<button type="button" class="btn btn-primary" id="mod-loss-add-btn">' + escapeHtml(t('addLoss')) + '</button>' +
+          '</div>';
+        el.lossAdmin.querySelectorAll('.mod-loss-edit').forEach((input) => {
+          input.addEventListener('change', () => {
+            const idx = Number(input.dataset.index);
+            const val = input.value.trim();
+            if (!val) { renderLossAdmin(); return; }
+            const old = state.lossOptions[idx];
+            state.lossOptions[idx] = val;
+            persistLossOptions();
+            logAudit('loss.update', t('auditLossOptions'), [{ field: t('auditRenamed'), from: old, to: val }]);
+            renderLossOptions();
+          });
+        });
+        el.lossAdmin.querySelectorAll('.mod-loss-del').forEach((button) => {
+          button.addEventListener('click', () => {
+            const removed = state.lossOptions.splice(Number(button.dataset.index), 1)[0];
+            persistLossOptions();
+            logAudit('loss.update', t('auditLossOptions'), [{ field: t('auditRemoved'), from: removed, to: null }]);
+            renderLossOptions();
+            renderLossAdmin();
+          });
+        });
+        const addBtn = el.lossAdmin.querySelector('#mod-loss-add-btn');
+        const addInput = el.lossAdmin.querySelector('.mod-loss-new');
+        const doAdd = () => {
+          const val = addInput.value.trim();
+          if (!val || state.lossOptions.includes(val)) { addInput.value = ''; return; }
+          state.lossOptions.push(val);
+          persistLossOptions();
+          logAudit('loss.update', t('auditLossOptions'), [{ field: t('auditAdded'), from: null, to: val }]);
+          renderLossOptions();
+          renderLossAdmin();
+        };
+        addBtn.addEventListener('click', doAdd);
+        addInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 15, height: 15 } });
+      }
+
       let reworkUnsub = null;
       function unsubscribeReworkOptions() {
         if (reworkUnsub) { try { reworkUnsub(); } catch (e) {} reworkUnsub = null; }
@@ -9027,20 +9254,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return derived;
       }
 
-      function fitOverlayText(el) {
-        // Riduce il font solo di questa etichetta finche' il testo (mese per esteso,
-        // es. "Settembre") non entra su una riga sola dentro la pillola.
-        if (!el) return;
-        el.style.fontSize = '';
-        let size = parseFloat(getComputedStyle(el).fontSize);
-        let guard = 0;
-        while (el.scrollWidth > el.clientWidth && size > 9 && guard < 12) {
-          size -= 0.5;
-          el.style.fontSize = size + 'px';
-          guard++;
-        }
-      }
-
       function ensurePeriodSelection(rows) {
         const activeRows = rows.filter(hasOperationalData);
         const productionRows = rows.filter((row) => row.totalFront > 0 || row.totalRear > 0);
@@ -9076,7 +9289,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const weekday = (WEEKDAY_FULL[state.lang] || WEEKDAY_FULL.it)[idx];
           const dayMonthYear = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: 'long', year: 'numeric' }).format(parseDate(state.selectedDate));
           el.dateWeekday.textContent = weekday + ' ' + dayMonthYear;
-          fitOverlayText(el.dateWeekday);
         }
         el.periodWeek.value = isoWeekStringOf(mondayOf(parseDate(state.selectedDate)));
         if (el.weekOverlay) {
@@ -9672,8 +9884,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
         const shift1 = normalizeTopReworks(row.shift1 && row.shift1.topReworks);
         const shift2 = normalizeTopReworks(row.shift2 && row.shift2.topReworks);
-        if (!shift1.length && !shift2.length) {
-          el.dailyReworkList.innerHTML = '<ol class="mod-rework-ranking">' + items(normalizeTopReworks(row.topReworks)) + '</ol>';
+        const legacy = normalizeTopReworks(row.topReworks);
+        if (isSingleShiftRow(row)) {
+          el.dailyReworkList.innerHTML = '<ol class="mod-rework-ranking">' + items(shift1.length ? shift1 : legacy) + '</ol>';
+          return;
+        }
+        // Le giornate vecchie hanno una classifica sola, senza turni: quelle
+        // restano com'erano. In tutte le altre le due colonne ci sono sempre,
+        // con la loro dicitura, anche quando non c'e' ancora niente dentro.
+        if (!shift1.length && !shift2.length && legacy.length) {
+          el.dailyReworkList.innerHTML = '<ol class="mod-rework-ranking">' + items(legacy) + '</ol>';
           return;
         }
         el.dailyReworkList.innerHTML = [['shift1', shift1], ['shift2', shift2]].map(([key, list]) =>
@@ -9730,14 +9950,27 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               escapeHtml(formatNumber(item.minutes)) + '</span>' +
               '<span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span></li>').join('')
           : '<li class="mod-empty">' + t('noLossReasons') + '</li>';
+        /* Se le perdite sono state scritte a mano nell'inserimento dati sono
+           quelle a comandare; altrimenti si ricavano dai fermi linea
+           registrati, come prima. */
+        const listFor = (shiftKey) => {
+          const manual = normalizeTopLosses(row[shiftKey] && row[shiftKey].topLosses)
+            .filter((item) => isNumber(item.minutes) && item.minutes > 0)
+            .sort((a, b) => b.minutes - a.minutes);
+          return manual.length ? manual : dailyLossRanking(row.date, shiftKey);
+        };
         if (isSingleShiftRow(row)) {
-          el.dailyLossList.innerHTML = '<ol class="mod-rework-ranking">' + items(dailyLossRanking(row.date, null)) + '</ol>';
+          const manual = normalizeTopLosses(row.shift1 && row.shift1.topLosses)
+            .filter((item) => isNumber(item.minutes) && item.minutes > 0)
+            .sort((a, b) => b.minutes - a.minutes);
+          const list = manual.length ? manual : dailyLossRanking(row.date, null);
+          el.dailyLossList.innerHTML = '<ol class="mod-rework-ranking">' + items(list) + '</ol>';
           return;
         }
         el.dailyLossList.innerHTML = ['shift1', 'shift2'].map((key) =>
           '<div class="mod-rework-shift">' +
             '<div class="mod-rework-shift-label">' + escapeHtml(t(key)) + '</div>' +
-            '<ol class="mod-rework-ranking">' + items(dailyLossRanking(row.date, key)) + '</ol>' +
+            '<ol class="mod-rework-ranking">' + items(listFor(key)) + '</ol>' +
           '</div>'
         ).join('');
       }
@@ -10118,6 +10351,91 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.reworkDialog.showModal();
       }
 
+      /* Perdite del turno: stessa meccanica dei rework, ma al posto del
+         numero di casi si scrivono i minuti di fermo. */
+      function selectedLossReasons() {
+        return Array.from(el.lossOptions.querySelectorAll('.mod-loss-option-input:checked')).map((input) => {
+          const minutesInput = el.lossOptions.querySelector('.mod-loss-minutes-input[data-for="' + input.id + '"]');
+          const minutes = minutesInput && minutesInput.value !== '' ? Number(minutesInput.value) : null;
+          return { reason: input.value, minutes: isNumber(minutes) ? minutes : null };
+        });
+      }
+
+      function lossShiftEls(shiftName) {
+        return {
+          count: shiftName === 'shift2' ? el.lossSelectedCount2 : el.lossSelectedCount1,
+          preview: shiftName === 'shift2' ? el.lossSelectionPreview2 : el.lossSelectionPreview1
+        };
+      }
+
+      function updateLossLauncherPreview(shiftName) {
+        const list = normalizeTopLosses(state[shiftName + 'TopLosses']);
+        const refs = lossShiftEls(shiftName);
+        refs.count.textContent = list.length + '/3 ' + t('lossesSelected');
+        refs.preview.textContent = list.length
+          ? list.map((item) => (isNumber(item.minutes) ? item.minutes + ' ' : '') + item.reason).join(' · ')
+          : t('noLossesSelected');
+      }
+
+      function updateLossSelectionState() {
+        const selected = selectedLossReasons();
+        el.dialogLossSelectedCount.textContent = selected.length + '/3 ' + t('lossesSelected');
+        el.lossOptions.querySelectorAll('.mod-loss-option-input').forEach((input) => {
+          input.disabled = selected.length >= 3 && !input.checked;
+          const minutesInput = el.lossOptions.querySelector('.mod-loss-minutes-input[data-for="' + input.id + '"]');
+          if (minutesInput) {
+            minutesInput.disabled = !input.checked;
+            if (!input.checked) minutesInput.value = '';
+          }
+        });
+      }
+
+      function setSelectedLossReasons(values) {
+        const selected = new Map(normalizeTopLosses(values).map((item) => [item.reason, item.minutes]));
+        el.lossOptions.querySelectorAll('.mod-loss-option-input').forEach((input) => {
+          input.checked = selected.has(input.value);
+          const minutesInput = el.lossOptions.querySelector('.mod-loss-minutes-input[data-for="' + input.id + '"]');
+          if (minutesInput) {
+            const minutes = selected.get(input.value);
+            minutesInput.value = isNumber(minutes) ? minutes : '';
+            minutesInput.disabled = !input.checked;
+          }
+        });
+        updateLossSelectionState();
+      }
+
+      function renderLossOptions() {
+        el.lossOptions.innerHTML = state.lossOptions.map((reason, index) => {
+          const id = 'mod-loss-option-' + index;
+          return '<div class="mod-rework-option-row">' +
+            '<label class="form-check" for="' + id + '"><input id="' + id + '" class="form-check-input mod-loss-option-input" type="checkbox" value="' + escapeHtml(reason) + '"><span class="form-check-label">' + escapeHtml(reason) + '</span></label>' +
+            '<input type="number" class="form-control mod-loss-minutes-input" data-for="' + id + '" min="0" step="1" placeholder="' + escapeHtml(t('minutes')) + '" disabled aria-label="' + escapeHtml(t('minutes') + ' - ' + reason) + '">' +
+          '</div>';
+        }).join('');
+        el.lossOptions.querySelectorAll('.mod-loss-option-input').forEach((input) => {
+          input.addEventListener('change', updateLossSelectionState);
+        });
+        el.lossOptions.querySelectorAll('.mod-loss-minutes-input').forEach((input) => {
+          input.addEventListener('input', updateLossSelectionState);
+        });
+        updateLossSelectionState();
+      }
+
+      function openLossSelectionDialog(shiftName) {
+        state.lossTarget = shiftName;
+        setSelectedLossReasons(state[shiftName + 'TopLosses']);
+        el.lossDialog.showModal();
+      }
+
+      function closeLossSelectionDialog(applyChanges) {
+        if (applyChanges && state.lossTarget) {
+          state[state.lossTarget + 'TopLosses'] = selectedLossReasons();
+          updateLossLauncherPreview(state.lossTarget);
+        }
+        state.lossTarget = null;
+        if (el.lossDialog.open) el.lossDialog.close(applyChanges ? 'apply' : 'cancel');
+      }
+
       function closeReworkSelectionDialog(applyChanges) {
         if (applyChanges && state.reworkTarget) {
           state[state.reworkTarget + 'TopReworks'] = selectedReworkReasons();
@@ -10214,6 +10532,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         entry.targetKitPerShift = readInput('mod-entry-target');
         entry.shift1.topReworks = state.shift1TopReworks;
         entry.shift2.topReworks = state.shift2TopReworks;
+        entry.shift1.topLosses = state.shift1TopLosses;
+        entry.shift2.topLosses = state.shift2TopLosses;
         entry.shift1.note = el.entryNoteShift1.value.trim();
         entry.shift2.note = el.entryNoteShift2.value.trim();
         if (single) {
@@ -10223,6 +10543,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           // finire nei totali della giornata.
           entry.shift2 = emptyShift();
           entry.shift2.topReworks = [];
+          entry.shift2.topLosses = [];
           entry.shift2.note = '';
         }
         return deriveRow(entry);
@@ -10298,8 +10619,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.entryUniqueEnd.value = '';
         state.shift1TopReworks = [];
         state.shift2TopReworks = [];
+        state.shift1TopLosses = [];
+        state.shift2TopLosses = [];
         updateReworkLauncherPreview('shift1');
         updateReworkLauncherPreview('shift2');
+        updateLossLauncherPreview('shift1');
+        updateLossLauncherPreview('shift2');
         el.entryNoteShift1.value = '';
         el.entryNoteShift2.value = '';
         autoGrow(el.entryNoteShift1);
@@ -10333,8 +10658,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.entryUniqueEnd.value = row.shift1.uniqueShiftEnd || '';
         state.shift1TopReworks = normalizeTopReworks(row.shift1.topReworks);
         state.shift2TopReworks = normalizeTopReworks(row.shift2.topReworks);
+        state.shift1TopLosses = normalizeTopLosses(row.shift1.topLosses);
+        state.shift2TopLosses = normalizeTopLosses(row.shift2.topLosses);
         updateReworkLauncherPreview('shift1');
         updateReworkLauncherPreview('shift2');
+        updateLossLauncherPreview('shift1');
+        updateLossLauncherPreview('shift2');
         el.entryNoteShift1.value = row.shift1.note || '';
         el.entryNoteShift2.value = row.shift2.note || '';
         autoGrow(el.entryNoteShift1);
@@ -10377,8 +10706,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             fillShift('shift2', row.shift2);
             state.shift1TopReworks = normalizeTopReworks(row.shift1.topReworks);
             state.shift2TopReworks = normalizeTopReworks(row.shift2.topReworks);
+            state.shift1TopLosses = normalizeTopLosses(row.shift1.topLosses);
+            state.shift2TopLosses = normalizeTopLosses(row.shift2.topLosses);
             updateReworkLauncherPreview('shift1');
             updateReworkLauncherPreview('shift2');
+            updateLossLauncherPreview('shift1');
+            updateLossLauncherPreview('shift2');
             updateLiveSummary();
           }
         }
@@ -10500,6 +10833,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             unsubscribeStoppages();
             unsubscribeStoppageConfig();
             unsubscribeReworkOptions();
+            unsubscribeLossOptions();
             if (el.updateDialog && el.updateDialog.open) el.updateDialog.close();
             state.manual = [];
             setLocked(true);
@@ -10523,6 +10857,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             subscribeStoppages();
             subscribeStoppageConfig();
             subscribeReworkOptions();
+            subscribeLossOptions();
             loadChatUsers();
             subscribeChat();
             migrateLocalEntriesToCloud();
@@ -13814,6 +14149,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!state.authUser) return;
         renderUserAdmin();
         renderReworkAdmin();
+        renderLossAdmin();
         renderAuditLog();
         el.oeePlanned.value = state.oeeConfig.plannedMinPerShift;
         el.oeeTarget.value = state.oeeConfig.targetKitPerShift;
@@ -14111,6 +14447,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         event.preventDefault();
         closeReworkSelectionDialog(false);
       });
+      el.openLossDialog1.addEventListener('click', () => openLossSelectionDialog('shift1'));
+      el.openLossDialog2.addEventListener('click', () => openLossSelectionDialog('shift2'));
+      el.closeLossDialog.addEventListener('click', () => closeLossSelectionDialog(false));
+      el.cancelLossDialog.addEventListener('click', () => closeLossSelectionDialog(false));
+      el.applyLossDialog.addEventListener('click', () => closeLossSelectionDialog(true));
+      el.lossDialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        closeLossSelectionDialog(false);
+      });
       root.querySelectorAll('.mod-overtime-btn').forEach((button) => {
         button.addEventListener('click', () => openOvertimeDialog(button.dataset.shift));
       });
@@ -14194,6 +14539,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       loadReworkOptions();
       renderReworkOptions();
+      loadLossOptions();
+      renderLossOptions();
       loadManual();
       localSeedManual = state.manual.slice();
       // subscribeEntries() parte dal login (initAuth): senza accesso non si
