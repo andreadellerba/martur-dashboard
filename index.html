@@ -3753,6 +3753,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       min-width: min(100%, 128px);
       flex: 1 1 30%;
     }
+    /* a capo tra i gruppi di campi del modulo turno */
+    #martur-operations-dashboard .mod-entry-fields > .mod-row-break {
+      flex: 0 0 100%;
+      height: 0;
+      margin-top: -8px;
+    }
     #martur-operations-dashboard .mod-wide-field {
       flex-basis: 100% !important;
     }
@@ -5229,9 +5235,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <div class="viz-controls mod-entry-fields">
             <label class="form-label"><span data-i18n="frontLine">Linea anteriore</span><input id="mod-s1-front" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="rearLine">Linea posteriore</span><input id="mod-s1-rear" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="stellantisCars">KIT Stellantis</span><input id="mod-s1-cars" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="convocati">Convocati Diretti</span><input id="mod-s1-convocati" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="presence">Presenze</span><input id="mod-s1-presence" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="absent">Assenti</span><input id="mod-s1-absent" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="rework">Rework</span><input id="mod-s1-rework" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label mod-overtime-field-label">
               <span data-i18n="overtimePct">Straordinario %</span>
@@ -5240,11 +5249,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
                 <button type="button" class="btn btn-ghost mod-overtime-btn" data-shift="shift1" data-i18n-title="calcOvertime" title="Calcola straordinario">+</button>
               </div>
             </label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="dummySeats">Sedili dummy</span><input id="mod-s1-dummy" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="coda">Coda</span><input id="mod-s1-coda" class="form-control" type="number" min="0" step="1"></label>
-            <label class="form-label"><span data-i18n="stellantisCars">KIT Stellantis</span><input id="mod-s1-cars" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="firstSeqMartur">Prima Sequenza Martur</span><input id="mod-s1-firstseqm" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="lastSeqMartur">Ultima Sequenza Martur</span><input id="mod-s1-lastseqm" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="firstSeqStellantis">Prima Sequenza Stellantis</span><input id="mod-s1-firstseqs" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="lastSeqStellantis">Ultima Sequenza Stellantis</span><input id="mod-s1-lastseqs" class="form-control" type="number" min="0" step="1"></label>
           </div>
@@ -5286,9 +5297,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <div class="viz-controls mod-entry-fields">
             <label class="form-label"><span data-i18n="frontLine">Linea anteriore</span><input id="mod-s2-front" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="rearLine">Linea posteriore</span><input id="mod-s2-rear" class="form-control" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="stellantisCars">KIT Stellantis</span><input id="mod-s2-cars" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="convocati">Convocati Diretti</span><input id="mod-s2-convocati" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="presence">Presenze</span><input id="mod-s2-presence" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="absent">Assenti</span><input id="mod-s2-absent" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="rework">Rework</span><input id="mod-s2-rework" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label mod-overtime-field-label">
               <span data-i18n="overtimePct">Straordinario %</span>
@@ -5297,11 +5311,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
                 <button type="button" class="btn btn-ghost mod-overtime-btn" data-shift="shift2" data-i18n-title="calcOvertime" title="Calcola straordinario">+</button>
               </div>
             </label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="dummySeats">Sedili dummy</span><input id="mod-s2-dummy" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="coda">Coda</span><input id="mod-s2-coda" class="form-control" type="number" min="0" step="1"></label>
-            <label class="form-label"><span data-i18n="stellantisCars">KIT Stellantis</span><input id="mod-s2-cars" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="firstSeqMartur">Prima Sequenza Martur</span><input id="mod-s2-firstseqm" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="lastSeqMartur">Ultima Sequenza Martur</span><input id="mod-s2-lastseqm" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="firstSeqStellantis">Prima Sequenza Stellantis</span><input id="mod-s2-firstseqs" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="lastSeqStellantis">Ultima Sequenza Stellantis</span><input id="mod-s2-lastseqs" class="form-control" type="number" min="0" step="1"></label>
           </div>
@@ -6400,6 +6416,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           operators: 'operatori',
           absenceRecords: 'giorni assenza',
           rework: 'Rework',
+          palletIn: 'Ingresso Pallet',
           reworkRate: 'Tasso Rework',
           reworkProductionRate: 'Rework / produzione',
           reworkFormula: 'Rework ÷ produzione Front Line',
@@ -6906,6 +6923,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           operators: 'operators',
           absenceRecords: 'absence days',
           rework: 'Rework',
+          palletIn: 'Pallet input',
           reworkRate: 'Rework rate',
           reworkProductionRate: 'Rework / production',
           reworkFormula: 'Rework ÷ Front Line production',
@@ -7412,6 +7430,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           operators: 'operatör',
           absenceRecords: 'devamsızlık günü',
           rework: 'Rework',
+          palletIn: 'Palet girişi',
           reworkRate: 'Rework oranı',
           reworkProductionRate: 'Rework / üretim',
           qualitySummaryTitle: 'Kalite özeti',
@@ -10025,7 +10044,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(t('presence'), formatOptionalNumber(shift.presence), goldCls) +
               metric(t('absent'), formatOptionalNumber(shift.absent), absentCls) +
               metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
-              metric(t('rework'), reworkText, reworkCls) +
+              metric(t('palletIn'), reworkText, reworkCls) +
               metric(t('dummySeats'), formatOptionalNumber(shift.dummy), dummyCls) +
               metric(t('coda'), formatOptionalNumber(shift.coda), codaCls) +
               metric(t('overtime'), overtimeText, otCls) +
