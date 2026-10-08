@@ -6674,7 +6674,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDelete: 'Elimina questo EDI',
           ediDeleteConfirm: 'Eliminare «{name}»?',
           auditEdiDelete: 'EDI eliminato',
-          ediNoTable: 'Nell’Excel non c’è la tabella per codice materiale (colonne Material, Back, W, Colore, Heat e settimane WK).',
+          ediNoTable: 'Nell’Excel non ho trovato una tabella con le settimane (WK41, W 41, Week 41…) e almeno una colonna tra W, Colore, Back, Heat. Controlla il file.',
+          ediMissing: 'Colonne non trovate, righe non calcolate: {list}.',
           auditEdiUpload: 'EDI salvato',
           ediReading: 'Lettura dell’Excel…',
           ediLoadError: 'Impossibile leggere il file Excel.',
@@ -7237,7 +7238,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDelete: 'Delete this EDI',
           ediDeleteConfirm: 'Delete «{name}»?',
           auditEdiDelete: 'EDI deleted',
-          ediNoTable: 'The Excel has no table by material code (columns Material, Back, W, Colore, Heat and WK weeks).',
+          ediNoTable: 'No table found in the Excel with weeks (WK41, W 41, Week 41…) and at least one of the W, Colore, Back, Heat columns. Please check the file.',
+          ediMissing: 'Columns not found, rows not calculated: {list}.',
           auditEdiUpload: 'EDI saved',
           ediReading: 'Reading the Excel…',
           ediLoadError: 'Unable to read the Excel file.',
@@ -7800,7 +7802,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDelete: 'Bu EDI’yi sil',
           ediDeleteConfirm: '«{name}» silinsin mi?',
           auditEdiDelete: 'EDI silindi',
-          ediNoTable: 'Excel dosyasında malzeme koduna göre tablo yok (Material, Back, W, Colore, Heat sütunları ve WK haftaları).',
+          ediNoTable: 'Excel dosyasında haftalar (WK41, W 41, Week 41…) ve W, Colore, Back, Heat sütunlarından en az biri olan bir tablo bulunamadı. Dosyayı kontrol edin.',
+          ediMissing: 'Bulunamayan sütunlar, satırlar hesaplanmadı: {list}.',
           auditEdiUpload: 'EDI kaydedildi',
           ediReading: 'Excel okunuyor…',
           ediLoadError: 'Excel dosyası okunamadı.',
@@ -13907,7 +13910,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<td class="mod-edi-total">100%</td></tr></tfoot>';
 
         if (ediDraft) {
-          el.ediStatus.textContent = t('ediDraftStatus').replace('{file}', data.fileName || '—');
+          const missing = (data.missing || []).map((g) => ({ W: '6W/4W', COLORE: 'Colore', BACK: 'Back 50/100', HEAT: 'Heater' })[g]);
+          el.ediStatus.textContent = t('ediDraftStatus').replace('{file}', data.fileName || '—') +
+            (missing.length ? ' ⚠ ' + t('ediMissing').replace('{list}', missing.join(', ')) : '');
+          el.ediStatus.classList.toggle('mod-negative', missing.length > 0);
           return;
         }
         // File, data e autore del salvataggio non si mostrano: stanno nel
@@ -13932,50 +13938,92 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return xlsxLibPromise;
       }
 
-      // Cerca in tutti i fogli la tabella per codice materiale: la riga di
-      // intestazione con Material, Back, W, Colore, Heat e le settimane (WK..).
-      // Le settimane a volume zero non si mostrano.
+      // Lettura dell'Excel: si guardano tutti i fogli e, in ognuno, le prime
+      // righe in cerca dell'intestazione della tabella per codice materiale.
+      // I nomi delle colonne si riconoscono in piu' varianti (Colore/Color,
+      // Heat/Heater, Back/Rear...) e le settimane in piu' formati (WK41,
+      // W 41, Week 41, KW41, Sett. 41...). Vince il foglio con piu' colonne
+      // riconosciute; se ne manca qualcuna si calcola il resto e si avvisa.
+      const EDI_HEADERS = {
+        MATERIAL: ['MATERIAL', 'MATERIALE', 'MATERIALCODE', 'CODICE', 'CODICEMATERIALE', 'CODE', 'ARTICLE', 'ARTICLECODE',
+          'ARTICOLO', 'PARTNUMBER', 'PARTNO', 'PN', 'MALZEME', 'MALZEMEKODU'],
+        W: ['W', 'WAY', 'WAYS', 'VIE', 'VIA', '6W4W', 'SEATWAY', 'REGOLAZIONI'],
+        COLORE: ['COLORE', 'COLORI', 'COLOR', 'COLOUR', 'COLORS', 'TRIM', 'RIVESTIMENTO', 'RENK'],
+        BACK: ['BACK', 'BACKREST', 'REAR', 'SCHIENALE', 'SPLIT', 'ARKA'],
+        HEAT: ['HEAT', 'HEATER', 'HEATING', 'HEATED', 'RISCALDAMENTO', 'RISCALDATO', 'ISITMA', 'ISITICI']
+      };
+      const EDI_WEEK_RE = /^(?:WK|W|WEEK|KW|CW|SETT|SETTIMANA|HAFTA)\.?\s*0*(\d{1,2})$/;
+      function ediHeaderKey(v) {
+        return String(v === undefined || v === null ? '' : v).toUpperCase()
+          .normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Z0-9]/g, '');
+      }
+      function ediQty(v) {
+        if (typeof v === 'number') return v;
+        const n = Number(String(v || '').replace(/\s/g, '').replace(',', '.'));
+        return Number.isFinite(n) ? n : 0;
+      }
       function parseEdiWorkbook(XLSX, book) {
         const norm = (v) => String(v === undefined || v === null ? '' : v).trim().toUpperCase();
+        let best = null; // { sheet, cols, weekCols, rows, h, found }
         for (const name of book.SheetNames) {
           const rows = XLSX.utils.sheet_to_json(book.Sheets[name], { header: 1, blankrows: false, defval: '' });
-          for (let h = 0; h < Math.min(rows.length, 20); h++) {
-            const head = rows[h].map(norm);
-            const col = (label) => head.indexOf(label);
-            const cBack = col('BACK'), cW = col('W'), cColor = col('COLORE'), cHeat = col('HEAT'), cMat = col('MATERIAL');
-            if ([cBack, cW, cColor, cHeat, cMat].some((i) => i < 0)) continue;
+          for (let h = 0; h < Math.min(rows.length, 60); h++) {
+            const head = rows[h].map(ediHeaderKey);
+            const cols = {};
+            Object.keys(EDI_HEADERS).forEach((field) => {
+              const i = head.findIndex((v) => EDI_HEADERS[field].indexOf(v) >= 0);
+              if (i >= 0) cols[field] = i;
+            });
             const weekCols = [];
-            head.forEach((v, i) => { const m = /^WK\s*0*(\d+)$/.exec(v); if (m) weekCols.push({ i, label: 'W ' + m[1] }); });
-            if (!weekCols.length) continue;
-            const cols = { W: cW, COLORE: cColor, BACK: cBack, HEAT: cHeat };
-            const total = weekCols.map(() => 0);
-            const byKey = new Map(); // "GRUPPO:codice" -> riga
-            for (let r = h + 1; r < rows.length; r++) {
-              const row = rows[r];
-              if (!norm(row[cMat])) continue;
-              const qty = weekCols.map((wc) => Number(row[wc.i]) || 0);
-              if (!qty.some(Boolean)) continue;
-              qty.forEach((q, j) => { total[j] += q; });
-              EDI_GROUPS.forEach((group) => {
-                const raw = norm(row[cols[group]]);
-                if (!raw) return;
-                const code = EDI_MERGE[group + ':' + raw] || raw;
-                const key = group + ':' + code;
-                if (!byKey.has(key)) byKey.set(key, { group, code, values: weekCols.map(() => 0) });
-                const line = byKey.get(key);
-                qty.forEach((q, j) => { line.values[j] += q; });
-              });
-            }
-            // Le settimane a volume zero non si mostrano.
-            const keep = weekCols.map((wc, j) => total[j] > 0);
-            const weeks = weekCols.filter((wc, j) => keep[j]).map((wc) => wc.label);
-            const lines = Array.from(byKey.values())
-              .map((line) => Object.assign(line, { values: line.values.filter((v, j) => keep[j]) }))
-              .sort((a, b) => ediRowOrder(a.group, a.code) - ediRowOrder(b.group, b.code));
-            if (weeks.length) return { weeks, total: total.filter((v, j) => keep[j]), rows: lines };
+            rows[h].forEach((v, i) => {
+              const m = EDI_WEEK_RE.exec(String(v || '').trim().toUpperCase());
+              if (m) weekCols.push({ i, label: 'W ' + m[1] });
+            });
+            const groups = EDI_GROUPS.filter((g) => cols[g] !== undefined);
+            if (!weekCols.length || !groups.length) continue;
+            const score = groups.length * 10 + (cols.MATERIAL !== undefined ? 1 : 0);
+            if (!best || score > best.score) best = { score, cols, weekCols, rows, h, groups };
           }
         }
-        return null;
+        if (!best) return null;
+
+        const { cols, weekCols, rows, h, groups } = best;
+        const total = weekCols.map(() => 0);
+        const byKey = new Map(); // "GRUPPO:codice" -> riga
+        for (let r = h + 1; r < rows.length; r++) {
+          const row = rows[r];
+          // Righe di totale gia' presenti nel foglio: non vanno risommate.
+          if (row.some((v) => /^\s*(TOT|TOTAL|TOTALE|TOPLAM)\b/i.test(String(v)))) continue;
+          if (cols.MATERIAL !== undefined && !norm(row[cols.MATERIAL])) continue;
+          if (cols.MATERIAL === undefined && !groups.some((g) => norm(row[cols[g]]))) continue;
+          const qty = weekCols.map((wc) => ediQty(row[wc.i]));
+          if (!qty.some(Boolean)) continue;
+          qty.forEach((q, j) => { total[j] += q; });
+          groups.forEach((group) => {
+            const raw = norm(row[cols[group]]);
+            if (!raw) return;
+            const code = EDI_MERGE[group + ':' + raw] || raw;
+            const key = group + ':' + code;
+            if (!byKey.has(key)) byKey.set(key, { group, code, values: weekCols.map(() => 0) });
+            const line = byKey.get(key);
+            qty.forEach((q, j) => { line.values[j] += q; });
+          });
+        }
+        // Settimane ripetute (es. colonne giornaliere sotto la stessa WK):
+        // si sommano in una sola colonna.
+        const labels = [];
+        weekCols.forEach((wc) => { if (labels.indexOf(wc.label) < 0) labels.push(wc.label); });
+        const fold = (arr) => labels.map((l) => weekCols.reduce((s, wc, j) => s + (wc.label === l ? arr[j] : 0), 0));
+        const totalW = fold(total);
+        // Le settimane a volume zero non si mostrano.
+        const keep = totalW.map((v) => v > 0);
+        const weeks = labels.filter((l, j) => keep[j]);
+        if (!weeks.length) return null;
+        const lines = Array.from(byKey.values())
+          .map((line) => Object.assign(line, { values: fold(line.values).filter((v, j) => keep[j]) }))
+          .sort((a, b) => ediRowOrder(a.group, a.code) - ediRowOrder(b.group, b.code));
+        const missing = EDI_GROUPS.filter((g) => cols[g] === undefined);
+        return { weeks, total: totalW.filter((v, j) => keep[j]), rows: lines, missing };
       }
 
       // Excel caricato: le tabelle si riempiono subito, ma restano una bozza
