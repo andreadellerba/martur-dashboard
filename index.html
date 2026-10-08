@@ -3672,9 +3672,45 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       overflow: hidden;
       width: 100%;
     }
-    /* Card dei turni: la nota ha tre righe invece di due. */
-    #martur-operations-dashboard .mod-daily-shift-card .mod-shift-note { height: 3.9em; }
-    #martur-operations-dashboard .mod-daily-shift-card .mod-shift-note-text { -webkit-line-clamp: 3; }
+    /* "Leggi tutta la nota": sotto la nota, al centro, ben visibile. Il posto
+       c'e' sempre (invisibile se non serve) cosi' le card restano pari. */
+    #martur-operations-dashboard .mod-note-more {
+      visibility: hidden;
+      justify-self: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border: 1.5px solid var(--gold);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--gold) 12%, transparent);
+      color: var(--gold);
+      font: inherit;
+      font-size: var(--fs-label);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    #martur-operations-dashboard .mod-note-more svg { width: 15px; height: 15px; }
+    #martur-operations-dashboard .mod-note-more.mod-note-more-on { visibility: visible; }
+    #martur-operations-dashboard .mod-capture .mod-note-more { display: none; }
+    #martur-operations-dashboard .mod-note-dialog { max-width: 720px; }
+    #martur-operations-dashboard .mod-note-full {
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 6px 4px 16px;
+      text-align: center;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      text-transform: uppercase;
+      font-size: var(--fs-lead);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    #martur-operations-dashboard .mod-note-dialog .mod-dialog-actions { display: flex; justify-content: center; }
+    #martur-operations-dashboard .mod-note-dialog .mod-dialog-head { justify-content: center; text-align: center; }
+    #martur-operations-dashboard .mod-note-dialog .mod-selection-copy { width: 100%; }
     #martur-operations-dashboard .mod-seq-label-tail {
       display: inline;
     }
@@ -6301,6 +6337,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </div>
   </dialog>
+  <!-- Nota completa di un turno (quando non sta nelle due righe della card). -->
+  <dialog id="mod-note-dialog" class="card mod-selection-dialog mod-note-dialog" aria-labelledby="mod-note-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-note-title" class="mod-dialog-title"></h2>
+        </div>
+      </div>
+      <div id="mod-note-full" class="mod-note-full"></div>
+      <div class="mod-dialog-actions">
+        <button type="button" id="mod-note-close" class="btn btn-primary" data-i18n="close">Chiudi</button>
+      </div>
+    </div>
+  </dialog>
   <dialog id="mod-approve-dialog" class="card mod-selection-dialog" aria-labelledby="mod-approve-title">
     <div class="mod-dialog-shell">
       <div class="mod-dialog-head">
@@ -6561,6 +6611,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <li><b>EDI Stellantis:</b> carica, salva e confronta gli EDI.</li>
             <li><b>Report anomalie:</b> dal QR serve la foto del badge.</li>
             <li><b>Password:</b> cambiala da Impostazioni › Il tuo account.</li>
+            <li><b>Schermo intero:</b> da Impostazioni, utile sul TV.</li>
+            <li><b>Note lunghe:</b> «Leggi tutta la nota» le apre per intero.</li>
           </ul>
           <div class="mod-update-banner-sign">E anche questa volta, sempre Forza Juve!<br>Andrea :)</div>
         </div>
@@ -6572,6 +6624,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             <li><b>EDI Stellantis:</b> upload, save and compare EDIs.</li>
             <li><b>Anomaly reports:</b> QR reports need a badge photo.</li>
             <li><b>Password:</b> change it in Settings › Your account.</li>
+            <li><b>Full screen:</b> from Settings, handy on the TV.</li>
+            <li><b>Long notes:</b> «Read the full note» opens them in full.</li>
           </ul>
           <div class="mod-update-banner-sign">And once again, always Forza Juve!<br>Andrea :)</div>
         </div>
@@ -7289,6 +7343,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Qualità',
           tabEdi: 'EDI',
           tabSummary: 'Attività',
+          noteMore: 'Leggi tutta la nota',
           fullscreenOn: 'Schermo intero',
           fullscreenOff: 'Esci da schermo intero',
           accountTitle: 'Il tuo account',
@@ -7887,6 +7942,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Quality',
           tabEdi: 'EDI',
           tabSummary: 'Activities',
+          noteMore: 'Read the full note',
           fullscreenOn: 'Full screen',
           fullscreenOff: 'Exit full screen',
           accountTitle: 'Your account',
@@ -8485,6 +8541,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Kalite',
           tabEdi: 'EDI',
           tabSummary: 'Faaliyetler',
+          noteMore: 'Notun tamamını oku',
           fullscreenOn: 'Tam ekran',
           fullscreenOff: 'Tam ekrandan çık',
           accountTitle: 'Hesabınız',
@@ -11284,6 +11341,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             ((shift.note || '').trim()
               ? '<div class="mod-shift-note"><span class="mod-shift-note-text">' + escapeHtml(shift.note.trim()) + '</span></div>'
               : '<div class="mod-shift-note mod-shift-note-empty"><span class="mod-shift-note-text">' + escapeHtml(t('noShiftNote')) + '</span></div>') +
+            // Nota piu' lunga di due righe: sotto compare "Leggi tutta la nota"
+            // (lo decide updateNoteMore dopo il disegno). Il posto del tasto c'e'
+            // sempre, cosi' le due card restano alte uguali.
+            '<button type="button" class="mod-note-more" data-note="' + escapeHtml((shift.note || '').trim()) + '" data-title="' +
+              escapeHtml((isSingleShiftRow(row) ? t('uniqueShift') : t(shiftKey)) + ' · ' + formatDateNumeric(row.date)) + '">' +
+              '<i data-lucide="maximize-2" aria-hidden="true"></i><span>' + escapeHtml(t('noteMore')) + '</span></button>' +
           '</article>';
       }
 
@@ -11340,6 +11403,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           '</span>';
       }
 
+      // Mostra "Leggi tutta la nota" solo dove la nota non sta nelle due righe.
+      function updateNoteMore() {
+        el.dailyShiftGrid.querySelectorAll('.mod-daily-shift-card').forEach((card) => {
+          const text = card.querySelector('.mod-shift-note-text');
+          const more = card.querySelector('.mod-note-more');
+          if (!text || !more) return;
+          more.classList.toggle('mod-note-more-on', text.scrollHeight > text.clientHeight + 2);
+        });
+      }
+      window.addEventListener('resize', () => window.requestAnimationFrame(updateNoteMore));
       function renderDailyShiftCards(row) {
         if (isSingleShiftRow(row)) {
           // Turno unico: una sola card centrata (dati nel campo "1° turno").
@@ -11350,6 +11423,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             (hasTime ? ' <span class="mod-shift-time">(' + escapeHtml(shift1.uniqueShiftStart) + ' - ' + escapeHtml(shift1.uniqueShiftEnd) + ')</span>' : '');
           el.dailyShiftGrid.classList.add('mod-single-shift');
           el.dailyShiftGrid.innerHTML = shiftCardHtml(row, 'shift1', 0, titleHtml);
+          window.requestAnimationFrame(updateNoteMore);
           positionKpiTiles(state.view === 'daily');
           return;
         }
@@ -11358,6 +11432,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           return shiftCardHtml(row, shiftKey, index, shiftTitleHtml(shiftKey, index, row.date, true));
         }).join('');
         positionKpiTiles(false);
+        window.requestAnimationFrame(updateNoteMore);
       }
 
       function renderShiftTables(overall, subtitle) {
@@ -16599,6 +16674,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       });
+      // Nota completa di un turno in un riquadro, con il tasto Chiudi.
+      el.dailyShiftGrid.addEventListener('click', (event) => {
+        const more = event.target.closest('.mod-note-more');
+        if (!more || !more.classList.contains('mod-note-more-on')) return;
+        const dlg = root.querySelector('#mod-note-dialog');
+        dlg.querySelector('#mod-note-title').textContent = more.dataset.title || '';
+        dlg.querySelector('#mod-note-full').textContent = more.dataset.note || '';
+        dlg.showModal();
+      });
+      root.querySelector('#mod-note-close').addEventListener('click', () => root.querySelector('#mod-note-dialog').close());
       el.backBtn.addEventListener('click', openSummaryDialog);
       el.closeSummaryDialog.addEventListener('click', () => el.summaryDialog.close());
       el.cancelSummaryDialog.addEventListener('click', () => el.summaryDialog.close());
