@@ -9989,10 +9989,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (isNumber(shift.front) && isNumber(shift.stellantisCars) && shift.front !== shift.stellantisCars) {
             if (shift.front > shift.stellantisCars) { frontCls = 'mod-metric-good'; stellCls = 'mod-metric-bad'; }
             else { frontCls = 'mod-metric-bad'; stellCls = 'mod-metric-good'; }
+          } else if (isNumber(shift.front) && isNumber(shift.stellantisCars)) {
+            frontCls = 'mod-metric-yellow';   // linea anteriore uguale a Stellantis
           }
           let rearCls = '';
           if (isNumber(shift.rear) && isNumber(shift.stellantisCars) && shift.rear !== shift.stellantisCars) {
             rearCls = shift.rear > shift.stellantisCars ? 'mod-metric-good' : 'mod-metric-bad';
+          } else if (isNumber(shift.rear) && isNumber(shift.stellantisCars)) {
+            rearCls = 'mod-metric-yellow';    // linea posteriore uguale a Stellantis
           }
           let reworkCls = '';
           if (isNumber(reworkRate)) {
