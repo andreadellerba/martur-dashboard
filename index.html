@@ -805,18 +805,30 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    badge delle variazioni. Si accende con la classe "martur-officina"
    su <html> (Impostazioni > Stile) e si spegne togliendola. */
 :root.martur-officina {
-  --gold: light-dark(#9c7b3c, #d2b26f);
+  --gold: light-dark(#86672c, #c9a55f);
   --gold-foreground: light-dark(#ffffff, #1b1a17);
-  --background: light-dark(#f6f3ec, #141311);
+  --background: light-dark(#e9e2d3, #0f0e0c);
   --card: light-dark(#ffffff, #1f1d1a);
   --popover: light-dark(#ffffff, #24221e);
-  --border: light-dark(#e4dccb, rgb(255 255 255 / 9%));
+  --border: light-dark(#d5c8ab, rgb(255 255 255 / 11%));
   --muted: light-dark(rgb(120 100 60 / 9%), rgb(255 240 210 / 8%));
   --muted-foreground: light-dark(#6f6656, #b3a994);
-  --off-line: light-dark(#e4dccb, #34302a);
+  --off-line: light-dark(#d5c8ab, #3d382f);
   --off-ink: light-dark(#1b1a17, #f4efe4);
   --font-sans: 'Barlow', -apple-system, system-ui, "Segoe UI", sans-serif;
   --off-num: 'Barlow Semi Condensed', 'Barlow', sans-serif;
+  /* Tutto un po' piu' grande: testi e numeri crescono insieme. */
+  --font-size-base: 15px;
+}
+/* Testi e numeri un filo piu' grandi (+1 px sulla base) anche nella vista
+   compatta e sul telefono, che hanno una base loro. */
+:root.martur-officina #martur-operations-dashboard.mod-compact {
+  --font-size-base: 14px;
+}
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina {
+    --font-size-base: 13.5px;
+  }
 }
 :root.martur-officina,
 :root.martur-officina body {
@@ -834,23 +846,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 }
 /* KPI: il bordo resta largo uguale (2px) ma prende il colore della carta. */
 :root.martur-officina #martur-operations-dashboard .mod-kpi-tile {
+  border-width: 3px;
   border-color: var(--off-line);
   box-shadow: 0 1px 0 var(--off-line);
 }
 :root.martur-officina #martur-operations-dashboard .mod-kpi-tile:hover {
   box-shadow: 0 8px 22px -12px rgb(60 45 15 / 30%);
 }
-/* Delta Martur / Stellantis: la tile scura, come nella proposta. */
-:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 {
-  background: #1b1a17;
-  border-color: #1b1a17;
-}
-:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 > .text-muted:not(.text-small),
-:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 .text-small,
-:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 .viz-stat-value:not(.text-destructive) {
-  color: #f6f3ec;
-}
-:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 .text-destructive { color: #ff8a7a; }
 /* Titoli delle KPI: grigio caldo, un filo piu' pieni (stessa misura). */
 :root.martur-officina #martur-operations-dashboard .mod-kpi-tile > .text-muted:not(.text-small) {
   color: var(--muted-foreground);
@@ -892,6 +894,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 }
 /* Card dei turni: bordo largo uguale (2px), ma color carta invece dell'oro. */
 :root.martur-officina #martur-operations-dashboard .mod-daily-shift-card {
+  border-width: 3px;
   border-color: var(--off-line);
 }
 /* Menu a pillola: tiene il font originale, cosi' resta largo esattamente
