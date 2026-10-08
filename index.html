@@ -3834,7 +3834,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       white-space: nowrap;
     }
     #martur-operations-dashboard .mod-rework-ranking .mod-empty {
-      flex: 1 1 100%;
+      /* Vuota ma grande come una pillola con il dato: stessa altezza del
+         cerchio col numero (34px) e larga quanto il testo. */
+      flex: 0 1 auto;
+      min-height: 45px; /* quanto una pillola con il numero, bordo compreso */
+      padding-left: 14px;
+      padding-right: 14px;
     }
     #martur-operations-dashboard .mod-chart-wrap {
       position: relative;
