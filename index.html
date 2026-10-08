@@ -911,6 +911,21 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   background: var(--card);
   border-color: var(--off-line);
 }
+/* Calendario in alto a destra e tabella anomalie: bianchi come le card. */
+:root.martur-officina #martur-operations-dashboard .mod-datenav {
+  background: var(--card);
+  border-color: var(--off-line);
+}
+:root.martur-officina #martur-operations-dashboard .mod-anomaly-wrap {
+  background: var(--card);
+  border-color: var(--off-line);
+}
+/* "Nessuna scheda anomalia": nera e grande come il testo delle note. */
+:root.martur-officina #martur-operations-dashboard .mod-anomaly-table td.mod-anomaly-empty {
+  color: var(--off-ink);
+  font-size: var(--fs-lead);
+  font-weight: 600;
+}
 /* Menu a pillola e pulsanti: bordi e fondi della stessa carta. */
 :root.martur-officina #martur-operations-dashboard .mod-pillnav {
   background: var(--card);
