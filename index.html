@@ -844,6 +844,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   background: var(--card);
   box-shadow: 0 1px 0 var(--off-line);
 }
+/* Immagine di riepilogo: html2canvas disegna l'ombra a filo come un
+   rettangolo pieno sopra la card. Nell'immagine niente ombre. */
+:root.martur-officina #martur-operations-dashboard .mod-capture .card,
+:root.martur-officina #martur-operations-dashboard .mod-capture .mod-kpi-tile { box-shadow: none; }
 /* KPI: il bordo resta largo uguale (2px) ma prende il colore della carta. */
 :root.martur-officina #martur-operations-dashboard .mod-kpi-tile {
   border-width: 3px;
@@ -13307,6 +13311,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const html = await buildSummaryHtml(date, shiftChoice);
           const wrap = document.createElement('div');
           wrap.setAttribute('aria-hidden', 'true');
+          wrap.classList.add('mod-capture');
           // 720px = quanto e' larga una card turno nel Giornaliero su un
           // monitor normale. Larghezza fissa (non quella della finestra) cosi'
           // l'immagine viene sempre identica, e uguale a quella che si vede a
@@ -13331,6 +13336,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           wrap.style.setProperty('--background', 'rgb(255, 255, 255)');
           wrap.style.setProperty('--card', 'rgba(8, 9, 11, 0.05)');
           wrap.style.setProperty('--destructive', 'rgb(198, 66, 0)');
+          // Stile Officina: html2canvas non capisce light-dark() e dipingeva
+          // le card a strisce. Qui i suoi colori vanno scritti semplici.
+          if (document.documentElement.classList.contains('martur-officina')) {
+            const officina = {
+              '--background': '#e9e2d3', '--card': '#ffffff', '--popover': '#ffffff',
+              '--border': '#d5c8ab', '--off-line': '#d5c8ab', '--gold': '#86672c',
+              '--gold-foreground': '#ffffff', '--muted': 'rgba(120, 100, 60, 0.09)',
+              '--muted-foreground': '#6f6656', '--off-ink': '#1b1a17'
+            };
+            Object.keys(officina).forEach((k) => wrap.style.setProperty(k, officina[k]));
+          }
           wrap.innerHTML = html;
           root.appendChild(wrap);
           if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
