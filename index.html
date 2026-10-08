@@ -6590,6 +6590,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditAnomalyCreate: 'Scheda anomalia creata',
           auditAnomalyUpdate: 'Scheda anomalia modificata',
           auditAnomalyDelete: 'Scheda anomalia eliminata',
+          auditAnomalyApprove: 'Segnalazione QR approvata',
+          auditAnomalyReject: 'Segnalazione QR rifiutata ed eliminata',
+          ediFileField: 'File Excel',
           auditExportAnomaliesPdf: 'PDF anomalie esportato',
           auditExportAnomaliesExcel: 'Excel anomalie esportato',
           auditGroupSettings: 'Impostazioni',
@@ -6643,7 +6646,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDelete: 'Elimina questo EDI',
           ediDeleteConfirm: 'Eliminare «{name}»?',
           auditEdiDelete: 'EDI eliminato',
-          ediSource: 'Excel: {file} · salvato il {when} da {who}',
           ediNoTable: 'Nell’Excel non c’è la tabella per codice materiale (colonne Material, Back, W, Colore, Heat e settimane WK).',
           auditEdiUpload: 'EDI salvato',
           ediReading: 'Lettura dell’Excel…',
@@ -7149,6 +7151,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditAnomalyCreate: 'Anomaly report created',
           auditAnomalyUpdate: 'Anomaly report edited',
           auditAnomalyDelete: 'Anomaly report deleted',
+          auditAnomalyApprove: 'QR report approved',
+          auditAnomalyReject: 'QR report rejected and deleted',
+          ediFileField: 'Excel file',
           auditExportAnomaliesPdf: 'Anomalies PDF exported',
           auditExportAnomaliesExcel: 'Anomalies Excel exported',
           auditGroupSettings: 'Settings',
@@ -7202,7 +7207,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDelete: 'Delete this EDI',
           ediDeleteConfirm: 'Delete «{name}»?',
           auditEdiDelete: 'EDI deleted',
-          ediSource: 'Excel: {file} · saved on {when} by {who}',
           ediNoTable: 'The Excel has no table by material code (columns Material, Back, W, Colore, Heat and WK weeks).',
           auditEdiUpload: 'EDI saved',
           ediReading: 'Reading the Excel…',
@@ -7708,6 +7712,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditAnomalyCreate: 'Anomali kartı oluşturuldu',
           auditAnomalyUpdate: 'Anomali kartı düzenlendi',
           auditAnomalyDelete: 'Anomali kartı silindi',
+          auditAnomalyApprove: 'QR bildirimi onaylandı',
+          auditAnomalyReject: 'QR bildirimi reddedildi ve silindi',
+          ediFileField: 'Excel dosyası',
           auditExportAnomaliesPdf: 'Anomali PDF dışa aktarıldı',
           auditExportAnomaliesExcel: 'Anomali Excel dışa aktarıldı',
           auditGroupSettings: 'Ayarlar',
@@ -7761,7 +7768,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDelete: 'Bu EDI’yi sil',
           ediDeleteConfirm: '«{name}» silinsin mi?',
           auditEdiDelete: 'EDI silindi',
-          ediSource: 'Excel: {file} · {when} tarihinde {who} tarafından kaydedildi',
           ediNoTable: 'Excel dosyasında malzeme koduna göre tablo yok (Material, Back, W, Colore, Heat sütunları ve WK haftaları).',
           auditEdiUpload: 'EDI kaydedildi',
           ediReading: 'Excel okunuyor…',
@@ -12226,7 +12232,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           approval: 'approved',
           approvedBy: state.authUsername || null,
           approvedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => el.approveDialog.close()).catch(() => {
+        }).then(() => {
+          el.approveDialog.close();
+          const item = (state.anomalies || []).find((x) => x.id === id);
+          if (item) logAudit('anomaly.approve', anomalyAuditName(item), anomalyAuditChanges(null, item));
+        }).catch(() => {
           el.approveOk.disabled = false;
           alert(t('reportFormError'));
         });
@@ -12238,7 +12248,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const batch = db.batch();
         batch.delete(db.collection('anomalies').doc(id));
         batch.delete(db.collection('anomalyBadges').doc(id));
-        batch.commit().then(() => el.approveDialog.close()).catch(() => {
+        const gone = (state.anomalies || []).find((x) => x.id === id) || null;
+        batch.commit().then(() => {
+          el.approveDialog.close();
+          if (gone) logAudit('anomaly.reject', anomalyAuditName(gone), anomalyAuditChanges(gone, null));
+        }).catch(() => {
           el.approveReject.disabled = false;
           alert(t('reportFormError'));
         });
@@ -13818,13 +13832,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.ediStatus.textContent = t('ediDraftStatus').replace('{file}', data.fileName || '—');
           return;
         }
-        let when = '';
-        try {
-          when = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-            .format(new Date(data.savedAt));
-        } catch (e) {}
-        el.ediStatus.textContent = t('ediSource').replace('{file}', data.fileName || '—')
-          .replace('{when}', when).replace('{who}', data.savedBy || '—');
+        // File, data e autore del salvataggio non si mostrano: stanno nel
+        // registro modifiche.
+        el.ediStatus.textContent = '';
       }
 
       // Libreria per leggere gli Excel, caricata solo quando serve.
@@ -13925,7 +13935,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediSelectedId = ref.id;
           el.ediSaveBtn.disabled = false;
           renderEdi();
-          logAudit('edi.upload', name);
+          logAudit('edi.upload', name, [{ field: t('ediFileField'), from: null, to: draft.fileName || '—' }]);
         }).catch(() => {
           el.ediSaveBtn.disabled = false;
           alert(t('userCreateError'));
@@ -13938,7 +13948,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         db.collection('ediReports').doc(report.id).delete().then(() => {
           ediSelectedId = '';
           renderEdi();
-          logAudit('edi.delete', report.name);
+          logAudit('edi.delete', report.name, [{ field: t('ediFileField'), from: report.fileName || '—', to: null }]);
         }).catch(() => alert(t('userCreateError')));
       }
       el.ediFile.addEventListener('change', () => {
@@ -14600,7 +14610,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
         'anomaly.create': ['auditAnomalyCreate', 'anomalies'], 'anomaly.update': ['auditAnomalyUpdate', 'anomalies'],
-        'anomaly.delete': ['auditAnomalyDelete', 'anomalies'], 'anomalySettings.update': ['auditAnomalySettings', 'anomalies'],
+        'anomaly.delete': ['auditAnomalyDelete', 'anomalies'], 'anomaly.approve': ['auditAnomalyApprove', 'anomalies'], 'anomaly.reject': ['auditAnomalyReject', 'anomalies'], 'anomalySettings.update': ['auditAnomalySettings', 'anomalies'],
         'export.anomaliesPdf': ['auditExportAnomaliesPdf', 'exports'], 'export.anomaliesExcel': ['auditExportAnomaliesExcel', 'exports']
       };
       const AUDIT_GROUPS = {
