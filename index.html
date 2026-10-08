@@ -4177,8 +4177,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-text-body .form-control { width: 100%; box-sizing: border-box; min-width: 0; }
     #martur-operations-dashboard #mod-text-reset[hidden] { display: none; }
-    #martur-operations-dashboard .mod-user-perms { margin-left: auto; display: inline-flex; flex-wrap: wrap; gap: 4px 14px; }
-    #martur-operations-dashboard .mod-user-approve { margin: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+    /* Una riga per utente: nome, spunte e Revoca sulla stessa linea. Solo
+       su schermi stretti si va a capo. */
+    #martur-operations-dashboard .mod-user-row.mod-cfg-line { flex-wrap: nowrap; gap: 12px; }
+    #martur-operations-dashboard .mod-user-row .mod-cfg-line-name {
+      flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    #martur-operations-dashboard .mod-user-perms { margin-left: auto; display: inline-flex; flex-wrap: nowrap; gap: 14px; flex: none; }
+    #martur-operations-dashboard .mod-user-approve { margin: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
+    #martur-operations-dashboard .mod-user-row .mod-cfg-remove-user { flex: none; white-space: nowrap; padding-inline: 8px; }
+    @media (max-width: 640px) {
+      #martur-operations-dashboard .mod-user-row.mod-cfg-line { flex-wrap: wrap; }
+      #martur-operations-dashboard .mod-user-perms { flex-wrap: wrap; }
+    }
     #martur-operations-dashboard .mod-user-row {
       justify-content: space-between;
     }
@@ -6477,6 +6488,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditRole: 'Ruolo',
           userCanApprove: 'Può approvare segnalazioni QR',
           userCanEditTexts: 'Può modificare i testi',
+          userCanApproveShort: 'Approva QR',
+          userCanEditTextsShort: 'Modifica testi',
           auditUserTexts: 'Permesso modifica testi cambiato',
           auditTextsUpdate: 'Testo modificato',
           textEditMode: 'Modifica testi',
@@ -7012,6 +7025,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditRole: 'Role',
           userCanApprove: 'Can approve QR reports',
           userCanEditTexts: 'Can edit texts',
+          userCanApproveShort: 'Approve QR',
+          userCanEditTextsShort: 'Edit texts',
           auditUserTexts: 'Text editing permission changed',
           auditTextsUpdate: 'Text changed',
           textEditMode: 'Edit texts',
@@ -7547,6 +7562,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditRole: 'Rol',
           userCanApprove: 'QR bildirimlerini onaylayabilir',
           userCanEditTexts: 'Metinleri düzenleyebilir',
+          userCanApproveShort: 'QR onayla',
+          userCanEditTextsShort: 'Metin düzenle',
           auditUserTexts: 'Metin düzenleme izni değiştirildi',
           auditTextsUpdate: 'Metin değiştirildi',
           textEditMode: 'Metinleri düzenle',
@@ -14198,8 +14215,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       // Permessi singoli che l'Amministratore da' a chi vuole, con una spunta.
       const USER_PERMISSIONS = [
-        { field: 'canApprove', label: 'userCanApprove', audit: 'user.approve' },
-        { field: 'canEditTexts', label: 'userCanEditTexts', audit: 'user.texts' }
+        { field: 'canApprove', label: 'userCanApprove', short: 'userCanApproveShort', audit: 'user.approve' },
+        { field: 'canEditTexts', label: 'userCanEditTexts', short: 'userCanEditTextsShort', audit: 'user.texts' }
       ];
       function renderUserAdminList(rows) {
         const roleLabel = (role) => role === 'configAdmin' ? t('roleConfigAdmin') : t('roleAdmin');
@@ -14211,9 +14228,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
                 // servono agli altri.
                 (row.role === 'configAdmin' ? '' :
                   '<span class="mod-user-perms">' + USER_PERMISSIONS.map((p) =>
-                    '<label class="form-check mod-user-approve"><input type="checkbox" class="form-check-input mod-user-perm-input" data-perm="' + p.field +
+                    '<label class="form-check mod-user-approve" title="' + escapeHtml(t(p.label)) + '"><input type="checkbox" class="form-check-input mod-user-perm-input" data-perm="' + p.field +
                       '" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '"' + (row[p.field] ? ' checked' : '') +
-                      '><span class="form-check-label">' + escapeHtml(t(p.label)) + '</span></label>').join('') +
+                      '><span class="form-check-label">' + escapeHtml(t(p.short)) + '</span></label>').join('') +
                   '</span>') +
                 '<button type="button" class="btn btn-ghost mod-cfg-remove-user" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '">' + escapeHtml(t('revokeAccess')) + '</button>' +
               '</div>'
