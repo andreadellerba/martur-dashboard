@@ -2168,6 +2168,72 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-qr-code svg { display: block; width: 100%; height: auto; }
     #martur-operations-dashboard .mod-qr-url { font-size: var(--font-size-small); overflow-wrap: anywhere; text-align: center; }
 
+    /* ---- EDI ----
+       Tabella delle opzioni per settimana: stessa intestazione dorata del
+       report anomalie, tutto centrato, larga quanto lo schermo. */
+    #martur-operations-dashboard .mod-edi-screen {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-edi-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      text-align: center;
+    }
+    #martur-operations-dashboard .mod-edi-upload { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    #martur-operations-dashboard .mod-edi-upload[hidden] { display: none; }
+    #martur-operations-dashboard .mod-edi-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+    #martur-operations-dashboard .mod-edi-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    #martur-operations-dashboard .mod-edi-table th,
+    #martur-operations-dashboard .mod-edi-table td {
+      padding: 11px 12px;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    #martur-operations-dashboard .mod-edi-table tr > :last-child { border-right: 0; }
+    #martur-operations-dashboard .mod-edi-table tr > :first-child { text-align: center; padding-inline: 14px; }
+    #martur-operations-dashboard .mod-edi-table thead th {
+      background: var(--gold);
+      color: light-dark(rgb(255 255 255), rgb(0 0 0));
+      border-color: light-dark(rgb(255 255 255 / 0.3), rgb(0 0 0 / 0.2));
+      font-size: var(--fs-label);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    #martur-operations-dashboard .mod-edi-table tbody th { font-weight: 700; }
+    #martur-operations-dashboard .mod-edi-table tbody tr:nth-child(even) > * { background: color-mix(in srgb, var(--muted) 60%, transparent); }
+    #martur-operations-dashboard .mod-edi-table tbody tr:hover > * { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+    /* Colonna del totale: piu' grande e in evidenza, come nell'Excel. */
+    #martur-operations-dashboard .mod-edi-table td.mod-edi-total {
+      font-size: 1.15em;
+      font-weight: 800;
+      background: color-mix(in srgb, var(--gold) 14%, transparent);
+    }
+    #martur-operations-dashboard .mod-edi-table tfoot > tr > * {
+      font-weight: 800;
+      border-top: 2px solid var(--gold);
+      border-bottom: 0;
+      background: color-mix(in srgb, var(--gold) 10%, transparent);
+    }
     /* ---- Report anomalie ----
        Nella pagina, sotto il sottomenu: titolo e dati del modulo, poi la
        tabella. */
@@ -4974,6 +5040,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="quality" data-drop-target="qualityMonthly" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="monthly">Mensile</span></button>
             </div>
           </span>
+          <button type="button" class="mod-nav-tab mod-view-btn" data-view="edi" aria-pressed="false" data-i18n="ediTab">EDI</button>
           <span class="mod-nav-drop" data-nav-drop="summary">
             <button type="button" class="mod-nav-tab mod-view-btn mod-nav-drop-btn" data-view="summary" aria-pressed="false" aria-haspopup="true" aria-expanded="false">
               <span data-i18n="summaryTab">ATTIVITÀ</span><svg class="mod-nav-drop-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
@@ -4989,6 +5056,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <option value="daily" data-i18n="production">ANTERIORE / POSTERIORE</option>
           <option value="abarth" data-i18n="abarth">Abarth</option>
           <option value="dmc" data-i18n="dmcSection">DMC</option>
+          <option value="edi" data-i18n="ediTab">EDI</option>
           <option value="summary" data-i18n="summaryTab">ATTIVITÀ</option>
         </select>
         <select id="mod-view-subselect" class="mod-view-select mod-view-subselect" aria-label="Sotto-vista" hidden></select>
@@ -5758,6 +5826,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </dialog>
 
+  <!-- EDI: tabella delle opzioni per settimana, caricata da un Excel. -->
+  <section id="mod-edi-screen" class="mod-edi-screen" hidden>
+    <div class="mod-edi-head">
+      <span id="mod-edi-status" class="text-small text-muted"></span>
+      <label id="mod-edi-upload" class="btn btn-primary mod-edi-upload" hidden>
+        <input id="mod-edi-file" type="file" accept=".xlsx,.xls,.csv" hidden>
+        <i data-lucide="file-up" aria-hidden="true"></i><span data-i18n="ediUpload">Carica Excel</span>
+      </label>
+    </div>
+    <div class="mod-edi-wrap">
+      <table id="mod-edi-table" class="mod-edi-table"></table>
+    </div>
+  </section>
+
   <section id="mod-summary-screen" class="mod-summary-screen" hidden>
     <div class="mod-summary-head">
       <span id="mod-anomaly-count" class="mod-summary-count text-small text-muted" hidden></span>
@@ -6500,6 +6582,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditReset: 'Ripristina originale',
           textEditOriginal: 'Originale',
           textEditMany: 'cambia in {n} punti dell’app',
+          ediTab: 'EDI',
+          ediUpload: 'Carica Excel',
+          ediOptions: 'Opzioni',
+          ediTotal: 'Totale %',
+          ediTotalVolume: 'Volume totale',
+          ediSample: 'Dati di esempio: carica l’Excel per vedere quelli reali.',
+          ediReading: 'Lettura dell’Excel…',
+          ediLoaded: 'Excel letto: {file} ({n} righe). Il calcolo verrà collegato appena definito.',
+          ediLoadError: 'Impossibile leggere il file Excel.',
           auditUserApprove: 'Permesso di approvazione modificato',
           auditNoChanges: 'nessun campo cambiato',
           auditLegacyNote: 'Voce registrata prima del registro dettagliato: i campi cambiati non erano stati salvati.',
@@ -7037,6 +7128,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditReset: 'Restore original',
           textEditOriginal: 'Original',
           textEditMany: 'changes {n} places in the app',
+          ediTab: 'EDI',
+          ediUpload: 'Upload Excel',
+          ediOptions: 'Options',
+          ediTotal: 'Total %',
+          ediTotalVolume: 'Total volume',
+          ediSample: 'Sample data: upload the Excel to see the real figures.',
+          ediReading: 'Reading the Excel…',
+          ediLoaded: 'Excel read: {file} ({n} rows). The calculation will be connected once defined.',
+          ediLoadError: 'Unable to read the Excel file.',
           auditUserApprove: 'Approval permission changed',
           auditNoChanges: 'no field changed',
           auditLegacyNote: 'Logged before the detailed log: the changed fields were not saved.',
@@ -7574,6 +7674,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditReset: 'Orijinali geri yükle',
           textEditOriginal: 'Orijinal',
           textEditMany: 'uygulamada {n} yeri değiştirir',
+          ediTab: 'EDI',
+          ediUpload: 'Excel yükle',
+          ediOptions: 'Seçenekler',
+          ediTotal: 'Toplam %',
+          ediTotalVolume: 'Toplam hacim',
+          ediSample: 'Örnek veriler: gerçek veriler için Excel dosyasını yükleyin.',
+          ediReading: 'Excel okunuyor…',
+          ediLoaded: 'Excel okundu: {file} ({n} satır). Hesaplama tanımlanınca bağlanacak.',
+          ediLoadError: 'Excel dosyası okunamadı.',
           auditUserApprove: 'Onay izni değiştirildi',
           auditNoChanges: 'değişen alan yok',
           auditLegacyNote: 'Ayrıntılı kayıttan önce: değişen alanlar kaydedilmemişti.',
@@ -8192,6 +8301,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         updateClose: root.querySelector('#mod-update-close'),
         updateOk: root.querySelector('#mod-update-ok'),
         summaryScreen: root.querySelector('#mod-summary-screen'),
+        ediScreen: root.querySelector('#mod-edi-screen'),
+        ediStatus: root.querySelector('#mod-edi-status'),
+        ediUpload: root.querySelector('#mod-edi-upload'),
+        ediFile: root.querySelector('#mod-edi-file'),
+        ediTable: root.querySelector('#mod-edi-table'),
         summaryBoard: root.querySelector('#mod-summary-board'),
         taskAdd: root.querySelector('#mod-task-add'),
         taskPdf: root.querySelector('#mod-task-pdf'),
@@ -13487,6 +13601,84 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       window.addEventListener('resize', () => { if (!el.chatScreen.hidden) sizeChatMessages(); });
 
+      // ---- EDI ----
+      // Quota di ogni opzione per settimana, piu' il totale del periodo.
+      // Finche' non si carica l'Excel (e non e' definito il calcolo) si vede
+      // l'esempio, segnato come tale.
+      const EDI_SAMPLE = {
+        weeks: ['W 41', 'W 42', 'W 45', 'W 46', 'W 47', 'W 49', 'W 50', 'W 51'],
+        rows: [
+          { label: '6W', values: [41, 40, 39, 35, 37, 23, 28, 33], total: 34 },
+          { label: '4W', values: [59, 60, 61, 65, 63, 77, 72, 67], total: 66 },
+          { label: 'LEATHER', values: [30, 33, 38, 50, 49, 33, 34, 39], total: 38 },
+          { label: 'Fabric', values: [63, 60, 58, 45, 45, 62, 62, 57], total: 56 },
+          { label: 'Abarth', values: [7, 7, 4, 5, 6, 5, 4, 4], total: 5 },
+          { label: '50%', values: [85, 83, 78, 70, 74, 47, 61, 67], total: 71 },
+          { label: '100%', values: [15, 17, 22, 30, 26, 53, 39, 33], total: 29 },
+          { label: 'Heater', values: [57, 57, 59, 67, 72, 45, 56, 65], total: 60 },
+          { label: 'w/o Heater', values: [43, 43, 41, 33, 28, 55, 44, 35], total: 40 }
+        ],
+        volumes: [1967, 1900, 1842, 1851, 1766, 1855, 1128, 1833]
+      };
+      let ediData = null;     // dati calcolati dall'Excel (quando ci sara' il calcolo)
+      let ediFileInfo = null; // ultimo Excel letto: nome e righe
+
+      function renderEdi() {
+        const data = ediData || EDI_SAMPLE;
+        const pct = (v) => isNumber(v) ? escapeHtml(formatNumber(v)) + '%' : '—';
+        el.ediTable.innerHTML =
+          '<thead><tr><th>' + escapeHtml(t('ediOptions')) + '</th>' +
+            data.weeks.map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
+            '<th class="mod-edi-total">' + escapeHtml(t('ediTotal')) + '</th></tr></thead>' +
+          '<tbody>' + data.rows.map((row) =>
+            '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
+              row.values.map((v) => '<td>' + pct(v) + '</td>').join('') +
+              '<td class="mod-edi-total">' + pct(row.total) + '</td></tr>'
+          ).join('') + '</tbody>' +
+          '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
+            data.volumes.map((v) => '<td>' + escapeHtml(formatNumber(v)) + '</td>').join('') +
+            '<td class="mod-edi-total">100%</td></tr></tfoot>';
+        el.ediStatus.textContent = ediFileInfo
+          ? t('ediLoaded').replace('{file}', ediFileInfo.name).replace('{n}', ediFileInfo.rows)
+          : (ediData ? '' : t('ediSample'));
+        el.ediUpload.hidden = !state.isAdmin;
+      }
+
+      // Libreria per leggere gli Excel, caricata solo quando serve.
+      let xlsxLibPromise = null;
+      function loadXlsxLib() {
+        if (globalThis.XLSX) return Promise.resolve(globalThis.XLSX);
+        if (!xlsxLibPromise) {
+          xlsxLibPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+            script.onload = () => globalThis.XLSX ? resolve(globalThis.XLSX) : reject(new Error('xlsx'));
+            script.onerror = () => { xlsxLibPromise = null; reject(new Error('xlsx')); };
+            document.head.appendChild(script);
+          });
+        }
+        return xlsxLibPromise;
+      }
+      // Per ora l'Excel si legge e basta: il calcolo delle percentuali si
+      // aggancia qui appena e' definito.
+      function readEdiExcel(file) {
+        el.ediStatus.textContent = t('ediReading');
+        Promise.all([loadXlsxLib(), file.arrayBuffer()]).then(([XLSX, buffer]) => {
+          const book = XLSX.read(buffer, { type: 'array' });
+          const sheet = book.Sheets[book.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false });
+          ediFileInfo = { name: file.name, rows: rows.length };
+          renderEdi();
+        }).catch(() => {
+          el.ediStatus.textContent = t('ediLoadError');
+        });
+      }
+      el.ediFile.addEventListener('change', () => {
+        const file = el.ediFile.files && el.ediFile.files[0];
+        if (file) readEdiExcel(file);
+        el.ediFile.value = '';
+      });
+
       function renderChat() {
         subscribeChat();
         loadChatUsers();
@@ -14534,8 +14726,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const isChat = state.view === 'chat';
         const isSummary = state.view === 'summary';
         const isTv = state.view === 'tv';
+        const isEdi = state.view === 'edi';
         const isPlaceholder = isAbarth || isDmc;
-        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat && !isSummary && !isTv;
+        const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat && !isSummary && !isTv && !isEdi;
+        el.ediScreen.hidden = !isEdi;
         el.dashboardScreen.hidden = !isDashboard;
         el.attendanceScreen.hidden = !isAttendance;
         el.entryScreen.hidden = !isEntry;
@@ -14571,7 +14765,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const topLevelView = PRODUCTION_VIEWS.indexOf(state.view) >= 0
           ? 'daily'
           : QUALITY_VIEWS.indexOf(state.view) >= 0 ? 'dmc' : state.view;
-        if (el.viewSelect.value !== topLevelView && ['daily', 'abarth', 'dmc', 'summary'].includes(topLevelView)) {
+        if (el.viewSelect.value !== topLevelView && ['daily', 'abarth', 'dmc', 'edi', 'summary'].includes(topLevelView)) {
           el.viewSelect.value = topLevelView;
         }
         updateBackButton();
@@ -14591,6 +14785,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         } else if (state.view === 'attendance') renderAttendanceScreen(rows);
         else if (state.view === 'stoppages') renderStoppages();
         else if (state.view === 'chat') renderChat();
+        else if (state.view === 'edi') renderEdi();
         else if (state.view === 'tv') renderTv();
         else if (state.view === 'abarth' || state.view === 'dmc') {
           subscribeSection(state.selectedDate);
