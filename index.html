@@ -1017,7 +1017,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   /* Intestazione non piu' fissa in alto: sul telefono e' alta e, restando
      attaccata mentre si scorre, copriva l'inizio della pagina. Le sezioni
      restano a portata nella pillola in basso. */
-  :root #martur-operations-dashboard .mod-topbar { position: static; }
+  :root #martur-operations-dashboard .mod-topbar {
+    position: static;
+    /* Spazio sopra il logo: sotto orologio e notch il telefono sfuma i
+       contenuti, e il logo attaccato in cima veniva sfocato. */
+    padding-top: calc(env(safe-area-inset-top, 0px) + 26px);
+  }
   /* Ordine: logo, tasti tondi, calendario, tendina della vista. Il vecchio
      "stadio" del menu si scioglie ("display: contents") cosi' i suoi pezzi
      si mettono in fila con gli altri. */
