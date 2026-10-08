@@ -4717,7 +4717,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-user-perms { margin-left: auto; display: inline-flex; flex-wrap: nowrap; gap: 14px; flex: none; }
     #martur-operations-dashboard .mod-user-approve { margin: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
-    #martur-operations-dashboard .mod-user-row .mod-cfg-remove-user { flex: none; white-space: nowrap; padding-inline: 8px; }
+    #martur-operations-dashboard .mod-user-row :is(.mod-cfg-remove-user, .mod-cfg-reset-pw) { flex: none; width: 36px; height: 36px; padding: 0; display: inline-grid; place-items: center; }
+    #martur-operations-dashboard .mod-user-row .mod-cfg-remove-user { color: var(--destructive); }
+    #martur-operations-dashboard .mod-pw-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; align-items: center; }
+    #martur-operations-dashboard #mod-pw-msg { margin-top: 6px; }
     @media (max-width: 640px) {
       #martur-operations-dashboard .mod-user-row.mod-cfg-line { flex-wrap: wrap; }
       #martur-operations-dashboard .mod-user-perms { flex-wrap: wrap; }
@@ -6617,6 +6620,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </button>
       </div>
       <div class="mod-dialog-scroll">
+        <!-- Il tuo account: ognuno cambia la propria password (serve quella attuale). -->
+        <div id="mod-account" class="mod-stoppage-admin mod-cfg-section-first" hidden>
+          <div class="mod-section-label" data-i18n="accountTitle">Il tuo account</div>
+          <form id="mod-pw-form" class="mod-pw-form" autocomplete="on">
+            <input type="password" id="mod-pw-old" class="form-control" autocomplete="current-password" placeholder="Password attuale" data-i18n-placeholder="pwOld">
+            <input type="password" id="mod-pw-new" class="form-control" autocomplete="new-password" minlength="6" placeholder="Nuova password (min. 6)" data-i18n-placeholder="pwNew">
+            <input type="password" id="mod-pw-new2" class="form-control" autocomplete="new-password" minlength="6" placeholder="Ripeti nuova password" data-i18n-placeholder="pwNew2">
+            <button type="submit" id="mod-pw-btn" class="btn btn-primary" data-i18n="pwChange">Cambia password</button>
+          </form>
+          <div id="mod-pw-msg" class="text-small" role="status" hidden></div>
+        </div>
         <div id="mod-user-admin" class="mod-stoppage-admin mod-cfg-section-first"></div>
         <div id="mod-oee-admin" class="mod-stoppage-admin mod-cfg-section-first">
           <div class="mod-section-label" data-i18n="oeeSettings">OEE — parametri</div>
@@ -7250,6 +7264,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Qualità',
           tabEdi: 'EDI',
           tabSummary: 'Attività',
+          accountTitle: 'Il tuo account',
+          pwOld: 'Password attuale',
+          pwNew: 'Nuova password (min. 6)',
+          pwNew2: 'Ripeti nuova password',
+          pwChange: 'Cambia password',
+          pwChanged: 'Password cambiata.',
+          pwWrong: 'La password attuale non è corretta.',
+          pwMismatch: 'Le due nuove password non coincidono.',
+          pwTooShort: 'La nuova password deve avere almeno 6 caratteri.',
+          pwError: 'Non è stato possibile cambiare la password. Riprova.',
+          pwResetBtn: 'Password',
+          pwResetTitle: 'Reimposta la password di questo utente',
+          pwResetPrompt: 'Nuova password per «{name}» (min. 6 caratteri):',
+          pwResetDone: 'Password di «{name}» reimpostata. Comunicagliela: entrerà con lo stesso nome utente.',
+          pwResetError: 'Non è stato possibile reimpostare la password.',
+          auditPwReset: 'Password reimpostata da amministratore',
+          auditPwSelf: 'Password cambiata dall’utente',
           cases: 'casi',
           dailyTopLosses: 'Le 3 perdite più frequenti del giorno (minuti)',
           noLossReasons: 'Nessun fermo registrato.',
@@ -7829,6 +7860,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Quality',
           tabEdi: 'EDI',
           tabSummary: 'Activities',
+          accountTitle: 'Your account',
+          pwOld: 'Current password',
+          pwNew: 'New password (min. 6)',
+          pwNew2: 'Repeat new password',
+          pwChange: 'Change password',
+          pwChanged: 'Password changed.',
+          pwWrong: 'The current password is not correct.',
+          pwMismatch: 'The two new passwords do not match.',
+          pwTooShort: 'The new password must have at least 6 characters.',
+          pwError: 'The password could not be changed. Please try again.',
+          pwResetBtn: 'Password',
+          pwResetTitle: 'Reset this user’s password',
+          pwResetPrompt: 'New password for «{name}» (min. 6 characters):',
+          pwResetDone: 'Password for «{name}» has been reset. Tell them: they log in with the same username.',
+          pwResetError: 'The password could not be reset.',
+          auditPwReset: 'Password reset by administrator',
+          auditPwSelf: 'Password changed by the user',
           cases: 'cases',
           dailyTopLosses: 'Top 3 losses for the day (minutes)',
           noLossReasons: 'No stoppages recorded.',
@@ -8408,6 +8456,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Kalite',
           tabEdi: 'EDI',
           tabSummary: 'Faaliyetler',
+          accountTitle: 'Hesabınız',
+          pwOld: 'Mevcut şifre',
+          pwNew: 'Yeni şifre (en az 6)',
+          pwNew2: 'Yeni şifreyi tekrarla',
+          pwChange: 'Şifreyi değiştir',
+          pwChanged: 'Şifre değiştirildi.',
+          pwWrong: 'Mevcut şifre yanlış.',
+          pwMismatch: 'İki yeni şifre aynı değil.',
+          pwTooShort: 'Yeni şifre en az 6 karakter olmalı.',
+          pwError: 'Şifre değiştirilemedi. Tekrar deneyin.',
+          pwResetBtn: 'Şifre',
+          pwResetTitle: 'Bu kullanıcının şifresini sıfırla',
+          pwResetPrompt: '«{name}» için yeni şifre (en az 6 karakter):',
+          pwResetDone: '«{name}» şifresi sıfırlandı. Kendisine bildirin: aynı kullanıcı adıyla girecek.',
+          pwResetError: 'Şifre sıfırlanamadı.',
+          auditPwReset: 'Şifre yönetici tarafından sıfırlandı',
+          auditPwSelf: 'Şifre kullanıcı tarafından değiştirildi',
           cases: 'vaka',
           dailyTopLosses: 'Günün en büyük 3 kaybı (dakika)',
           noLossReasons: 'Kayitli duruş yok.',
@@ -8658,6 +8723,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       const auth = firebaseApp ? firebase.auth() : null;
       const db = firebaseApp ? firebase.firestore() : null;
 
+      // Nome utente "pulito", come nell'email interna dell'account.
+      function usernameKey(username) {
+        return String(username || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '');
+      }
       function usernameToEmail(username) {
         return String(username || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '') + AUTH_EMAIL_DOMAIN;
       }
@@ -8823,6 +8892,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
         stoppageAdmin: root.querySelector('#mod-stoppage-admin'),
         userAdmin: root.querySelector('#mod-user-admin'),
+        account: root.querySelector('#mod-account'),
+        pwForm: root.querySelector('#mod-pw-form'),
+        pwOld: root.querySelector('#mod-pw-old'),
+        pwNew: root.querySelector('#mod-pw-new'),
+        pwNew2: root.querySelector('#mod-pw-new2'),
+        pwBtn: root.querySelector('#mod-pw-btn'),
+        pwMsg: root.querySelector('#mod-pw-msg'),
         auditLog: root.querySelector('#mod-audit-log'),
         oeePlanned: root.querySelector('#mod-oee-planned'),
         oeeTarget: root.querySelector('#mod-oee-target'),
@@ -15381,6 +15457,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderUserAdmin() {
+        el.account.hidden = !state.authUser;
+        el.pwMsg.hidden = true;
         if (!state.isConfigAdmin || !db) { el.userAdmin.innerHTML = ''; return; }
         el.userAdmin.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div><div class="text-small text-muted">' + escapeHtml(t('loadingUsers')) + '</div>';
         db.collection('users').orderBy('username').get().then((snap) => {
@@ -15406,6 +15484,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'rework.update': ['auditReworkUpdate', 'settings'],
         'user.create': ['auditUserCreate', 'users'], 'user.revoke': ['auditUserRevoke', 'users'],
         'user.approve': ['auditUserApprove', 'users'], 'user.texts': ['auditUserTexts', 'users'],
+        'user.passwordReset': ['auditPwReset', 'users'], 'user.selfPassword': ['auditPwSelf', 'users'],
         'texts.update': ['auditTextsUpdate', 'settings'], 'edi.upload': ['auditEdiUpload', 'data'], 'edi.delete': ['auditEdiDelete', 'data'], 'edi.rename': ['auditEdiRename', 'data'],
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
@@ -15513,7 +15592,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
                       '" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '"' + (row[p.field] ? ' checked' : '') +
                       '><span class="form-check-label">' + escapeHtml(t(p.short)) + '</span></label>').join('') +
                   '</span>') +
-                '<button type="button" class="btn btn-ghost mod-cfg-remove-user" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '">' + escapeHtml(t('revokeAccess')) + '</button>' +
+                (state.authUser && row.id === state.authUser.uid ? '' :
+                  '<button type="button" class="btn btn-ghost mod-cfg-reset-pw" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '" title="' + escapeHtml(t('pwResetTitle')) + '" aria-label="' + escapeHtml(t('pwResetTitle')) + '"><i data-lucide="key-round" aria-hidden="true"></i></button>') +
+                '<button type="button" class="btn btn-ghost mod-cfg-remove-user" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '" title="' + escapeHtml(t('revokeAccess')) + '" aria-label="' + escapeHtml(t('revokeAccess')) + '"><i data-lucide="user-x" aria-hidden="true"></i></button>' +
               '</div>'
             ).join('')
           : '<div class="text-small text-muted">' + escapeHtml(t('noUsers')) + '</div>';
@@ -15535,6 +15616,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           button.addEventListener('click', () => revokeUserAccess(button.dataset.uid, button.dataset.username));
         });
         el.userAdmin.querySelector('#mod-user-add-btn').addEventListener('click', createUserAccount);
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 18, height: 18 } });
+        el.userAdmin.querySelectorAll('.mod-cfg-reset-pw').forEach((button) => {
+          button.addEventListener('click', () => resetUserPassword(button.dataset.uid, button.dataset.username));
+        });
         el.userAdmin.querySelectorAll('.mod-user-perm-input').forEach((input) => {
           input.addEventListener('change', () => {
             const on = input.checked;
@@ -15550,6 +15635,79 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             });
           });
         });
+      }
+
+      // ---- Password ----
+      // Ognuno cambia la propria: Firebase chiede di confermare quella attuale.
+      function showPwMsg(key, ok) {
+        el.pwMsg.textContent = t(key);
+        el.pwMsg.className = 'text-small ' + (ok ? 'mod-positive' : 'mod-negative');
+        el.pwMsg.hidden = false;
+      }
+      function changeOwnPassword() {
+        const user = auth && auth.currentUser;
+        if (!user) return;
+        const oldPw = el.pwOld.value;
+        const newPw = el.pwNew.value;
+        if (!oldPw || newPw.length < 6) { showPwMsg('pwTooShort', false); return; }
+        if (newPw !== el.pwNew2.value) { showPwMsg('pwMismatch', false); return; }
+        el.pwBtn.disabled = true;
+        const cred = firebase.auth.EmailAuthProvider.credential(user.email, oldPw);
+        user.reauthenticateWithCredential(cred)
+          .then(() => user.updatePassword(newPw))
+          .then(() => {
+            el.pwForm.reset();
+            showPwMsg('pwChanged', true);
+            logAudit('user.selfPassword', state.authUsername || '');
+          })
+          .catch((error) => {
+            const wrong = error && /wrong-password|invalid-credential|invalid-login/.test(error.code || '');
+            showPwMsg(wrong ? 'pwWrong' : 'pwError', false);
+          })
+          .finally(() => { el.pwBtn.disabled = false; });
+      }
+      el.pwForm.addEventListener('submit', (event) => { event.preventDefault(); changeOwnPassword(); });
+
+      // L'Amministratore reimposta la password di un altro senza conoscere la
+      // vecchia. Firebase non permette di cambiarla da qui (servirebbe un
+      // server, a pagamento): si crea un account nuovo con la nuova password,
+      // gli si passano nome, ruolo e permessi, e loginAliases fa entrare quel
+      // nome utente con l'account nuovo. Il vecchio resta senza ruolo.
+      function resetUserPassword(uid, username) {
+        if (!db || !state.isConfigAdmin) return;
+        const pw = window.prompt(t('pwResetPrompt').replace('{name}', username));
+        if (pw === null) return;
+        if (pw.length < 6) { alert(t('pwTooShort')); return; }
+        const key = usernameKey(username);
+        const newEmail = key + '.r' + Date.now().toString(36) + AUTH_EMAIL_DOMAIN;
+        const secondaryApp = firebase.initializeApp(FIREBASE_CONFIG, 'reset-' + Date.now());
+        db.collection('users').doc(uid).get()
+          .then((snap) => {
+            if (!snap.exists) throw new Error('nouser');
+            const data = snap.data();
+            return secondaryApp.auth().createUserWithEmailAndPassword(newEmail, pw).then((cred) => {
+              const batch = db.batch();
+              batch.set(db.collection('users').doc(cred.user.uid), data);
+              batch.delete(db.collection('users').doc(uid));
+              batch.set(db.collection('loginAliases').doc(key), {
+                email: newEmail,
+                updatedAt: new Date().toISOString(),
+                updatedBy: state.authUsername || ''
+              });
+              return batch.commit();
+            });
+          })
+          .then(() => secondaryApp.auth().signOut())
+          .then(() => secondaryApp.delete())
+          .then(() => {
+            alert(t('pwResetDone').replace('{name}', username));
+            logAudit('user.passwordReset', username);
+            renderUserAdmin();
+          })
+          .catch(() => {
+            secondaryApp.delete().catch(() => {});
+            alert(t('pwResetError'));
+          });
       }
 
       function createUserAccount() {
@@ -15572,6 +15730,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const secondaryAuth = secondaryApp.auth();
         secondaryAuth.createUserWithEmailAndPassword(usernameToEmail(username), password)
           .then((cred) => db.collection('users').doc(cred.user.uid).set({ username, role }))
+          // Nome nuovo da zero: nessun vecchio rimando a un altro account.
+          .then(() => db.collection('loginAliases').doc(usernameKey(username)).delete().catch(() => {}))
           .then(() => secondaryAuth.signOut())
           .then(() => secondaryApp.delete())
           .then(() => { renderUserAdmin(); logAudit('user.create', username, [{ field: t('auditRole'), from: null, to: role }]); })
@@ -16206,7 +16366,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const submitBtn = el.adminForm.querySelector('button[type="submit"]');
         el.adminError.hidden = true;
         submitBtn.disabled = true;
-        auth.signInWithEmailAndPassword(usernameToEmail(username), password)
+        // Se un admin ha reimpostato la password, l'utente ha un account nuovo:
+        // loginAliases dice quale email usare per quel nome utente.
+        const fallback = usernameToEmail(username);
+        const findEmail = db
+          ? db.collection('loginAliases').doc(usernameKey(username)).get()
+            .then((doc) => (doc.exists && doc.data().email) || fallback)
+            .catch(() => fallback)
+          : Promise.resolve(fallback);
+        findEmail.then((email) => auth.signInWithEmailAndPassword(email, password))
           .then(() => {
             el.adminPassword.value = '';
             el.adminDialog.close();

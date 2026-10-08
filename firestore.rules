@@ -15,6 +15,15 @@ service cloud.firestore {
       allow write: if isSignedIn() && myRole() == 'configAdmin';
     }
 
+    match /loginAliases/{name} {
+      // Dopo un reset della password fatto dall'Amministratore, quel nome
+      // utente entra con un account nuovo: qui c'e' quale email usare. Si
+      // legge anche prima dell'accesso (serve proprio per entrare); la scrive
+      // solo un Amministratore.
+      allow read: if true;
+      allow write: if isSignedIn() && myRole() == 'configAdmin';
+    }
+
     match /messages/{msgId} {
       allow read: if isSignedIn();
       // Chiunque sia autenticato puo' inviare un messaggio a proprio nome.
