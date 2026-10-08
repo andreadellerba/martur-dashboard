@@ -2186,7 +2186,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-edi-upload { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
     #martur-operations-dashboard .mod-edi-upload[hidden] { display: none; }
-    #martur-operations-dashboard .mod-edi-select { width: auto; min-width: 220px; max-width: 100%; }
+    #martur-operations-dashboard .mod-edi-current { font-size: 1.05em; }
+    #martur-operations-dashboard #mod-edi-menu { max-height: 60vh; overflow-y: auto; }
+    #martur-operations-dashboard #mod-edi-menu .mod-nav-drop-item { white-space: nowrap; }
+    #martur-operations-dashboard .mod-edi-menu-empty { color: var(--muted-foreground); cursor: default; }
+    #martur-operations-dashboard .mod-edi-menu-empty:hover { background: transparent; }
     #martur-operations-dashboard .mod-edi-save {
       display: flex;
       justify-content: center;
@@ -5060,7 +5064,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="quality" data-drop-target="qualityMonthly" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="monthly">Mensile</span></button>
             </div>
           </span>
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="edi" aria-pressed="false" data-i18n="ediTab">EDI</button>
+          <span class="mod-nav-drop" data-nav-drop="edi">
+            <button type="button" class="mod-nav-tab mod-view-btn mod-nav-drop-btn" data-view="edi" aria-pressed="false" aria-haspopup="true" aria-expanded="false">
+              <span data-i18n="ediTab">EDI</span><svg class="mod-nav-drop-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <!-- Voci create dal codice: "Nuovo" e gli EDI salvati. -->
+            <div id="mod-edi-menu" class="mod-nav-drop-menu" role="menu" aria-label="EDI" hidden></div>
+          </span>
           <span class="mod-nav-drop" data-nav-drop="summary">
             <button type="button" class="mod-nav-tab mod-view-btn mod-nav-drop-btn" data-view="summary" aria-pressed="false" aria-haspopup="true" aria-expanded="false">
               <span data-i18n="summaryTab">ATTIVITÀ</span><svg class="mod-nav-drop-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
@@ -5850,7 +5860,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
        Vuote finche' non si carica un file o si sceglie un EDI salvato. -->
   <section id="mod-edi-screen" class="mod-edi-screen" hidden>
     <div class="mod-edi-head">
-      <select id="mod-edi-select" class="form-select mod-edi-select" aria-label="EDI"></select>
+      <strong id="mod-edi-current" class="mod-edi-current"></strong>
       <button type="button" id="mod-edi-delete" class="btn btn-ghost mod-pill-icon" title="Elimina" data-i18n-title="ediDelete" hidden>
         <i data-lucide="trash-2" aria-hidden="true"></i>
       </button>
@@ -6621,8 +6631,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Opzioni',
           ediTotal: 'Totale %',
           ediTotalVolume: 'Volume totale',
-          ediEmpty: 'Carica un Excel o scegli un EDI salvato.',
-          ediEmptyView: 'Scegli un EDI salvato dal menu.',
+          ediEmpty: 'Carica un Excel, oppure scegli un EDI salvato dal menu EDI in alto.',
+          ediNew: 'Nuovo (carica Excel)',
+          ediNoneSaved: 'Nessun EDI salvato',
+          ediEmptyView: 'Scegli un EDI salvato dal menu EDI in alto.',
           ediChoose: 'Scegli un EDI salvato…',
           ediDraftOption: 'Excel caricato (non salvato)',
           ediDraftStatus: 'Excel: {file} · non ancora salvato: scrivi il nome e premi Salva.',
@@ -7178,8 +7190,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Options',
           ediTotal: 'Total %',
           ediTotalVolume: 'Total volume',
-          ediEmpty: 'Upload an Excel or choose a saved EDI.',
-          ediEmptyView: 'Choose a saved EDI from the menu.',
+          ediEmpty: 'Upload an Excel, or choose a saved EDI from the EDI menu at the top.',
+          ediNew: 'New (upload Excel)',
+          ediNoneSaved: 'No saved EDI',
+          ediEmptyView: 'Choose a saved EDI from the EDI menu at the top.',
           ediChoose: 'Choose a saved EDI…',
           ediDraftOption: 'Uploaded Excel (not saved)',
           ediDraftStatus: 'Excel: {file} · not saved yet: enter the name and press Save.',
@@ -7735,8 +7749,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Seçenekler',
           ediTotal: 'Toplam %',
           ediTotalVolume: 'Toplam hacim',
-          ediEmpty: 'Bir Excel yükleyin veya kayıtlı bir EDI seçin.',
-          ediEmptyView: 'Menüden kayıtlı bir EDI seçin.',
+          ediEmpty: 'Bir Excel yükleyin veya üstteki EDI menüsünden kayıtlı bir EDI seçin.',
+          ediNew: 'Yeni (Excel yükle)',
+          ediNoneSaved: 'Kayıtlı EDI yok',
+          ediEmptyView: 'Üstteki EDI menüsünden kayıtlı bir EDI seçin.',
           ediChoose: 'Kayıtlı bir EDI seçin…',
           ediDraftOption: 'Yüklenen Excel (kaydedilmedi)',
           ediDraftStatus: 'Excel: {file} · henüz kaydedilmedi: adı yazıp Kaydet’e basın.',
@@ -8374,7 +8390,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ediFile: root.querySelector('#mod-edi-file'),
         ediTable: root.querySelector('#mod-edi-table'),
         ediQty: root.querySelector('#mod-edi-qty'),
-        ediSelect: root.querySelector('#mod-edi-select'),
+        ediMenu: root.querySelector('#mod-edi-menu'),
+        ediCurrent: root.querySelector('#mod-edi-current'),
         ediDelete: root.querySelector('#mod-edi-delete'),
         ediSave: root.querySelector('#mod-edi-save'),
         ediName: root.querySelector('#mod-edi-name'),
@@ -9846,6 +9863,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
          (Produzione, Qualita', Attivita'). L'etichetta del pulsante resta
          sempre la stessa: la scelta si vede aprendo la tendina. */
       function updateNavDrops() {
+        renderEdiMenu();
         root.querySelectorAll('.mod-nav-drop-item[data-drop-group="production"]').forEach((button) => {
           button.setAttribute('aria-pressed', String(button.dataset.dropTarget === state.productionTab));
         });
@@ -9870,6 +9888,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         } else if (QUALITY_VIEWS.indexOf(state.view) >= 0) {
           options = [['dmc', t('daily')], ['qualityWeekly', t('weekly')], ['qualityMonthly', t('monthly')]];
           value = state.qualityTab;
+        } else if (state.view === 'edi') {
+          options = [['', t(ediDraft ? 'ediDraftOption' : (state.isAdmin ? 'ediNew' : 'ediChoose'))]].concat(ediReports.map((r) => [r.id, r.name]));
+          value = ediDraft ? '' : ediSelectedId;
         } else if (state.view === 'summary') {
           options = [['plan', t('summaryPlanTab')], ['anomalies', t('summaryAnomalyTab')]];
           value = state.summaryTab;
@@ -11412,6 +11433,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             subscribeEntries();
             subscribeTasks();
             subscribeAnomalies();
+            subscribeEdi();
             subscribeOeeConfig();
             subscribeStoppages();
             subscribeStoppageConfig();
@@ -13715,7 +13737,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           list.sort((a, b) => String(b.savedAt || '').localeCompare(String(a.savedAt || '')));
           ediReports = list;
           if (ediSelectedId && !list.some((r) => r.id === ediSelectedId)) ediSelectedId = '';
-          if (state.view === 'edi') renderEdi();
+          if (state.view === 'edi') renderEdi(); else renderEdiMenu();
         }, () => {});
       }
       function unsubscribeEdi() {
@@ -13730,17 +13752,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           data.weeks.map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
           (extra ? '<th class="mod-edi-total">' + escapeHtml(extra) + '</th>' : '') + '</tr></thead>';
       }
+      // Tendina della voce EDI nel menu in alto: "Nuovo" (pagina vuota, per
+      // caricare un Excel) e gli EDI salvati, dal piu' recente.
+      const EDI_CHECK = '<svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
+      function renderEdiMenu() {
+        const current = state.view === 'edi' && !ediDraft ? ediSelectedId : null;
+        const item = (id, label) => '<button type="button" class="mod-nav-drop-item" role="menuitem" data-edi-id="' + escapeHtml(id) +
+          '" aria-pressed="' + String(current === id) + '">' + EDI_CHECK + '<span>' + escapeHtml(label) + '</span></button>';
+        el.ediMenu.innerHTML = (state.isAdmin ? item('', t('ediNew')) : '') +
+          (ediReports.length ? ediReports.map((r) => item(r.id, r.name)).join('')
+            : '<span class="mod-nav-drop-item mod-edi-menu-empty">' + escapeHtml(t('ediNoneSaved')) + '</span>');
+      }
+      function openEdi(id) {
+        ediSelectedId = id || '';
+        ediDraft = null;
+        if (state.view !== 'edi') navigateTo('edi'); else renderEdi();
+      }
+
       function renderEdi() {
         subscribeEdi();
         const admin = state.isAdmin;
         el.ediUpload.hidden = !admin;
-        el.ediSelect.innerHTML = '<option value="">' + escapeHtml(t(ediDraft ? 'ediDraftOption' : 'ediChoose')) + '</option>' +
-          ediReports.map((r) => '<option value="' + escapeHtml(r.id) + '"' + (r.id === ediSelectedId ? ' selected' : '') + '>' +
-            escapeHtml(r.name) + '</option>').join('');
-        el.ediSelect.value = ediDraft ? '' : ediSelectedId;
+        renderEdiMenu();
         el.ediDelete.hidden = !admin || !ediSelectedId || Boolean(ediDraft);
         el.ediSave.hidden = !admin || !ediDraft;
         const data = ediDraft || ediReports.find((r) => r.id === ediSelectedId) || null;
+        el.ediCurrent.textContent = ediDraft ? t('ediDraftOption') : (data ? data.name : '');
         if (!data || !data.weeks || !data.weeks.length) {
           const empty = '<tbody><tr><td class="mod-edi-empty">' + escapeHtml(t(admin ? 'ediEmpty' : 'ediEmptyView')) + '</td></tr></tbody>';
           el.ediQty.innerHTML = empty;
@@ -13909,10 +13946,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (file) readEdiExcel(file);
         el.ediFile.value = '';
       });
-      el.ediSelect.addEventListener('change', () => {
-        ediSelectedId = el.ediSelect.value;
-        ediDraft = null;
-        renderEdi();
+      el.ediMenu.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-edi-id]');
+        if (!button) return;
+        closeNavDrops();
+        openEdi(button.dataset.ediId);
       });
       el.ediSaveBtn.addEventListener('click', saveEdi);
       el.ediName.addEventListener('keydown', (event) => {
@@ -15444,6 +15482,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           const value = el.viewSubselect.value;
           if (PRODUCTION_VIEWS.indexOf(view) >= 0 || QUALITY_VIEWS.indexOf(view) >= 0) {
             navigateTo(value);
+          } else if (view === 'edi') {
+            openEdi(value);
           } else if (view === 'summary' && state.summaryTab !== value) {
             state.summaryTab = value;
             applySummaryTab();
