@@ -2188,6 +2188,35 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-edi-upload[hidden] { display: none; }
     #martur-operations-dashboard .mod-edi-current { font-size: 1.05em; }
     #martur-operations-dashboard .mod-edi-block[hidden] { display: none; }
+    #martur-operations-dashboard .mod-edi-compare-btn { display: inline-flex; align-items: center; gap: 6px; }
+    #martur-operations-dashboard .mod-edi-compare-btn[hidden],
+    #martur-operations-dashboard .mod-edi-compare-select[hidden] { display: none; }
+    #martur-operations-dashboard .mod-edi-compare-btn[aria-pressed="true"] { background: var(--gold); color: var(--gold-foreground); }
+    #martur-operations-dashboard .mod-edi-compare-select { width: auto; max-width: 100%; }
+    /* Confronto: due tabelle affiancate (una sotto l'altra su schermi
+       stretti). Nella seconda, verde = aumentato, rosso = diminuito. */
+    #martur-operations-dashboard .mod-edi-compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      #martur-operations-dashboard .mod-edi-compare-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    #martur-operations-dashboard .mod-edi-panel { display: grid; gap: 6px; min-width: 0; align-content: start; }
+    #martur-operations-dashboard .mod-edi-panel-title { text-align: center; font-weight: 800; }
+    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table { min-width: max-content; font-size: var(--font-size-small); }
+    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table th,
+    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table td { padding: 7px 8px; }
+    /* Stessa altezza di riga nelle due tabelle, anche dove c'e' la differenza. */
+    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table tbody > tr > *,
+    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table tfoot > tr > * { height: 46px; box-sizing: border-box; }
+    #martur-operations-dashboard .mod-edi-table td.mod-edi-up { background: light-dark(rgb(22 163 74 / 0.16), rgb(74 222 128 / 0.18)) !important; }
+    #martur-operations-dashboard .mod-edi-table td.mod-edi-down { background: light-dark(rgb(220 38 38 / 0.14), rgb(248 113 113 / 0.18)) !important; }
+    #martur-operations-dashboard .mod-edi-delta { display: block; font-size: 0.78em; font-weight: 700; line-height: 1.1; }
+    #martur-operations-dashboard .mod-edi-up .mod-edi-delta { color: light-dark(rgb(21 128 61), rgb(74 222 128)); }
+    #martur-operations-dashboard .mod-edi-down .mod-edi-delta { color: light-dark(rgb(185 28 28), rgb(248 113 113)); }
     /* Numeri / %: due pulsanti uniti, quello scelto in oro. */
     #martur-operations-dashboard .mod-edi-mode {
       display: inline-flex;
@@ -5887,6 +5916,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <button type="button" class="mod-edi-mode-btn" data-edi-mode="qty" aria-pressed="true" data-i18n="ediModeQty">Numeri</button>
         <button type="button" class="mod-edi-mode-btn" data-edi-mode="pct" aria-pressed="false">%</button>
       </div>
+      <!-- Confronto: un secondo EDI salvato affiancato a quello aperto. -->
+      <button type="button" id="mod-edi-compare-btn" class="btn btn-ghost mod-edi-compare-btn" aria-pressed="false" hidden>
+        <i data-lucide="git-compare" aria-hidden="true"></i><span data-i18n="ediCompare">Confronta</span>
+      </button>
+      <select id="mod-edi-compare" class="form-select mod-edi-compare-select" aria-label="Confronta con" hidden></select>
+      <button type="button" id="mod-edi-rename" class="btn btn-ghost mod-pill-icon" title="Rinomina" data-i18n-title="ediRename" hidden>
+        <i data-lucide="pencil" aria-hidden="true"></i>
+      </button>
       <button type="button" id="mod-edi-delete" class="btn btn-ghost mod-pill-icon" title="Elimina" data-i18n-title="ediDelete" hidden>
         <i data-lucide="trash-2" aria-hidden="true"></i>
       </button>
@@ -5902,11 +5939,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     <span id="mod-edi-status" class="text-small text-muted mod-edi-status"></span>
     <div class="mod-edi-block" data-edi-block="qty">
       <h3 class="mod-edi-title" data-i18n="ediQtyTitle">Quantità</h3>
-      <div class="mod-edi-wrap"><table id="mod-edi-qty" class="mod-edi-table"></table></div>
+      <div id="mod-edi-qty-box"></div>
     </div>
     <div class="mod-edi-block" data-edi-block="pct" hidden>
       <h3 class="mod-edi-title" data-i18n="ediPctTitle">Percentuali</h3>
-      <div class="mod-edi-wrap"><table id="mod-edi-table" class="mod-edi-table"></table></div>
+      <div id="mod-edi-pct-box"></div>
     </div>
   </section>
 
@@ -6672,6 +6709,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediModeQty: 'Numeri',
           ediPctTitle: 'Percentuali',
           ediDelete: 'Elimina questo EDI',
+          ediRename: 'Rinomina questo EDI',
+          ediRenamePrompt: 'Nuovo nome dell’EDI:',
+          ediNameField: 'Nome',
+          ediCompare: 'Confronta',
+          ediCompareWith: 'con {name}',
+          ediCompareLegend: '{new} rispetto a {old}: verde ▲ aumentato, rosso ▼ diminuito.',
+          auditEdiRename: 'EDI rinominato',
           ediDeleteConfirm: 'Eliminare «{name}»?',
           auditEdiDelete: 'EDI eliminato',
           ediNoTable: 'Nell’Excel non ho trovato una tabella con le settimane (WK41, W 41, Week 41…) e almeno una colonna tra W, Colore, Back, Heat. Controlla il file.',
@@ -7236,6 +7280,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediModeQty: 'Numbers',
           ediPctTitle: 'Percentages',
           ediDelete: 'Delete this EDI',
+          ediRename: 'Rename this EDI',
+          ediRenamePrompt: 'New EDI name:',
+          ediNameField: 'Name',
+          ediCompare: 'Compare',
+          ediCompareWith: 'with {name}',
+          ediCompareLegend: '{new} compared with {old}: green ▲ increased, red ▼ decreased.',
+          auditEdiRename: 'EDI renamed',
           ediDeleteConfirm: 'Delete «{name}»?',
           auditEdiDelete: 'EDI deleted',
           ediNoTable: 'No table found in the Excel with weeks (WK41, W 41, Week 41…) and at least one of the W, Colore, Back, Heat columns. Please check the file.',
@@ -7800,6 +7851,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediModeQty: 'Sayılar',
           ediPctTitle: 'Yüzdeler',
           ediDelete: 'Bu EDI’yi sil',
+          ediRename: 'Bu EDI’yi yeniden adlandır',
+          ediRenamePrompt: 'Yeni EDI adı:',
+          ediNameField: 'Ad',
+          ediCompare: 'Karşılaştır',
+          ediCompareWith: '{name} ile',
+          ediCompareLegend: '{new}, {old} ile karşılaştırıldı: yeşil ▲ arttı, kırmızı ▼ azaldı.',
+          auditEdiRename: 'EDI yeniden adlandırıldı',
           ediDeleteConfirm: '«{name}» silinsin mi?',
           auditEdiDelete: 'EDI silindi',
           ediNoTable: 'Excel dosyasında haftalar (WK41, W 41, Week 41…) ve W, Colore, Back, Heat sütunlarından en az biri olan bir tablo bulunamadı. Dosyayı kontrol edin.',
@@ -8429,8 +8487,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ediStatus: root.querySelector('#mod-edi-status'),
         ediUpload: root.querySelector('#mod-edi-upload'),
         ediFile: root.querySelector('#mod-edi-file'),
-        ediTable: root.querySelector('#mod-edi-table'),
-        ediQty: root.querySelector('#mod-edi-qty'),
+        ediPctBox: root.querySelector('#mod-edi-pct-box'),
+        ediCompareBtn: root.querySelector('#mod-edi-compare-btn'),
+        ediCompareSel: root.querySelector('#mod-edi-compare'),
+        ediRename: root.querySelector('#mod-edi-rename'),
+        ediQtyBox: root.querySelector('#mod-edi-qty-box'),
         ediMenu: root.querySelector('#mod-edi-menu'),
         ediCurrent: root.querySelector('#mod-edi-current'),
         ediDelete: root.querySelector('#mod-edi-delete'),
@@ -13811,7 +13872,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ediUnsub = db.collection('ediReports').onSnapshot((snap) => {
           const list = [];
           snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
-          list.sort((a, b) => String(b.savedAt || '').localeCompare(String(a.savedAt || '')));
+          list.sort((a, b) => ediSortKey(b) - ediSortKey(a) || String(b.savedAt || '').localeCompare(String(a.savedAt || '')));
           ediReports = list;
           if (ediSelectedId && !list.some((r) => r.id === ediSelectedId)) ediSelectedId = '';
           if (state.view === 'edi') renderEdi(); else renderEdiMenu();
@@ -13861,53 +13922,145 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         });
       });
 
+      // Valori di una tabella (Numeri o %), riga per riga, pronti da disegnare
+      // e da confrontare con un altro EDI.
+      function ediMatrix(data, mode) {
+        const lines = ediRowsOf(data).slice().sort((a, b) => ediRowOrder(a.group, a.code) - ediRowOrder(b.group, b.code));
+        const total = ediTotalOf(data);
+        const n = data.weeks.length;
+        const sum = (arr) => (arr || []).reduce((s, v) => s + (Number(v) || 0), 0);
+        const rows = lines.map((row) => {
+          const cells = mode === 'pct'
+            ? data.weeks.map((w, i) => ediPct(lines, row, total, i))
+            : row.values.map((v) => Number(v) || 0);
+          // Totale: somma nei Numeri, media delle settimane nelle %.
+          const tot = mode === 'pct'
+            ? cells.reduce((s, v) => s + (Number.isFinite(v) ? v : 0), 0) / n
+            : sum(row.values);
+          return { key: row.group + ':' + row.code, label: ediRowLabel(row.group, row.code), cells, total: tot };
+        });
+        return { weeks: data.weeks, rows, foot: total.map((v) => Number(v) || 0), footTotal: sum(total) };
+      }
+
+      // Tabella HTML. Con "base" ogni cella si confronta con la stessa riga e
+      // la stessa settimana dell'altro EDI: verde se e' aumentata, rossa se e'
+      // diminuita, con la differenza sotto.
+      function ediTableHtml(data, mode, base) {
+        const m = ediMatrix(data, mode);
+        const b = base ? ediMatrix(base, mode) : null;
+        const pctMode = mode === 'pct';
+        const fmt = (v, isPct) => !Number.isFinite(v) ? '—'
+          : escapeHtml(formatNumber(Math.round(v))) + (isPct ? '%' : '');
+        const cell = (v, old, isPct, extraCls) => {
+          let cls = extraCls || '';
+          let delta = '';
+          if (b && Number.isFinite(v) && Number.isFinite(old)) {
+            const d = Math.round(v) - Math.round(old);
+            if (d) {
+              cls += (cls ? ' ' : '') + (d > 0 ? 'mod-edi-up' : 'mod-edi-down');
+              delta = '<span class="mod-edi-delta">' + (d > 0 ? '▲ +' : '▼ −') + escapeHtml(formatNumber(Math.abs(d))) + (isPct ? ' pt' : '') + '</span>';
+            }
+          }
+          return '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + fmt(v, isPct) + delta + '</td>';
+        };
+        const oldOf = (key, week) => {
+          if (!b) return NaN;
+          const row = b.rows.find((r) => r.key === key);
+          const i = b.weeks.indexOf(week);
+          return row && i >= 0 ? row.cells[i] : NaN;
+        };
+        const oldFoot = (week) => {
+          if (!b) return NaN;
+          const i = b.weeks.indexOf(week);
+          return i >= 0 ? b.foot[i] : NaN;
+        };
+        return '<div class="mod-edi-wrap"><table class="mod-edi-table">' +
+          ediWeekHead(data, t(pctMode ? 'ediTotal' : 'ediTotalQty')) +
+          '<tbody>' + m.rows.map((row) =>
+            '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
+              row.cells.map((v, i) => cell(v, oldOf(row.key, m.weeks[i]), pctMode)).join('') +
+              // Il totale copre settimane diverse da EDI a EDI: non si confronta.
+              '<td class="mod-edi-total">' + fmt(row.total, pctMode) + '</td></tr>'
+          ).join('') + '</tbody>' +
+          '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
+            m.foot.map((v, i) => cell(v, oldFoot(m.weeks[i]), false)).join('') +
+            '<td class="mod-edi-total">' + (pctMode ? '100%' : fmt(m.footTotal, false)) + '</td></tr></tfoot>' +
+          '</table></div>';
+      }
+
+      // Ordine della tendina: settimana EDI piu' recente in alto (41, 40,
+      // 39...). La settimana e' la prima del file; l'anno viene dalla data di
+      // salvataggio (un EDI di fine anno salvato a gennaio resta nel suo anno).
+      function ediSortKey(r) {
+        const m = /(\d+)/.exec(String((r.weeks || [])[0] || ''));
+        const week = m ? Number(m[1]) : 0;
+        const d = new Date(r.savedAt || 0);
+        let year = d.getFullYear() || 0;
+        if (d.getMonth() <= 1 && week >= 45) year -= 1;
+        return year * 100 + week;
+      }
+
+      let ediCompareOn = false;
+      let ediCompareId = '';
+
       function renderEdi() {
         subscribeEdi();
         applyEdiMode();
         const admin = state.isAdmin;
         el.ediUpload.hidden = !admin;
         renderEdiMenu();
-        el.ediDelete.hidden = !admin || !ediSelectedId || Boolean(ediDraft);
+        const saved = !ediDraft && ediReports.find((r) => r.id === ediSelectedId) || null;
+        el.ediDelete.hidden = !admin || !saved;
+        el.ediRename.hidden = !admin || !saved;
         el.ediSave.hidden = !admin || !ediDraft;
-        const data = ediDraft || ediReports.find((r) => r.id === ediSelectedId) || null;
+        const data = ediDraft || saved;
         el.ediCurrent.textContent = ediDraft ? t('ediDraftOption') : (data ? data.name : '');
+
+        // Confronto: solo fra EDI salvati, e serve almeno un altro EDI.
+        const others = saved ? ediReports.filter((r) => r.id !== saved.id) : [];
+        el.ediCompareBtn.hidden = !saved || !others.length;
+        if (!saved || !others.length) ediCompareOn = false;
+        el.ediCompareBtn.setAttribute('aria-pressed', String(ediCompareOn));
+        el.ediCompareSel.hidden = !ediCompareOn;
+        if (ediCompareOn) {
+          if (!others.some((r) => r.id === ediCompareId)) {
+            // Di partenza l'EDI precedente a quello aperto, se c'e'.
+            const older = others.find((r) => ediSortKey(r) < ediSortKey(saved));
+            ediCompareId = (older || others[0]).id;
+          }
+          el.ediCompareSel.innerHTML = others.map((r) => '<option value="' + escapeHtml(r.id) + '"' +
+            (r.id === ediCompareId ? ' selected' : '') + '>' + escapeHtml(t('ediCompareWith').replace('{name}', r.name)) + '</option>').join('');
+          el.ediCompareSel.value = ediCompareId;
+        }
+        const other = ediCompareOn ? others.find((r) => r.id === ediCompareId) || null : null;
+
         if (!data || !data.weeks || !data.weeks.length) {
-          const empty = '<tbody><tr><td class="mod-edi-empty">' + escapeHtml(t(admin ? 'ediEmpty' : 'ediEmptyView')) + '</td></tr></tbody>';
-          el.ediQty.innerHTML = empty;
-          el.ediTable.innerHTML = empty;
+          const empty = '<div class="mod-edi-wrap"><table class="mod-edi-table"><tbody><tr><td class="mod-edi-empty">' +
+            escapeHtml(t(admin ? 'ediEmpty' : 'ediEmptyView')) + '</td></tr></tbody></table></div>';
+          el.ediQtyBox.innerHTML = empty;
+          el.ediPctBox.innerHTML = empty;
           el.ediStatus.textContent = '';
           el.ediStatus.classList.remove('mod-negative');
           return;
         }
-        const lines = ediRowsOf(data).slice().sort((a, b) => ediRowOrder(a.group, a.code) - ediRowOrder(b.group, b.code));
-        const total = ediTotalOf(data);
-        const n = data.weeks.length;
-        const num = (v) => escapeHtml(formatNumber(Number(v) || 0));
-        const pct = (v) => Number.isFinite(v) ? escapeHtml(formatNumber(Math.round(v))) + '%' : '—';
-        const sum = (arr) => (arr || []).reduce((s, v) => s + (Number(v) || 0), 0);
 
-        el.ediQty.innerHTML = ediWeekHead(data, t('ediTotalQty')) +
-          '<tbody>' + lines.map((row) =>
-            '<tr><th scope="row">' + escapeHtml(ediRowLabel(row.group, row.code)) + '</th>' +
-              row.values.map((v) => '<td>' + num(v) + '</td>').join('') +
-              '<td class="mod-edi-total">' + num(sum(row.values)) + '</td></tr>'
-          ).join('') + '</tbody>' +
-          '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
-            total.map((v) => '<td>' + num(v) + '</td>').join('') +
-            '<td class="mod-edi-total">' + num(sum(total)) + '</td></tr></tfoot>';
+        if (other) {
+          // A sinistra il piu' vecchio, a destra il piu' recente con i
+          // cambiamenti rispetto al primo.
+          const pair = ediSortKey(other) <= ediSortKey(saved) ? [other, saved] : [saved, other];
+          const panel = (d, mode, base) => '<div class="mod-edi-panel"><div class="mod-edi-panel-title">' + escapeHtml(d.name) +
+            '</div>' + ediTableHtml(d, mode, base) + '</div>';
+          ['qty', 'pct'].forEach((mode) => {
+            (mode === 'qty' ? el.ediQtyBox : el.ediPctBox).innerHTML = '<div class="mod-edi-compare-grid">' +
+              panel(pair[0], mode, null) + panel(pair[1], mode, pair[0]) + '</div>';
+          });
+          el.ediStatus.textContent = t('ediCompareLegend').replace('{new}', pair[1].name).replace('{old}', pair[0].name);
+          el.ediStatus.classList.remove('mod-negative');
+          return;
+        }
 
-        el.ediTable.innerHTML = ediWeekHead(data, t('ediTotal')) +
-          '<tbody>' + lines.map((row) => {
-            const values = data.weeks.map((w, i) => ediPct(lines, row, total, i));
-            // Totale: media delle settimane, come nell'Excel.
-            const avg = values.reduce((s, v) => s + (Number.isFinite(v) ? v : 0), 0) / n;
-            return '<tr><th scope="row">' + escapeHtml(ediRowLabel(row.group, row.code)) + '</th>' +
-              values.map((v) => '<td>' + pct(v) + '</td>').join('') +
-              '<td class="mod-edi-total">' + pct(avg) + '</td></tr>';
-          }).join('') + '</tbody>' +
-          '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
-            total.map((v) => '<td>' + num(v) + '</td>').join('') +
-            '<td class="mod-edi-total">100%</td></tr></tfoot>';
+        el.ediQtyBox.innerHTML = ediTableHtml(data, 'qty', null);
+        el.ediPctBox.innerHTML = ediTableHtml(data, 'pct', null);
 
         if (ediDraft) {
           const missing = (data.missing || []).map((g) => ({ W: '6W/4W', COLORE: 'Colore', BACK: 'Back 50/100', HEAT: 'Heater' })[g]);
@@ -13921,6 +14074,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.ediStatus.textContent = '';
         el.ediStatus.classList.remove('mod-negative');
       }
+
+      function renameEdi() {
+        const report = ediReports.find((r) => r.id === ediSelectedId);
+        if (!report || !db || !state.isAdmin) return;
+        const name = (window.prompt(t('ediRenamePrompt'), report.name) || '').trim().slice(0, 60);
+        if (!name || name === report.name) return;
+        db.collection('ediReports').doc(report.id).update({ name }).then(() => {
+          logAudit('edi.rename', name, [{ field: t('ediNameField'), from: report.name, to: name }]);
+        }).catch(() => alert(t('userCreateError')));
+      }
+      el.ediRename.addEventListener('click', renameEdi);
+      el.ediCompareBtn.addEventListener('click', () => {
+        ediCompareOn = !ediCompareOn;
+        renderEdi();
+      });
+      el.ediCompareSel.addEventListener('change', () => {
+        ediCompareId = el.ediCompareSel.value;
+        renderEdi();
+      });
 
       // Libreria per leggere gli Excel, caricata solo quando serve.
       let xlsxLibPromise = null;
@@ -14070,9 +14242,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (!parsed) { el.ediStatus.textContent = t('ediNoTable'); return; }
           ediDraft = Object.assign(parsed, { fileName: file.name });
           ediSelectedId = '';
-          el.ediName.value = 'EDI ' + formatDateNumeric(isoDate(new Date()));
+          // Nome suggerito: "EDI WEEK ", il numero lo scrive chi salva.
+          el.ediName.value = 'EDI WEEK ';
           renderEdi();
           el.ediName.focus();
+          el.ediName.setSelectionRange(el.ediName.value.length, el.ediName.value.length);
         }).catch(() => {
           el.ediStatus.textContent = t('ediLoadError');
         });
@@ -14768,7 +14942,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'rework.update': ['auditReworkUpdate', 'settings'],
         'user.create': ['auditUserCreate', 'users'], 'user.revoke': ['auditUserRevoke', 'users'],
         'user.approve': ['auditUserApprove', 'users'], 'user.texts': ['auditUserTexts', 'users'],
-        'texts.update': ['auditTextsUpdate', 'settings'], 'edi.upload': ['auditEdiUpload', 'data'], 'edi.delete': ['auditEdiDelete', 'data'],
+        'texts.update': ['auditTextsUpdate', 'settings'], 'edi.upload': ['auditEdiUpload', 'data'], 'edi.delete': ['auditEdiDelete', 'data'], 'edi.rename': ['auditEdiRename', 'data'],
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
         'anomaly.create': ['auditAnomalyCreate', 'anomalies'], 'anomaly.update': ['auditAnomalyUpdate', 'anomalies'],
