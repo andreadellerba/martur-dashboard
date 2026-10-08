@@ -16,6 +16,8 @@
   try {
     var saved = window.localStorage.getItem('martur-dashboard-theme');
     document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+    // Stile grafico: Officina salvo scelta diversa (Impostazioni > Stile).
+    if (window.localStorage.getItem('martur-dashboard-style') !== 'classic') document.documentElement.classList.add('martur-officina');
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'light');
   }
@@ -792,6 +794,122 @@ svg {
 }
 
 html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@500;600;700;800&amp;display=swap">
+<style>
+/* ---- Stile grafico "Officina" ----
+   Solo un vestito sopra lo stile classico: stessi posti, stesse misure.
+   Cambiano colori (fondo caldo, card bianche, oro piu' profondo), font
+   (Barlow per i testi, Barlow Semi Condensed per i numeri), bordi e
+   badge delle variazioni. Si accende con la classe "martur-officina"
+   su <html> (Impostazioni > Stile) e si spegne togliendola. */
+:root.martur-officina {
+  --gold: light-dark(#9c7b3c, #d2b26f);
+  --gold-foreground: light-dark(#ffffff, #1b1a17);
+  --background: light-dark(#f6f3ec, #141311);
+  --card: light-dark(#ffffff, #1f1d1a);
+  --popover: light-dark(#ffffff, #24221e);
+  --border: light-dark(#e4dccb, rgb(255 255 255 / 9%));
+  --muted: light-dark(rgb(120 100 60 / 9%), rgb(255 240 210 / 8%));
+  --muted-foreground: light-dark(#6f6656, #b3a994);
+  --off-line: light-dark(#e4dccb, #34302a);
+  --off-ink: light-dark(#1b1a17, #f4efe4);
+  --font-sans: 'Barlow', -apple-system, system-ui, "Segoe UI", sans-serif;
+  --off-num: 'Barlow Semi Condensed', 'Barlow', sans-serif;
+}
+:root.martur-officina,
+:root.martur-officina body {
+  background: var(--background);
+}
+:root.martur-officina #martur-operations-dashboard,
+:root.martur-officina dialog {
+  font-family: var(--font-sans);
+  color: var(--off-ink);
+}
+/* Card: bianche, senza bordo spesso, ombra a filo. */
+:root.martur-officina #martur-operations-dashboard .card {
+  background: var(--card);
+  box-shadow: 0 1px 0 var(--off-line);
+}
+/* KPI: il bordo resta largo uguale (2px) ma prende il colore della carta. */
+:root.martur-officina #martur-operations-dashboard .mod-kpi-tile {
+  border-color: var(--off-line);
+  box-shadow: 0 1px 0 var(--off-line);
+}
+:root.martur-officina #martur-operations-dashboard .mod-kpi-tile:hover {
+  box-shadow: 0 8px 22px -12px rgb(60 45 15 / 30%);
+}
+/* Delta Martur / Stellantis: la tile scura, come nella proposta. */
+:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 {
+  background: #1b1a17;
+  border-color: #1b1a17;
+}
+:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 > .text-muted:not(.text-small),
+:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 .text-small,
+:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 .viz-stat-value:not(.text-destructive) {
+  color: #f6f3ec;
+}
+:root.martur-officina[data-theme="light"] #martur-operations-dashboard .mod-kpi-tile-4 .text-destructive { color: #ff8a7a; }
+/* Titoli delle KPI: grigio caldo, un filo piu' pieni (stessa misura). */
+:root.martur-officina #martur-operations-dashboard .mod-kpi-tile > .text-muted:not(.text-small) {
+  color: var(--muted-foreground);
+  font-weight: 700;
+}
+/* Numeri: tutti in Barlow Semi Condensed, piu' pieni. */
+:root.martur-officina #martur-operations-dashboard .viz-stat-value,
+:root.martur-officina #martur-operations-dashboard .mod-shift-metric strong,
+:root.martur-officina #martur-operations-dashboard .mod-edi-table td,
+:root.martur-officina #martur-operations-dashboard .mod-edi-table tfoot th,
+:root.martur-officina #martur-operations-dashboard .mod-kpi-trend {
+  font-family: var(--off-num);
+  font-variant-numeric: tabular-nums;
+}
+:root.martur-officina #martur-operations-dashboard .viz-stat-value,
+:root.martur-officina #martur-operations-dashboard .mod-shift-metric strong {
+  font-weight: 700;
+}
+/* Variazioni: badge a pillola colorata invece del solo testo. */
+:root.martur-officina #martur-operations-dashboard .mod-kpi-trend {
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+:root.martur-officina #martur-operations-dashboard .mod-kpi-trend.mod-trend-up {
+  color: light-dark(#1d6b3a, #7fe0a4);
+  background: light-dark(#e3f4e9, rgb(74 222 128 / 14%));
+}
+:root.martur-officina #martur-operations-dashboard .mod-kpi-trend.mod-trend-down {
+  color: light-dark(#b42318, #ff9a8c);
+  background: light-dark(#fde8e6, rgb(255 99 99 / 14%));
+}
+:root.martur-officina #martur-operations-dashboard .mod-kpi-trend.mod-trend-flat {
+  background: var(--muted);
+}
+/* Etichette dei turni: grigio caldo invece del nero pieno. */
+:root.martur-officina #martur-operations-dashboard .mod-shift-metric .text-small {
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+/* Card dei turni: bordo largo uguale (2px), ma color carta invece dell'oro. */
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card {
+  border-color: var(--off-line);
+}
+/* Menu a pillola: tiene il font originale, cosi' resta largo esattamente
+   come nello stile classico (Barlow e' piu' stretto e lo accorciava). */
+:root.martur-officina #martur-operations-dashboard .mod-pillnav {
+  font-family: -apple-system, system-ui, "Segoe UI", sans-serif;
+}
+/* Menu a pillola e pulsanti: bordi e fondi della stessa carta. */
+:root.martur-officina #martur-operations-dashboard .mod-pillnav {
+  background: var(--card);
+  border-color: var(--off-line);
+}
+:root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab[aria-pressed="true"],
+:root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab-icon[aria-pressed="true"] {
+  color: var(--gold-foreground);
+  background: var(--gold);
+}
+</style>
 </head>
 <body>
 <div id="martur-operations-dashboard" class="mod-locked">
@@ -1077,6 +1195,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       color: var(--primary);
       background: var(--accent);
     }
+    #martur-operations-dashboard .mod-style-choice { padding: 6px 12px; font-weight: 600; }
+    #martur-operations-dashboard .mod-style-choice[aria-pressed="true"] { color: var(--gold-foreground); background: var(--gold); }
     #martur-operations-dashboard .mod-brand-link {
       border: 0;
       background: none;
@@ -5172,6 +5292,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </div>
       </div>
       <div class="mod-app-menu-sec">
+        <span class="mod-app-menu-label" data-i18n="styleLabel">Stile</span>
+        <div class="mod-app-menu-choices">
+          <button type="button" class="btn btn-ghost mod-style-choice" data-style="classic" aria-pressed="false" data-i18n="styleClassic">Classico</button>
+          <button type="button" class="btn btn-ghost mod-style-choice" data-style="officina" aria-pressed="true" data-i18n="styleOfficina">Officina</button>
+        </div>
+      </div>
+      <div class="mod-app-menu-sec">
         <span class="mod-app-menu-label" data-i18n="language">Lingua</span>
         <button type="button" class="btn btn-ghost mod-lang-btn" id="mod-lang-btn" title="Lingua">🇮🇹</button>
       </div>
@@ -6738,6 +6865,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           settings: 'Impostazioni',
           theme: 'Tema',
           density: 'Spaziatura',
+          styleLabel: 'Stile',
+          styleClassic: 'Classico',
+          styleOfficina: 'Officina',
           densityComfort: 'Normale',
           densityCompact: 'Compatta',
           language: 'Lingua',
@@ -7308,6 +7438,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           settings: 'Settings',
           theme: 'Theme',
           density: 'Spacing',
+          styleLabel: 'Style',
+          styleClassic: 'Classic',
+          styleOfficina: 'Workshop',
           densityComfort: 'Normal',
           densityCompact: 'Compact',
           language: 'Language',
@@ -7878,6 +8011,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           settings: 'Ayarlar',
           theme: 'Tema',
           density: 'Aralık',
+          styleLabel: 'Stil',
+          styleClassic: 'Klasik',
+          styleOfficina: 'Atölye',
           densityComfort: 'Normal',
           densityCompact: 'Kompakt',
           language: 'Dil',
@@ -15446,6 +15582,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         button.addEventListener('click', () => applyDensity(button.dataset.density));
       });
       applyDensity(state.density);
+      // Stile grafico (Impostazioni > Stile): Classico o Officina. Cambia
+      // solo l'aspetto; la scelta resta su questo dispositivo.
+      function applyStyle(style) {
+        const officina = style !== 'classic';
+        document.documentElement.classList.toggle('martur-officina', officina);
+        root.querySelectorAll('.mod-style-choice').forEach((button) => {
+          button.setAttribute('aria-pressed', String((button.dataset.style === 'officina') === officina));
+        });
+        try { window.localStorage.setItem('martur-dashboard-style', officina ? 'officina' : 'classic'); } catch (e) {}
+      }
+      root.querySelectorAll('.mod-style-choice').forEach((button) => {
+        button.addEventListener('click', () => { applyStyle(button.dataset.style); renderAll(); });
+      });
+      applyStyle(document.documentElement.classList.contains('martur-officina') ? 'officina' : 'classic');
       // ---- Modifica testi ----
       // Chi ha il permesso accende la modalita' dal menu: passando sopra un
       // testo questo si evidenzia, toccandolo si cambia. Il testo nuovo va su
