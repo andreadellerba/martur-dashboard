@@ -2053,25 +2053,38 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: none !important;
     }
     #martur-operations-dashboard .mod-report-screen {
+      grid-template-columns: minmax(0, 1fr);
+      padding-inline: clamp(10px, 4vw, 24px);
+      box-sizing: border-box;
+      max-width: 100vw;
       display: grid;
       place-items: start center;
       padding-block: 24px;
     }
     #martur-operations-dashboard .mod-report-card {
       width: min(560px, 100%);
+      min-width: 0;
+      box-sizing: border-box;
+      justify-self: center;
       display: grid;
       gap: 20px;
-      padding: 24px 22px;
+      padding: clamp(16px, 5vw, 24px) clamp(12px, 4.5vw, 22px);
       border: 1px solid var(--gold);
       border-radius: var(--radius);
       background: var(--card);
     }
     #martur-operations-dashboard .mod-report-logo {
+      max-width: 100%;
+      object-fit: contain;
       height: 34px;
       width: auto;
       justify-self: center;
     }
-    #martur-operations-dashboard .mod-report-form { display: grid; gap: 14px; }
+    #martur-operations-dashboard .mod-report-form { display: grid; gap: 14px; min-width: 0; }
+    /* ogni campo si adatta alla larghezza del telefono, date comprese */
+    #martur-operations-dashboard .mod-report-form .mod-field, #martur-operations-dashboard .mod-report-form .form-control, #martur-operations-dashboard .mod-report-row > * { min-width: 0; max-width: 100%; box-sizing: border-box; }
+    #martur-operations-dashboard .mod-report-form .form-control { width: 100%; }
+    #martur-operations-dashboard .mod-report-form input[type="date"] { -webkit-appearance: none; appearance: none; text-align: left; }
     #martur-operations-dashboard .mod-report-form .mod-field { display: grid; gap: 5px; font-weight: 600; }
     #martur-operations-dashboard .mod-report-form .form-control { font-size: 16px; min-height: 44px; }
     #martur-operations-dashboard .mod-report-titles { display: grid; gap: 4px; text-align: center; }
@@ -2092,6 +2105,35 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       background: var(--gold);
       border-color: var(--gold);
       color: var(--gold-foreground);
+    }
+    /* Foto del badge nel modulo QR: primo passo obbligatorio */
+    #martur-operations-dashboard .mod-report-badge {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      text-align: center;
+      padding: 14px;
+      border: 1px dashed var(--gold);
+      border-radius: 12px;
+      min-width: 0;
+    }
+    #martur-operations-dashboard .mod-report-badge-label { font-weight: 800; text-transform: uppercase; }
+    #martur-operations-dashboard .mod-report-badge-preview { max-width: 100%; max-height: 220px; border-radius: 10px; object-fit: contain; }
+    #martur-operations-dashboard .mod-report-badge-btn { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; cursor: pointer; }
+    #martur-operations-dashboard .mod-report-fields { display: grid; gap: 14px; min-width: 0; }
+    #martur-operations-dashboard .mod-report-fields[hidden] { display: none !important; }
+    /* Verifica delle schede dal QR (admin) */
+    #martur-operations-dashboard .mod-approve-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 4px 0 8px; }
+    #martur-operations-dashboard .mod-approve-photo { display: grid; place-items: center; min-height: 160px; border-radius: 10px; background: light-dark(rgb(240 240 240), rgb(20 20 20)); overflow: hidden; }
+    #martur-operations-dashboard .mod-approve-photo img { width: 100%; max-height: 380px; object-fit: contain; }
+    #martur-operations-dashboard .mod-approve-info { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 0; align-content: start; }
+    #martur-operations-dashboard .mod-approve-info dt { font-weight: 700; color: var(--muted-foreground); }
+    #martur-operations-dashboard .mod-approve-info dd { margin: 0; overflow-wrap: anywhere; }
+    #martur-operations-dashboard .mod-approve-reject { margin-right: auto; color: light-dark(rgb(185 28 28), rgb(255 120 120)); }
+    #martur-operations-dashboard .mod-anomaly-pending { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: light-dark(rgb(254 243 199), rgb(80 60 10)); color: light-dark(rgb(146 64 14), rgb(253 224 71)); }
+    #martur-operations-dashboard .mod-anomaly-verify { margin-left: 6px; padding: 2px 10px; min-height: 0; font-size: 12px; font-weight: 700; }
+    @media (max-width: 640px) {
+      #martur-operations-dashboard .mod-approve-body { grid-template-columns: 1fr; }
     }
     #martur-operations-dashboard .mod-report-done {
       display: grid;
@@ -5530,6 +5572,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <h1 class="mod-report-title" data-i18n="reportFormTitle">Segnala un'anomalia</h1>
           <p class="mod-report-hint" data-i18n="reportFormHint">Compila i campi e premi Invia: la scheda arriva subito ai responsabili.</p>
         </div>
+        <!-- Primo passo: foto del badge. I campi della scheda compaiono dopo. -->
+        <div class="mod-report-badge">
+          <span class="mod-report-badge-label" data-i18n="reportBadgeLabel">Foto del tuo badge</span>
+          <p class="mod-report-hint" data-i18n="reportBadgeHint">Prima di compilare la scheda fotografa il tuo badge aziendale: serve a verificare chi la invia.</p>
+          <img id="mod-report-badge-preview" class="mod-report-badge-preview" alt="" hidden>
+          <label class="btn mod-report-badge-btn">
+            <input id="mod-report-badge" type="file" accept="image/*" capture="environment" hidden>
+            <span id="mod-report-badge-text" data-i18n="reportBadgeTake">Fotografa il badge</span>
+          </label>
+        </div>
+        <div id="mod-report-fields" class="mod-report-fields" hidden>
         <label class="mod-field">
           <span data-anomaly-label="reporter">Nome e cognome</span>
           <input id="mod-report-reporter" type="text" class="form-control" maxlength="80" autocomplete="name" required>
@@ -5575,14 +5628,36 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </div>
         <div id="mod-report-error" class="text-small mod-negative" role="alert" hidden></div>
         <button id="mod-report-send" type="submit" class="btn btn-primary mod-report-send" data-i18n="reportFormSend">Invia anomalia</button>
+        </div>
       </form>
       <div id="mod-report-done" class="mod-report-done" role="status" hidden>
         <div class="mod-report-done-icon" aria-hidden="true">✓</div>
         <h1 id="mod-report-done-title" class="mod-report-title">Anomalia inviata correttamente</h1>
-        <p class="mod-report-hint" data-i18n="reportDoneHint">Grazie, la segnalazione è stata registrata. Puoi chiudere questa pagina.</p>
+        <p class="mod-report-hint" data-i18n="reportDoneHint">Grazie, la segnalazione è stata inviata. Comparirà nella tabella dopo l'approvazione dell'amministratore. Puoi chiudere questa pagina.</p>
       </div>
     </div>
   </section>
+
+  <!-- Verifica di una scheda arrivata dal QR: foto del badge e dati, l'admin approva o rifiuta. -->
+  <dialog id="mod-approve-dialog" class="card mod-selection-dialog" aria-labelledby="mod-approve-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-approve-title" class="mod-dialog-title" data-i18n="approveTitle">Verifica segnalazione</h2>
+          <span class="text-small text-muted" data-i18n="approveHint">Controlla che il badge corrisponda a chi ha firmato la scheda, poi approva o rifiuta.</span>
+        </div>
+        <button type="button" class="btn btn-ghost mod-dialog-close" id="mod-approve-close" aria-label="X">✕</button>
+      </div>
+      <div class="mod-approve-body">
+        <div class="mod-approve-photo"><img id="mod-approve-img" alt=""><span id="mod-approve-nophoto" class="text-small text-muted" hidden></span></div>
+        <dl id="mod-approve-info" class="mod-approve-info"></dl>
+      </div>
+      <div class="mod-dialog-actions">
+        <button type="button" class="btn mod-approve-reject" id="mod-approve-reject" data-i18n="approveReject">Rifiuta ed elimina</button>
+        <button type="button" class="btn btn-primary" id="mod-approve-ok" data-i18n="approveOk">Approva</button>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="mod-qr-dialog" class="card mod-selection-dialog" aria-labelledby="mod-qr-title">
     <div class="mod-dialog-shell">
@@ -6520,7 +6595,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportFormInvalid: 'Inserisci nome e cognome, data apertura e descrizione dell\'anomalia.',
           reportFormError: 'Invio non riuscito. Controlla la connessione e riprova.',
           reportDoneTitle: 'Anomalia inviata correttamente',
-          reportDoneHint: 'Grazie, la segnalazione è stata registrata. Puoi chiudere questa pagina.',
+          reportDoneHint: 'Grazie, la segnalazione è stata inviata. Comparirà nella tabella dopo l\'approvazione dell\'amministratore. Puoi chiudere questa pagina.',
+          reportBadgeLabel: 'Foto del tuo badge',
+          reportBadgeHint: 'Prima di compilare la scheda fotografa il tuo badge aziendale: serve a verificare chi la invia.',
+          reportBadgeTake: 'Fotografa il badge',
+          reportBadgeRetake: 'Rifai la foto',
+          reportBadgeMissing: 'Prima fotografa il tuo badge.',
+          approveTitle: 'Verifica segnalazione',
+          approveHint: 'Controlla che il badge corrisponda a chi ha firmato la scheda, poi approva o rifiuta.',
+          approveOk: 'Approva',
+          approveReject: 'Rifiuta ed elimina',
+          approveRejectConfirm: 'Eliminare questa segnalazione e la foto del badge?',
+          approveLoading: 'Caricamento foto…',
+          approveNoPhoto: 'Foto del badge non disponibile',
+          anomalyPending: 'In attesa',
+          anomalyVerify: 'Verifica',
+          anomalyPendingCount: '{n} da approvare',
           qrTitle: 'QR segnalazione anomalie',
           qrHint: 'Da appendere in linea: chi lo inquadra apre solo il modulo, senza accesso alla dashboard.',
           qrPrint: 'Stampa',
@@ -7027,7 +7117,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportFormInvalid: 'Enter your name, the opening date and the anomaly description.',
           reportFormError: 'Sending failed. Check the connection and try again.',
           reportDoneTitle: 'Anomaly sent successfully',
-          reportDoneHint: 'Thank you, the report has been recorded. You can close this page.',
+          reportDoneHint: 'Thank you, the report has been sent. It will appear in the table once the administrator approves it. You can close this page.',
+          reportBadgeLabel: 'Photo of your badge',
+          reportBadgeHint: 'Before filling in the form, take a photo of your company badge: it is used to verify who is sending it.',
+          reportBadgeTake: 'Take a photo of the badge',
+          reportBadgeRetake: 'Retake photo',
+          reportBadgeMissing: 'Take a photo of your badge first.',
+          approveTitle: 'Verify report',
+          approveHint: 'Check that the badge matches the person who signed the report, then approve or reject.',
+          approveOk: 'Approve',
+          approveReject: 'Reject and delete',
+          approveRejectConfirm: 'Delete this report and the badge photo?',
+          approveLoading: 'Loading photo…',
+          approveNoPhoto: 'Badge photo not available',
+          anomalyPending: 'Pending',
+          anomalyVerify: 'Verify',
+          anomalyPendingCount: '{n} to approve',
           qrTitle: 'Anomaly report QR',
           qrHint: 'Post it on the line: whoever scans it opens only the form, with no access to the dashboard.',
           qrPrint: 'Print',
@@ -7534,7 +7639,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reportFormInvalid: 'Adınızı, açılış tarihini ve anomali açıklamasını girin.',
           reportFormError: 'Gönderilemedi. Bağlantıyı kontrol edip tekrar deneyin.',
           reportDoneTitle: 'Anomali başarıyla gönderildi',
-          reportDoneHint: 'Teşekkürler, bildirim kaydedildi. Bu sayfayı kapatabilirsiniz.',
+          reportDoneHint: 'Teşekkürler, bildirim gönderildi. Yönetici onayladıktan sonra tabloda görünecek. Bu sayfayı kapatabilirsiniz.',
+          reportBadgeLabel: 'Kartınızın fotoğrafı',
+          reportBadgeHint: 'Formu doldurmadan önce şirket kartınızın fotoğrafını çekin: gönderenin kim olduğunu doğrulamak için kullanılır.',
+          reportBadgeTake: 'Kartın fotoğrafını çek',
+          reportBadgeRetake: 'Fotoğrafı yeniden çek',
+          reportBadgeMissing: 'Önce kartınızın fotoğrafını çekin.',
+          approveTitle: 'Bildirimi doğrula',
+          approveHint: 'Kartın formu imzalayan kişiye ait olduğunu kontrol edin, sonra onaylayın veya reddedin.',
+          approveOk: 'Onayla',
+          approveReject: 'Reddet ve sil',
+          approveRejectConfirm: 'Bu bildirim ve kart fotoğrafı silinsin mi?',
+          approveLoading: 'Fotoğraf yükleniyor…',
+          approveNoPhoto: 'Kart fotoğrafı yok',
+          anomalyPending: 'Beklemede',
+          anomalyVerify: 'Doğrula',
+          anomalyPendingCount: '{n} onay bekliyor',
           qrTitle: 'Anomali bildirimi QR',
           qrHint: 'Hatta asın: okutan kişi yalnızca formu açar, panoya erişemez.',
           qrPrint: 'Yazdır',
@@ -7978,6 +8098,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         reportScreen: root.querySelector('#mod-report-screen'),
         reportLogo: root.querySelector('#mod-report-logo'),
         reportForm: root.querySelector('#mod-report-form'),
+        reportBadge: root.querySelector('#mod-report-badge'),
+        reportBadgePreview: root.querySelector('#mod-report-badge-preview'),
+        reportBadgeText: root.querySelector('#mod-report-badge-text'),
+        reportFields: root.querySelector('#mod-report-fields'),
+        approveDialog: root.querySelector('#mod-approve-dialog'),
+        approveImg: root.querySelector('#mod-approve-img'),
+        approveNoPhoto: root.querySelector('#mod-approve-nophoto'),
+        approveInfo: root.querySelector('#mod-approve-info'),
+        approveOk: root.querySelector('#mod-approve-ok'),
+        approveReject: root.querySelector('#mod-approve-reject'),
+        approveClose: root.querySelector('#mod-approve-close'),
         reportReporter: root.querySelector('#mod-report-reporter'),
         reportMachine: root.querySelector('#mod-report-machine'),
         reportDescription: root.querySelector('#mod-report-description'),
@@ -11468,9 +11599,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (Number(item.number)) return Number(item.number);
         return item.openedAt ? parseDate(item.openedAt).getTime() : 0;
       }
+      // Segnalazioni da QR in attesa di approvazione: le vedono solo gli
+      // admin e non prendono un N. scheda finche' non sono approvate.
+      function anomalyPending(item) {
+        return Boolean(item && item.approval === 'pending');
+      }
+      function anomaliesVisible() {
+        const list = state.anomalies || [];
+        return state.isAdmin ? list : list.filter((x) => !anomalyPending(x));
+      }
       function anomalyNumbers() {
         const numbers = new Map();
-        (state.anomalies || []).slice()
+        (state.anomalies || []).filter((x) => !anomalyPending(x))
           .sort((a, b) => anomalyCreatedKey(a) - anomalyCreatedKey(b) || String(a.id).localeCompare(String(b.id)))
           .forEach((item, index) => { numbers.set(item.id, index + 1); });
         return numbers;
@@ -11503,7 +11643,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const numbers = anomalyNumbers();
         const value = anomalySortValue[key] || anomalySortValue.number;
         const sign = dir === 'asc' ? 1 : -1;
-        return (state.anomalies || []).slice().sort((a, b) => {
+        return anomaliesVisible().slice().sort((a, b) => {
+          // In attesa sempre in cima, cosi' l'admin le vede subito.
+          if (anomalyPending(a) !== anomalyPending(b)) return anomalyPending(a) ? -1 : 1;
           const va = value(a, numbers), vb = value(b, numbers);
           if (va === null || vb === null) {
             if (va !== vb) return va === null ? 1 : -1;
@@ -11522,9 +11664,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renderAnomalies() {
         const list = anomaliesSorted();
         const editable = canEditSummary();
-        const notClosed = list.filter((x) => x.status !== 'closed').length;
+        const pendingCount = list.filter(anomalyPending).length;
+        const approved = list.filter((x) => !anomalyPending(x));
+        const notClosed = approved.filter((x) => x.status !== 'closed').length;
         const numbers = anomalyNumbers();
-        el.anomalyCount.textContent = t('anomalyCount').replace('{n}', list.length).replace('{open}', notClosed);
+        el.anomalyCount.textContent = t('anomalyCount').replace('{n}', approved.length).replace('{open}', notClosed) +
+          (pendingCount ? ' · ' + t('anomalyPendingCount').replace('{n}', pendingCount) : '');
         applyAnomalyLabels();
         el.anomalyPanel.querySelectorAll('th[data-sort]').forEach((th) => {
           if (th.dataset.sort === state.anomalySort.key) {
@@ -11537,10 +11682,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.anomalyBody.innerHTML = list.length ? list.map((item) => {
           const st = findBy(ANOMALY_STATUSES, item.status, true);
           const selected = item.id === state.anomalySelectedId;
+          const numCell = anomalyPending(item)
+            ? '<span class="mod-anomaly-pending">' + escapeHtml(t('anomalyPending')) + '</span>' +
+              '<button type="button" class="btn btn-primary mod-anomaly-verify">' + escapeHtml(t('anomalyVerify')) + '</button>'
+            : '<button type="button" class="mod-anomaly-pick" aria-pressed="' + selected + '" title="' +
+              escapeHtml(t('anomalySelectRow')) + '">' + escapeHtml(numbers.get(item.id) || '—') + '</button>';
           return '<tr' + (editable ? ' tabindex="0"' : '') + (selected ? ' class="mod-anomaly-row-selected"' : '') +
               ' data-anomaly-id="' + escapeHtml(item.id) + '">' +
-            '<td class="mod-anomaly-num"><button type="button" class="mod-anomaly-pick" aria-pressed="' + selected + '" title="' +
-              escapeHtml(t('anomalySelectRow')) + '">' + escapeHtml(numbers.get(item.id) || '—') + '</button></td>' +
+            '<td class="mod-anomaly-num">' + numCell + '</td>' +
             // data-label: su telefono la riga diventa una scheda e ogni valore
             // si porta dietro il nome della sua colonna.
             '<td class="mod-anomaly-name" data-label="' + escapeHtml(anomalyLabel('reporter')) + '">' + escapeHtml(item.reporter || '—') + '</td>' +
@@ -11554,6 +11703,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<td data-label="' + escapeHtml(anomalyLabel('status')) + '"><span class="mod-anomaly-status mod-anomaly-status-' + st.id + '">' + escapeHtml(t(st.key)) + '</span></td>' +
           '</tr>';
         }).join('') : '<tr><td colspan="10" class="mod-anomaly-empty">' + escapeHtml(t('anomalyNone')) + '</td></tr>';
+        el.anomalyBody.querySelectorAll('.mod-anomaly-verify').forEach((button) => {
+          button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            openApproveDialog(button.closest('tr').dataset.anomalyId);
+          });
+        });
         // Clic su N. scheda: seleziona (o toglie la selezione), per tutti.
         el.anomalyBody.querySelectorAll('.mod-anomaly-pick').forEach((button) => {
           button.addEventListener('click', (event) => {
@@ -11575,6 +11730,68 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // modificare ed eliminare restano agli admin con la matita accesa.
         el.anomalyAdd.hidden = !state.authUser;
         el.anomalySettingsBtn.hidden = !editable;
+      }
+
+      // Verifica di una segnalazione da QR: foto del badge accanto ai dati,
+      // poi Approva (entra in tabella col suo numero) o Rifiuta (sparisce).
+      let approvingId = null;
+      function openApproveDialog(id) {
+        const item = (state.anomalies || []).find((x) => x.id === id);
+        if (!item || !state.isAdmin || !db) return;
+        approvingId = id;
+        el.approveImg.hidden = true;
+        el.approveImg.removeAttribute('src');
+        el.approveNoPhoto.hidden = false;
+        el.approveNoPhoto.textContent = t('approveLoading');
+        const rows = [
+          ['reporter', item.reporter], ['machine', item.machine],
+          ['openedAt', item.openedAt ? formatDateNumeric(item.openedAt) : ''],
+          ['description', item.description], ['action', item.action], ['owner', item.owner],
+          ['department', departmentLabel(item.department)]
+        ];
+        el.approveInfo.innerHTML = rows.filter((r) => r[1]).map((r) =>
+          '<dt>' + escapeHtml(anomalyLabel(r[0])) + '</dt><dd>' + escapeHtml(r[1]) + '</dd>').join('');
+        el.approveOk.disabled = false;
+        el.approveReject.disabled = false;
+        el.approveDialog.showModal();
+        db.collection('anomalyBadges').doc(id).get().then((doc) => {
+          if (approvingId !== id) return;
+          const photo = doc.exists ? (doc.data() || {}).photo : null;
+          if (photo) {
+            el.approveImg.src = photo;
+            el.approveImg.hidden = false;
+            el.approveNoPhoto.hidden = true;
+          } else {
+            el.approveNoPhoto.textContent = t('approveNoPhoto');
+          }
+        }).catch(() => {
+          if (approvingId === id) el.approveNoPhoto.textContent = t('approveNoPhoto');
+        });
+      }
+      function approveAnomaly() {
+        const id = approvingId;
+        if (!id || !db) return;
+        el.approveOk.disabled = true;
+        db.collection('anomalies').doc(id).update({
+          approval: 'approved',
+          approvedBy: state.authUsername || null,
+          approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => el.approveDialog.close()).catch(() => {
+          el.approveOk.disabled = false;
+          alert(t('reportFormError'));
+        });
+      }
+      function rejectAnomaly() {
+        const id = approvingId;
+        if (!id || !db || !confirm(t('approveRejectConfirm'))) return;
+        el.approveReject.disabled = true;
+        const batch = db.batch();
+        batch.delete(db.collection('anomalies').doc(id));
+        batch.delete(db.collection('anomalyBadges').doc(id));
+        batch.commit().then(() => el.approveDialog.close()).catch(() => {
+          el.approveReject.disabled = false;
+          alert(t('reportFormError'));
+        });
       }
 
       function anomaliesOnScreen() {
@@ -11898,6 +12115,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.reportScreen.hidden = false;
         document.title = t('reportFormTitle') + ' · Martur Italy';
         el.reportForm.addEventListener('submit', (event) => { event.preventDefault(); sendReport(); });
+        // Prima la foto del badge: i campi compaiono solo dopo.
+        el.reportBadge.addEventListener('change', () => {
+          const file = el.reportBadge.files && el.reportBadge.files[0];
+          if (!file) return;
+          compressBadgePhoto(file).then((dataUrl) => {
+            reportBadgePhoto = dataUrl;
+            el.reportBadgePreview.src = dataUrl;
+            el.reportBadgePreview.hidden = false;
+            el.reportBadgeText.textContent = t('reportBadgeRetake');
+            el.reportBadgeText.removeAttribute('data-i18n');
+            el.reportFields.hidden = false;
+            el.reportError.hidden = true;
+          }).catch(() => {
+            el.reportError.textContent = t('reportFormError');
+            el.reportError.hidden = false;
+          });
+        });
         // Nomi dei campi: gli stessi della tabella. Se non arrivano restano
         // quelli standard.
         if (db) {
@@ -11908,9 +12142,41 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
       }
 
+      // Foto del badge ridotta a JPEG leggero: deve stare comoda in un
+      // documento Firestore (limite 1 MB).
+      let reportBadgePhoto = null;
+      function compressBadgePhoto(file) {
+        return new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const scale = Math.min(1, 1000 / Math.max(img.naturalWidth, img.naturalHeight));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+            canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            let quality = 0.6;
+            let data = canvas.toDataURL('image/jpeg', quality);
+            while (data.length > 300000 && quality > 0.2) {
+              quality -= 0.1;
+              data = canvas.toDataURL('image/jpeg', quality);
+            }
+            resolve(data);
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('img')); };
+          img.src = url;
+        });
+      }
+
       let reportSending = false;
       function sendReport() {
         if (reportSending) return;
+        if (!reportBadgePhoto) {
+          el.reportError.textContent = t('reportBadgeMissing');
+          el.reportError.hidden = false;
+          return;
+        }
         const reporter = el.reportReporter.value.trim();
         const description = el.reportDescription.value.trim();
         const openedAt = el.reportOpened.value;
@@ -11936,6 +12202,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           status: el.reportStatus.value,
           closedAt: el.reportClosed.value || null,
           source: 'qr',
+          approval: 'pending',
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         if (payload.status === 'closed' && !payload.closedAt) payload.closedAt = isoDate(new Date());
@@ -11943,7 +12210,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.reportError.hidden = true;
         el.reportSend.disabled = true;
         el.reportSend.textContent = t('reportFormSending');
-        db.collection('anomalies').add(payload).then(() => {
+        // Scheda e foto insieme: o entrano tutte e due o nessuna.
+        const ref = db.collection('anomalies').doc();
+        const batch = db.batch();
+        batch.set(ref, payload);
+        batch.set(db.collection('anomalyBadges').doc(ref.id), {
+          photo: reportBadgePhoto,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        batch.commit().then(() => {
           // Dopo l'invio resta solo la conferma: nessun pulsante, nessun link.
           el.reportForm.remove();
           el.reportDoneTitle.textContent = t('reportDoneTitle');
@@ -14177,6 +14452,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       el.anomalyPdf.addEventListener('click', exportAnomaliesPdf);
       el.anomalyQr.addEventListener('click', openQrDialog);
       el.qrClose.addEventListener('click', () => el.qrDialog.close());
+      el.approveClose.addEventListener('click', () => el.approveDialog.close());
+      el.approveDialog.addEventListener('close', () => { approvingId = null; });
+      el.approveOk.addEventListener('click', approveAnomaly);
+      el.approveReject.addEventListener('click', rejectAnomaly);
       el.qrPrint.addEventListener('click', printReportQr);
       el.anomalyExcel.addEventListener('click', exportAnomaliesExcel);
       el.anomalyDialogClose.addEventListener('click', () => el.anomalyDialog.close());

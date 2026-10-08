@@ -78,6 +78,20 @@ service cloud.firestore {
       allow create: if (isSignedIn() && isValidAnomaly()) || isQrReport();
     }
 
+    match /anomalyBadges/{id} {
+      // Foto del badge di chi invia dal QR: si carica insieme alla scheda
+      // nuova (stesso id), come immagine di dimensione limitata.
+      // La vedono ed eliminano solo gli admin.
+      allow create: if request.resource.data.keys().hasOnly(['photo', 'createdAt'])
+        && request.resource.data.photo is string
+        && request.resource.data.photo.size() < 600000
+        && request.resource.data.createdAt == request.time
+        && existsAfter(/databases/$(database)/documents/anomalies/$(id))
+        && !exists(/databases/$(database)/documents/anomalies/$(id));
+      allow read, delete: if isAdmin();
+      allow update: if false;
+    }
+
     match /anomalySettings/{doc} {
       // "main": nomi di titolo e colonne, letti anche dal modulo QR.
       allow read: if true;
@@ -112,8 +126,10 @@ service cloud.firestore {
     function isQrReport() {
       let d = request.resource.data;
       return d.keys().hasOnly(['reporter', 'machine', 'openedAt', 'description', 'action',
-          'owner', 'department', 'closedAt', 'status', 'source', 'createdAt'])
+          'owner', 'department', 'closedAt', 'status', 'source', 'approval', 'createdAt'])
         && d.source == 'qr'
+        // resta in attesa finche' un admin non la approva
+        && d.approval == 'pending'
         && d.createdAt == request.time
         && d.reporter.size() > 0
         && anomalyFieldsOk(d);
