@@ -2220,6 +2220,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-transform: uppercase;
     }
     #martur-operations-dashboard .mod-edi-table tbody th { font-weight: 700; }
+    #martur-operations-dashboard .mod-edi-table td.mod-edi-empty { padding: 40px 16px; color: var(--muted-foreground); white-space: normal; }
     #martur-operations-dashboard .mod-edi-table tbody tr:nth-child(even) > * { background: color-mix(in srgb, var(--muted) 60%, transparent); }
     #martur-operations-dashboard .mod-edi-table tbody tr:hover > * { background: color-mix(in srgb, var(--gold) 12%, transparent); }
     /* Colonna del totale: piu' grande e in evidenza, come nell'Excel. */
@@ -6587,9 +6588,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Opzioni',
           ediTotal: 'Totale %',
           ediTotalVolume: 'Volume totale',
-          ediSample: 'Dati di esempio: carica l’Excel per vedere quelli reali.',
+          ediEmpty: 'Nessun dato EDI: carica l’Excel per vedere la tabella.',
+          ediSource: 'Excel: {file} · caricato il {when} da {who}',
+          ediNoTable: 'Nell’Excel non c’è la tabella per codice materiale (colonne Material, Back, W, Colore, Heat e settimane WK).',
+          auditEdiUpload: 'Excel EDI caricato',
           ediReading: 'Lettura dell’Excel…',
-          ediLoaded: 'Excel letto: {file} ({n} righe). Il calcolo verrà collegato appena definito.',
           ediLoadError: 'Impossibile leggere il file Excel.',
           auditUserApprove: 'Permesso di approvazione modificato',
           auditNoChanges: 'nessun campo cambiato',
@@ -7133,9 +7136,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Options',
           ediTotal: 'Total %',
           ediTotalVolume: 'Total volume',
-          ediSample: 'Sample data: upload the Excel to see the real figures.',
+          ediEmpty: 'No EDI data: upload the Excel to see the table.',
+          ediSource: 'Excel: {file} · uploaded on {when} by {who}',
+          ediNoTable: 'The Excel has no table by material code (columns Material, Back, W, Colore, Heat and WK weeks).',
+          auditEdiUpload: 'EDI Excel uploaded',
           ediReading: 'Reading the Excel…',
-          ediLoaded: 'Excel read: {file} ({n} rows). The calculation will be connected once defined.',
           ediLoadError: 'Unable to read the Excel file.',
           auditUserApprove: 'Approval permission changed',
           auditNoChanges: 'no field changed',
@@ -7679,9 +7684,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Seçenekler',
           ediTotal: 'Toplam %',
           ediTotalVolume: 'Toplam hacim',
-          ediSample: 'Örnek veriler: gerçek veriler için Excel dosyasını yükleyin.',
+          ediEmpty: 'EDI verisi yok: tabloyu görmek için Excel dosyasını yükleyin.',
+          ediSource: 'Excel: {file} · {when} tarihinde {who} tarafından yüklendi',
+          ediNoTable: 'Excel dosyasında malzeme koduna göre tablo yok (Material, Back, W, Colore, Heat sütunları ve WK haftaları).',
+          auditEdiUpload: 'EDI Excel yüklendi',
           ediReading: 'Excel okunuyor…',
-          ediLoaded: 'Excel okundu: {file} ({n} satır). Hesaplama tanımlanınca bağlanacak.',
           ediLoadError: 'Excel dosyası okunamadı.',
           auditUserApprove: 'Onay izni değiştirildi',
           auditNoChanges: 'değişen alan yok',
@@ -11301,6 +11308,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             unsubscribeEntries();
             unsubscribeTasks();
             unsubscribeAnomalies();
+            unsubscribeEdi();
             unsubscribeSection();
             unsubscribeDmcTarget();
             if (el.sectionDialog.open) el.sectionDialog.close();
@@ -11338,6 +11346,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             subscribeEntries();
             subscribeTasks();
             subscribeAnomalies();
+            subscribeEdi();
             subscribeOeeConfig();
             subscribeStoppages();
             subscribeStoppageConfig();
@@ -13602,46 +13611,76 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       window.addEventListener('resize', () => { if (!el.chatScreen.hidden) sizeChatMessages(); });
 
       // ---- EDI ----
-      // Quota di ogni opzione per settimana, piu' il totale del periodo.
-      // Finche' non si carica l'Excel (e non e' definito il calcolo) si vede
-      // l'esempio, segnato come tale.
-      const EDI_SAMPLE = {
-        weeks: ['W 41', 'W 42', 'W 45', 'W 46', 'W 47', 'W 49', 'W 50', 'W 51'],
-        rows: [
-          { label: '6W', values: [41, 40, 39, 35, 37, 23, 28, 33], total: 34 },
-          { label: '4W', values: [59, 60, 61, 65, 63, 77, 72, 67], total: 66 },
-          { label: 'LEATHER', values: [30, 33, 38, 50, 49, 33, 34, 39], total: 38 },
-          { label: 'Fabric', values: [63, 60, 58, 45, 45, 62, 62, 57], total: 56 },
-          { label: 'Abarth', values: [7, 7, 4, 5, 6, 5, 4, 4], total: 5 },
-          { label: '50%', values: [85, 83, 78, 70, 74, 47, 61, 67], total: 71 },
-          { label: '100%', values: [15, 17, 22, 30, 26, 53, 39, 33], total: 29 },
-          { label: 'Heater', values: [57, 57, 59, 67, 72, 45, 56, 65], total: 60 },
-          { label: 'w/o Heater', values: [43, 43, 41, 33, 28, 55, 44, 35], total: 40 }
-        ],
-        volumes: [1967, 1900, 1842, 1851, 1766, 1855, 1128, 1833]
-      };
-      let ediData = null;     // dati calcolati dall'Excel (quando ci sara' il calcolo)
-      let ediFileInfo = null; // ultimo Excel letto: nome e righe
+      // Dal foglio dell'Excel EDI con una riga per codice materiale (colonne
+      // Material, Back, W, Colore, Heat e una colonna per settimana) si
+      // sommano le quantita' per settimana. Il risultato sta in
+      // config/edi: lo vedono tutti, lo carica chi ha il pulsante.
+      const EDI_ROWS = [
+        // 6W/4W come nell'Excel di riferimento: 6W = quota 6W divisa per due,
+        // 4W = il resto.
+        { label: '6W', pct: (c, i) => c.w6[i] / c.total[i] / 2 * 100 },
+        { label: '4W', pct: (c, i) => 100 - c.w6[i] / c.total[i] / 2 * 100 },
+        { label: 'LEATHER', pct: (c, i) => c.leather[i] / c.total[i] * 100 },
+        { label: 'Fabric', pct: (c, i) => c.fabric[i] / c.total[i] * 100 },
+        { label: 'Abarth', pct: (c, i) => c.abarth[i] / c.total[i] * 100 },
+        { label: '50%', pct: (c, i) => c.r50[i] / c.total[i] * 100 },
+        { label: '100%', pct: (c, i) => c.r100[i] / c.total[i] * 100 },
+        { label: 'Heater', pct: (c, i) => c.heater[i] / c.total[i] * 100 },
+        { label: 'w/o Heater', pct: (c, i) => c.noHeater[i] / c.total[i] * 100 }
+      ];
+      let ediData = null;   // { weeks, counts, fileName, uploadedAt, uploadedBy }
+      let ediUnsub = null;
+
+      function subscribeEdi() {
+        if (!db || ediUnsub) return;
+        ediUnsub = db.collection('config').doc('edi').onSnapshot((doc) => {
+          ediData = doc.exists ? doc.data() : null;
+          if (state.view === 'edi') renderEdi();
+        }, () => {});
+      }
+      function unsubscribeEdi() {
+        if (ediUnsub) { try { ediUnsub(); } catch (e) {} ediUnsub = null; }
+        ediData = null;
+      }
 
       function renderEdi() {
-        const data = ediData || EDI_SAMPLE;
-        const pct = (v) => isNumber(v) ? escapeHtml(formatNumber(v)) + '%' : '—';
+        el.ediUpload.hidden = !state.isAdmin;
+        const data = ediData;
+        if (!data || !data.weeks || !data.weeks.length) {
+          el.ediTable.innerHTML = '<tbody><tr><td class="mod-edi-empty">' + escapeHtml(t('ediEmpty')) + '</td></tr></tbody>';
+          el.ediStatus.textContent = '';
+          return;
+        }
+        const c = data.counts;
+        const n = data.weeks.length;
+        const pct = (v) => Number.isFinite(v) ? escapeHtml(formatNumber(Math.round(v))) + '%' : '—';
+        const rows = EDI_ROWS.map((def) => {
+          const values = data.weeks.map((w, i) => def.pct(c, i));
+          // Totale: media delle settimane, come nell'Excel.
+          const total = values.reduce((sum, v) => sum + v, 0) / n;
+          return { label: def.label, values, total };
+        });
         el.ediTable.innerHTML =
           '<thead><tr><th>' + escapeHtml(t('ediOptions')) + '</th>' +
             data.weeks.map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
             '<th class="mod-edi-total">' + escapeHtml(t('ediTotal')) + '</th></tr></thead>' +
-          '<tbody>' + data.rows.map((row) =>
+          '<tbody>' + rows.map((row) =>
             '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
               row.values.map((v) => '<td>' + pct(v) + '</td>').join('') +
               '<td class="mod-edi-total">' + pct(row.total) + '</td></tr>'
           ).join('') + '</tbody>' +
           '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
-            data.volumes.map((v) => '<td>' + escapeHtml(formatNumber(v)) + '</td>').join('') +
+            c.total.map((v) => '<td>' + escapeHtml(formatNumber(v)) + '</td>').join('') +
             '<td class="mod-edi-total">100%</td></tr></tfoot>';
-        el.ediStatus.textContent = ediFileInfo
-          ? t('ediLoaded').replace('{file}', ediFileInfo.name).replace('{n}', ediFileInfo.rows)
-          : (ediData ? '' : t('ediSample'));
-        el.ediUpload.hidden = !state.isAdmin;
+        let when = '';
+        if (data.uploadedAt) {
+          try {
+            when = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+              .format(new Date(data.uploadedAt));
+          } catch (e) {}
+        }
+        el.ediStatus.textContent = t('ediSource').replace('{file}', data.fileName || '—')
+          .replace('{when}', when).replace('{who}', data.uploadedBy || '—');
       }
 
       // Libreria per leggere gli Excel, caricata solo quando serve.
@@ -13659,16 +13698,67 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         return xlsxLibPromise;
       }
-      // Per ora l'Excel si legge e basta: il calcolo delle percentuali si
-      // aggancia qui appena e' definito.
+
+      // Cerca in tutti i fogli la tabella per codice materiale: la riga di
+      // intestazione con Material, Back, W, Colore, Heat e le settimane (WK..).
+      // Le settimane a volume zero non si mostrano.
+      function parseEdiWorkbook(XLSX, book) {
+        const norm = (v) => String(v === undefined || v === null ? '' : v).trim().toUpperCase();
+        for (const name of book.SheetNames) {
+          const rows = XLSX.utils.sheet_to_json(book.Sheets[name], { header: 1, blankrows: false, defval: '' });
+          for (let h = 0; h < Math.min(rows.length, 20); h++) {
+            const head = rows[h].map(norm);
+            const col = (label) => head.indexOf(label);
+            const cBack = col('BACK'), cW = col('W'), cColor = col('COLORE'), cHeat = col('HEAT'), cMat = col('MATERIAL');
+            if ([cBack, cW, cColor, cHeat, cMat].some((i) => i < 0)) continue;
+            const weekCols = [];
+            head.forEach((v, i) => { const m = /^WK\s*0*(\d+)$/.exec(v); if (m) weekCols.push({ i, label: 'W ' + m[1] }); });
+            if (!weekCols.length) continue;
+            const keys = ['total', 'w6', 'w4', 'leather', 'fabric', 'abarth', 'r50', 'r100', 'heater', 'noHeater'];
+            const counts = {};
+            keys.forEach((k) => { counts[k] = weekCols.map(() => 0); });
+            for (let r = h + 1; r < rows.length; r++) {
+              const row = rows[r];
+              if (!norm(row[cMat])) continue;
+              const w = norm(row[cW]), color = norm(row[cColor]), heat = norm(row[cHeat]), back = norm(row[cBack]);
+              weekCols.forEach((wc, j) => {
+                const q = Number(row[wc.i]) || 0;
+                if (!q) return;
+                counts.total[j] += q;
+                if (w === '6W') counts.w6[j] += q;
+                if (w === '4W') counts.w4[j] += q;
+                if (color === 'LE') counts.leather[j] += q;
+                if (color === 'FAB') counts.fabric[j] += q;
+                if (color === 'ABT' || color === 'ABA') counts.abarth[j] += q;
+                if (back === '50') counts.r50[j] += q;
+                if (back === '100') counts.r100[j] += q;
+                if (heat === 'H') counts.heater[j] += q;
+                if (heat === 'NOH') counts.noHeater[j] += q;
+              });
+            }
+            const keep = weekCols.map((wc, j) => counts.total[j] > 0);
+            const weeks = weekCols.filter((wc, j) => keep[j]).map((wc) => wc.label);
+            keys.forEach((k) => { counts[k] = counts[k].filter((v, j) => keep[j]); });
+            if (weeks.length) return { weeks, counts };
+          }
+        }
+        return null;
+      }
+
       function readEdiExcel(file) {
+        if (!db || !state.isAdmin) return;
         el.ediStatus.textContent = t('ediReading');
         Promise.all([loadXlsxLib(), file.arrayBuffer()]).then(([XLSX, buffer]) => {
-          const book = XLSX.read(buffer, { type: 'array' });
-          const sheet = book.Sheets[book.SheetNames[0]];
-          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false });
-          ediFileInfo = { name: file.name, rows: rows.length };
-          renderEdi();
+          const parsed = parseEdiWorkbook(XLSX, XLSX.read(buffer, { type: 'array' }));
+          if (!parsed) { el.ediStatus.textContent = t('ediNoTable'); return null; }
+          const doc = Object.assign(parsed, {
+            fileName: file.name,
+            uploadedAt: new Date().toISOString(),
+            uploadedBy: state.authUsername || ''
+          });
+          return db.collection('config').doc('edi').set(doc).then(() => {
+            logAudit('edi.upload', file.name);
+          });
         }).catch(() => {
           el.ediStatus.textContent = t('ediLoadError');
         });
@@ -14317,7 +14407,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'rework.update': ['auditReworkUpdate', 'settings'],
         'user.create': ['auditUserCreate', 'users'], 'user.revoke': ['auditUserRevoke', 'users'],
         'user.approve': ['auditUserApprove', 'users'], 'user.texts': ['auditUserTexts', 'users'],
-        'texts.update': ['auditTextsUpdate', 'settings'],
+        'texts.update': ['auditTextsUpdate', 'settings'], 'edi.upload': ['auditEdiUpload', 'data'],
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
         'anomaly.create': ['auditAnomalyCreate', 'anomalies'], 'anomaly.update': ['auditAnomalyUpdate', 'anomalies'],
