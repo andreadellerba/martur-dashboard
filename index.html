@@ -3403,6 +3403,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       overflow: hidden;
       width: 100%;
     }
+    #martur-operations-dashboard .mod-shift-note-empty { color: var(--muted-foreground); font-weight: 500; }
     /* Card dei turni: la nota ha tre righe invece di due. */
     #martur-operations-dashboard .mod-daily-shift-card .mod-shift-note { height: 3.9em; }
     #martur-operations-dashboard .mod-daily-shift-card .mod-shift-note-text { -webkit-line-clamp: 3; }
@@ -6986,6 +6987,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkSelectionRequired: 'Con rilavorazioni presenti, seleziona esattamente 3 motivi rework.',
           reworkLimitReached: 'Puoi selezionare al massimo 3 motivi rework.',
           noReworkReasons: 'Nessun motivo rework disponibile.',
+          noShiftNote: 'Nessuna nota inserita',
           cases: 'casi',
           dailyTopLosses: 'Le 3 perdite più frequenti del giorno (minuti)',
           noLossReasons: 'Nessun fermo registrato.',
@@ -7559,6 +7561,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkSelectionRequired: 'When rework is present, select exactly 3 rework reasons.',
           reworkLimitReached: 'You can select at most 3 rework reasons.',
           noReworkReasons: 'No rework reasons are available.',
+          noShiftNote: 'No notes entered',
           cases: 'cases',
           dailyTopLosses: 'Top 3 losses for the day (minutes)',
           noLossReasons: 'No stoppages recorded.',
@@ -8132,6 +8135,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkSelectionRequired: 'Rework mevcutken tam olarak 3 rework nedeni seçin.',
           reworkLimitReached: 'En fazla 3 rework nedeni seçebilirsiniz.',
           noReworkReasons: 'Mevcut rework nedeni yok.',
+          noShiftNote: 'Not girilmedi',
           cases: 'vaka',
           dailyTopLosses: 'Günün en büyük 3 kaybı (dakika)',
           noLossReasons: 'Kayitli duruş yok.',
@@ -10881,8 +10885,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               metric(t('overtime'), overtimeText, otCls) +
               metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
             '</div>' +
-            '<div class="mod-shift-note"><span class="mod-shift-note-text">' +
-              escapeHtml((shift.note || '').trim()) + '</span></div>' +
+            // Senza nota si legge "Nessuna nota inserita" (in grigio): appena
+            // se ne scrive una, al suo posto c'e' il testo inserito.
+            ((shift.note || '').trim()
+              ? '<div class="mod-shift-note"><span class="mod-shift-note-text">' + escapeHtml(shift.note.trim()) + '</span></div>'
+              : '<div class="mod-shift-note mod-shift-note-empty"><span class="mod-shift-note-text">' + escapeHtml(t('noShiftNote')) + '</span></div>') +
           '</article>';
       }
 
