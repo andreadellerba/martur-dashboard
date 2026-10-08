@@ -934,6 +934,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   text-align: center;
 }
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) > .mod-section-head > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
   justify-content: center;
 }
 /* OLE e Perdite dentro una card bianca, le due alte uguali. */
@@ -949,14 +953,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   border: 3px solid var(--off-line);
   border-radius: var(--radius-2xl);
 }
+/* Niente stanghetta oro davanti a questi quattro titoli centrati. */
+:root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
+:root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: none; }
 /* Numeri delle card con un filo di contorno scuro: si leggono meglio. */
 :root.martur-officina #martur-operations-dashboard :is(.viz-stat-value, .mod-shift-metric strong, .mod-loss-kpi-val, .mod-oee-row-value) {
-  -webkit-text-stroke: 0.6px rgb(0 0 0 / 55%);
+  -webkit-text-stroke: 0.9px rgb(0 0 0 / 60%);
   paint-order: stroke fill;
 }
 :root.martur-officina #martur-operations-dashboard .mod-oee-gauge-value {
   stroke: rgb(0 0 0 / 55%);
-  stroke-width: 1.2px;
+  stroke-width: 1.7px;
   paint-order: stroke fill;
 }
 /* Logo, menu e calendario vicini al centro anche sugli schermi larghi. */
@@ -2358,6 +2365,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-edi-screen {
       display: grid;
       gap: 14px;
+      /* Una colonna che non si allarga col contenuto: le tabelle larghe
+         scorrono dentro il loro riquadro invece di allargare la pagina. */
+      grid-template-columns: minmax(0, 1fr);
       min-width: 0;
     }
     #martur-operations-dashboard .mod-edi-head {
@@ -2437,7 +2447,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-edi-save[hidden] { display: none; }
     #martur-operations-dashboard .mod-edi-save .form-control { width: 240px; max-width: 100%; }
     #martur-operations-dashboard .mod-edi-status { text-align: center; }
-    #martur-operations-dashboard .mod-edi-block { display: grid; gap: 8px; min-width: 0; }
+    #martur-operations-dashboard .mod-edi-block { display: grid; gap: 8px; min-width: 0; grid-template-columns: minmax(0, 1fr); }
     #martur-operations-dashboard .mod-edi-title {
       margin: 0;
       text-align: center;
@@ -3330,6 +3340,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       #martur-operations-dashboard .mod-single-shift-side {
         flex-direction: row;
+      }
+      /* Due tile per riga, meta' larghezza ciascuna: prima prendevano la
+         misura del loro testo e le due righe venivano diverse. */
+      #martur-operations-dashboard .mod-single-shift-side > .mod-kpi-tile {
+        flex: 1 1 0;
+        min-width: 0;
       }
       /* Affiancate sono tile strette: l'icona in alto a destra finiva addosso
          al titolo, e qui non aggiunge niente. */
@@ -10214,7 +10230,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         el.viewSubselect.hidden = false;
         el.viewSubselect.innerHTML = options.map(([v, label]) =>
-          '<option value="' + v + '"' + (v === value ? ' selected' : '') + '>' + escapeHtml(label) + '</option>'
+          '<option value="' + v + '"' + (v === value ? ' selected' : '') + '>' + escapeHtml(String(label).toLocaleUpperCase(locale())) + '</option>'
         ).join('');
         el.viewSubselect.value = value;
       }
@@ -10459,6 +10475,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         root.querySelectorAll('[data-i18n]').forEach((node) => {
           node.textContent = t(node.dataset.i18n);
         });
+        // Menu del telefono: voci sempre in maiuscolo, anche nella lista che
+        // apre il telefono (li' il CSS non arriva).
+        if (el.viewSelect) Array.from(el.viewSelect.options).forEach((o) => { o.textContent = o.textContent.toLocaleUpperCase(locale()); });
         root.querySelectorAll('[data-i18n-placeholder]').forEach((input) => {
           input.placeholder = t(input.dataset.i18nPlaceholder);
         });
