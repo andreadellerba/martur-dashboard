@@ -14643,34 +14643,51 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }, () => {});
       }
 
-      // Testo "proprio" di un elemento: solo i suoi nodi di testo diretti.
-      function ownText(node) {
-        let text = '';
-        node.childNodes.forEach((child) => { if (child.nodeType === 3) text += child.nodeValue; });
-        return text.replace(/\s+/g, ' ').trim();
+      // Da un elemento alla voce (o alle voci) di traduzione che lo scrivono.
+      // In ordine:
+      //  1. data-i18n sull'elemento o su un genitore vicino;
+      //  2. testo uguale a una traduzione, anche se spezzato in piu' pezzi
+      //     ("Prima" + "Martur"): si sale finche' il testo resta corto e si
+      //     tiene il livello piu' alto che coincide;
+      //  3. traduzione contenuta in una frase composta ("1° Turno (B)"):
+      //     la piu' lunga, al livello piu' basso.
+      const TEXT_EDIT_MAX = 80;
+      function normText(s) {
+        return String(s || '').replace(/\s+/g, ' ').trim().toLocaleLowerCase();
       }
-      // Da un elemento alla voce (o alle voci) di traduzione che lo scrivono:
-      // prima data-i18n, poi si cerca il testo uguale fra le traduzioni.
       function textKeysFor(start) {
+        if (!start || !start.closest || start.closest('#mod-text-dialog, #mod-text-edit-bar')) return null;
         const dict = translations[state.lang] || {};
+        const keys = Object.keys(dict);
+        const levels = [];
         let node = start;
-        for (let depth = 0; node && node !== root && depth < 4; depth++, node = node.parentElement) {
-          if (node.closest('#mod-text-dialog, #mod-text-edit-bar')) return null;
+        for (let depth = 0; node && node !== root && depth < 5; depth++, node = node.parentElement) {
           if (node.dataset && node.dataset.i18n) {
             return { node, keys: [node.dataset.i18n], text: t(node.dataset.i18n) };
           }
           if (node.dataset && node.dataset.i18nPlaceholder) {
             return { node, keys: [node.dataset.i18nPlaceholder], text: t(node.dataset.i18nPlaceholder) };
           }
-          const text = ownText(node);
-          if (!text) continue;
-          let keys = Object.keys(dict).filter((k) => t(k) === text);
-          if (!keys.length) {
-            const low = text.toLocaleLowerCase();
-            keys = Object.keys(dict).filter((k) => t(k).toLocaleLowerCase() === low);
+          const text = normText(node.textContent);
+          if (text.length > TEXT_EDIT_MAX) break;
+          if (text) levels.push({ node, text });
+        }
+        let exact = null;
+        levels.forEach((lv) => {
+          const hit = keys.filter((k) => normText(t(k)) === lv.text);
+          if (hit.length) exact = { node: lv.node, keys: hit, text: t(hit[0]) };
+        });
+        if (exact) return exact;
+        for (const lv of levels) {
+          let best = null;
+          keys.forEach((k) => {
+            const v = normText(t(k));
+            if (v.length >= 3 && lv.text.indexOf(v) >= 0 && (!best || v.length > best.len)) best = { len: v.length, value: v };
+          });
+          if (best) {
+            const hit = keys.filter((k) => normText(t(k)) === best.value);
+            return { node: lv.node, keys: hit, text: t(hit[0]) };
           }
-          if (keys.length) return { node, keys, text: t(keys[0]) };
-          return null;
         }
         return null;
       }
