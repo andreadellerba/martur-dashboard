@@ -997,7 +997,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 @media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
   :root #martur-operations-dashboard {
     /* spazio per non finire sotto le pillole in basso */
-    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px));
   }
   :root #martur-operations-dashboard .mod-topbar-left {
     display: flex;
@@ -1105,7 +1105,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     position: fixed;
     left: 12px;
     right: 12px;
-    bottom: calc(12px + env(safe-area-inset-bottom));
+    /* Staccata dalla barra dei gesti del telefono. */
+    bottom: calc(26px + env(safe-area-inset-bottom, 0px));
     z-index: 60;
     max-width: 520px;
     margin: 0 auto;
