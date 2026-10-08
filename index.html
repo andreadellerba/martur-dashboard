@@ -2186,6 +2186,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-edi-upload { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
     #martur-operations-dashboard .mod-edi-upload[hidden] { display: none; }
+    #martur-operations-dashboard .mod-edi-select { width: auto; min-width: 220px; max-width: 100%; }
+    #martur-operations-dashboard .mod-edi-save {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    #martur-operations-dashboard .mod-edi-save[hidden] { display: none; }
+    #martur-operations-dashboard .mod-edi-save .form-control { width: 240px; max-width: 100%; }
+    #martur-operations-dashboard .mod-edi-status { text-align: center; }
+    #martur-operations-dashboard .mod-edi-block { display: grid; gap: 8px; min-width: 0; }
+    #martur-operations-dashboard .mod-edi-title {
+      margin: 0;
+      text-align: center;
+      font-size: var(--fs-label);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
     #martur-operations-dashboard .mod-edi-wrap {
       overflow-x: auto;
       border: 1px solid var(--border);
@@ -5827,17 +5846,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </div>
   </dialog>
 
-  <!-- EDI: tabella delle opzioni per settimana, caricata da un Excel. -->
+  <!-- EDI: quantita' e percentuali per settimana, calcolate da un Excel.
+       Vuote finche' non si carica un file o si sceglie un EDI salvato. -->
   <section id="mod-edi-screen" class="mod-edi-screen" hidden>
     <div class="mod-edi-head">
-      <span id="mod-edi-status" class="text-small text-muted"></span>
+      <select id="mod-edi-select" class="form-select mod-edi-select" aria-label="EDI"></select>
+      <button type="button" id="mod-edi-delete" class="btn btn-ghost mod-pill-icon" title="Elimina" data-i18n-title="ediDelete" hidden>
+        <i data-lucide="trash-2" aria-hidden="true"></i>
+      </button>
       <label id="mod-edi-upload" class="btn btn-primary mod-edi-upload" hidden>
         <input id="mod-edi-file" type="file" accept=".xlsx,.xls,.csv" hidden>
         <i data-lucide="file-up" aria-hidden="true"></i><span data-i18n="ediUpload">Carica Excel</span>
       </label>
     </div>
-    <div class="mod-edi-wrap">
-      <table id="mod-edi-table" class="mod-edi-table"></table>
+    <div id="mod-edi-save" class="mod-edi-save" hidden>
+      <input id="mod-edi-name" class="form-control" type="text" maxlength="60" autocomplete="off">
+      <button type="button" id="mod-edi-save-btn" class="btn btn-primary" data-i18n="save">Salva</button>
+    </div>
+    <span id="mod-edi-status" class="text-small text-muted mod-edi-status"></span>
+    <div class="mod-edi-block">
+      <h3 class="mod-edi-title" data-i18n="ediQtyTitle">Quantità</h3>
+      <div class="mod-edi-wrap"><table id="mod-edi-qty" class="mod-edi-table"></table></div>
+    </div>
+    <div class="mod-edi-block">
+      <h3 class="mod-edi-title" data-i18n="ediPctTitle">Percentuali</h3>
+      <div class="mod-edi-wrap"><table id="mod-edi-table" class="mod-edi-table"></table></div>
     </div>
   </section>
 
@@ -6588,10 +6621,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Opzioni',
           ediTotal: 'Totale %',
           ediTotalVolume: 'Volume totale',
-          ediEmpty: 'Nessun dato EDI: carica l’Excel per vedere la tabella.',
-          ediSource: 'Excel: {file} · caricato il {when} da {who}',
+          ediEmpty: 'Carica un Excel o scegli un EDI salvato.',
+          ediEmptyView: 'Scegli un EDI salvato dal menu.',
+          ediChoose: 'Scegli un EDI salvato…',
+          ediDraftOption: 'Excel caricato (non salvato)',
+          ediDraftStatus: 'Excel: {file} · non ancora salvato: scrivi il nome e premi Salva.',
+          ediQtyTitle: 'Quantità',
+          ediPctTitle: 'Percentuali',
+          ediDelete: 'Elimina questo EDI',
+          ediDeleteConfirm: 'Eliminare «{name}»?',
+          auditEdiDelete: 'EDI eliminato',
+          ediSource: 'Excel: {file} · salvato il {when} da {who}',
           ediNoTable: 'Nell’Excel non c’è la tabella per codice materiale (colonne Material, Back, W, Colore, Heat e settimane WK).',
-          auditEdiUpload: 'Excel EDI caricato',
+          auditEdiUpload: 'EDI salvato',
           ediReading: 'Lettura dell’Excel…',
           ediLoadError: 'Impossibile leggere il file Excel.',
           auditUserApprove: 'Permesso di approvazione modificato',
@@ -7136,10 +7178,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Options',
           ediTotal: 'Total %',
           ediTotalVolume: 'Total volume',
-          ediEmpty: 'No EDI data: upload the Excel to see the table.',
-          ediSource: 'Excel: {file} · uploaded on {when} by {who}',
+          ediEmpty: 'Upload an Excel or choose a saved EDI.',
+          ediEmptyView: 'Choose a saved EDI from the menu.',
+          ediChoose: 'Choose a saved EDI…',
+          ediDraftOption: 'Uploaded Excel (not saved)',
+          ediDraftStatus: 'Excel: {file} · not saved yet: enter the name and press Save.',
+          ediQtyTitle: 'Quantities',
+          ediPctTitle: 'Percentages',
+          ediDelete: 'Delete this EDI',
+          ediDeleteConfirm: 'Delete «{name}»?',
+          auditEdiDelete: 'EDI deleted',
+          ediSource: 'Excel: {file} · saved on {when} by {who}',
           ediNoTable: 'The Excel has no table by material code (columns Material, Back, W, Colore, Heat and WK weeks).',
-          auditEdiUpload: 'EDI Excel uploaded',
+          auditEdiUpload: 'EDI saved',
           ediReading: 'Reading the Excel…',
           ediLoadError: 'Unable to read the Excel file.',
           auditUserApprove: 'Approval permission changed',
@@ -7684,10 +7735,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediOptions: 'Seçenekler',
           ediTotal: 'Toplam %',
           ediTotalVolume: 'Toplam hacim',
-          ediEmpty: 'EDI verisi yok: tabloyu görmek için Excel dosyasını yükleyin.',
-          ediSource: 'Excel: {file} · {when} tarihinde {who} tarafından yüklendi',
+          ediEmpty: 'Bir Excel yükleyin veya kayıtlı bir EDI seçin.',
+          ediEmptyView: 'Menüden kayıtlı bir EDI seçin.',
+          ediChoose: 'Kayıtlı bir EDI seçin…',
+          ediDraftOption: 'Yüklenen Excel (kaydedilmedi)',
+          ediDraftStatus: 'Excel: {file} · henüz kaydedilmedi: adı yazıp Kaydet’e basın.',
+          ediQtyTitle: 'Miktarlar',
+          ediPctTitle: 'Yüzdeler',
+          ediDelete: 'Bu EDI’yi sil',
+          ediDeleteConfirm: '«{name}» silinsin mi?',
+          auditEdiDelete: 'EDI silindi',
+          ediSource: 'Excel: {file} · {when} tarihinde {who} tarafından kaydedildi',
           ediNoTable: 'Excel dosyasında malzeme koduna göre tablo yok (Material, Back, W, Colore, Heat sütunları ve WK haftaları).',
-          auditEdiUpload: 'EDI Excel yüklendi',
+          auditEdiUpload: 'EDI kaydedildi',
           ediReading: 'Excel okunuyor…',
           ediLoadError: 'Excel dosyası okunamadı.',
           auditUserApprove: 'Onay izni değiştirildi',
@@ -8313,6 +8373,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ediUpload: root.querySelector('#mod-edi-upload'),
         ediFile: root.querySelector('#mod-edi-file'),
         ediTable: root.querySelector('#mod-edi-table'),
+        ediQty: root.querySelector('#mod-edi-qty'),
+        ediSelect: root.querySelector('#mod-edi-select'),
+        ediDelete: root.querySelector('#mod-edi-delete'),
+        ediSave: root.querySelector('#mod-edi-save'),
+        ediName: root.querySelector('#mod-edi-name'),
+        ediSaveBtn: root.querySelector('#mod-edi-save-btn'),
         summaryBoard: root.querySelector('#mod-summary-board'),
         taskAdd: root.querySelector('#mod-task-add'),
         taskPdf: root.querySelector('#mod-task-pdf'),
@@ -11346,7 +11412,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             subscribeEntries();
             subscribeTasks();
             subscribeAnomalies();
-            subscribeEdi();
             subscribeOeeConfig();
             subscribeStoppages();
             subscribeStoppageConfig();
@@ -13628,59 +13693,101 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         { label: 'Heater', pct: (c, i) => c.heater[i] / c.total[i] * 100 },
         { label: 'w/o Heater', pct: (c, i) => c.noHeater[i] / c.total[i] * 100 }
       ];
-      let ediData = null;   // { weeks, counts, fileName, uploadedAt, uploadedBy }
+      // Righe della tabella quantita': stesse voci, numeri assoluti.
+      const EDI_QTY_ROWS = [
+        { label: '6W', key: 'w6' }, { label: '4W', key: 'w4' },
+        { label: 'LEATHER', key: 'leather' }, { label: 'Fabric', key: 'fabric' },
+        { label: 'Abarth', key: 'abarth' }, { label: '50%', key: 'r50' },
+        { label: '100%', key: 'r100' }, { label: 'Heater', key: 'heater' },
+        { label: 'w/o Heater', key: 'noHeater' }
+      ];
+      let ediReports = [];     // EDI salvati (ediReports), piu' recenti prima
+      let ediSelectedId = '';  // EDI scelto nella tendina
+      let ediDraft = null;     // Excel appena caricato, non ancora salvato
       let ediUnsub = null;
 
+      // Gli EDI salvati si leggono solo quando si apre la pagina.
       function subscribeEdi() {
-        if (!db || ediUnsub) return;
-        ediUnsub = db.collection('config').doc('edi').onSnapshot((doc) => {
-          ediData = doc.exists ? doc.data() : null;
+        if (!db || ediUnsub || !state.authUser) return;
+        ediUnsub = db.collection('ediReports').onSnapshot((snap) => {
+          const list = [];
+          snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
+          list.sort((a, b) => String(b.savedAt || '').localeCompare(String(a.savedAt || '')));
+          ediReports = list;
+          if (ediSelectedId && !list.some((r) => r.id === ediSelectedId)) ediSelectedId = '';
           if (state.view === 'edi') renderEdi();
         }, () => {});
       }
       function unsubscribeEdi() {
         if (ediUnsub) { try { ediUnsub(); } catch (e) {} ediUnsub = null; }
-        ediData = null;
+        ediReports = [];
+        ediSelectedId = '';
+        ediDraft = null;
       }
 
+      function ediWeekHead(data, extra) {
+        return '<thead><tr><th>' + escapeHtml(t('ediOptions')) + '</th>' +
+          data.weeks.map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
+          (extra ? '<th class="mod-edi-total">' + escapeHtml(extra) + '</th>' : '') + '</tr></thead>';
+      }
       function renderEdi() {
-        el.ediUpload.hidden = !state.isAdmin;
-        const data = ediData;
+        subscribeEdi();
+        const admin = state.isAdmin;
+        el.ediUpload.hidden = !admin;
+        el.ediSelect.innerHTML = '<option value="">' + escapeHtml(t(ediDraft ? 'ediDraftOption' : 'ediChoose')) + '</option>' +
+          ediReports.map((r) => '<option value="' + escapeHtml(r.id) + '"' + (r.id === ediSelectedId ? ' selected' : '') + '>' +
+            escapeHtml(r.name) + '</option>').join('');
+        el.ediSelect.value = ediDraft ? '' : ediSelectedId;
+        el.ediDelete.hidden = !admin || !ediSelectedId || Boolean(ediDraft);
+        el.ediSave.hidden = !admin || !ediDraft;
+        const data = ediDraft || ediReports.find((r) => r.id === ediSelectedId) || null;
         if (!data || !data.weeks || !data.weeks.length) {
-          el.ediTable.innerHTML = '<tbody><tr><td class="mod-edi-empty">' + escapeHtml(t('ediEmpty')) + '</td></tr></tbody>';
+          const empty = '<tbody><tr><td class="mod-edi-empty">' + escapeHtml(t(admin ? 'ediEmpty' : 'ediEmptyView')) + '</td></tr></tbody>';
+          el.ediQty.innerHTML = empty;
+          el.ediTable.innerHTML = empty;
           el.ediStatus.textContent = '';
           return;
         }
         const c = data.counts;
         const n = data.weeks.length;
+        const num = (v) => escapeHtml(formatNumber(Number(v) || 0));
         const pct = (v) => Number.isFinite(v) ? escapeHtml(formatNumber(Math.round(v))) + '%' : '—';
+
+        el.ediQty.innerHTML = ediWeekHead(data, '') +
+          '<tbody>' + EDI_QTY_ROWS.map((row) =>
+            '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
+              (c[row.key] || []).map((v) => '<td>' + num(v) + '</td>').join('') + '</tr>'
+          ).join('') + '</tbody>' +
+          '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
+            c.total.map((v) => '<td>' + num(v) + '</td>').join('') + '</tr></tfoot>';
+
         const rows = EDI_ROWS.map((def) => {
           const values = data.weeks.map((w, i) => def.pct(c, i));
           // Totale: media delle settimane, come nell'Excel.
           const total = values.reduce((sum, v) => sum + v, 0) / n;
           return { label: def.label, values, total };
         });
-        el.ediTable.innerHTML =
-          '<thead><tr><th>' + escapeHtml(t('ediOptions')) + '</th>' +
-            data.weeks.map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
-            '<th class="mod-edi-total">' + escapeHtml(t('ediTotal')) + '</th></tr></thead>' +
+        el.ediTable.innerHTML = ediWeekHead(data, t('ediTotal')) +
           '<tbody>' + rows.map((row) =>
             '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
               row.values.map((v) => '<td>' + pct(v) + '</td>').join('') +
               '<td class="mod-edi-total">' + pct(row.total) + '</td></tr>'
           ).join('') + '</tbody>' +
           '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
-            c.total.map((v) => '<td>' + escapeHtml(formatNumber(v)) + '</td>').join('') +
+            c.total.map((v) => '<td>' + num(v) + '</td>').join('') +
             '<td class="mod-edi-total">100%</td></tr></tfoot>';
-        let when = '';
-        if (data.uploadedAt) {
-          try {
-            when = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-              .format(new Date(data.uploadedAt));
-          } catch (e) {}
+
+        if (ediDraft) {
+          el.ediStatus.textContent = t('ediDraftStatus').replace('{file}', data.fileName || '—');
+          return;
         }
+        let when = '';
+        try {
+          when = new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+            .format(new Date(data.savedAt));
+        } catch (e) {}
         el.ediStatus.textContent = t('ediSource').replace('{file}', data.fileName || '—')
-          .replace('{when}', when).replace('{who}', data.uploadedBy || '—');
+          .replace('{when}', when).replace('{who}', data.savedBy || '—');
       }
 
       // Libreria per leggere gli Excel, caricata solo quando serve.
@@ -13745,29 +13852,73 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return null;
       }
 
+      // Excel caricato: le tabelle si riempiono subito, ma restano una bozza
+      // finche' non si preme Salva (con il nome, es. "EDI 08/10/2026").
       function readEdiExcel(file) {
-        if (!db || !state.isAdmin) return;
+        if (!state.isAdmin) return;
         el.ediStatus.textContent = t('ediReading');
         Promise.all([loadXlsxLib(), file.arrayBuffer()]).then(([XLSX, buffer]) => {
           const parsed = parseEdiWorkbook(XLSX, XLSX.read(buffer, { type: 'array' }));
-          if (!parsed) { el.ediStatus.textContent = t('ediNoTable'); return null; }
-          const doc = Object.assign(parsed, {
-            fileName: file.name,
-            uploadedAt: new Date().toISOString(),
-            uploadedBy: state.authUsername || ''
-          });
-          return db.collection('config').doc('edi').set(doc).then(() => {
-            logAudit('edi.upload', file.name);
-          });
+          if (!parsed) { el.ediStatus.textContent = t('ediNoTable'); return; }
+          ediDraft = Object.assign(parsed, { fileName: file.name });
+          ediSelectedId = '';
+          el.ediName.value = 'EDI ' + formatDateNumeric(isoDate(new Date()));
+          renderEdi();
+          el.ediName.focus();
         }).catch(() => {
           el.ediStatus.textContent = t('ediLoadError');
         });
+      }
+      function saveEdi() {
+        const draft = ediDraft;
+        const name = el.ediName.value.trim();
+        if (!draft || !db || !state.isAdmin) return;
+        if (!name) { el.ediName.focus(); return; }
+        el.ediSaveBtn.disabled = true;
+        const ref = db.collection('ediReports').doc();
+        ref.set({
+          name,
+          weeks: draft.weeks,
+          counts: draft.counts,
+          fileName: draft.fileName || '',
+          savedAt: new Date().toISOString(),
+          savedBy: state.authUsername || ''
+        }).then(() => {
+          ediDraft = null;
+          ediSelectedId = ref.id;
+          el.ediSaveBtn.disabled = false;
+          renderEdi();
+          logAudit('edi.upload', name);
+        }).catch(() => {
+          el.ediSaveBtn.disabled = false;
+          alert(t('userCreateError'));
+        });
+      }
+      function deleteEdi() {
+        const report = ediReports.find((r) => r.id === ediSelectedId);
+        if (!report || !db || !state.isAdmin) return;
+        if (!confirm(t('ediDeleteConfirm').replace('{name}', report.name))) return;
+        db.collection('ediReports').doc(report.id).delete().then(() => {
+          ediSelectedId = '';
+          renderEdi();
+          logAudit('edi.delete', report.name);
+        }).catch(() => alert(t('userCreateError')));
       }
       el.ediFile.addEventListener('change', () => {
         const file = el.ediFile.files && el.ediFile.files[0];
         if (file) readEdiExcel(file);
         el.ediFile.value = '';
       });
+      el.ediSelect.addEventListener('change', () => {
+        ediSelectedId = el.ediSelect.value;
+        ediDraft = null;
+        renderEdi();
+      });
+      el.ediSaveBtn.addEventListener('click', saveEdi);
+      el.ediName.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') { event.preventDefault(); saveEdi(); }
+      });
+      el.ediDelete.addEventListener('click', deleteEdi);
 
       function renderChat() {
         subscribeChat();
@@ -14407,7 +14558,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'rework.update': ['auditReworkUpdate', 'settings'],
         'user.create': ['auditUserCreate', 'users'], 'user.revoke': ['auditUserRevoke', 'users'],
         'user.approve': ['auditUserApprove', 'users'], 'user.texts': ['auditUserTexts', 'users'],
-        'texts.update': ['auditTextsUpdate', 'settings'], 'edi.upload': ['auditEdiUpload', 'data'],
+        'texts.update': ['auditTextsUpdate', 'settings'], 'edi.upload': ['auditEdiUpload', 'data'], 'edi.delete': ['auditEdiDelete', 'data'],
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
         'anomaly.create': ['auditAnomalyCreate', 'anomalies'], 'anomaly.update': ['auditAnomalyUpdate', 'anomalies'],

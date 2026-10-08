@@ -88,6 +88,13 @@ service cloud.firestore {
       allow write: if canEditTexts() && lang in ['it', 'en', 'tr'];
     }
 
+    match /ediReports/{id} {
+      // EDI salvati (tabelle quantita'/percentuali per settimana): li vede
+      // chi ha l'accesso, li salvano ed eliminano Operatori e Amministratori.
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
     match /anomalies/{id} {
       // Schede anomalia: le legge chi ha l'accesso, le modifica e le elimina
       // solo un admin. Una scheda nuova puo' aprirla chiunque abbia l'accesso
