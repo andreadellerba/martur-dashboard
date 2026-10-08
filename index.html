@@ -14,12 +14,21 @@
 <script>
 (() => {
   try {
+    // Una volta sola per dispositivo: si riparte da stile Officina in tema
+    // chiaro, anche dove prima era stato scelto altro. Dopo, la scelta fatta
+    // dalle Impostazioni viene ricordata come sempre.
+    if (window.localStorage.getItem('martur-default-officina-light') !== '1') {
+      window.localStorage.setItem('martur-dashboard-theme', 'light');
+      window.localStorage.setItem('martur-dashboard-style', 'officina');
+      window.localStorage.setItem('martur-default-officina-light', '1');
+    }
     var saved = window.localStorage.getItem('martur-dashboard-theme');
     document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
     // Stile grafico: Officina salvo scelta diversa (Impostazioni > Stile).
     if (window.localStorage.getItem('martur-dashboard-style') !== 'classic') document.documentElement.classList.add('martur-officina');
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('martur-officina');
   }
 })();
 </script>
