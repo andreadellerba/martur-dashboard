@@ -7,10 +7,10 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'self' blob: data: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Martur Italy Operations Dashboard</title>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-title" content="Martur">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#e9e2d3">
 <script>
 (() => {
   try {
@@ -956,16 +956,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: none; }
-/* Numeri delle card con un filo di contorno scuro: si leggono meglio. */
-:root.martur-officina #martur-operations-dashboard :is(.viz-stat-value, .mod-shift-metric strong, .mod-loss-kpi-val, .mod-oee-row-value) {
-  -webkit-text-stroke: 0.9px rgb(0 0 0 / 60%);
-  paint-order: stroke fill;
-}
-:root.martur-officina #martur-operations-dashboard .mod-oee-gauge-value {
-  stroke: rgb(0 0 0 / 55%);
-  stroke-width: 1.7px;
-  paint-order: stroke fill;
-}
 /* Logo, menu e calendario vicini al centro anche sugli schermi larghi. */
 @media (min-width: 1420px) {
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster { --topbar-gap: 14px; }
@@ -989,6 +979,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    ":root" davanti serve a vincere sulle regole del telefono piu' vecchie,
    che stanno piu' in basso nel foglio. */
 #martur-operations-dashboard .mod-tabbar { display: none; }
+/* Scritte "vuote" (nessun dato, nessuna attivita', nessun fermo...): sempre
+   al centro del loro riquadro, anche dentro le tabelle. */
+#martur-operations-dashboard :is(td.mod-empty, .mod-oee-empty, .mod-task-empty) { text-align: center !important; }
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root #martur-operations-dashboard .mod-period-note { text-align: center; justify-content: center; }
+}
 @media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
   :root #martur-operations-dashboard {
     /* spazio per non finire sotto le pillole in basso */
@@ -1009,18 +1005,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     height: auto;
   }
   :root #martur-operations-dashboard .mod-cal-toggle { display: none; }
-  /* Il vecchio "stadio" diventa una fila di tasti tondi, senza contorno. */
-  :root #martur-operations-dashboard .mod-pillnav {
-    order: 2;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    padding: 0;
-    display: flex;
+  /* Intestazione non piu' fissa in alto: sul telefono e' alta e, restando
+     attaccata mentre si scorre, copriva l'inizio della pagina. Le sezioni
+     restano a portata nella pillola in basso. */
+  :root #martur-operations-dashboard .mod-topbar { position: static; }
+  /* Ordine: logo, tasti tondi, calendario, tendina della vista. Il vecchio
+     "stadio" del menu si scioglie ("display: contents") cosi' i suoi pezzi
+     si mettono in fila con gli altri. */
+  :root #martur-operations-dashboard .mod-topbar-cluster {
+    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: 12px;
   }
+  :root #martur-operations-dashboard .mod-topbar-left { order: 1; flex: 0 0 100%; }
+  :root #martur-operations-dashboard .mod-pillnav { display: contents; }
+  :root #martur-operations-dashboard .mod-pillnav > :is(#mod-back-btn, #mod-entry-view-btn, .mod-daily-admin-actions, .mod-appmenu-wrap) { order: 2; }
   :root #martur-operations-dashboard .mod-pillnav > #mod-view-select { display: none; }
   :root #martur-operations-dashboard .mod-pillnav :is(#mod-back-btn, #mod-entry-view-btn, .mod-appmenu-btn, .mod-daily-admin-actions .btn) {
     width: 44px;
@@ -1043,16 +1044,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   /* Vista (Giornaliero, Settimanale... o l'EDI salvato): una pillola bianca
      a tutta larghezza, sotto i tasti. */
   :root #martur-operations-dashboard .mod-pillnav > .mod-view-subselect {
-    order: 5;
-    flex: 1 1 100%;
+    order: 4;
+    flex: 0 0 100%;
     max-width: 100%;
-    min-height: 44px;
+    /* Altezza fissa: su iPhone la tendina nativa si schiacciava e tagliava
+       il testo. 16px evita lo zoom automatico di Safari al tocco. */
+    -webkit-appearance: none;
+    appearance: none;
+    height: 52px;
+    min-height: 52px;
     margin: 0;
-    padding: 0 18px;
+    padding: 0 44px;
     border: 1.5px solid var(--border);
     border-radius: 999px;
-    background: var(--popover);
+    background-color: var(--popover);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f6656' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 18px 18px;
+    color: var(--foreground);
+    font-size: 16px;
     font-weight: 700;
+    line-height: 1.2;
     letter-spacing: 0.04em;
     text-align: center;
     text-align-last: center;
@@ -1064,6 +1077,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     display: flex;
     order: 3;
     width: 100%;
+    flex: 0 0 100%;
     min-height: 44px;
     background: var(--popover);
     border: 1.5px solid var(--border);
@@ -2796,6 +2810,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         text-align: right;
         white-space: normal;
       }
+      /* Riga "nessuna scheda": testo al centro, senza etichetta. */
+      #martur-operations-dashboard .mod-anomaly-table tbody td.mod-anomaly-empty {
+        display: block;
+        width: 100%;
+        padding: 24px 8px;
+        text-align: center;
+      }
+      #martur-operations-dashboard .mod-anomaly-table tbody td.mod-anomaly-empty::before { content: none; }
       #martur-operations-dashboard .mod-anomaly-table tbody td::before {
         content: attr(data-label);
         flex: none;
@@ -6210,8 +6232,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
        itstracker). Su computer resta nascosto: li' c'e' il menu in alto. -->
   <nav class="mod-tabbar" id="mod-tabbar" aria-label="Sezioni">
     <div class="mod-tabbar-pill mod-tabbar-main">
-      <button type="button" class="mod-tabbtn" data-tab="production" aria-pressed="false"><i data-lucide="factory" aria-hidden="true"></i><span data-i18n="tabProduction">Produzione</span></button>
-      <button type="button" class="mod-tabbtn" data-tab="abarth" aria-pressed="false"><i data-lucide="armchair" aria-hidden="true"></i><span data-i18n="tabAbarth">Abarth</span></button>
+      <button type="button" class="mod-tabbtn" data-tab="production" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 21h20"></path><path d="M3 21V11l5 3v-3l5 3v-3l5 3V4h3v17"></path><path d="M7 17h2M12 17h2"></path></svg><span data-i18n="tabProduction">Produzione</span></button>
+      <button type="button" class="mod-tabbtn" data-tab="abarth" aria-pressed="false"><i data-lucide="car" aria-hidden="true"></i><span data-i18n="tabAbarth">Abarth</span></button>
       <button type="button" class="mod-tabbtn" data-tab="quality" aria-pressed="false"><i data-lucide="shield-check" aria-hidden="true"></i><span data-i18n="tabQuality">Qualità</span></button>
       <button type="button" class="mod-tabbtn" data-tab="edi" aria-pressed="false"><i data-lucide="file-spreadsheet" aria-hidden="true"></i><span data-i18n="tabEdi">EDI</span></button>
       <button type="button" class="mod-tabbtn" data-tab="summary" aria-pressed="false"><i data-lucide="clipboard-list" aria-hidden="true"></i><span data-i18n="tabSummary">Attività</span></button>
