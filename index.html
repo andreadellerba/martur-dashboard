@@ -3672,28 +3672,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       overflow: hidden;
       width: 100%;
     }
-    /* "Leggi tutta la nota": sotto la nota, al centro, ben visibile. Il posto
-       c'e' sempre (invisibile se non serve) cosi' le card restano pari. */
+    /* Nota lunga: piccola icona a destra, dentro le due righe, che apre il
+       testo intero. Il testo si stringe di quanto serve e resta centrato. */
+    #martur-operations-dashboard .mod-shift-note { position: relative; }
+    #martur-operations-dashboard .mod-shift-note:has(.mod-note-more-on) .mod-shift-note-text { padding-inline: 34px; box-sizing: border-box; }
     #martur-operations-dashboard .mod-note-more {
-      visibility: hidden;
-      justify-self: center;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 16px;
-      border: 1.5px solid var(--gold);
+      display: none;
+      position: absolute;
+      right: 0;
+      bottom: 2px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      place-items: center;
+      border: 1px solid var(--border);
       border-radius: 999px;
-      background: color-mix(in srgb, var(--gold) 12%, transparent);
-      color: var(--gold);
-      font: inherit;
-      font-size: var(--fs-label);
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      background: var(--card);
+      color: var(--muted-foreground);
       cursor: pointer;
     }
-    #martur-operations-dashboard .mod-note-more svg { width: 15px; height: 15px; }
-    #martur-operations-dashboard .mod-note-more.mod-note-more-on { visibility: visible; }
+    #martur-operations-dashboard .mod-note-more:hover { color: var(--gold); border-color: var(--gold); }
+    #martur-operations-dashboard .mod-note-more svg { width: 14px; height: 14px; }
+    #martur-operations-dashboard .mod-note-more.mod-note-more-on { display: inline-grid; }
     #martur-operations-dashboard .mod-capture .mod-note-more { display: none; }
     #martur-operations-dashboard .mod-note-dialog { max-width: 720px; }
     #martur-operations-dashboard .mod-note-full {
@@ -11338,15 +11338,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '</div>' +
             // Senza nota si legge "Nessuna nota inserita" (in grigio): appena
             // se ne scrive una, al suo posto c'e' il testo inserito.
+            // Nota piu' lunga di due righe: a destra, dentro la nota, una
+            // piccola icona apre il testo intero (la mostra updateNoteMore).
             ((shift.note || '').trim()
-              ? '<div class="mod-shift-note"><span class="mod-shift-note-text">' + escapeHtml(shift.note.trim()) + '</span></div>'
+              ? '<div class="mod-shift-note"><span class="mod-shift-note-text">' + escapeHtml(shift.note.trim()) + '</span>' +
+                '<button type="button" class="mod-note-more" data-note="' + escapeHtml(shift.note.trim()) + '" data-title="' +
+                  escapeHtml((isSingleShiftRow(row) ? t('uniqueShift') : t(shiftKey)) + ' · ' + formatDateNumeric(row.date)) +
+                  '" title="' + escapeHtml(t('noteMore')) + '" aria-label="' + escapeHtml(t('noteMore')) + '">' +
+                  '<i data-lucide="maximize-2" aria-hidden="true"></i></button></div>'
               : '<div class="mod-shift-note mod-shift-note-empty"><span class="mod-shift-note-text">' + escapeHtml(t('noShiftNote')) + '</span></div>') +
-            // Nota piu' lunga di due righe: sotto compare "Leggi tutta la nota"
-            // (lo decide updateNoteMore dopo il disegno). Il posto del tasto c'e'
-            // sempre, cosi' le due card restano alte uguali.
-            '<button type="button" class="mod-note-more" data-note="' + escapeHtml((shift.note || '').trim()) + '" data-title="' +
-              escapeHtml((isSingleShiftRow(row) ? t('uniqueShift') : t(shiftKey)) + ' · ' + formatDateNumeric(row.date)) + '">' +
-              '<i data-lucide="maximize-2" aria-hidden="true"></i><span>' + escapeHtml(t('noteMore')) + '</span></button>' +
           '</article>';
       }
 
