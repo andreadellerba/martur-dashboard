@@ -6657,7 +6657,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditMany: 'cambia in {n} punti dell’app',
           ediTab: 'EDI',
           ediUpload: 'Carica Excel',
-          ediOptions: 'Opzioni',
+          ediOptions: 'EDI Stellantis',
+          ediTotalQty: 'Totale',
           ediTotal: 'Totale %',
           ediTotalVolume: 'Volume totale',
           ediEmpty: 'Carica un Excel, oppure scegli un EDI salvato dal menu EDI in alto.',
@@ -7219,7 +7220,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditMany: 'changes {n} places in the app',
           ediTab: 'EDI',
           ediUpload: 'Upload Excel',
-          ediOptions: 'Options',
+          ediOptions: 'EDI Stellantis',
+          ediTotalQty: 'Total',
           ediTotal: 'Total %',
           ediTotalVolume: 'Total volume',
           ediEmpty: 'Upload an Excel, or choose a saved EDI from the EDI menu at the top.',
@@ -7781,7 +7783,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditMany: 'uygulamada {n} yeri değiştirir',
           ediTab: 'EDI',
           ediUpload: 'Excel yükle',
-          ediOptions: 'Seçenekler',
+          ediOptions: 'EDI Stellantis',
+          ediTotalQty: 'Toplam',
           ediTotal: 'Toplam %',
           ediTotalVolume: 'Toplam hacim',
           ediEmpty: 'Bir Excel yükleyin veya üstteki EDI menüsünden kayıtlı bir EDI seçin.',
@@ -13742,30 +13745,58 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       // ---- EDI ----
       // Dal foglio dell'Excel EDI con una riga per codice materiale (colonne
-      // Material, Back, W, Colore, Heat e una colonna per settimana) si
-      // sommano le quantita' per settimana. Il risultato sta in
-      // config/edi: lo vedono tutti, lo carica chi ha il pulsante.
-      const EDI_ROWS = [
-        // 6W/4W come nell'Excel di riferimento: 6W = quota 6W divisa per due,
-        // 4W = il resto.
-        { label: '6W', pct: (c, i) => c.w6[i] / c.total[i] / 2 * 100 },
-        { label: '4W', pct: (c, i) => 100 - c.w6[i] / c.total[i] / 2 * 100 },
-        { label: 'LEATHER', pct: (c, i) => c.leather[i] / c.total[i] * 100 },
-        { label: 'Fabric', pct: (c, i) => c.fabric[i] / c.total[i] * 100 },
-        { label: 'Abarth', pct: (c, i) => c.abarth[i] / c.total[i] * 100 },
-        { label: '50%', pct: (c, i) => c.r50[i] / c.total[i] * 100 },
-        { label: '100%', pct: (c, i) => c.r100[i] / c.total[i] * 100 },
-        { label: 'Heater', pct: (c, i) => c.heater[i] / c.total[i] * 100 },
-        { label: 'w/o Heater', pct: (c, i) => c.noHeater[i] / c.total[i] * 100 }
+      // Material, W, Colore, Back, Heat e una colonna per settimana) si
+      // sommano le quantita' per settimana. Le righe delle tabelle nascono dai
+      // codici trovati in quelle colonne: un codice nuovo diventa da solo una
+      // riga nuova. I codici gia' noti hanno il nome della tabella di
+      // riferimento (LE = LEATHER, H = Heater, ...).
+      const EDI_GROUPS = ['W', 'COLORE', 'BACK', 'HEAT'];
+      // Codici che finiscono nella stessa riga.
+      const EDI_MERGE = { 'COLORE:ABT': 'ABARTH', 'COLORE:ABA': 'ABARTH' };
+      const EDI_KNOWN = [
+        ['W', '6W', '6W'], ['W', '4W', '4W'],
+        ['COLORE', 'LE', 'LEATHER'], ['COLORE', 'FAB', 'Fabric'], ['COLORE', 'ABARTH', 'Abarth'],
+        ['BACK', '50', '50%'], ['BACK', '100', '100%'],
+        ['HEAT', 'H', 'Heater'], ['HEAT', 'NOH', 'w/o Heater']
       ];
-      // Righe della tabella quantita': stesse voci, numeri assoluti.
-      const EDI_QTY_ROWS = [
-        { label: '6W', key: 'w6' }, { label: '4W', key: 'w4' },
-        { label: 'LEATHER', key: 'leather' }, { label: 'Fabric', key: 'fabric' },
-        { label: 'Abarth', key: 'abarth' }, { label: '50%', key: 'r50' },
-        { label: '100%', key: 'r100' }, { label: 'Heater', key: 'heater' },
-        { label: 'w/o Heater', key: 'noHeater' }
-      ];
+      function ediRowLabel(group, code) {
+        const known = EDI_KNOWN.find((k) => k[0] === group && k[1] === code);
+        if (known) return known[2];
+        return group === 'BACK' && /^\d+$/.test(code) ? code + '%' : code;
+      }
+      // Ordine: i gruppi come nella tabella di riferimento; dentro ogni
+      // gruppo prima i codici noti, poi quelli nuovi.
+      function ediRowOrder(group, code) {
+        const g = EDI_GROUPS.indexOf(group);
+        const k = EDI_KNOWN.findIndex((x) => x[0] === group && x[1] === code);
+        return (g < 0 ? 9 : g) * 1000 + (k >= 0 ? k : 500);
+      }
+      // EDI salvati con la versione precedente: stessi numeri, altro formato.
+      const EDI_OLD_KEYS = {
+        w6: ['W', '6W'], w4: ['W', '4W'], leather: ['COLORE', 'LE'], fabric: ['COLORE', 'FAB'],
+        abarth: ['COLORE', 'ABARTH'], r50: ['BACK', '50'], r100: ['BACK', '100'],
+        heater: ['HEAT', 'H'], noHeater: ['HEAT', 'NOH']
+      };
+      function ediRowsOf(data) {
+        if (Array.isArray(data.rows)) return data.rows;
+        const c = data.counts || {};
+        return Object.keys(EDI_OLD_KEYS).filter((k) => Array.isArray(c[k]))
+          .map((k) => ({ group: EDI_OLD_KEYS[k][0], code: EDI_OLD_KEYS[k][1], values: c[k] }));
+      }
+      function ediTotalOf(data) {
+        return data.total || (data.counts && data.counts.total) || [];
+      }
+      // Percentuale di una riga in una settimana. 6W/4W come nell'Excel di
+      // riferimento: 6W = quota 6W divisa per due, 4W = il resto.
+      function ediPct(rows, row, total, i) {
+        if (!total[i]) return NaN;
+        if (row.group === 'W' && row.code === '6W') return row.values[i] / total[i] / 2 * 100;
+        if (row.group === 'W' && row.code === '4W') {
+          const w6 = rows.find((r) => r.group === 'W' && r.code === '6W');
+          if (w6) return 100 - w6.values[i] / total[i] / 2 * 100;
+        }
+        return row.values[i] / total[i] * 100;
+      }
       let ediReports = [];     // EDI salvati (ediReports), piu' recenti prima
       let ediSelectedId = '';  // EDI scelto nella tendina
       let ediDraft = null;     // Excel appena caricato, non ancora salvato
@@ -13842,35 +13873,37 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.ediQty.innerHTML = empty;
           el.ediTable.innerHTML = empty;
           el.ediStatus.textContent = '';
+          el.ediStatus.classList.remove('mod-negative');
           return;
         }
-        const c = data.counts;
+        const lines = ediRowsOf(data).slice().sort((a, b) => ediRowOrder(a.group, a.code) - ediRowOrder(b.group, b.code));
+        const total = ediTotalOf(data);
         const n = data.weeks.length;
         const num = (v) => escapeHtml(formatNumber(Number(v) || 0));
         const pct = (v) => Number.isFinite(v) ? escapeHtml(formatNumber(Math.round(v))) + '%' : '—';
+        const sum = (arr) => (arr || []).reduce((s, v) => s + (Number(v) || 0), 0);
 
-        el.ediQty.innerHTML = ediWeekHead(data, '') +
-          '<tbody>' + EDI_QTY_ROWS.map((row) =>
-            '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
-              (c[row.key] || []).map((v) => '<td>' + num(v) + '</td>').join('') + '</tr>'
+        el.ediQty.innerHTML = ediWeekHead(data, t('ediTotalQty')) +
+          '<tbody>' + lines.map((row) =>
+            '<tr><th scope="row">' + escapeHtml(ediRowLabel(row.group, row.code)) + '</th>' +
+              row.values.map((v) => '<td>' + num(v) + '</td>').join('') +
+              '<td class="mod-edi-total">' + num(sum(row.values)) + '</td></tr>'
           ).join('') + '</tbody>' +
           '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
-            c.total.map((v) => '<td>' + num(v) + '</td>').join('') + '</tr></tfoot>';
+            total.map((v) => '<td>' + num(v) + '</td>').join('') +
+            '<td class="mod-edi-total">' + num(sum(total)) + '</td></tr></tfoot>';
 
-        const rows = EDI_ROWS.map((def) => {
-          const values = data.weeks.map((w, i) => def.pct(c, i));
-          // Totale: media delle settimane, come nell'Excel.
-          const total = values.reduce((sum, v) => sum + v, 0) / n;
-          return { label: def.label, values, total };
-        });
         el.ediTable.innerHTML = ediWeekHead(data, t('ediTotal')) +
-          '<tbody>' + rows.map((row) =>
-            '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
-              row.values.map((v) => '<td>' + pct(v) + '</td>').join('') +
-              '<td class="mod-edi-total">' + pct(row.total) + '</td></tr>'
-          ).join('') + '</tbody>' +
+          '<tbody>' + lines.map((row) => {
+            const values = data.weeks.map((w, i) => ediPct(lines, row, total, i));
+            // Totale: media delle settimane, come nell'Excel.
+            const avg = values.reduce((s, v) => s + (Number.isFinite(v) ? v : 0), 0) / n;
+            return '<tr><th scope="row">' + escapeHtml(ediRowLabel(row.group, row.code)) + '</th>' +
+              values.map((v) => '<td>' + pct(v) + '</td>').join('') +
+              '<td class="mod-edi-total">' + pct(avg) + '</td></tr>';
+          }).join('') + '</tbody>' +
           '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
-            c.total.map((v) => '<td>' + num(v) + '</td>').join('') +
+            total.map((v) => '<td>' + num(v) + '</td>').join('') +
             '<td class="mod-edi-total">100%</td></tr></tfoot>';
 
         if (ediDraft) {
@@ -13880,6 +13913,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // File, data e autore del salvataggio non si mostrano: stanno nel
         // registro modifiche.
         el.ediStatus.textContent = '';
+        el.ediStatus.classList.remove('mod-negative');
       }
 
       // Libreria per leggere gli Excel, caricata solo quando serve.
@@ -13913,32 +13947,32 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             const weekCols = [];
             head.forEach((v, i) => { const m = /^WK\s*0*(\d+)$/.exec(v); if (m) weekCols.push({ i, label: 'W ' + m[1] }); });
             if (!weekCols.length) continue;
-            const keys = ['total', 'w6', 'w4', 'leather', 'fabric', 'abarth', 'r50', 'r100', 'heater', 'noHeater'];
-            const counts = {};
-            keys.forEach((k) => { counts[k] = weekCols.map(() => 0); });
+            const cols = { W: cW, COLORE: cColor, BACK: cBack, HEAT: cHeat };
+            const total = weekCols.map(() => 0);
+            const byKey = new Map(); // "GRUPPO:codice" -> riga
             for (let r = h + 1; r < rows.length; r++) {
               const row = rows[r];
               if (!norm(row[cMat])) continue;
-              const w = norm(row[cW]), color = norm(row[cColor]), heat = norm(row[cHeat]), back = norm(row[cBack]);
-              weekCols.forEach((wc, j) => {
-                const q = Number(row[wc.i]) || 0;
-                if (!q) return;
-                counts.total[j] += q;
-                if (w === '6W') counts.w6[j] += q;
-                if (w === '4W') counts.w4[j] += q;
-                if (color === 'LE') counts.leather[j] += q;
-                if (color === 'FAB') counts.fabric[j] += q;
-                if (color === 'ABT' || color === 'ABA') counts.abarth[j] += q;
-                if (back === '50') counts.r50[j] += q;
-                if (back === '100') counts.r100[j] += q;
-                if (heat === 'H') counts.heater[j] += q;
-                if (heat === 'NOH') counts.noHeater[j] += q;
+              const qty = weekCols.map((wc) => Number(row[wc.i]) || 0);
+              if (!qty.some(Boolean)) continue;
+              qty.forEach((q, j) => { total[j] += q; });
+              EDI_GROUPS.forEach((group) => {
+                const raw = norm(row[cols[group]]);
+                if (!raw) return;
+                const code = EDI_MERGE[group + ':' + raw] || raw;
+                const key = group + ':' + code;
+                if (!byKey.has(key)) byKey.set(key, { group, code, values: weekCols.map(() => 0) });
+                const line = byKey.get(key);
+                qty.forEach((q, j) => { line.values[j] += q; });
               });
             }
-            const keep = weekCols.map((wc, j) => counts.total[j] > 0);
+            // Le settimane a volume zero non si mostrano.
+            const keep = weekCols.map((wc, j) => total[j] > 0);
             const weeks = weekCols.filter((wc, j) => keep[j]).map((wc) => wc.label);
-            keys.forEach((k) => { counts[k] = counts[k].filter((v, j) => keep[j]); });
-            if (weeks.length) return { weeks, counts };
+            const lines = Array.from(byKey.values())
+              .map((line) => Object.assign(line, { values: line.values.filter((v, j) => keep[j]) }))
+              .sort((a, b) => ediRowOrder(a.group, a.code) - ediRowOrder(b.group, b.code));
+            if (weeks.length) return { weeks, total: total.filter((v, j) => keep[j]), rows: lines };
           }
         }
         return null;
@@ -13971,7 +14005,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ref.set({
           name,
           weeks: draft.weeks,
-          counts: draft.counts,
+          total: draft.total,
+          rows: draft.rows,
           fileName: draft.fileName || '',
           savedAt: new Date().toISOString(),
           savedBy: state.authUsername || ''
