@@ -2948,9 +2948,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     /* Il popup si adatta all'elenco: e' piu' alto degli altri dialoghi. */
     /* Popup novita' piu' grande degli altri dialoghi: ci sta tutto il testo
        senza dover scorrere, pulsante compreso. */
+    #martur-operations-dashboard .mod-update-pw { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--border); }
+    #martur-operations-dashboard .mod-update-dialog .mod-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
     #martur-operations-dashboard .mod-selection-dialog.mod-update-dialog {
       max-width: min(1320px, calc(100vw - 32px));
       max-height: 94vh;
+    }
+    @media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+      #martur-operations-dashboard .mod-update-dialog .mod-update-banner-col ul { font-size: var(--fs-body); line-height: 1.3; }
+      #martur-operations-dashboard .mod-update-dialog .mod-update-banner-col li { margin-bottom: 3px; }
+      #martur-operations-dashboard .mod-update-dialog .mod-update-banner-title { font-size: var(--fs-title); margin-bottom: 4px; }
+      #martur-operations-dashboard .mod-update-dialog .mod-update-banner-sign { margin-top: 6px; font-size: var(--fs-body); }
+      #martur-operations-dashboard .mod-update-dialog .mod-update-banner-col + .mod-update-banner-col { margin-top: 10px; padding-top: 10px; padding-left: 0; border-left: 0; }
     }
     #martur-operations-dashboard .mod-update-dialog .mod-update-banner-cols {
       overflow-y: auto;
@@ -6539,25 +6548,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         <div class="mod-update-banner-col">
           <div class="mod-update-banner-title">Novità di oggi</div>
           <ul>
-            <li><b>Nuovo look:</b> colori più caldi, card bianche, numeri più grandi e leggibili. Chi preferisce può tornare allo stile classico da Impostazioni › Stile.</li>
-            <li><b>App disponibile per telefono</b>, con il nuovo menu in basso per passare da una sezione all'altra. Per installarla chiedete ad Andrea.</li>
-            <li><b>Nuova sezione EDI Stellantis:</b> si carica l'Excel EDI, si salva ogni settimana e si possono confrontare due EDI per vedere cosa è aumentato o diminuito.</li>
-            <li><b>Report anomalie con controllo foto badge:</b> chi segnala dal QR deve fotografare il badge; la segnalazione compare dopo la verifica.</li>
+            <li><b>Nuovo look:</b> card bianche, numeri più grandi.</li>
+            <li><b>App per telefono:</b> per installarla chiedete ad Andrea.</li>
+            <li><b>EDI Stellantis:</b> carica, salva e confronta gli EDI.</li>
+            <li><b>Report anomalie:</b> dal QR serve la foto del badge.</li>
+            <li><b>Password:</b> cambiala da Impostazioni › Il tuo account.</li>
           </ul>
           <div class="mod-update-banner-sign">E anche questa volta, sempre Forza Juve!<br>Andrea :)</div>
         </div>
         <div class="mod-update-banner-col">
           <div class="mod-update-banner-title">What's new today</div>
           <ul>
-            <li><b>New look:</b> warmer colours, white cards, bigger and easier-to-read numbers. You can switch back to the classic style from Settings › Style.</li>
-            <li><b>Phone app available</b>, with a new bottom menu to move between sections. Ask Andrea to install it.</li>
-            <li><b>New EDI Stellantis section:</b> upload the EDI Excel, save each week and compare two EDIs to see what went up or down.</li>
-            <li><b>Anomaly reports with badge photo check:</b> anyone reporting via QR must take a photo of their badge; the report appears after it has been checked.</li>
+            <li><b>New look:</b> white cards, bigger numbers.</li>
+            <li><b>Phone app:</b> ask Andrea to install it.</li>
+            <li><b>EDI Stellantis:</b> upload, save and compare EDIs.</li>
+            <li><b>Anomaly reports:</b> QR reports need a badge photo.</li>
+            <li><b>Password:</b> change it in Settings › Your account.</li>
           </ul>
           <div class="mod-update-banner-sign">And once again, always Forza Juve!<br>Andrea :)</div>
         </div>
       </div>
       <div class="mod-dialog-actions">
+        <button type="button" id="mod-update-pw" class="btn btn-ghost mod-update-pw"><i data-lucide="key-round" aria-hidden="true"></i><span>Cambia la tua password · Change your password</span></button>
         <button type="button" id="mod-update-ok" class="btn btn-primary">Ho capito · Got it</button>
       </div>
     </div>
@@ -16295,6 +16307,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       el.updateClose.addEventListener('click', dismissUpdateBanner);
       el.updateOk.addEventListener('click', dismissUpdateBanner);
+      // Dal popup novita': chiude il popup e apre Impostazioni sul riquadro
+      // "Il tuo account", pronto per scrivere la password attuale.
+      root.querySelector('#mod-update-pw').addEventListener('click', () => {
+        dismissUpdateBanner();
+        el.stoppageSettingsBtn.click();
+        window.setTimeout(() => { el.account.scrollIntoView({ block: 'start' }); el.pwOld.focus(); }, 150);
+      });
 
       el.taskAdd.addEventListener('click', () => openTaskDialog(null));
       el.taskPdf.addEventListener('click', exportTasksPdf);
