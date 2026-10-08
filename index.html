@@ -4139,6 +4139,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: grid;
       gap: 6px;
     }
+    #martur-operations-dashboard .mod-user-approve { margin: 0 0 0 auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
     #martur-operations-dashboard .mod-user-row {
       justify-content: space-between;
     }
@@ -6408,6 +6409,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditAdded: 'Aggiunto',
           auditFromDate: 'Valido dal',
           auditRole: 'Ruolo',
+          userCanApprove: 'Può approvare segnalazioni QR',
+          auditUserApprove: 'Permesso di approvazione modificato',
           auditNoChanges: 'nessun campo cambiato',
           auditLegacyNote: 'Voce registrata prima del registro dettagliato: i campi cambiati non erano stati salvati.',
           auditLogin: 'Accesso',
@@ -6930,6 +6933,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditAdded: 'Added',
           auditFromDate: 'Valid from',
           auditRole: 'Role',
+          userCanApprove: 'Can approve QR reports',
+          auditUserApprove: 'Approval permission changed',
           auditNoChanges: 'no field changed',
           auditLegacyNote: 'Logged before the detailed log: the changed fields were not saved.',
           auditLogin: 'Sign in',
@@ -7452,6 +7457,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditAdded: 'Eklendi',
           auditFromDate: 'Geçerlilik',
           auditRole: 'Rol',
+          userCanApprove: 'QR bildirimlerini onaylayabilir',
+          auditUserApprove: 'Onay izni değiştirildi',
           auditNoChanges: 'değişen alan yok',
           auditLegacyNote: 'Ayrıntılı kayıttan önce: değişen alanlar kaydedilmemişti.',
           auditLogin: 'Giriş',
@@ -11007,6 +11014,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // La matita delle attivita' resta accesa solo per gli admin.
         if (!state.isAdmin) state.summaryEdit = false;
         state.isConfigAdmin = role === 'configAdmin';
+        state.canApprove = state.isConfigAdmin;
       }
 
       function syncWelcomeLangButtons() {
@@ -11075,6 +11083,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           if (el.welcomeDialog && el.welcomeDialog.open) el.welcomeDialog.close();
           db.collection('users').doc(user.uid).get().then((doc) => {
             applyAuthRole(doc.exists ? doc.data().role : null);
+            // Approvare le segnalazioni dal QR: gli Amministratori sempre, gli
+            // altri solo con la spunta data dalla gestione utenti.
+            state.canApprove = state.isConfigAdmin || Boolean(doc.exists && doc.data().canApprove === true);
             state.authUsername = doc.exists ? doc.data().username : null;
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
@@ -11702,7 +11713,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       function anomaliesVisible() {
         const list = state.anomalies || [];
-        return state.isAdmin ? list : list.filter((x) => !anomalyPending(x));
+        return state.canApprove ? list : list.filter((x) => !anomalyPending(x));
       }
       function anomalyNumbers() {
         const numbers = new Map();
@@ -11833,7 +11844,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       let approvingId = null;
       function openApproveDialog(id) {
         const item = (state.anomalies || []).find((x) => x.id === id);
-        if (!item || !state.isAdmin || !db) return;
+        if (!item || !state.canApprove || !db) return;
         approvingId = id;
         el.approveImg.hidden = true;
         el.approveImg.removeAttribute('src');
@@ -13960,7 +13971,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.userAdmin.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div><div class="text-small text-muted">' + escapeHtml(t('loadingUsers')) + '</div>';
         db.collection('users').orderBy('username').get().then((snap) => {
           const rows = [];
-          snap.forEach((doc) => rows.push({ id: doc.id, username: doc.data().username, role: doc.data().role }));
+          snap.forEach((doc) => rows.push({ id: doc.id, username: doc.data().username, role: doc.data().role, canApprove: doc.data().canApprove === true }));
           renderUserAdminList(rows);
         }).catch(() => {
           el.userAdmin.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div><div class="text-small mod-negative">' + escapeHtml(t('userListError')) + '</div>';
@@ -13980,6 +13991,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'oee.update': ['auditOeeUpdate', 'settings'], 'stoppageConfig.update': ['auditStoppageConfig', 'settings'],
         'rework.update': ['auditReworkUpdate', 'settings'],
         'user.create': ['auditUserCreate', 'users'], 'user.revoke': ['auditUserRevoke', 'users'],
+        'user.approve': ['auditUserApprove', 'users'],
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
         'anomaly.create': ['auditAnomalyCreate', 'anomalies'], 'anomaly.update': ['auditAnomalyUpdate', 'anomalies'],
@@ -14073,6 +14085,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ? rows.map((row) =>
               '<div class="mod-cfg-line mod-user-row">' +
                 '<span class="mod-cfg-line-name">' + escapeHtml(row.username) + '<span class="text-small text-muted"> · ' + escapeHtml(roleLabel(row.role)) + '</span></span>' +
+                // Gli Amministratori approvano sempre: la spunta serve agli altri.
+                (row.role === 'configAdmin' ? '' :
+                  '<label class="form-check mod-user-approve"><input type="checkbox" class="form-check-input mod-user-approve-input" data-uid="' +
+                    escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '"' + (row.canApprove ? ' checked' : '') +
+                    '><span class="form-check-label">' + escapeHtml(t('userCanApprove')) + '</span></label>') +
                 '<button type="button" class="btn btn-ghost mod-cfg-remove-user" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '">' + escapeHtml(t('revokeAccess')) + '</button>' +
               '</div>'
             ).join('')
@@ -14095,6 +14112,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           button.addEventListener('click', () => revokeUserAccess(button.dataset.uid, button.dataset.username));
         });
         el.userAdmin.querySelector('#mod-user-add-btn').addEventListener('click', createUserAccount);
+        el.userAdmin.querySelectorAll('.mod-user-approve-input').forEach((input) => {
+          input.addEventListener('change', () => {
+            const on = input.checked;
+            input.disabled = true;
+            db.collection('users').doc(input.dataset.uid).update({ canApprove: on }).then(() => {
+              input.disabled = false;
+              logAudit('user.approve', input.dataset.username, [{ field: t('userCanApprove'), from: on ? 'no' : 'sì', to: on ? 'sì' : 'no' }]);
+            }).catch(() => {
+              input.checked = !on;
+              input.disabled = false;
+              alert(t('userCreateError'));
+            });
+          });
+        });
       }
 
       function createUserAccount() {
