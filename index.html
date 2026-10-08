@@ -2187,6 +2187,28 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-edi-upload { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
     #martur-operations-dashboard .mod-edi-upload[hidden] { display: none; }
     #martur-operations-dashboard .mod-edi-current { font-size: 1.05em; }
+    #martur-operations-dashboard .mod-edi-block[hidden] { display: none; }
+    /* Numeri / %: due pulsanti uniti, quello scelto in oro. */
+    #martur-operations-dashboard .mod-edi-mode {
+      display: inline-flex;
+      padding: 3px;
+      gap: 2px;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-full);
+    }
+    #martur-operations-dashboard .mod-edi-mode-btn {
+      min-width: 48px;
+      padding: 4px 14px;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #martur-operations-dashboard .mod-edi-mode-btn:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
+    #martur-operations-dashboard .mod-edi-mode-btn[aria-pressed="true"] { background: var(--gold); color: var(--gold-foreground); }
     #martur-operations-dashboard #mod-edi-menu { max-height: 60vh; overflow-y: auto; }
     #martur-operations-dashboard #mod-edi-menu .mod-nav-drop-item { white-space: nowrap; }
     #martur-operations-dashboard .mod-edi-menu-empty { color: var(--muted-foreground); cursor: default; }
@@ -5861,6 +5883,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   <section id="mod-edi-screen" class="mod-edi-screen" hidden>
     <div class="mod-edi-head">
       <strong id="mod-edi-current" class="mod-edi-current"></strong>
+      <div class="mod-edi-mode" role="group" aria-label="Vista">
+        <button type="button" class="mod-edi-mode-btn" data-edi-mode="qty" aria-pressed="true" data-i18n="ediModeQty">Numeri</button>
+        <button type="button" class="mod-edi-mode-btn" data-edi-mode="pct" aria-pressed="false">%</button>
+      </div>
       <button type="button" id="mod-edi-delete" class="btn btn-ghost mod-pill-icon" title="Elimina" data-i18n-title="ediDelete" hidden>
         <i data-lucide="trash-2" aria-hidden="true"></i>
       </button>
@@ -5874,11 +5900,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <button type="button" id="mod-edi-save-btn" class="btn btn-primary" data-i18n="save">Salva</button>
     </div>
     <span id="mod-edi-status" class="text-small text-muted mod-edi-status"></span>
-    <div class="mod-edi-block">
+    <div class="mod-edi-block" data-edi-block="qty">
       <h3 class="mod-edi-title" data-i18n="ediQtyTitle">Quantità</h3>
       <div class="mod-edi-wrap"><table id="mod-edi-qty" class="mod-edi-table"></table></div>
     </div>
-    <div class="mod-edi-block">
+    <div class="mod-edi-block" data-edi-block="pct" hidden>
       <h3 class="mod-edi-title" data-i18n="ediPctTitle">Percentuali</h3>
       <div class="mod-edi-wrap"><table id="mod-edi-table" class="mod-edi-table"></table></div>
     </div>
@@ -6642,6 +6668,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDraftOption: 'Excel caricato (non salvato)',
           ediDraftStatus: 'Excel: {file} · non ancora salvato: scrivi il nome e premi Salva.',
           ediQtyTitle: 'Quantità',
+          ediModeQty: 'Numeri',
           ediPctTitle: 'Percentuali',
           ediDelete: 'Elimina questo EDI',
           ediDeleteConfirm: 'Eliminare «{name}»?',
@@ -7203,6 +7230,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDraftOption: 'Uploaded Excel (not saved)',
           ediDraftStatus: 'Excel: {file} · not saved yet: enter the name and press Save.',
           ediQtyTitle: 'Quantities',
+          ediModeQty: 'Numbers',
           ediPctTitle: 'Percentages',
           ediDelete: 'Delete this EDI',
           ediDeleteConfirm: 'Delete «{name}»?',
@@ -7764,6 +7792,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDraftOption: 'Yüklenen Excel (kaydedilmedi)',
           ediDraftStatus: 'Excel: {file} · henüz kaydedilmedi: adı yazıp Kaydet’e basın.',
           ediQtyTitle: 'Miktarlar',
+          ediModeQty: 'Sayılar',
           ediPctTitle: 'Yüzdeler',
           ediDelete: 'Bu EDI’yi sil',
           ediDeleteConfirm: '«{name}» silinsin mi?',
@@ -13783,8 +13812,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (state.view !== 'edi') navigateTo('edi'); else renderEdi();
       }
 
+      // Una tabella alla volta: Numeri o %. La scelta resta sul dispositivo.
+      let ediMode = 'qty';
+      try { if (window.localStorage.getItem('martur-edi-mode') === 'pct') ediMode = 'pct'; } catch (e) {}
+      function applyEdiMode() {
+        root.querySelectorAll('.mod-edi-mode-btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.ediMode === ediMode)));
+        root.querySelectorAll('[data-edi-block]').forEach((b) => { b.hidden = b.dataset.ediBlock !== ediMode; });
+      }
+      root.querySelectorAll('.mod-edi-mode-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          ediMode = button.dataset.ediMode;
+          try { window.localStorage.setItem('martur-edi-mode', ediMode); } catch (e) {}
+          applyEdiMode();
+        });
+      });
+
       function renderEdi() {
         subscribeEdi();
+        applyEdiMode();
         const admin = state.isAdmin;
         el.ediUpload.hidden = !admin;
         renderEdiMenu();
