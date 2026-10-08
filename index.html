@@ -981,6 +981,151 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   background: var(--gold);
 }
 </style>
+<style>
+/* ---- Menu da telefono ----
+   In alto: logo grande al centro, sotto quattro tasti rotondi (riepilogo,
+   modifica, +, impostazioni), poi la tendina della vista e il calendario,
+   sempre visibile. In basso: le sezioni in due pillole (come itstracker).
+   ":root" davanti serve a vincere sulle regole del telefono piu' vecchie,
+   che stanno piu' in basso nel foglio. */
+#martur-operations-dashboard .mod-tabbar { display: none; }
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root #martur-operations-dashboard {
+    /* spazio per non finire sotto le pillole in basso */
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+  :root #martur-operations-dashboard .mod-topbar-left {
+    display: flex;
+    justify-content: center;
+  }
+  :root #martur-operations-dashboard .mod-topbar-left .mod-brand-link {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  :root #martur-operations-dashboard .mod-brand-logo {
+    width: 92%;
+    max-width: 560px;
+    height: auto;
+  }
+  :root #martur-operations-dashboard .mod-cal-toggle { display: none; }
+  /* Il vecchio "stadio" diventa una fila di tasti tondi, senza contorno. */
+  :root #martur-operations-dashboard .mod-pillnav {
+    order: 2;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  :root #martur-operations-dashboard .mod-pillnav > #mod-view-select { display: none; }
+  :root #martur-operations-dashboard .mod-pillnav :is(#mod-back-btn, #mod-entry-view-btn, .mod-appmenu-btn, .mod-daily-admin-actions .btn) {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--popover);
+    border: 1.5px solid var(--border);
+    color: var(--foreground);
+  }
+  :root #martur-operations-dashboard .mod-pillnav :is(#mod-back-btn, #mod-entry-view-btn, .mod-appmenu-btn, .mod-daily-admin-actions .btn) svg {
+    width: 19px;
+    height: 19px;
+  }
+  :root #martur-operations-dashboard .mod-pillnav #mod-entry-view-btn:disabled { opacity: 0.45; }
+  :root #martur-operations-dashboard .mod-daily-admin-actions { display: contents; }
+  /* Vista (Giornaliero, Settimanale... o l'EDI salvato): una pillola bianca
+     a tutta larghezza, sotto i tasti. */
+  :root #martur-operations-dashboard .mod-pillnav > .mod-view-subselect {
+    order: 5;
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    background: var(--popover);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-align-last: center;
+  }
+  /* Calendario: sempre visibile come pillola, non piu' a comparsa sopra la
+     pagina (copriva i contenuti). */
+  :root #martur-operations-dashboard .mod-datenav,
+  :root #martur-operations-dashboard .mod-topbar-cluster.mod-cal-open .mod-datenav {
+    display: flex;
+    order: 3;
+    width: 100%;
+    min-height: 44px;
+    background: var(--popover);
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    margin: 0;
+  }
+
+  /* Pillole in basso. */
+  :root #martur-operations-dashboard .mod-tabbar {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 60;
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+  :root #martur-operations-dashboard.mod-locked .mod-tabbar,
+  :root #martur-operations-dashboard.mod-tv-on .mod-tabbar { display: none; }
+  :root #martur-operations-dashboard .mod-tabbar-pill {
+    display: flex;
+    padding: 5px;
+    background: var(--popover);
+    border: 1.5px solid var(--border);
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgb(60 45 15 / 22%);
+  }
+  :root #martur-operations-dashboard .mod-tabbar-main { flex: 1 1 auto; min-width: 0; }
+  :root #martur-operations-dashboard .mod-tabbar-side { flex: 0 0 auto; }
+  :root #martur-operations-dashboard .mod-tabbtn {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 8px 4px;
+    border: 0;
+    border-radius: 24px;
+    background: none;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  :root #martur-operations-dashboard .mod-tabbar-side .mod-tabbtn { padding: 8px 12px; }
+  :root #martur-operations-dashboard .mod-tabbtn svg { width: 24px; height: 24px; }
+  :root #martur-operations-dashboard .mod-tabbtn[aria-pressed="true"] {
+    color: var(--gold);
+    background: color-mix(in srgb, var(--gold) 15%, transparent);
+  }
+}
+</style>
 </head>
 <body>
 <div id="martur-operations-dashboard" class="mod-locked">
@@ -2491,6 +2636,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-edi-table tbody th { font-weight: 700; }
     #martur-operations-dashboard .mod-edi-table td.mod-edi-empty { padding: 40px 16px; color: var(--muted-foreground); white-space: normal; }
+    /* Vuota: niente larghezza minima, la scritta sta nello schermo. */
+    #martur-operations-dashboard .mod-edi-table:has(.mod-edi-empty) { min-width: 0; }
     #martur-operations-dashboard .mod-edi-table tbody tr:nth-child(even) > * { background: color-mix(in srgb, var(--muted) 60%, transparent); }
     #martur-operations-dashboard .mod-edi-table tbody tr:hover > * { background: color-mix(in srgb, var(--gold) 12%, transparent); }
     /* Colonna del totale: piu' grande e in evidenza, come nell'Excel. */
@@ -6059,6 +6206,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   </section>
 
   <!-- Verifica di una scheda arrivata dal QR: foto del badge e dati, l'admin approva o rifiuta. -->
+  <!-- Menu delle sezioni sul telefono: una pillola in basso (come
+       itstracker). Su computer resta nascosto: li' c'e' il menu in alto. -->
+  <nav class="mod-tabbar" id="mod-tabbar" aria-label="Sezioni">
+    <div class="mod-tabbar-pill mod-tabbar-main">
+      <button type="button" class="mod-tabbtn" data-tab="production" aria-pressed="false"><i data-lucide="factory" aria-hidden="true"></i><span data-i18n="tabProduction">Produzione</span></button>
+      <button type="button" class="mod-tabbtn" data-tab="abarth" aria-pressed="false"><i data-lucide="armchair" aria-hidden="true"></i><span data-i18n="tabAbarth">Abarth</span></button>
+      <button type="button" class="mod-tabbtn" data-tab="quality" aria-pressed="false"><i data-lucide="shield-check" aria-hidden="true"></i><span data-i18n="tabQuality">Qualità</span></button>
+      <button type="button" class="mod-tabbtn" data-tab="edi" aria-pressed="false"><i data-lucide="file-spreadsheet" aria-hidden="true"></i><span data-i18n="tabEdi">EDI</span></button>
+      <button type="button" class="mod-tabbtn" data-tab="summary" aria-pressed="false"><i data-lucide="clipboard-list" aria-hidden="true"></i><span data-i18n="tabSummary">Attività</span></button>
+    </div>
+  </nav>
   <div id="mod-text-edit-bar" class="mod-text-edit-bar" hidden>
     <i data-lucide="type" aria-hidden="true"></i>
     <span data-i18n="textEditHint">Modifica testi: tocca un testo per cambiarlo</span>
@@ -7055,6 +7213,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkLimitReached: 'Puoi selezionare al massimo 3 motivi rework.',
           noReworkReasons: 'Nessun motivo rework disponibile.',
           noShiftNote: 'Nessuna nota inserita',
+          tabProduction: 'Produzione',
+          tabAbarth: 'Abarth',
+          tabQuality: 'Qualità',
+          tabEdi: 'EDI',
+          tabSummary: 'Attività',
           cases: 'casi',
           dailyTopLosses: 'Le 3 perdite più frequenti del giorno (minuti)',
           noLossReasons: 'Nessun fermo registrato.',
@@ -7629,6 +7792,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkLimitReached: 'You can select at most 3 rework reasons.',
           noReworkReasons: 'No rework reasons are available.',
           noShiftNote: 'No notes entered',
+          tabProduction: 'Production',
+          tabAbarth: 'Abarth',
+          tabQuality: 'Quality',
+          tabEdi: 'EDI',
+          tabSummary: 'Activities',
           cases: 'cases',
           dailyTopLosses: 'Top 3 losses for the day (minutes)',
           noLossReasons: 'No stoppages recorded.',
@@ -8203,6 +8371,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkLimitReached: 'En fazla 3 rework nedeni seçebilirsiniz.',
           noReworkReasons: 'Mevcut rework nedeni yok.',
           noShiftNote: 'Not girilmedi',
+          tabProduction: 'Üretim',
+          tabAbarth: 'Abarth',
+          tabQuality: 'Kalite',
+          tabEdi: 'EDI',
+          tabSummary: 'Faaliyetler',
           cases: 'vaka',
           dailyTopLosses: 'Günün en büyük 3 kaybı (dakika)',
           noLossReasons: 'Kayitli duruş yok.',
@@ -10190,7 +10363,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       /* Segno di spunta sulla scelta attiva dentro le tendine del menu
          (Produzione, Qualita', Attivita'). L'etichetta del pulsante resta
          sempre la stessa: la scelta si vede aprendo la tendina. */
+      // Pillole in basso (telefono): a quale sezione appartiene la pagina aperta.
+      function tabOfView(view) {
+        if (PRODUCTION_VIEWS.indexOf(view) >= 0) return 'production';
+        if (QUALITY_VIEWS.indexOf(view) >= 0) return 'quality';
+        if (view === 'abarth' || view === 'edi' || view === 'summary') return view;
+        return '';
+      }
+      function updateTabbar() {
+        const tab = tabOfView(state.view);
+        root.querySelectorAll('.mod-tabbtn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tab === tab)));
+      }
       function updateNavDrops() {
+        updateTabbar();
         renderEdiMenu();
         root.querySelectorAll('.mod-nav-drop-item[data-drop-group="production"]').forEach((button) => {
           button.setAttribute('aria-pressed', String(button.dataset.dropTarget === state.productionTab));
@@ -16153,6 +16338,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             state.summaryTab = target;
             applySummaryTab();
           }
+        });
+      });
+      // Pillola in basso (telefono): ogni tasto riapre l'ultima vista vista
+      // della sua sezione (Giornaliero/Settimanale/Mensile, ecc.).
+      root.querySelectorAll('.mod-tabbtn').forEach((button) => {
+        button.addEventListener('click', () => {
+          const tab = button.dataset.tab;
+          const target = tab === 'production' ? (state.productionTab || 'daily')
+            : tab === 'quality' ? (state.qualityTab || 'dmc') : tab;
+          navigateTo(target);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       });
       el.backBtn.addEventListener('click', openSummaryDialog);
