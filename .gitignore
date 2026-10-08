@@ -3,3 +3,7 @@
 *.jpeg
 *.jpg
 ChatGPT Image*.png
+
+# File Excel (EDI, produzione): dati aziendali, non vanno nel repository pubblico
+*.xls
+*.xlsx

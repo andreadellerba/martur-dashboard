@@ -13962,25 +13962,60 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const n = Number(String(v || '').replace(/\s/g, '').replace(',', '.'));
         return Number.isFinite(n) ? n : 0;
       }
+      // Settimane di un'intestazione. Si cercano nella riga stessa e nelle
+      // righe subito sopra (negli EDI grezzi la riga "Week" sta sopra quella
+      // con le date). Le prime settimane sono giorno per giorno: "WK 38" sta
+      // solo sul primo giorno e vale anche per le celle vuote che seguono.
+      // Ci si ferma al Totale o quando ricomincia l'anno (WK52 -> WK01).
+      function ediWeekColumns(rows, h) {
+        let best = null;
+        for (let r = h; r >= Math.max(0, h - 4); r--) {
+          const found = [];
+          (rows[r] || []).forEach((v, i) => {
+            const m = EDI_WEEK_RE.exec(String(v || '').trim().toUpperCase());
+            if (m) found.push({ i, n: Number(m[1]) });
+          });
+          if (found.length >= 2 || (found.length && !best)) { best = { r, found }; if (found.length >= 2) break; }
+        }
+        if (!best) return [];
+        const head = rows[h] || [];
+        const weekRow = rows[best.r] || [];
+        const width = Math.max(head.length, weekRow.length);
+        const isTotal = (v) => /TOT/i.test(String(v || ''));
+        const cols = [];
+        let current = null;
+        for (let i = best.found[0].i; i < width; i++) {
+          if (isTotal(head[i]) || isTotal(weekRow[i])) break;
+          const m = EDI_WEEK_RE.exec(String(weekRow[i] || '').trim().toUpperCase());
+          if (m) {
+            const n = Number(m[1]);
+            if (current !== null && n < current) break; // anno nuovo
+            current = n;
+          } else if (String(weekRow[i] || '').trim()) {
+            break; // altra intestazione: fine delle settimane
+          }
+          if (current === null) continue;
+          cols.push({ i, label: 'W ' + current });
+        }
+        return cols;
+      }
+
       function parseEdiWorkbook(XLSX, book) {
         const norm = (v) => String(v === undefined || v === null ? '' : v).trim().toUpperCase();
-        let best = null; // { sheet, cols, weekCols, rows, h, found }
+        let best = null; // { score, cols, weekCols, rows, h, groups }
         for (const name of book.SheetNames) {
-          const rows = XLSX.utils.sheet_to_json(book.Sheets[name], { header: 1, blankrows: false, defval: '' });
-          for (let h = 0; h < Math.min(rows.length, 60); h++) {
-            const head = rows[h].map(ediHeaderKey);
+          const rows = XLSX.utils.sheet_to_json(book.Sheets[name], { header: 1, blankrows: true, defval: '' });
+          for (let h = 0; h < Math.min(rows.length, 80); h++) {
+            const head = (rows[h] || []).map(ediHeaderKey);
             const cols = {};
             Object.keys(EDI_HEADERS).forEach((field) => {
               const i = head.findIndex((v) => EDI_HEADERS[field].indexOf(v) >= 0);
               if (i >= 0) cols[field] = i;
             });
-            const weekCols = [];
-            rows[h].forEach((v, i) => {
-              const m = EDI_WEEK_RE.exec(String(v || '').trim().toUpperCase());
-              if (m) weekCols.push({ i, label: 'W ' + m[1] });
-            });
             const groups = EDI_GROUPS.filter((g) => cols[g] !== undefined);
-            if (!weekCols.length || !groups.length) continue;
+            if (!groups.length) continue;
+            const weekCols = ediWeekColumns(rows, h);
+            if (!weekCols.length) continue;
             const score = groups.length * 10 + (cols.MATERIAL !== undefined ? 1 : 0);
             if (!best || score > best.score) best = { score, cols, weekCols, rows, h, groups };
           }
@@ -13991,7 +14026,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const total = weekCols.map(() => 0);
         const byKey = new Map(); // "GRUPPO:codice" -> riga
         for (let r = h + 1; r < rows.length; r++) {
-          const row = rows[r];
+          const row = rows[r] || [];
           // Righe di totale gia' presenti nel foglio: non vanno risommate.
           if (row.some((v) => /^\s*(TOT|TOTAL|TOTALE|TOPLAM)\b/i.test(String(v)))) continue;
           if (cols.MATERIAL !== undefined && !norm(row[cols.MATERIAL])) continue;
@@ -14009,8 +14044,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             qty.forEach((q, j) => { line.values[j] += q; });
           });
         }
-        // Settimane ripetute (es. colonne giornaliere sotto la stessa WK):
-        // si sommano in una sola colonna.
+        // Colonne della stessa settimana (i giorni): una sola colonna.
         const labels = [];
         weekCols.forEach((wc) => { if (labels.indexOf(wc.label) < 0) labels.push(wc.label); });
         const fold = (arr) => labels.map((l) => weekCols.reduce((s, wc, j) => s + (wc.label === l ? arr[j] : 0), 0));
