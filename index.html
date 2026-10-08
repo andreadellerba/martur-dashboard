@@ -5601,6 +5601,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <button type="button" class="mod-app-menu-item" id="mod-stoppage-settings-btn" title="Impostazioni" data-i18n-title="appSettings">
         <i data-lucide="sliders-horizontal" aria-hidden="true"></i><span data-i18n="appSettings">Impostazioni app</span>
       </button>
+      <button type="button" class="mod-app-menu-item" id="mod-fullscreen-btn">
+        <i data-lucide="maximize" aria-hidden="true"></i><span id="mod-fullscreen-text" data-i18n="fullscreenOn">Schermo intero</span>
+      </button>
       <button type="button" class="mod-app-menu-item" id="mod-text-edit-btn" hidden>
         <i data-lucide="type" aria-hidden="true"></i><span data-i18n="textEditMode">Modifica testi</span>
       </button>
@@ -7286,6 +7289,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Qualità',
           tabEdi: 'EDI',
           tabSummary: 'Attività',
+          fullscreenOn: 'Schermo intero',
+          fullscreenOff: 'Esci da schermo intero',
           accountTitle: 'Il tuo account',
           pwOld: 'Password attuale',
           pwNew: 'Nuova password (min. 6)',
@@ -7882,6 +7887,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Quality',
           tabEdi: 'EDI',
           tabSummary: 'Activities',
+          fullscreenOn: 'Full screen',
+          fullscreenOff: 'Exit full screen',
           accountTitle: 'Your account',
           pwOld: 'Current password',
           pwNew: 'New password (min. 6)',
@@ -8478,6 +8485,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           tabQuality: 'Kalite',
           tabEdi: 'EDI',
           tabSummary: 'Faaliyetler',
+          fullscreenOn: 'Tam ekran',
+          fullscreenOff: 'Tam ekrandan çık',
           accountTitle: 'Hesabınız',
           pwOld: 'Mevcut şifre',
           pwNew: 'Yeni şifre (en az 6)',
@@ -16240,6 +16249,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (found) openTextDialog(found);
       }, true);
       el.textEditBtn.addEventListener('click', () => { toggleAppMenu(false); setTextEditing(true); });
+      // Schermo intero (utile sul TV): toglie barra del titolo e barra di
+      // Windows. Si esce con lo stesso comando o con Esc.
+      const fsBtn = root.querySelector('#mod-fullscreen-btn');
+      const fsText = root.querySelector('#mod-fullscreen-text');
+      function updateFullscreenLabel() {
+        const on = Boolean(document.fullscreenElement);
+        fsText.dataset.i18n = on ? 'fullscreenOff' : 'fullscreenOn';
+        fsText.textContent = t(fsText.dataset.i18n);
+      }
+      if (!document.documentElement.requestFullscreen) fsBtn.hidden = true;
+      fsBtn.addEventListener('click', () => {
+        toggleAppMenu(false);
+        if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+        else document.documentElement.requestFullscreen().catch(() => {});
+      });
+      document.addEventListener('fullscreenchange', updateFullscreenLabel);
       el.textEditDone.addEventListener('click', () => setTextEditing(false));
       el.textSave.addEventListener('click', () => saveText(false));
       el.textReset.addEventListener('click', () => saveText(true));
