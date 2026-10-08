@@ -74,6 +74,20 @@ service cloud.firestore {
         || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('canApprove', false) == true);
     }
 
+    // Modificare i testi dell'app: gli Amministratori sempre, gli altri solo
+    // con la spunta "canEditTexts" sul proprio utente.
+    function canEditTexts() {
+      return isSignedIn() && (myRole() == 'configAdmin'
+        || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('canEditTexts', false) == true);
+    }
+
+    match /appTexts/{lang} {
+      // Testi cambiati dall'app, un documento per lingua. Li leggono tutti
+      // (anche il modulo QR e la schermata di accesso).
+      allow read: if true;
+      allow write: if canEditTexts() && lang in ['it', 'en', 'tr'];
+    }
+
     match /anomalies/{id} {
       // Schede anomalia: le legge chi ha l'accesso, le modifica e le elimina
       // solo un admin. Una scheda nuova puo' aprirla chiunque abbia l'accesso

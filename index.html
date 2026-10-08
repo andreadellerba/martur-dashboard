@@ -4139,7 +4139,46 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: grid;
       gap: 6px;
     }
-    #martur-operations-dashboard .mod-user-approve { margin: 0 0 0 auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+    /* Modifica testi: il testo sotto il mouse si evidenzia, la barra in
+       basso ricorda che la modalita' e' accesa. */
+    #martur-operations-dashboard.mod-text-editing .mod-text-hover {
+      outline: 2px dashed #e0b400;
+      outline-offset: 2px;
+      background: rgba(255, 214, 0, 0.18);
+      cursor: text;
+      border-radius: 4px;
+    }
+    #martur-operations-dashboard .mod-text-edit-bar {
+      position: fixed;
+      left: 50%;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: calc(100vw - 24px);
+      box-sizing: border-box;
+      padding: 8px 8px 8px 14px;
+      border-radius: 999px;
+      background: #1f1f1f;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+    }
+    #martur-operations-dashboard .mod-text-edit-bar[hidden] { display: none; }
+    #martur-operations-dashboard .mod-text-edit-bar svg { flex: none; color: #ffd600; }
+    #martur-operations-dashboard .mod-text-edit-bar .btn { flex: none; border-radius: 999px; background: #ffd600; border-color: #ffd600; color: #111; }
+    #martur-operations-dashboard .mod-text-body {
+      display: grid;
+      gap: 8px;
+      padding: 4px 0 12px;
+    }
+    #martur-operations-dashboard .mod-text-body .form-control { width: 100%; box-sizing: border-box; min-width: 0; }
+    #martur-operations-dashboard #mod-text-reset[hidden] { display: none; }
+    #martur-operations-dashboard .mod-user-perms { margin-left: auto; display: inline-flex; flex-wrap: wrap; gap: 4px 14px; }
+    #martur-operations-dashboard .mod-user-approve { margin: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
     #martur-operations-dashboard .mod-user-row {
       justify-content: space-between;
     }
@@ -4981,6 +5020,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <button type="button" class="mod-app-menu-item" id="mod-stoppage-settings-btn" title="Impostazioni" data-i18n-title="appSettings">
         <i data-lucide="sliders-horizontal" aria-hidden="true"></i><span data-i18n="appSettings">Impostazioni app</span>
       </button>
+      <button type="button" class="mod-app-menu-item" id="mod-text-edit-btn" hidden>
+        <i data-lucide="type" aria-hidden="true"></i><span data-i18n="textEditMode">Modifica testi</span>
+      </button>
       <button type="button" class="mod-app-menu-item" id="mod-export-pdf" title="Esporta PDF" data-i18n-title="exportPdf">
         <i data-lucide="file-down" aria-hidden="true"></i><span data-i18n="exportPdf">Esporta PDF</span>
       </button>
@@ -5640,6 +5682,30 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   </section>
 
   <!-- Verifica di una scheda arrivata dal QR: foto del badge e dati, l'admin approva o rifiuta. -->
+  <div id="mod-text-edit-bar" class="mod-text-edit-bar" hidden>
+    <i data-lucide="type" aria-hidden="true"></i>
+    <span data-i18n="textEditHint">Modifica testi: tocca un testo per cambiarlo</span>
+    <button type="button" class="btn btn-primary" id="mod-text-edit-done" data-i18n="textEditDone">Fine</button>
+  </div>
+  <dialog id="mod-text-dialog" class="card mod-selection-dialog" aria-labelledby="mod-text-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-text-title" class="mod-dialog-title" data-i18n="textEditTitle">Modifica testo</h2>
+          <span class="text-small text-muted" data-i18n="textEditDialogHint">La modifica vale per tutti gli utenti, nella lingua attuale.</span>
+        </div>
+      </div>
+      <div class="mod-text-body">
+        <input id="mod-text-input" class="form-control" type="text" maxlength="300" autocomplete="off">
+        <span id="mod-text-original" class="text-small text-muted"></span>
+      </div>
+      <div class="mod-dialog-actions">
+        <button type="button" class="btn btn-ghost" id="mod-text-reset" data-i18n="textEditReset">Ripristina originale</button>
+        <button type="button" class="btn" id="mod-text-cancel" data-i18n="cancel">Annulla</button>
+        <button type="button" class="btn btn-primary" id="mod-text-save" data-i18n="save">Salva</button>
+      </div>
+    </div>
+  </dialog>
   <dialog id="mod-approve-dialog" class="card mod-selection-dialog" aria-labelledby="mod-approve-title">
     <div class="mod-dialog-shell">
       <div class="mod-dialog-head">
@@ -6410,6 +6476,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditFromDate: 'Valido dal',
           auditRole: 'Ruolo',
           userCanApprove: 'Può approvare segnalazioni QR',
+          userCanEditTexts: 'Può modificare i testi',
+          auditUserTexts: 'Permesso modifica testi cambiato',
+          auditTextsUpdate: 'Testo modificato',
+          textEditMode: 'Modifica testi',
+          textEditHint: 'Modifica testi: tocca un testo per cambiarlo',
+          textEditDone: 'Fine',
+          textEditTitle: 'Modifica testo',
+          textEditDialogHint: 'La modifica vale per tutti gli utenti, nella lingua attuale.',
+          textEditReset: 'Ripristina originale',
+          textEditOriginal: 'Originale',
+          textEditMany: 'cambia in {n} punti dell’app',
           auditUserApprove: 'Permesso di approvazione modificato',
           auditNoChanges: 'nessun campo cambiato',
           auditLegacyNote: 'Voce registrata prima del registro dettagliato: i campi cambiati non erano stati salvati.',
@@ -6934,6 +7011,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditFromDate: 'Valid from',
           auditRole: 'Role',
           userCanApprove: 'Can approve QR reports',
+          userCanEditTexts: 'Can edit texts',
+          auditUserTexts: 'Text editing permission changed',
+          auditTextsUpdate: 'Text changed',
+          textEditMode: 'Edit texts',
+          textEditHint: 'Edit texts: tap a text to change it',
+          textEditDone: 'Done',
+          textEditTitle: 'Edit text',
+          textEditDialogHint: 'The change applies to all users, in the current language.',
+          textEditReset: 'Restore original',
+          textEditOriginal: 'Original',
+          textEditMany: 'changes {n} places in the app',
           auditUserApprove: 'Approval permission changed',
           auditNoChanges: 'no field changed',
           auditLegacyNote: 'Logged before the detailed log: the changed fields were not saved.',
@@ -7458,6 +7546,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           auditFromDate: 'Geçerlilik',
           auditRole: 'Rol',
           userCanApprove: 'QR bildirimlerini onaylayabilir',
+          userCanEditTexts: 'Metinleri düzenleyebilir',
+          auditUserTexts: 'Metin düzenleme izni değiştirildi',
+          auditTextsUpdate: 'Metin değiştirildi',
+          textEditMode: 'Metinleri düzenle',
+          textEditHint: 'Metin düzenleme: değiştirmek için bir metne dokunun',
+          textEditDone: 'Bitti',
+          textEditTitle: 'Metni düzenle',
+          textEditDialogHint: 'Değişiklik tüm kullanıcılar için, geçerli dilde uygulanır.',
+          textEditReset: 'Orijinali geri yükle',
+          textEditOriginal: 'Orijinal',
+          textEditMany: 'uygulamada {n} yeri değiştirir',
           auditUserApprove: 'Onay izni değiştirildi',
           auditNoChanges: 'değişen alan yok',
           auditLegacyNote: 'Ayrıntılı kayıttan önce: değişen alanlar kaydedilmemişti.',
@@ -8116,6 +8215,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         approveOk: root.querySelector('#mod-approve-ok'),
         approveReject: root.querySelector('#mod-approve-reject'),
         approveClose: root.querySelector('#mod-approve-close'),
+        textEditBtn: root.querySelector('#mod-text-edit-btn'),
+        textEditBar: root.querySelector('#mod-text-edit-bar'),
+        textEditDone: root.querySelector('#mod-text-edit-done'),
+        textDialog: root.querySelector('#mod-text-dialog'),
+        textInput: root.querySelector('#mod-text-input'),
+        textOriginal: root.querySelector('#mod-text-original'),
+        textSave: root.querySelector('#mod-text-save'),
+        textReset: root.querySelector('#mod-text-reset'),
+        textCancel: root.querySelector('#mod-text-cancel'),
         reportReporter: root.querySelector('#mod-report-reporter'),
         reportMachine: root.querySelector('#mod-report-machine'),
         reportDescription: root.querySelector('#mod-report-description'),
@@ -8312,7 +8420,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
       };
 
-      const t = (key) => translations[state.lang][key] || key;
+      // Testi cambiati dall'app (permesso "modifica testi"): valgono per
+      // tutti e stanno sopra la traduzione standard, lingua per lingua.
+      let textOverrides = { it: {}, en: {}, tr: {} };
+      const t = (key) => (textOverrides[state.lang] && textOverrides[state.lang][key]) || translations[state.lang][key] || key;
       const locale = () => state.lang === 'it' ? 'it-IT' : state.lang === 'tr' ? 'tr-TR' : 'en-GB';
       const isNumber = (value) => typeof value === 'number' && Number.isFinite(value);
       const valueOrZero = (value) => isNumber(value) ? value : 0;
@@ -11015,6 +11126,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!state.isAdmin) state.summaryEdit = false;
         state.isConfigAdmin = role === 'configAdmin';
         state.canApprove = state.isConfigAdmin;
+        state.canEditTexts = state.isConfigAdmin;
       }
 
       function syncWelcomeLangButtons() {
@@ -11048,6 +11160,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           state.authUser = user;
           if (!user) {
             applyAuthRole(null);
+            updateTextEditAccess();
             state.authUsername = null;
             unsubscribeChat();
             if (state.view === 'entry') state.view = 'daily';
@@ -11086,6 +11199,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             // Approvare le segnalazioni dal QR: gli Amministratori sempre, gli
             // altri solo con la spunta data dalla gestione utenti.
             state.canApprove = state.isConfigAdmin || Boolean(doc.exists && doc.data().canApprove === true);
+            state.canEditTexts = state.isConfigAdmin || Boolean(doc.exists && doc.data().canEditTexts === true);
+            updateTextEditAccess();
             state.authUsername = doc.exists ? doc.data().username : null;
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
@@ -11105,6 +11220,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             maybeShowUpdateBanner();
           }).catch(() => {
             applyAuthRole(null);
+            updateTextEditAccess();
             state.authUsername = null;
             updateAdminUI();
             subscribeEntries();
@@ -13971,7 +14087,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.userAdmin.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div><div class="text-small text-muted">' + escapeHtml(t('loadingUsers')) + '</div>';
         db.collection('users').orderBy('username').get().then((snap) => {
           const rows = [];
-          snap.forEach((doc) => rows.push({ id: doc.id, username: doc.data().username, role: doc.data().role, canApprove: doc.data().canApprove === true }));
+          snap.forEach((doc) => rows.push({ id: doc.id, username: doc.data().username, role: doc.data().role, canApprove: doc.data().canApprove === true, canEditTexts: doc.data().canEditTexts === true }));
           renderUserAdminList(rows);
         }).catch(() => {
           el.userAdmin.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('manageUsers')) + '</div><div class="text-small mod-negative">' + escapeHtml(t('userListError')) + '</div>';
@@ -13991,7 +14107,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         'oee.update': ['auditOeeUpdate', 'settings'], 'stoppageConfig.update': ['auditStoppageConfig', 'settings'],
         'rework.update': ['auditReworkUpdate', 'settings'],
         'user.create': ['auditUserCreate', 'users'], 'user.revoke': ['auditUserRevoke', 'users'],
-        'user.approve': ['auditUserApprove', 'users'],
+        'user.approve': ['auditUserApprove', 'users'], 'user.texts': ['auditUserTexts', 'users'],
+        'texts.update': ['auditTextsUpdate', 'settings'],
         'export.pdf': ['auditExportPdf', 'exports'], 'export.csv': ['auditExportCsv', 'exports'],
         'export.tasksPdf': ['auditExportTasksPdf', 'exports'], 'export.tasksExcel': ['auditExportTasksExcel', 'exports'],
         'anomaly.create': ['auditAnomalyCreate', 'anomalies'], 'anomaly.update': ['auditAnomalyUpdate', 'anomalies'],
@@ -14079,17 +14196,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.auditLog.querySelector('#mod-audit-group').addEventListener('change', (e) => { auditFilter.group = e.target.value; drawAuditLog(); });
       }
 
+      // Permessi singoli che l'Amministratore da' a chi vuole, con una spunta.
+      const USER_PERMISSIONS = [
+        { field: 'canApprove', label: 'userCanApprove', audit: 'user.approve' },
+        { field: 'canEditTexts', label: 'userCanEditTexts', audit: 'user.texts' }
+      ];
       function renderUserAdminList(rows) {
         const roleLabel = (role) => role === 'configAdmin' ? t('roleConfigAdmin') : t('roleAdmin');
         const listHtml = rows.length
           ? rows.map((row) =>
               '<div class="mod-cfg-line mod-user-row">' +
                 '<span class="mod-cfg-line-name">' + escapeHtml(row.username) + '<span class="text-small text-muted"> · ' + escapeHtml(roleLabel(row.role)) + '</span></span>' +
-                // Gli Amministratori approvano sempre: la spunta serve agli altri.
+                // Gli Amministratori hanno sempre tutti i permessi: le spunte
+                // servono agli altri.
                 (row.role === 'configAdmin' ? '' :
-                  '<label class="form-check mod-user-approve"><input type="checkbox" class="form-check-input mod-user-approve-input" data-uid="' +
-                    escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '"' + (row.canApprove ? ' checked' : '') +
-                    '><span class="form-check-label">' + escapeHtml(t('userCanApprove')) + '</span></label>') +
+                  '<span class="mod-user-perms">' + USER_PERMISSIONS.map((p) =>
+                    '<label class="form-check mod-user-approve"><input type="checkbox" class="form-check-input mod-user-perm-input" data-perm="' + p.field +
+                      '" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '"' + (row[p.field] ? ' checked' : '') +
+                      '><span class="form-check-label">' + escapeHtml(t(p.label)) + '</span></label>').join('') +
+                  '</span>') +
                 '<button type="button" class="btn btn-ghost mod-cfg-remove-user" data-uid="' + escapeHtml(row.id) + '" data-username="' + escapeHtml(row.username) + '">' + escapeHtml(t('revokeAccess')) + '</button>' +
               '</div>'
             ).join('')
@@ -14112,13 +14237,14 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           button.addEventListener('click', () => revokeUserAccess(button.dataset.uid, button.dataset.username));
         });
         el.userAdmin.querySelector('#mod-user-add-btn').addEventListener('click', createUserAccount);
-        el.userAdmin.querySelectorAll('.mod-user-approve-input').forEach((input) => {
+        el.userAdmin.querySelectorAll('.mod-user-perm-input').forEach((input) => {
           input.addEventListener('change', () => {
             const on = input.checked;
             input.disabled = true;
-            db.collection('users').doc(input.dataset.uid).update({ canApprove: on }).then(() => {
+            const perm = USER_PERMISSIONS.find((p) => p.field === input.dataset.perm);
+            db.collection('users').doc(input.dataset.uid).update({ [perm.field]: on }).then(() => {
               input.disabled = false;
-              logAudit('user.approve', input.dataset.username, [{ field: t('userCanApprove'), from: on ? 'no' : 'sì', to: on ? 'sì' : 'no' }]);
+              logAudit(perm.audit, input.dataset.username, [{ field: t(perm.label), from: on ? 'no' : 'sì', to: on ? 'sì' : 'no' }]);
             }).catch(() => {
               input.checked = !on;
               input.disabled = false;
@@ -14481,6 +14607,133 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         button.addEventListener('click', () => applyDensity(button.dataset.density));
       });
       applyDensity(state.density);
+      // ---- Modifica testi ----
+      // Chi ha il permesso accende la modalita' dal menu: passando sopra un
+      // testo questo si evidenzia, toccandolo si cambia. Il testo nuovo va su
+      // Firestore (appTexts/<lingua>) e lo vedono subito tutti.
+      let textEditing = false;
+      let textHoverNode = null;
+      let textEditTarget = null; // { keys, text }
+      let appTextsUnsub = null;
+
+      function subscribeAppTexts() {
+        if (!db || appTextsUnsub) return;
+        appTextsUnsub = db.collection('appTexts').onSnapshot((snap) => {
+          const next = { it: {}, en: {}, tr: {} };
+          snap.forEach((doc) => { if (next[doc.id]) next[doc.id] = doc.data() || {}; });
+          textOverrides = next;
+          if (REPORT_MODE) setTranslations(); else renderAll();
+        }, () => {});
+      }
+
+      // Testo "proprio" di un elemento: solo i suoi nodi di testo diretti.
+      function ownText(node) {
+        let text = '';
+        node.childNodes.forEach((child) => { if (child.nodeType === 3) text += child.nodeValue; });
+        return text.replace(/\s+/g, ' ').trim();
+      }
+      // Da un elemento alla voce (o alle voci) di traduzione che lo scrivono:
+      // prima data-i18n, poi si cerca il testo uguale fra le traduzioni.
+      function textKeysFor(start) {
+        const dict = translations[state.lang] || {};
+        let node = start;
+        for (let depth = 0; node && node !== root && depth < 4; depth++, node = node.parentElement) {
+          if (node.closest('#mod-text-dialog, #mod-text-edit-bar')) return null;
+          if (node.dataset && node.dataset.i18n) {
+            return { node, keys: [node.dataset.i18n], text: t(node.dataset.i18n) };
+          }
+          if (node.dataset && node.dataset.i18nPlaceholder) {
+            return { node, keys: [node.dataset.i18nPlaceholder], text: t(node.dataset.i18nPlaceholder) };
+          }
+          const text = ownText(node);
+          if (!text) continue;
+          let keys = Object.keys(dict).filter((k) => t(k) === text);
+          if (!keys.length) {
+            const low = text.toLocaleLowerCase();
+            keys = Object.keys(dict).filter((k) => t(k).toLocaleLowerCase() === low);
+          }
+          if (keys.length) return { node, keys, text: t(keys[0]) };
+          return null;
+        }
+        return null;
+      }
+
+      function setTextHover(node) {
+        if (textHoverNode === node) return;
+        if (textHoverNode) textHoverNode.classList.remove('mod-text-hover');
+        textHoverNode = node;
+        if (node) node.classList.add('mod-text-hover');
+      }
+      function setTextEditing(on) {
+        textEditing = Boolean(on && state.canEditTexts);
+        root.classList.toggle('mod-text-editing', textEditing);
+        el.textEditBar.hidden = !textEditing;
+        if (!textEditing) setTextHover(null);
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+      }
+      function updateTextEditAccess() {
+        el.textEditBtn.hidden = !state.canEditTexts;
+        if (!state.canEditTexts && textEditing) setTextEditing(false);
+      }
+
+      function openTextDialog(found) {
+        textEditTarget = found;
+        const original = (translations[state.lang] || {})[found.keys[0]] || '';
+        el.textInput.value = found.text;
+        el.textOriginal.textContent = t('textEditOriginal') + ': ' + original +
+          (found.keys.length > 1 ? ' · ' + t('textEditMany').replace('{n}', found.keys.length) : '');
+        el.textReset.hidden = !found.keys.some((k) => textOverrides[state.lang] && textOverrides[state.lang][k]);
+        el.textSave.disabled = false;
+        el.textDialog.showModal();
+        el.textInput.focus();
+        el.textInput.select();
+      }
+      function saveText(reset) {
+        const found = textEditTarget;
+        if (!found || !db || !state.canEditTexts) return;
+        const value = el.textInput.value.trim();
+        if (!reset && !value) { el.textInput.focus(); return; }
+        const dict = translations[state.lang] || {};
+        const patch = {};
+        found.keys.forEach((k) => {
+          // Uguale all'originale (o ripristino): si toglie la modifica.
+          patch[k] = reset || value === dict[k] ? firebase.firestore.FieldValue.delete() : value;
+        });
+        el.textSave.disabled = true;
+        const before = found.text;
+        db.collection('appTexts').doc(state.lang).set(patch, { merge: true }).then(() => {
+          el.textDialog.close();
+          logAudit('texts.update', found.keys.join(', '), [{ field: state.lang.toUpperCase(), from: before, to: reset ? dict[found.keys[0]] : value }]);
+        }).catch(() => {
+          el.textSave.disabled = false;
+          alert(t('userCreateError'));
+        });
+      }
+
+      // Cattura: in modalita' modifica il tocco non deve aprire pagine o
+      // premere pulsanti, solo scegliere il testo.
+      document.addEventListener('mouseover', (event) => {
+        if (!textEditing || el.textDialog.open) return;
+        const found = textKeysFor(event.target);
+        setTextHover(found ? found.node : null);
+      }, true);
+      document.addEventListener('click', (event) => {
+        if (!textEditing || el.textDialog.open) return;
+        if (event.target.closest('#mod-text-edit-bar')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const found = textKeysFor(event.target);
+        if (found) openTextDialog(found);
+      }, true);
+      el.textEditBtn.addEventListener('click', () => { toggleAppMenu(false); setTextEditing(true); });
+      el.textEditDone.addEventListener('click', () => setTextEditing(false));
+      el.textSave.addEventListener('click', () => saveText(false));
+      el.textReset.addEventListener('click', () => saveText(true));
+      el.textCancel.addEventListener('click', () => el.textDialog.close());
+      el.textInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') { event.preventDefault(); saveText(false); }
+      });
+
       function toggleAppMenu(force) {
         const show = typeof force === 'boolean' ? force : el.appMenu.hidden;
         el.appMenu.hidden = !show;
@@ -15057,6 +15310,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       loadOeeConfig();
       try { state.chatSeenTs = Number(window.localStorage.getItem(CHAT_SEEN_KEY)) || 0; } catch (e) {}
       clearForm();
+      // Testi cambiati dall'app: li leggono tutti, anche il modulo QR.
+      subscribeAppTexts();
       if (REPORT_MODE) {
         // Dal QR: solo il modulo, nessun accesso e nessun dato caricato.
         initReportMode();
