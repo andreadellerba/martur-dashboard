@@ -8743,44 +8743,124 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         // cosi' diventano visibili anche dagli altri dispositivi.
         if (entriesMigrated || !entriesCloudReady || !state.isAdmin || !db) return;
         entriesMigrated = true;
-        const cloudDates = new Set(state.manual.map((row) => row.date));
+        // Solo il tratto scaricato all'apertura: per i giorni piu' vecchi non
+        // sappiamo cosa c'e' sul cloud e non vanno sovrascritti.
+        const cutoff = historyCutoff();
+        const cloudDates = new Set(entriesRecent.map((row) => row.date));
         localSeedManual.forEach((row) => {
-          if (row && row.date && !cloudDates.has(row.date)) pushEntryToCloud(row);
+          if (row && row.date && row.date >= cutoff && !cloudDates.has(row.date)) pushEntryToCloud(row);
         });
       }
 
       // I dati di produzione si leggono solo da autenticati: la sottoscrizione
       // parte dopo il login e si chiude all'uscita.
+      // Per non rileggere ogni volta tutto lo storico (le letture gratuite di
+      // Firestore sono a numero limitato al giorno) all'apertura si scaricano
+      // solo le giornate e le microfermate dell'ultimo mese. Se si sceglie un
+      // periodo piu' vecchio, quel tratto si aggiunge al momento con un
+      // secondo ascolto, che resta aggiornato come il primo.
+      const HISTORY_DAYS = 31;
+      function historyCutoff() {
+        return isoDate(addDays(new Date(), -HISTORY_DAYS));
+      }
+      // Le microfermate hanno l'ora in UTC: un giorno di margine, cosi' quelle
+      // poco dopo mezzanotte finiscono comunque nel giorno giusto.
+      function stoppageBound(dateIso) {
+        return isoDate(addDays(parseDate(dateIso), -1));
+      }
+      let historyFrom = null; // primo giorno caricato, se prima del limite
+      let entriesRecent = [], entriesOlder = [];
+      let stoppagesRecent = [], stoppagesOlder = [];
+      let entriesOlderUnsub = null, stoppagesOlderUnsub = null;
+
+      function neededHistoryStart() {
+        const mode = periodMode();
+        let start = state.selectedDate;
+        // Settimana e mese si confrontano col periodo prima: serve anche quello.
+        if (mode === 'weekly') start = isoDate(addDays(mondayOf(parseDate(state.selectedDate)), -7));
+        else if (mode === 'monthly' && state.selectedMonth) {
+          const d = parseDate(state.selectedMonth + '-01');
+          start = isoDate(new Date(d.getFullYear(), d.getMonth() - 1, 1));
+        }
+        const f = state.stoppageFilters && state.stoppageFilters.date;
+        if (state.view === 'stoppages' && f && f < start) start = f;
+        return start;
+      }
+      function ensureHistoryFrom(dateIso) {
+        if (!dateIso || dateIso >= historyCutoff()) return;
+        if (historyFrom && dateIso >= historyFrom) return;
+        historyFrom = dateIso;
+        subscribeOlderEntries();
+        subscribeOlderStoppages();
+      }
+      function subscribeOlderEntries() {
+        if (!db || !historyFrom || !entriesUnsub) return;
+        if (entriesOlderUnsub) { try { entriesOlderUnsub(); } catch (e) {} }
+        entriesOlderUnsub = db.collection('entries')
+          .where(firebase.firestore.FieldPath.documentId(), '>=', historyFrom)
+          .where(firebase.firestore.FieldPath.documentId(), '<', historyCutoff())
+          .onSnapshot((snap) => {
+            entriesOlder = entryRowsFrom(snap);
+            applyEntries();
+          }, () => {});
+      }
+      function subscribeOlderStoppages() {
+        if (!db || !historyFrom || !stoppagesUnsub) return;
+        if (stoppagesOlderUnsub) { try { stoppagesOlderUnsub(); } catch (e) {} }
+        stoppagesOlderUnsub = db.collection('stoppages')
+          .where('timestamp', '>=', stoppageBound(historyFrom))
+          .where('timestamp', '<', stoppageBound(historyCutoff()))
+          .onSnapshot((snap) => {
+            stoppagesOlder = stoppageListFrom(snap);
+            applyStoppages();
+          }, () => {});
+      }
+
+      function entryRowsFrom(snap) {
+        const rows = [];
+        snap.forEach((doc) => {
+          const d = doc.data();
+          rows.push({
+            date: doc.id,
+            // i documenti scritti prima di questa versione non hanno il flag:
+            // restano sulla vecchia regola (fine settimana = turno unico)
+            singleShift: singleShiftFlag(d.singleShift),
+            shift1: d.shift1 || {},
+            shift2: d.shift2 || {},
+            absentOperators: Array.isArray(d.absentOperators) ? d.absentOperators : [],
+            plannedMinPerShift: isNumber(d.plannedMinPerShift) ? d.plannedMinPerShift : null,
+            targetKitPerShift: isNumber(d.targetKitPerShift) ? d.targetKitPerShift : null,
+            updatedAt: d.updatedAt || null
+          });
+        });
+        return rows;
+      }
+      function applyEntries() {
+        const byDate = new Map();
+        entriesOlder.concat(entriesRecent).forEach((row) => byDate.set(row.date, row));
+        state.manual = Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+        persistManual();
+        renderAll();
+      }
+
       let entriesUnsub = null;
       function unsubscribeEntries() {
         if (entriesUnsub) { try { entriesUnsub(); } catch (e) {} entriesUnsub = null; }
+        if (entriesOlderUnsub) { try { entriesOlderUnsub(); } catch (e) {} entriesOlderUnsub = null; }
+        entriesRecent = []; entriesOlder = [];
+        historyFrom = null;
       }
       function subscribeEntries() {
         if (!db || entriesUnsub) return;
-        entriesUnsub = db.collection('entries').onSnapshot((snap) => {
-          const rows = [];
-          snap.forEach((doc) => {
-            const d = doc.data();
-            rows.push({
-              date: doc.id,
-              // i documenti scritti prima di questa versione non hanno il flag:
-              // restano sulla vecchia regola (fine settimana = turno unico)
-              singleShift: singleShiftFlag(d.singleShift),
-              shift1: d.shift1 || {},
-              shift2: d.shift2 || {},
-              absentOperators: Array.isArray(d.absentOperators) ? d.absentOperators : [],
-              plannedMinPerShift: isNumber(d.plannedMinPerShift) ? d.plannedMinPerShift : null,
-              targetKitPerShift: isNumber(d.targetKitPerShift) ? d.targetKitPerShift : null,
-              updatedAt: d.updatedAt || null
-            });
-          });
-          rows.sort((a, b) => a.date.localeCompare(b.date));
-          state.manual = rows;
-          entriesCloudReady = true;
-          persistManual();
-          migrateLocalEntriesToCloud();
-          renderAll();
-        }, () => {});
+        entriesUnsub = db.collection('entries')
+          .where(firebase.firestore.FieldPath.documentId(), '>=', historyCutoff())
+          .onSnapshot((snap) => {
+            entriesRecent = entryRowsFrom(snap);
+            entriesCloudReady = true;
+            applyEntries();
+            migrateLocalEntriesToCloud();
+          }, () => {});
+        if (historyFrom) subscribeOlderEntries();
       }
 
       // Le impostazioni valgono per tutta la squadra, non per il singolo
@@ -8862,17 +8942,31 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       let stoppagesUnsub = null;
       function unsubscribeStoppages() {
         if (stoppagesUnsub) { try { stoppagesUnsub(); } catch (e) {} stoppagesUnsub = null; }
+        if (stoppagesOlderUnsub) { try { stoppagesOlderUnsub(); } catch (e) {} stoppagesOlderUnsub = null; }
+        stoppagesRecent = []; stoppagesOlder = [];
+      }
+      function stoppageListFrom(snap) {
+        const list = [];
+        snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
+        return list;
+      }
+      function applyStoppages() {
+        const byId = new Map();
+        stoppagesOlder.concat(stoppagesRecent).forEach((s) => byId.set(s.id, s));
+        state.stoppages = Array.from(byId.values());
+        persistStoppages();
+        if (state.view === 'stoppages') renderStoppages();
+        else if (state.view !== 'entry' && state.view !== 'attendance') renderDashboard();
       }
       function subscribeStoppages() {
         if (!db || stoppagesUnsub) return;
-        stoppagesUnsub = db.collection('stoppages').onSnapshot((snap) => {
-          const list = [];
-          snap.forEach((doc) => list.push(Object.assign({ id: doc.id }, doc.data())));
-          state.stoppages = list;
-          persistStoppages();
-          if (state.view === 'stoppages') renderStoppages();
-          else if (state.view !== 'entry' && state.view !== 'attendance') renderDashboard();
-        }, () => {});
+        stoppagesUnsub = db.collection('stoppages')
+          .where('timestamp', '>=', stoppageBound(historyCutoff()))
+          .onSnapshot((snap) => {
+            stoppagesRecent = stoppageListFrom(snap);
+            applyStoppages();
+          }, () => {});
+        if (historyFrom) subscribeOlderStoppages();
       }
 
       // Configurazione microfermate (operazioni e cause per linea): condivisa.
@@ -9411,6 +9505,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         el.datePicker.hidden = mode !== 'daily';
         el.weekPicker.hidden = mode !== 'weekly';
         el.monthPicker.hidden = mode !== 'monthly';
+        // Periodo piu' vecchio dell'ultimo mese: si scarica adesso.
+        ensureHistoryFrom(neededHistoryStart());
       }
 
       /* Giorno, settimana o mese: lo dice la pagina aperta. Produzione e
@@ -14137,6 +14233,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
 
       function renderStoppages() {
+        ensureHistoryFrom(neededHistoryStart());
         const now = Date.now();
         const todayIso = isoDate(new Date());
         const recentByKey = new Set();
