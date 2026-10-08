@@ -2948,7 +2948,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     /* Il popup si adatta all'elenco: e' piu' alto degli altri dialoghi. */
     /* Popup novita' piu' grande degli altri dialoghi: ci sta tutto il testo
        senza dover scorrere, pulsante compreso. */
-    #martur-operations-dashboard .mod-update-pw { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--border); }
     #martur-operations-dashboard .mod-update-dialog .mod-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
     #martur-operations-dashboard .mod-selection-dialog.mod-update-dialog {
       max-width: min(1320px, calc(100vw - 32px));
@@ -6569,7 +6568,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         </div>
       </div>
       <div class="mod-dialog-actions">
-        <button type="button" id="mod-update-pw" class="btn btn-ghost mod-update-pw"><i data-lucide="key-round" aria-hidden="true"></i><span>Cambia la tua password · Change your password</span></button>
         <button type="button" id="mod-update-ok" class="btn btn-primary">Ho capito · Got it</button>
       </div>
     </div>
@@ -16307,13 +16305,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       }
       el.updateClose.addEventListener('click', dismissUpdateBanner);
       el.updateOk.addEventListener('click', dismissUpdateBanner);
-      // Dal popup novita': chiude il popup e apre Impostazioni sul riquadro
-      // "Il tuo account", pronto per scrivere la password attuale.
-      root.querySelector('#mod-update-pw').addEventListener('click', () => {
-        dismissUpdateBanner();
-        el.stoppageSettingsBtn.click();
-        window.setTimeout(() => { el.account.scrollIntoView({ block: 'start' }); el.pwOld.focus(); }, 150);
-      });
 
       el.taskAdd.addEventListener('click', () => openTaskDialog(null));
       el.taskPdf.addEventListener('click', exportTasksPdf);
