@@ -2934,7 +2934,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       font-weight: 600;
       color: light-dark(rgb(20 20 22), #fff);
     }
-    #martur-operations-dashboard .mod-update-banner-col li { margin-bottom: 6px; }
+    #martur-operations-dashboard .mod-update-banner-col li { margin-bottom: 6px; font-weight: 500; }
+    /* Titoletto di ogni novita': grassetto e in oro. */
+    #martur-operations-dashboard .mod-update-banner-col li b { font-weight: 700; color: var(--gold); }
     #martur-operations-dashboard .mod-update-banner-sign {
       margin-top: 14px;
       font-size: var(--fs-lead);
@@ -6525,24 +6527,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
       <div class="mod-update-banner-cols">
         <div class="mod-update-banner-col">
-          <div class="mod-update-banner-title">In base ai recenti feedback</div>
+          <div class="mod-update-banner-title">Novità di oggi</div>
           <ul>
-            <li>N° Dummy visibili ogni fine settimana e fine del mese.</li>
-            <li>Aggiunta la sezione Attività (Daily Task) per tracciare le attività giornalmente, con progressi e chiusure.</li>
-            <li>Aumentato il font delle note.</li>
-            <li>Rimosso il dato Efficienza dall'OLE (non era il dato corretto).</li>
-            <li>Resa l'applicazione non visibile e privata senza login, per evitare problemi di sicurezza e dati sensibili.</li>
+            <li><b>Nuovo look "Officina":</b> colori più caldi, card bianche, numeri più grandi e leggibili. Chi preferisce può tornare allo stile classico da Impostazioni › Stile.</li>
+            <li><b>App disponibile per telefono</b>, con il nuovo menu in basso per passare da una sezione all'altra. Per installarla chiedete ad Andrea.</li>
+            <li><b>Nuova sezione EDI Stellantis:</b> si carica l'Excel EDI, si salva ogni settimana e si possono confrontare due EDI per vedere cosa è aumentato o diminuito.</li>
+            <li><b>Report anomalie con controllo foto badge:</b> chi segnala dal QR deve fotografare il badge; la segnalazione compare dopo la verifica.</li>
           </ul>
           <div class="mod-update-banner-sign">Buon lavoro e forza Juve!<br>Andrea ;)</div>
         </div>
         <div class="mod-update-banner-col">
-          <div class="mod-update-banner-title">Based on your recent feedback</div>
+          <div class="mod-update-banner-title">What's new today</div>
           <ul>
-            <li>Dummy count now shown at the end of every week and month.</li>
-            <li>Added the Activities section (Daily Task) to track activities day by day, with progress and closures.</li>
-            <li>Larger font for the shift notes.</li>
-            <li>Removed the Efficiency figure from OLE (it was not the correct data).</li>
-            <li>The app is now private and shows nothing without a login, to protect security and sensitive data.</li>
+            <li><b>New "Workshop" look:</b> warmer colours, white cards, bigger and easier-to-read numbers. You can switch back to the classic style from Settings › Style.</li>
+            <li><b>Phone app available</b>, with a new bottom menu to move between sections. Ask Andrea to install it.</li>
+            <li><b>New EDI Stellantis section:</b> upload the EDI Excel, save each week and compare two EDIs to see what went up or down.</li>
+            <li><b>Anomaly reports with badge photo check:</b> anyone reporting via QR must take a photo of their badge; the report appears after it has been checked.</li>
           </ul>
           <div class="mod-update-banner-sign">Have a good shift and forza Juve!<br>Andrea ;)</div>
         </div>
@@ -16108,7 +16108,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       // Scadenza: 10 settembre 2026 alle 10:00. (Il mese in JS parte da 0.)
       // Fino a quel momento il popup si ripropone a ogni apertura dell'app:
       // chiuderlo lo toglie solo per quella volta, al ricaricamento ritorna.
-      const UPDATE_BANNER_UNTIL = new Date(2026, 8, 10, 10, 0, 0);
+      // Popup novita': si vede a ogni accesso fino a giovedi' 9 ottobre 2026, ore 10.
+      const UPDATE_BANNER_UNTIL = new Date(2026, 9, 9, 10, 0, 0);
       function maybeShowUpdateBanner() {
         const dlg = el.updateDialog;
         if (!dlg || dlg.open) return;
