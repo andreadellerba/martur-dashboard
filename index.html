@@ -926,6 +926,43 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   font-size: var(--fs-lead);
   font-weight: 600;
 }
+/* Titoli di rework, perdite, OLE e Perdite: al centro. I sotto-titoli
+   "1° turno / 2° turno" restano dove sono. */
+:root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) > .mod-section-head {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+:root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) > .mod-section-head > div {
+  justify-content: center;
+}
+/* OLE e Perdite dentro una card bianca, le due alte uguali. */
+:root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) {
+  grid-template-rows: auto 1fr;
+}
+:root.martur-officina #martur-operations-dashboard #mod-oee-section > .mod-oee-layout,
+:root.martur-officina #martur-operations-dashboard #mod-waterfall-wrap {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 14px 18px;
+  background: var(--card);
+  border: 3px solid var(--off-line);
+  border-radius: var(--radius-2xl);
+}
+/* Numeri delle card con un filo di contorno scuro: si leggono meglio. */
+:root.martur-officina #martur-operations-dashboard :is(.viz-stat-value, .mod-shift-metric strong, .mod-loss-kpi-val, .mod-oee-row-value) {
+  -webkit-text-stroke: 0.6px rgb(0 0 0 / 55%);
+  paint-order: stroke fill;
+}
+:root.martur-officina #martur-operations-dashboard .mod-oee-gauge-value {
+  stroke: rgb(0 0 0 / 55%);
+  stroke-width: 1.2px;
+  paint-order: stroke fill;
+}
+/* Logo, menu e calendario vicini al centro anche sugli schermi larghi. */
+@media (min-width: 1420px) {
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster { --topbar-gap: 14px; }
+}
 /* Menu a pillola e pulsanti: bordi e fondi della stessa carta. */
 :root.martur-officina #martur-operations-dashboard .mod-pillnav {
   background: var(--card);
@@ -3418,7 +3455,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       overflow: hidden;
       width: 100%;
     }
-    #martur-operations-dashboard .mod-shift-note-empty { color: var(--muted-foreground); font-weight: 500; }
     /* Card dei turni: la nota ha tre righe invece di due. */
     #martur-operations-dashboard .mod-daily-shift-card .mod-shift-note { height: 3.9em; }
     #martur-operations-dashboard .mod-daily-shift-card .mod-shift-note-text { -webkit-line-clamp: 3; }
@@ -5407,7 +5443,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     <section id="mod-daily-rework-section" class="mod-section" aria-labelledby="mod-daily-rework-title">
       <div class="mod-section-head">
         <div>
-          <div id="mod-daily-rework-title" class="mod-section-label" data-i18n="dailyTopReworks">3 rework più frequenti segnalati dal riparatore</div>
+          <div id="mod-daily-rework-title" class="mod-section-label" data-i18n="dailyTopReworks">I 3 rework più frequenti segnalati dal riparatore (casi)</div>
         </div>
       </div>
       <!-- Una riga per turno, stesso stile: 1° turno sopra, 2° turno sotto. -->
@@ -6978,7 +7014,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           reworkRate: 'Tasso Rework',
           reworkProductionRate: 'Rework / produzione',
           reworkFormula: 'Rework ÷ produzione Front Line',
-          dailyTopReworks: '3 rework più frequenti segnalati dal riparatore',
+          dailyTopReworks: 'I 3 rework più frequenti segnalati dal riparatore (casi)',
           qualitySummaryTitle: 'Riepilogo qualità',
           qualityPeriodNoData: 'Nessun dato di qualità in questo periodo',
           qualityDays: 'giornate con dati',
@@ -7555,7 +7591,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qualitySummaryTitle: 'Quality summary',
           qualityPeriodNoData: 'No quality data in this period',
           qualityDays: 'days with data',
-          dailyTopReworks: '3 most frequent rework reasons reported by the repairer',
+          dailyTopReworks: 'The 3 most frequent rework reasons reported by the repairer (cases)',
           top3Reworks: 'Top 3 rework',
           selectTop3Reworks: 'Select the 3 most frequent rework reasons',
           reworkSelectionHint: 'Select exactly 3 reasons when rework is present.',
@@ -8129,7 +8165,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           qualityPeriodNoData: 'Bu dönemde kalite verisi yok',
           qualityDays: 'veri olan gün',
           reworkFormula: 'Rework ÷ Ön Hat üretimi',
-          dailyTopReworks: 'Tamircinin bildirdiği en sık 3 rework nedeni',
+          dailyTopReworks: 'Tamircinin bildirdiği en sık 3 rework nedeni (vaka)',
           top3Reworks: 'İlk 3 rework',
           selectTop3Reworks: 'En sık 3 rework nedenini seçin',
           reworkSelectionHint: 'Rework mevcut olduğunda tam olarak 3 neden seçin.',
