@@ -2206,6 +2206,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-edi-panel { display: grid; gap: 6px; min-width: 0; align-content: start; }
     #martur-operations-dashboard .mod-edi-panel-title { text-align: center; font-weight: 800; }
+    #martur-operations-dashboard .mod-edi-comparing .mod-edi-title,
+    #martur-operations-dashboard .mod-edi-comparing .mod-edi-status { display: none; }
     #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table { min-width: max-content; font-size: var(--font-size-small); }
     #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table th,
     #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table td { padding: 7px 8px; }
@@ -6714,7 +6716,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediNameField: 'Nome',
           ediCompare: 'Confronta',
           ediCompareWith: 'con {name}',
-          ediCompareLegend: '{new} rispetto a {old}: verde ▲ aumentato, rosso ▼ diminuito.',
           auditEdiRename: 'EDI rinominato',
           ediDeleteConfirm: 'Eliminare «{name}»?',
           auditEdiDelete: 'EDI eliminato',
@@ -7285,7 +7286,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediNameField: 'Name',
           ediCompare: 'Compare',
           ediCompareWith: 'with {name}',
-          ediCompareLegend: '{new} compared with {old}: green ▲ increased, red ▼ decreased.',
           auditEdiRename: 'EDI renamed',
           ediDeleteConfirm: 'Delete «{name}»?',
           auditEdiDelete: 'EDI deleted',
@@ -7856,7 +7856,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediNameField: 'Ad',
           ediCompare: 'Karşılaştır',
           ediCompareWith: '{name} ile',
-          ediCompareLegend: '{new}, {old} ile karşılaştırıldı: yeşil ▲ arttı, kırmızı ▼ azaldı.',
           auditEdiRename: 'EDI yeniden adlandırıldı',
           ediDeleteConfirm: '«{name}» silinsin mi?',
           auditEdiDelete: 'EDI silindi',
@@ -14033,6 +14032,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           el.ediCompareSel.value = ediCompareId;
         }
         const other = ediCompareOn ? others.find((r) => r.id === ediCompareId) || null : null;
+        // Nel confronto bastano i nomi sopra le due tabelle: niente titolo
+        // Quantita'/Percentuali e niente legenda.
+        el.ediScreen.classList.toggle('mod-edi-comparing', Boolean(other && data));
 
         if (!data || !data.weeks || !data.weeks.length) {
           const empty = '<div class="mod-edi-wrap"><table class="mod-edi-table"><tbody><tr><td class="mod-edi-empty">' +
@@ -14054,7 +14056,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             (mode === 'qty' ? el.ediQtyBox : el.ediPctBox).innerHTML = '<div class="mod-edi-compare-grid">' +
               panel(pair[0], mode, null) + panel(pair[1], mode, pair[0]) + '</div>';
           });
-          el.ediStatus.textContent = t('ediCompareLegend').replace('{new}', pair[1].name).replace('{old}', pair[0].name);
+          el.ediStatus.textContent = '';
           el.ediStatus.classList.remove('mod-negative');
           return;
         }
