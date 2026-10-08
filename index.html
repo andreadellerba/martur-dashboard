@@ -1030,7 +1030,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   }
   :root #martur-operations-dashboard .mod-topbar-left { order: 1; flex: 0 0 100%; }
   :root #martur-operations-dashboard .mod-pillnav { display: contents; }
-  :root #martur-operations-dashboard .mod-pillnav > :is(#mod-back-btn, #mod-entry-view-btn, .mod-daily-admin-actions, .mod-appmenu-wrap) { order: 2; }
+  :root #martur-operations-dashboard .mod-pillnav > :is(#mod-back-btn, #mod-entry-view-btn, .mod-appmenu-wrap),
+  :root #martur-operations-dashboard .mod-pillnav > .mod-daily-admin-actions > * { order: 2; }
   :root #martur-operations-dashboard .mod-pillnav > #mod-view-select { display: none; }
   :root #martur-operations-dashboard .mod-pillnav :is(#mod-back-btn, #mod-entry-view-btn, .mod-appmenu-btn, .mod-daily-admin-actions .btn) {
     width: 44px;
