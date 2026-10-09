@@ -2127,7 +2127,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     #martur-operations-dashboard.mod-compact .mod-task-col { padding: 8px; gap: 7px; }
     #martur-operations-dashboard.mod-compact .mod-anomaly-table th,
     #martur-operations-dashboard.mod-compact .mod-anomaly-table td { padding: 5px 8px; }
-    #martur-operations-dashboard.mod-compact .mod-rework-shifts { gap: 8px; }
+    #martur-operations-dashboard.mod-compact .mod-rework-shifts,
+    #martur-operations-dashboard.mod-compact .mod-two-col { gap: 8px; }
     #martur-operations-dashboard.mod-compact .mod-rework-ranking li { padding-bottom: 4px; }
     #martur-operations-dashboard .mod-attendance-screen {
       gap: 14px;
@@ -4661,7 +4662,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     #martur-operations-dashboard .mod-two-col {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      gap: 14px; /* come fra le card dei turni */
       align-items: start;
     }
     #martur-operations-dashboard .mod-table-wrap {
