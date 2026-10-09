@@ -26,6 +26,15 @@
     document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
     // Stile grafico: Officina salvo scelta diversa (Impostazioni > Stile).
     if (window.localStorage.getItem('martur-dashboard-style') !== 'classic') document.documentElement.classList.add('martur-officina');
+    // Colore dello sfondo (Impostazioni > Sfondo) e tono dei testi sopra.
+    window.marturApplyBg = function (bg) {
+      var el = document.documentElement;
+      var tones = { burgundy: ['dark', 'dark'], notte: ['dark', 'dark'], grafite: ['dark', 'dark'], salvia: ['light', 'dark'], avorio: ['light', 'light'] };
+      if (!tones[bg]) { el.removeAttribute('data-bg'); el.removeAttribute('data-bgtone'); return; }
+      el.setAttribute('data-bg', bg);
+      el.setAttribute('data-bgtone', tones[bg][el.getAttribute('data-theme') === 'dark' ? 1 : 0]);
+    };
+    window.marturApplyBg(window.localStorage.getItem('martur-dashboard-bg'));
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'light');
     document.documentElement.classList.add('martur-officina');
@@ -991,6 +1000,66 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   color: light-dark(color-mix(in srgb, var(--col-color) 55%, #000), var(--col-color));
   border-bottom-color: light-dark(color-mix(in srgb, var(--col-color) 55%, #000), var(--col-color));
 }
+/* ---- Colore dello sfondo (Impostazioni › Sfondo, solo stile Officina) ----
+   Ogni colore ha la versione per il tema chiaro e per quello scuro. Le card
+   restano come sono; cambiano solo i testi scritti direttamente sullo
+   sfondo: chiari se lo sfondo e' scuro, scuri se e' chiaro (data-bgtone,
+   calcolato dall'app guardando il colore vero dello sfondo). */
+:root.martur-officina[data-bg="burgundy"] { --background: light-dark(#6e1f2c, #3a1119); }
+:root.martur-officina[data-bg="notte"]    { --background: light-dark(#1f3150, #111a2b); }
+:root.martur-officina[data-bg="grafite"]  { --background: light-dark(#3f4045, #1c1d20); }
+:root.martur-officina[data-bg="salvia"]   { --background: light-dark(#b8c2ae, #2a3226); }
+:root.martur-officina[data-bg="avorio"]   { --background: light-dark(#f1ece1, #e6dfd0); }
+:root.martur-officina[data-bgtone="dark"] #martur-operations-dashboard {
+  --foreground: #ffffff;
+  --off-ink: #ffffff;
+  --muted-foreground: rgb(255 255 255 / 78%);
+  --gold: #e2c07a;
+  color: #ffffff;
+}
+:root.martur-officina[data-bgtone="light"] #martur-operations-dashboard {
+  --foreground: rgb(8 9 11);
+  --off-ink: #1b1a17;
+  --muted-foreground: #5f574a;
+  --gold: #86672c;
+  color: rgb(8 9 11);
+}
+/* Dentro card, menu, finestre e tendine tornano i colori normali del tema. */
+:root.martur-officina[data-bgtone] #martur-operations-dashboard :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, .mod-capture, [role="dialog"], [role="menu"], [role="listbox"]) {
+  --foreground: light-dark(rgb(8 9 11), rgb(255 255 255));
+  --off-ink: light-dark(#1b1a17, #f4efe4);
+  --muted-foreground: light-dark(#6f6656, #b3a994);
+  --gold: light-dark(#86672c, #c9a55f);
+  color: var(--foreground);
+}
+/* Campi e tendine: solo i colori, il testo lo decide il campo (quello della data e' nascosto apposta). */
+:root.martur-officina[data-bgtone] #martur-operations-dashboard :is(select, input, textarea) {
+  --foreground: light-dark(rgb(8 9 11), rgb(255 255 255));
+  --off-ink: light-dark(#1b1a17, #f4efe4);
+  --muted-foreground: light-dark(#6f6656, #b3a994);
+  --gold: light-dark(#86672c, #c9a55f);
+}
+@media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
+  :root.martur-officina[data-bgtone] #martur-operations-dashboard .mod-pillnav {
+    --foreground: light-dark(rgb(8 9 11), rgb(255 255 255));
+    --off-ink: light-dark(#1b1a17, #f4efe4);
+    --muted-foreground: light-dark(#6f6656, #b3a994);
+    --gold: light-dark(#86672c, #c9a55f);
+    color: var(--foreground);
+  }
+}
+:root:not(.martur-officina) #martur-operations-dashboard .mod-bg-sec { display: none; }
+#martur-operations-dashboard .mod-bg-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+#martur-operations-dashboard .mod-bg-choice {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--sw);
+  cursor: pointer;
+}
+#martur-operations-dashboard .mod-bg-choice[aria-pressed="true"] { outline: 3px solid var(--gold); outline-offset: 2px; }
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: none; }
@@ -3872,6 +3941,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-note-more svg { width: 14px; height: 14px; }
     #martur-operations-dashboard .mod-note-more.mod-note-more-on { display: inline-grid; }
     #martur-operations-dashboard .mod-capture .mod-note-more { display: none; }
+    /* Immagine per Outlook: le note escono sempre intere, non tagliate a due righe. */
+    #martur-operations-dashboard .mod-capture .mod-shift-note { height: auto !important; min-height: 2.6em; }
+    #martur-operations-dashboard .mod-capture .mod-shift-note-text { display: block; -webkit-line-clamp: unset; overflow: visible; white-space: pre-wrap; padding-inline: 0 !important; }
     /* Nota aperta per intero dentro la card: niente piu' altezza fissa ne'
        taglio a due righe; l'icona diventa "riduci". */
     #martur-operations-dashboard .mod-shift-note.mod-shift-note-open { height: auto; min-height: 2.6em; }
@@ -5803,6 +5875,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           <button type="button" class="btn btn-ghost mod-style-choice" data-style="officina" aria-pressed="true" data-i18n="styleOfficina">Officina</button>
         </div>
       </div>
+      <div class="mod-app-menu-sec mod-bg-sec">
+        <span class="mod-app-menu-label" data-i18n="bgLabel">Sfondo</span>
+        <div class="mod-app-menu-choices mod-bg-choices">
+          <button type="button" class="mod-bg-choice" data-bg="sabbia" title="Sabbia" style="--sw:#d8cdb5"></button>
+          <button type="button" class="mod-bg-choice" data-bg="burgundy" title="Burgundy" style="--sw:#6e1f2c"></button>
+          <button type="button" class="mod-bg-choice" data-bg="notte" title="Blu notte" style="--sw:#1f3150"></button>
+          <button type="button" class="mod-bg-choice" data-bg="grafite" title="Grafite" style="--sw:#3f4045"></button>
+          <button type="button" class="mod-bg-choice" data-bg="salvia" title="Salvia" style="--sw:#b8c2ae"></button>
+          <button type="button" class="mod-bg-choice" data-bg="avorio" title="Avorio" style="--sw:#f1ece1"></button>
+        </div>
+      </div>
       <div class="mod-app-menu-sec">
         <span class="mod-app-menu-label" data-i18n="language">Lingua</span>
         <button type="button" class="btn btn-ghost mod-lang-btn" id="mod-lang-btn" title="Lingua">🇮🇹</button>
@@ -7408,6 +7491,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           theme: 'Tema',
           density: 'Spaziatura',
           styleLabel: 'Stile',
+          bgLabel: 'Sfondo',
           styleClassic: 'Classico',
           styleOfficina: 'Officina',
           densityComfort: 'Normale',
@@ -8011,6 +8095,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           theme: 'Theme',
           density: 'Spacing',
           styleLabel: 'Style',
+          bgLabel: 'Background',
           styleClassic: 'Classic',
           styleOfficina: 'Workshop',
           densityComfort: 'Normal',
@@ -8615,6 +8700,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           density: 'Aralık',
           styleLabel: 'Stil',
           styleClassic: 'Klasik',
+          bgLabel: 'Arka plan',
           styleOfficina: 'Atölye',
           densityComfort: 'Normal',
           densityCompact: 'Kompakt',
@@ -9103,6 +9189,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         try {
           window.localStorage.setItem(THEME_STORAGE_KEY, theme);
         } catch (error) {}
+        // il tono dei testi sopra lo sfondo dipende anche dal tema
+        try { if (window.marturApplyBg) window.marturApplyBg(window.localStorage.getItem('martur-dashboard-bg')); } catch (error) {}
         syncLogoGold();
       }
 
@@ -14070,7 +14158,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
               '--background': '#e9e2d3', '--card': '#ffffff', '--popover': '#ffffff',
               '--border': '#d5c8ab', '--off-line': '#d5c8ab', '--gold': '#86672c',
               '--gold-foreground': '#ffffff', '--muted': 'rgba(120, 100, 60, 0.09)',
-              '--muted-foreground': '#6f6656', '--off-ink': '#1b1a17'
+              '--muted-foreground': '#6f6656', '--off-ink': '#1b1a17',
+              '--off-edge': '#86672c', '--foreground': 'rgb(8, 9, 11)'
             };
             Object.keys(officina).forEach((k) => wrap.style.setProperty(k, officina[k]));
           }
@@ -16598,6 +16687,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         button.addEventListener('click', () => { applyStyle(button.dataset.style); renderAll(); });
       });
       applyStyle(document.documentElement.classList.contains('martur-officina') ? 'officina' : 'classic');
+      // ---- Colore dello sfondo ----
+      function currentBg() {
+        try { return window.localStorage.getItem('martur-dashboard-bg') || 'sabbia'; } catch (e) { return 'sabbia'; }
+      }
+      function applyBg(bg) {
+        try { window.localStorage.setItem('martur-dashboard-bg', bg); } catch (e) {}
+        if (window.marturApplyBg) window.marturApplyBg(bg);
+        syncLogoGold();
+        root.querySelectorAll('.mod-bg-choice').forEach((button) => {
+          button.setAttribute('aria-pressed', String(button.dataset.bg === bg));
+        });
+      }
+      root.querySelectorAll('.mod-bg-choice').forEach((button) => {
+        button.addEventListener('click', () => applyBg(button.dataset.bg));
+      });
+      applyBg(currentBg());
       // ---- Modifica testi ----
       // Chi ha il permesso accende la modalita' dal menu: passando sopra un
       // testo questo si evidenzia, toccandolo si cambia. Il testo nuovo va su
