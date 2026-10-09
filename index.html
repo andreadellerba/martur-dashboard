@@ -1136,6 +1136,29 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 :root.martur-officina #martur-operations-dashboard :is(.mod-rework-rank-badge, .mod-tabbtn, .mod-kpi-trend, .viz-badge, .mod-edi-mode-btn, .mod-pill-icon, .mod-datenav .mod-period-nav, .mod-note-add, .mod-note-add-plus, .mod-period-note-delta, .mod-anomaly-pending) {
   border-radius: 6px !important;
 }
+/* PC: logo, menu e calendario dentro un'unica barra bianca col bordo oro,
+   larga quanto le card e con tutto centrato. Menu e calendario dentro non
+   hanno piu' bordo ne' fondo propri. */
+@media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster {
+    box-sizing: border-box;
+    padding: 6px 14px;
+    background: var(--card);
+    border: 3px solid var(--off-edge);
+    border-radius: 10px;
+    justify-content: center;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster :is(.mod-pillnav, .mod-datenav) {
+    border: 0 !important;
+    background: transparent;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo {
+    margin-left: 0;
+    width: clamp(80px, calc(100vw - 1215px), 422px);
+  }
+  :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard .mod-topbar-cluster { color-scheme: light; color: var(--foreground); }
+  :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard .mod-topbar-cluster { color-scheme: dark; color: var(--foreground); }
+}
 /* Card con gli stessi angoli del menu (10 px), non piu' tondeggianti. */
 :root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-anomaly-wrap, .mod-task-card, .mod-period-note, .mod-task-col, .mod-report-card, .mod-edi-wrap) {
   border-radius: 10px !important;
@@ -9398,7 +9421,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         if (!logoGoldSrc) logoGoldSrc = img.getAttribute('src');
         const probe = document.createElement('span');
         probe.style.cssText = 'position:absolute;visibility:hidden;color:var(--gold)';
-        root.appendChild(probe);
+        // accanto al logo: prende l'oro della zona in cui sta (barra bianca o sfondo)
+        (img.parentNode || root).appendChild(probe);
         const target = (getComputedStyle(probe).color.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
         probe.remove();
         if (target.length < 3) return;
