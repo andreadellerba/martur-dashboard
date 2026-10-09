@@ -1519,11 +1519,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       outline: 2px solid var(--ring);
       outline-offset: 2px;
     }
-    /* Logo poco piu' basso del menu (40 px = 482 px di larghezza); sui laptop
+    /* Logo poco piu' basso del menu (35 px = 422 px di larghezza); sui laptop
        stretti si rimpicciolisce per lasciare spazio a menu e calendario. */
     #martur-operations-dashboard .mod-brand-logo {
       display: block;
-      width: clamp(165px, calc(100vw - 1120px), 482px);
+      width: clamp(165px, calc(100vw - 1140px), 422px);
+      margin-left: 16px; /* non a filo con le card sotto */
       height: auto;
       border-radius: var(--radius-sm);
     }
