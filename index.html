@@ -1159,6 +1159,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard .mod-topbar-cluster { color-scheme: light; color: var(--foreground); }
   :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard .mod-topbar-cluster { color-scheme: dark; color: var(--foreground); }
 }
+/* Niente barra di scorrimento della pagina: si scorre lo stesso (rotella,
+   trascinamento, tastiera), solo che la barra a destra non si vede. */
+html { scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display: none; }
 /* Card con gli stessi angoli del menu (10 px), non piu' tondeggianti. */
 :root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-anomaly-wrap, .mod-task-card, .mod-period-note, .mod-task-col, .mod-report-card, .mod-edi-wrap) {
   border-radius: 10px !important;
