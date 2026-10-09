@@ -2731,7 +2731,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-edi-table tr > :last-child { border-right: 0; }
     /* Colonna dei nomi stretta quanto il nome piu' lungo: lo spazio avanza
        alle settimane. Numeri piu' grandi e pieni, righe piu' basse. */
-    #martur-operations-dashboard .mod-edi-table tr > :first-child { text-align: center; padding-inline: 10px; width: 1%; }
+    #martur-operations-dashboard .mod-edi-table tr > :first-child { text-align: left; padding-inline: 8px; width: 1%; }
+    /* Nomi delle righe sempre in maiuscolo, allineati a sinistra. */
+    #martur-operations-dashboard :is(.mod-edi-table tbody th, .mod-edi-table tfoot th, .mod-edi-legend-item, .mod-edi-tip-row) { text-transform: uppercase; }
+    #martur-operations-dashboard .mod-edi-endlabel { text-transform: uppercase; }
     #martur-operations-dashboard .mod-edi-table td { font-size: 1.12em; font-weight: 600; font-variant-numeric: tabular-nums; }
     #martur-operations-dashboard .mod-edi-table thead th {
       background: var(--gold);
