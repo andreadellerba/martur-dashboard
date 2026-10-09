@@ -1164,7 +1164,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 html, html * { scrollbar-width: none; }
 html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; display: none; }
 /* Voci del menu in nero; quella aperta resta in oro. */
-:root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn):not([aria-pressed="true"]) {
+:root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn, button):not([aria-pressed="true"]),
+:root.martur-officina #martur-operations-dashboard .mod-datenav button {
   color: var(--off-ink);
 }
 /* Card con gli stessi angoli del menu (10 px), non piu' tondeggianti. */
