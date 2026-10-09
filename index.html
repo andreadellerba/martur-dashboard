@@ -1163,6 +1163,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    trascinamento, tastiera), solo che la barra a destra non si vede. */
 html, html * { scrollbar-width: none; }
 html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+/* Voci del menu in nero; quella aperta resta in oro. */
+:root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn):not([aria-pressed="true"]) {
+  color: var(--off-ink);
+}
 /* Card con gli stessi angoli del menu (10 px), non piu' tondeggianti. */
 :root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-anomaly-wrap, .mod-task-card, .mod-period-note, .mod-task-col, .mod-report-card, .mod-edi-wrap) {
   border-radius: 10px !important;
