@@ -962,6 +962,16 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   border: 3px solid var(--off-line);
   border-radius: var(--radius-2xl);
 }
+/* Grafici, tabelle per turno, assenze, fermi e dati inseriti: ognuno nella
+   sua card bianca, per staccarsi dallo sfondo. */
+:root.martur-officina #martur-operations-dashboard .mod-boxed {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 14px 18px;
+  background: var(--card);
+  border: 3px solid var(--off-line);
+  border-radius: var(--radius-2xl);
+}
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: none; }
@@ -5875,7 +5885,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </section>
     </div>
 
-    <section id="mod-main-chart-section" class="mod-section">
+    <section id="mod-main-chart-section" class="mod-section mod-boxed">
       <div class="mod-section-head">
         <div>
           <div class="mod-section-label" data-i18n="productionVsClient">Martur vs Stellantis</div>
@@ -5900,7 +5910,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </section>
 
     <section id="mod-rate-charts-section" class="mod-two-col">
-      <div class="mod-section">
+      <div class="mod-section mod-boxed">
         <div class="mod-section-head">
           <div>
             <div class="mod-section-label" data-i18n="reworkProductionRate">Rework / produzione</div>
@@ -5914,7 +5924,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           </div>
         </div>
       </div>
-      <div class="mod-section">
+      <div class="mod-section mod-boxed">
         <div class="mod-section-head">
           <div>
             <div class="mod-section-label" data-i18n="absenteeismWorkforceRate">Assenteismo / organico totale</div>
@@ -5931,7 +5941,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     </section>
 
     <section id="mod-period-shift-section" class="mod-two-col">
-      <div class="mod-section">
+      <div class="mod-section mod-boxed">
         <div>
           <div class="mod-section-label" data-i18n="shiftProduction">Produzione per turno</div>
           <div id="mod-shift-period" class="text-small text-muted"></div>
@@ -5951,7 +5961,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           </table>
         </div>
       </div>
-      <div class="mod-section">
+      <div class="mod-section mod-boxed">
         <div>
           <div class="mod-section-label" data-i18n="shiftPeopleQuality">Persone e qualità per turno</div>
           <div id="mod-shift-quality-period" class="text-small text-muted"></div>
@@ -5983,7 +5993,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </div>
 
-    <section id="mod-operator-absence-section" class="mod-section" aria-labelledby="mod-operator-absence-title">
+    <section id="mod-operator-absence-section" class="mod-section mod-boxed" aria-labelledby="mod-operator-absence-title">
       <div class="mod-section-head">
         <div>
           <div id="mod-operator-absence-title" class="mod-section-label" data-i18n="operatorAbsenceTracking">Assenteismo per operatore</div>
@@ -6008,7 +6018,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </section>
 
-    <section class="mod-section" aria-labelledby="mod-attendance-log-title">
+    <section class="mod-section mod-boxed" aria-labelledby="mod-attendance-log-title">
       <div class="mod-section-head">
         <div>
           <div id="mod-attendance-log-title" class="mod-section-label" data-i18n="absenceLog">Registro assenze</div>
@@ -6225,7 +6235,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
     </form>
 
-    <section class="mod-section">
+    <section class="mod-section mod-boxed">
       <div class="mod-section-head">
         <div>
           <div class="mod-section-label" data-i18n="savedEntries">Dati inseriti</div>
@@ -6254,7 +6264,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
   <section id="mod-stoppages-screen" class="mod-stoppages-screen" hidden>
     <div id="mod-stoppages-schema" class="mod-stoppages-schema"></div>
-    <section class="mod-section">
+    <section class="mod-section mod-boxed">
       <div class="mod-section-head">
         <div>
           <div class="mod-section-label" data-i18n="recordedStoppages">Fermi registrati</div>
