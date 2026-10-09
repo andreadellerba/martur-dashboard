@@ -31,7 +31,17 @@
     // lo stesso scurito)]. "sabbia" e' lo sfondo normale dello stile.
     window.MARTUR_BGS = [
       ['sabbia', 'Sabbia', '#d8cdb5', '#0f0e0c'], ['avorio', 'Avorio', '#f1ece1', '#e6dfd0'],
-      ['grigio', 'Grigio', '#c9ccd1'], ['salvia', 'Salvia', '#b8c2ae'], ['menta', 'Menta', '#a8e6cf'],
+      ['grigio', 'Grigio', '#c9ccd1'], ['salvia', 'Salvia', '#b8c2ae'],
+      // Tinte spente: riposano gli occhi anche su una TV accesa tutto il
+      // giorno e fanno risaltare le card bianche.
+      ['perla', 'Grigio perla', '#b7b3ad'], ['tortora', 'Tortora', '#a89f91'], ['cammello', 'Cammello', '#b39b77'],
+      ['taupe', 'Taupe', '#8b7f73'], ['polvere', 'Blu polvere', '#7f97ad'], ['acciaio', 'Blu acciaio', '#4f6a84'],
+      ['ardesia', 'Ardesia', '#5b6770'], ['bluardesia', 'Blu ardesia', '#3d4a5c'], ['ottanio', 'Ottanio', '#2f5d62'],
+      ['salviascura', 'Salvia scura', '#6c7a64'], ['bosco', 'Verde bosco', '#3f5a4a'], ['olivatenue', 'Oliva tenue', '#7d8566'],
+      ['terracotta', 'Terracotta', '#a4705a'], ['mattone', 'Mattone', '#7a4b3e'], ['malva', 'Malva', '#8e7a8f'],
+      ['prugna', 'Prugna', '#5c4358'], ['caffe', 'Caffe', '#4d3b30'], ['antracite', 'Antracite', '#45413c'],
+      // Colori accesi.
+      ['menta', 'Menta', '#a8e6cf'],
       ['cielo', 'Cielo', '#a9d6f5'], ['lavanda', 'Lavanda', '#c9b6ee'], ['rosa', 'Rosa', '#ff9ebb'],
       ['pesca', 'Pesca', '#ffb38a'], ['giallo', 'Giallo', '#ffd23f'], ['lime', 'Lime', '#b5e61d'],
       ['arancio', 'Arancio', '#ff7a00'], ['rosso', 'Rosso', '#e01e37'], ['magenta', 'Magenta', '#e0007a'],
@@ -1118,6 +1128,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   cursor: pointer;
 }
 #martur-operations-dashboard .mod-bg-choice[aria-pressed="true"] { outline: 3px solid var(--gold); outline-offset: 2px; }
+/* Forme squadrate come menu e calendario: niente piu' pillole tonde. I
+   riquadri hanno angoli da 10 px, i pezzi dentro (numeri, tasti, badge) da 6. */
+:root.martur-officina #martur-operations-dashboard :is(.mod-rework-ranking li, .mod-datenav, .mod-pillnav > .mod-view-subselect, .mod-tabbar-pill, .mod-bg-current, .mod-edi-mode, .mod-edi-legend-item, .mod-shiftmode-opt, .mod-welcome-lang, .mod-anomaly-pick, .mod-cfg-chip, .mod-greeting-btn, .mod-summary-edit, .mod-task-quick, .mod-legend-toggle) {
+  border-radius: 10px !important;
+}
+:root.martur-officina #martur-operations-dashboard :is(.mod-rework-rank-badge, .mod-tabbtn, .mod-kpi-trend, .viz-badge, .mod-edi-mode-btn, .mod-pill-icon, .mod-datenav .mod-period-nav, .mod-note-add, .mod-note-add-plus, .mod-period-note-delta, .mod-anomaly-pending) {
+  border-radius: 6px !important;
+}
+/* Chiusura di settimana / mese: stesso bordo oro delle card. */
+:root.martur-officina #martur-operations-dashboard .mod-period-note {
+  border: 3px solid var(--off-edge);
+  border-radius: var(--radius-2xl);
+}
+/* Telefono: note dei turni un filo piu' piccole (su PC restano come sono). */
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root #martur-operations-dashboard .mod-shift-note { font-size: calc(var(--fs-lead) * 0.86); }
+}
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: none; }
