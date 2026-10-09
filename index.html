@@ -4001,7 +4001,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-capture .mod-note-more { display: none; }
     /* Nota a elenco (1) 2) 3) ...): una voce per riga, allineate a sinistra. */
     #martur-operations-dashboard .mod-shift-note-list { justify-content: flex-start; }
-    #martur-operations-dashboard .mod-shift-note-list .mod-shift-note-text { white-space: pre-line; text-align: left; }
+    #martur-operations-dashboard .mod-shift-note-list .mod-shift-note-text { text-align: left; padding-left: 0 !important; }
+    /* Voce a elenco: il numero in una colonna sua, il testo che va a capo resta rientrato sotto il testo. */
+    #martur-operations-dashboard .mod-note-li { display: block; padding-left: 1.4em; text-indent: -1.4em; }
+    #martur-operations-dashboard .mod-note-n { display: inline-block; width: 1.4em; text-indent: 0; }
     /* Immagine per Outlook: le note escono sempre intere, non tagliate a due righe. */
     #martur-operations-dashboard .mod-capture .mod-shift-note { height: auto !important; min-height: 2.6em; }
     #martur-operations-dashboard .mod-capture .mod-shift-note-text { display: block; -webkit-line-clamp: unset; overflow: visible; white-space: pre-wrap; padding-inline: 0 !important; }
@@ -4724,6 +4727,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
+    }
+    /* Nota a elenco: il "+" sotto il campo aggiunge la voce dopo la 5). */
+    #martur-operations-dashboard .mod-note-field { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
+    #martur-operations-dashboard .mod-note-field > .form-label { width: 100%; }
+    #martur-operations-dashboard .mod-note-add {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
     }
     #martur-operations-dashboard .mod-entry-notes textarea {
       min-height: 44px;
@@ -6399,14 +6415,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
 
       <div class="mod-entry-notes">
-        <label class="form-label">
-          <span data-i18n="shift1NoteLabel">Nota 1° turno</span>
-          <textarea id="mod-s1-note" class="form-control mod-autogrow" rows="1"></textarea>
-        </label>
-        <label class="form-label">
-          <span data-i18n="shift2NoteLabel">Nota 2° turno</span>
-          <textarea id="mod-s2-note" class="form-control mod-autogrow" rows="1"></textarea>
-        </label>
+        <div class="mod-note-field">
+          <label class="form-label">
+            <span data-i18n="shift1NoteLabel">Nota 1° turno</span>
+            <textarea id="mod-s1-note" class="form-control mod-autogrow" rows="5"></textarea>
+          </label>
+          <button type="button" class="btn btn-ghost mod-note-add" data-note-for="mod-s1-note" title="Aggiungi una voce" aria-label="Aggiungi una voce">+</button>
+        </div>
+        <div class="mod-note-field">
+          <label class="form-label">
+            <span data-i18n="shift2NoteLabel">Nota 2° turno</span>
+            <textarea id="mod-s2-note" class="form-control mod-autogrow" rows="5"></textarea>
+          </label>
+          <button type="button" class="btn btn-ghost mod-note-add" data-note-for="mod-s2-note" title="Aggiungi una voce" aria-label="Aggiungi una voce">+</button>
+        </div>
       </div>
       <div class="mod-form-actions">
         <div class="mod-action-group">
@@ -11730,8 +11752,17 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             // piccola icona la allarga sul posto con tutto il testo; ritoccata
             // la riporta a due righe (la mostra updateNoteMore).
             ((shift.note || '').trim()
-              ? '<div class="mod-shift-note' + (shift.note.trim().includes('\n') ? ' mod-shift-note-list' : '') + (openShiftNotes.has(row.date + ':' + shiftKey) ? ' mod-shift-note-open' : '') + '">' +
-                '<span class="mod-shift-note-text">' + escapeHtml(shift.note.trim()) + '</span>' +
+              ? '<div class="mod-shift-note' + (isListNote(shift.note) ? ' mod-shift-note-list' : '') + (openShiftNotes.has(row.date + ':' + shiftKey) ? ' mod-shift-note-open' : '') + '">' +
+                // Nota a elenco: una riga per voce; se una voce va a capo, il
+                // seguito resta rientrato sotto il testo, non sotto il numero.
+                '<span class="mod-shift-note-text">' + (isListNote(shift.note)
+                  ? shift.note.trim().split('\n').filter((line) => line.trim()).map((line) => {
+                      const m = /^\s*(\d+[).])\s*(.*)$/.exec(line);
+                      return m
+                        ? '<span class="mod-note-li"><span class="mod-note-n">' + escapeHtml(m[1]) + '</span>' + escapeHtml(m[2]) + '</span>'
+                        : '<span class="mod-note-li">' + escapeHtml(line.trim()) + '</span>';
+                    }).join('')
+                  : escapeHtml(shift.note.trim())) + '</span>' +
                 '<button type="button" class="mod-note-more" data-note-key="' + escapeHtml(row.date + ':' + shiftKey) +
                   '" title="' + escapeHtml(t('noteMore')) + '" aria-label="' + escapeHtml(t('noteMore')) + '">' +
                   '<i data-lucide="maximize-2" class="mod-note-ico-open" aria-hidden="true"></i>' +
@@ -12215,8 +12246,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         entry.shift2.topReworks = state.shift2TopReworks;
         entry.shift1.topLosses = state.shift1TopLosses;
         entry.shift2.topLosses = state.shift2TopLosses;
-        entry.shift1.note = el.entryNoteShift1.value.trim();
-        entry.shift2.note = el.entryNoteShift2.value.trim();
+        entry.shift1.note = renumberNote(el.entryNoteShift1.value);
+        entry.shift2.note = renumberNote(el.entryNoteShift2.value);
         if (single) {
           entry.shift1.uniqueShiftStart = el.entryUniqueStart.value || null;
           entry.shift1.uniqueShiftEnd = el.entryUniqueEnd.value || null;
@@ -12306,8 +12337,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         updateReworkLauncherPreview('shift2');
         updateLossLauncherPreview('shift1');
         updateLossLauncherPreview('shift2');
-        el.entryNoteShift1.value = '';
-        el.entryNoteShift2.value = '';
+        el.entryNoteShift1.value = noteForEdit('');
+        el.entryNoteShift2.value = noteForEdit('');
         autoGrow(el.entryNoteShift1);
         autoGrow(el.entryNoteShift2);
         fillEntryOee(el.entryDate.value, null);
@@ -12345,8 +12376,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         updateReworkLauncherPreview('shift2');
         updateLossLauncherPreview('shift1');
         updateLossLauncherPreview('shift2');
-        el.entryNoteShift1.value = row.shift1.note || '';
-        el.entryNoteShift2.value = row.shift2.note || '';
+        el.entryNoteShift1.value = noteForEdit(row.shift1.note);
+        el.entryNoteShift2.value = noteForEdit(row.shift2.note);
         autoGrow(el.entryNoteShift1);
         autoGrow(el.entryNoteShift2);
         fillEntryOee(el.entryDate.value, row);
@@ -16753,41 +16784,66 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       applyStyle(document.documentElement.classList.contains('martur-officina') ? 'officina' : 'classic');
       // ---- Note dei turni a elenco: 1) 2) 3) ... ----
-      // Nel campo della nota ogni riga e' una voce numerata: entrando nel campo
-      // vuoto compare "1) ", con Invio si passa alla voce dopo; uscendo dal
-      // campo le voci vuote spariscono e i numeri si rimettono in ordine.
-      const NOTE_NUM = /^\s*\d+[).]\s*/;
+      // Nel campo ci sono gia' le voci da 1) a 5) con lo spazio dopo la
+      // parentesi; il "+" sotto aggiunge la 6), la 7)... Invio porta alla voce
+      // dopo. Al salvataggio le voci vuote si tolgono e i numeri si rimettono
+      // in ordine (renumberNote).
+      // regola e numero minimo di voci dentro le funzioni (non const): servono
+      // anche a pagina appena aperta, prima che il codice arrivi fin qui
+      function noteNumRe() { return /^\s*\d+[).]\s*/; }
+      function noteItems(text) {
+        return String(text || '').split('\n').map((line) => line.replace(noteNumRe(), '').trim()).filter((line) => line);
+      }
+      // Nota da mostrare a elenco: piu' righe, o anche una sola voce "1) ...".
+      function isListNote(text) {
+        const s = String(text || '').trim();
+        return s.includes('\n') || noteNumRe().test(s);
+      }
       function renumberNote(text) {
-        return String(text || '').split('\n').map((line) => line.replace(NOTE_NUM, '').trim()).filter((line) => line)
-          .map((line, i) => (i + 1) + ') ' + line).join('\n');
+        return noteItems(text).map((line, i) => (i + 1) + ') ' + line).join('\n');
+      }
+      function noteForEdit(text) {
+        const lines = noteItems(text).map((line, i) => (i + 1) + ') ' + line);
+        while (lines.length < 5) lines.push((lines.length + 1) + ') ');
+        return lines.join('\n');
+      }
+      // Cursore alla fine della riga "index" (0 = prima riga).
+      function noteCaretToLine(area, index) {
+        const lines = area.value.split('\n');
+        let pos = 0;
+        for (let i = 0; i < index && i < lines.length; i++) pos += lines[i].length + 1;
+        pos += (lines[Math.min(index, lines.length - 1)] || '').length;
+        area.setSelectionRange(pos, pos);
+      }
+      function addNoteItem(area) {
+        const lines = area.value.split('\n');
+        lines.push((lines.length + 1) + ') ');
+        area.value = lines.join('\n');
+        area.dispatchEvent(new Event('input', { bubbles: true }));
+        area.focus();
+        noteCaretToLine(area, lines.length - 1);
       }
       [el.entryNoteShift1, el.entryNoteShift2].forEach((area) => {
         if (!area) return;
-        const refresh = () => area.dispatchEvent(new Event('input', { bubbles: true }));
         area.addEventListener('focus', () => {
-          if (!area.value.trim()) { area.value = '1) '; refresh(); }
-          else if (!NOTE_NUM.test(area.value)) { area.value = renumberNote(area.value); refresh(); }
-          const end = area.value.length;
-          area.setSelectionRange(end, end);
+          if (!noteNumRe().test(area.value)) {
+            area.value = noteForEdit(area.value);
+            area.dispatchEvent(new Event('input', { bubbles: true }));
+          }
         });
         area.addEventListener('keydown', (event) => {
           if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
           event.preventDefault();
-          const pos = area.selectionStart;
-          const before = area.value.slice(0, pos);
-          const after = area.value.slice(area.selectionEnd);
-          const n = before.split('\n').length + 1;
-          const insert = '\n' + n + ') ';
-          // i numeri delle voci sotto scalano di uno
-          const rest = after.replace(/\n\s*(\d+)\)/g, (m, d) => '\n' + (Number(d) + 1) + ')');
-          area.value = before + insert + rest;
-          const caret = pos + insert.length;
-          area.setSelectionRange(caret, caret);
-          refresh();
+          const line = area.value.slice(0, area.selectionStart).split('\n').length - 1;
+          const total = area.value.split('\n').length;
+          if (line + 1 < total) noteCaretToLine(area, line + 1);
+          else addNoteItem(area);
         });
-        area.addEventListener('blur', () => {
-          const clean = renumberNote(area.value);
-          if (clean !== area.value) { area.value = clean; refresh(); }
+      });
+      root.querySelectorAll('.mod-note-add').forEach((button) => {
+        button.addEventListener('click', () => {
+          const area = root.querySelector('#' + button.dataset.noteFor);
+          if (area) addNoteItem(area);
         });
       });
       // ---- Colore dello sfondo ----
