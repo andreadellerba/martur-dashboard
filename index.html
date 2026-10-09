@@ -986,15 +986,23 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 @media (min-width: 1420px) {
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster { --topbar-gap: 14px; }
 }
-/* Menu a pillola e pulsanti: bordi e fondi della stessa carta. */
+/* Menu (PC): bianco, squadrato come le card, senza bordo (lo spessore del
+   bordo diventa spazio interno, cosi' le misure restano 718 x 43). La voce
+   aperta ha un contorno oro e un fondo oro chiaro. */
 :root.martur-officina #martur-operations-dashboard .mod-pillnav {
   background: var(--card);
-  border-color: var(--off-line);
+  border: 0 !important;
+  padding: 4px;
+  border-radius: 10px;
+}
+:root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn) {
+  border-radius: 6px;
 }
 :root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab[aria-pressed="true"],
 :root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab-icon[aria-pressed="true"] {
-  color: var(--gold-foreground);
-  background: var(--gold);
+  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
+  box-shadow: inset 0 0 0 2px var(--gold);
 }
 </style>
 <style>
@@ -1523,8 +1531,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
        stretti si rimpicciolisce per lasciare spazio a menu e calendario. */
     #martur-operations-dashboard .mod-brand-logo {
       display: block;
-      width: clamp(165px, calc(100vw - 1140px), 422px);
-      margin-left: 16px; /* non a filo con le card sotto */
+      width: clamp(80px, calc(100vw - 1165px), 422px);
+      margin-left: clamp(0px, calc(100vw - 1500px), 16px); /* non a filo con le card sotto (sui laptop stretti lo spazio va al menu) */
       height: auto;
       border-radius: var(--radius-sm);
     }
