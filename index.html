@@ -2557,6 +2557,81 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-edi-upload[hidden] { display: none; }
     #martur-operations-dashboard .mod-edi-current { font-size: 1.05em; }
     #martur-operations-dashboard .mod-edi-block[hidden] { display: none; }
+    /* ---- Grafico Andamento (EDI) ---- */
+    #martur-operations-dashboard .mod-edi-rowpick { cursor: pointer; user-select: none; }
+    #martur-operations-dashboard .mod-edi-rowpick:hover { text-decoration: underline; text-underline-offset: 3px; }
+    #martur-operations-dashboard .mod-edi-swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 7px;
+      border-radius: 999px;
+      vertical-align: 1px;
+      background: var(--pick, var(--muted-foreground));
+    }
+    #martur-operations-dashboard .mod-edi-rowpick:not(.mod-edi-rowpick-on) .mod-edi-swatch {
+      background: transparent;
+      box-shadow: inset 0 0 0 1.5px var(--border);
+    }
+    #martur-operations-dashboard .mod-edi-swatch-dash { opacity: 0.55; }
+    #martur-operations-dashboard .mod-edi-chart { display: grid; gap: 10px; }
+    #martur-operations-dashboard .mod-edi-chart-hint {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--muted-foreground);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+    #martur-operations-dashboard .mod-edi-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px 12px;
+    }
+    #martur-operations-dashboard .mod-edi-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--foreground);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #martur-operations-dashboard .mod-edi-legend-note { display: inline-flex; align-items: center; gap: 6px; color: var(--muted-foreground); font-size: var(--fs-label); }
+    #martur-operations-dashboard .mod-edi-line-solid,
+    #martur-operations-dashboard .mod-edi-line-dash { display: inline-block; width: 22px; height: 0; border-top: 2.5px solid var(--foreground); margin-left: 8px; }
+    #martur-operations-dashboard .mod-edi-line-dash { border-top-style: dashed; opacity: 0.7; }
+    #martur-operations-dashboard .mod-edi-chart-wrap { position: relative; padding: 10px 8px 4px; }
+    #martur-operations-dashboard .mod-edi-svg { display: block; width: 100%; height: auto; }
+    #martur-operations-dashboard .mod-edi-grid { stroke: var(--border); stroke-width: 1; }
+    #martur-operations-dashboard .mod-edi-axis { fill: var(--muted-foreground); font-size: 13px; font-variant-numeric: tabular-nums; }
+    #martur-operations-dashboard .mod-edi-endlabel { fill: var(--foreground); font-size: 13px; font-weight: 700; }
+    #martur-operations-dashboard .mod-edi-dot { stroke: var(--card); stroke-width: 2; }
+    #martur-operations-dashboard .mod-edi-cross { stroke: var(--muted-foreground); stroke-width: 1; stroke-dasharray: 3 3; }
+    #martur-operations-dashboard .mod-edi-hit { fill: transparent; cursor: crosshair; }
+    #martur-operations-dashboard .mod-edi-tip {
+      position: absolute;
+      top: 12px;
+      z-index: 2;
+      min-width: 170px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--popover);
+      box-shadow: 0 8px 22px -10px rgb(0 0 0 / 35%);
+      font-size: var(--fs-label);
+      pointer-events: none;
+    }
+    #martur-operations-dashboard .mod-edi-tip[hidden] { display: none; }
+    #martur-operations-dashboard .mod-edi-tip-title { font-weight: 800; margin-bottom: 4px; }
+    #martur-operations-dashboard .mod-edi-tip-row { display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+    #martur-operations-dashboard .mod-edi-tip-row b { margin-left: auto; padding-left: 14px; font-variant-numeric: tabular-nums; }
+    #martur-operations-dashboard #mod-edi-chart-block[hidden] { display: none; }
     #martur-operations-dashboard .mod-edi-compare-btn { display: inline-flex; align-items: center; gap: 6px; }
     #martur-operations-dashboard .mod-edi-compare-btn[hidden],
     #martur-operations-dashboard .mod-edi-compare-select[hidden] { display: none; }
@@ -6430,6 +6505,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       <h3 class="mod-edi-title" data-i18n="ediPctTitle">Percentuali</h3>
       <div id="mod-edi-pct-box"></div>
     </div>
+    <!-- Andamento: righe scelte toccandole nelle tabelle sopra. -->
+    <div class="mod-edi-block" id="mod-edi-chart-block" hidden>
+      <h3 class="mod-edi-title" data-i18n="ediChartTitle">Andamento</h3>
+      <div id="mod-edi-chart" class="mod-edi-chart"></div>
+    </div>
   </section>
 
   <section id="mod-summary-screen" class="mod-summary-screen" hidden>
@@ -7206,6 +7286,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDraftOption: 'Excel caricato (non salvato)',
           ediDraftStatus: 'Excel: {file} · non ancora salvato: scrivi il nome e premi Salva.',
           ediQtyTitle: 'Quantità',
+          ediChartTitle: 'Andamento',
+          ediChartPick: 'Tocca per mostrare o nascondere nel grafico',
+          ediChartEmpty: 'Tocca il nome di una riga nelle tabelle (es. 6W, LEATHER) per vederne l’andamento qui.',
+          ediChartRemove: 'Togli dal grafico',
           ediModeQty: 'Numeri',
           ediPctTitle: 'Percentuali',
           ediDelete: 'Elimina questo EDI',
@@ -7805,6 +7889,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDraftOption: 'Uploaded Excel (not saved)',
           ediDraftStatus: 'Excel: {file} · not saved yet: enter the name and press Save.',
           ediQtyTitle: 'Quantities',
+          ediChartTitle: 'Trend',
+          ediChartPick: 'Tap to show or hide in the chart',
+          ediChartEmpty: 'Tap a row name in the tables (e.g. 6W, LEATHER) to see its trend here.',
+          ediChartRemove: 'Remove from chart',
           ediModeQty: 'Numbers',
           ediPctTitle: 'Percentages',
           ediDelete: 'Delete this EDI',
@@ -8404,6 +8492,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           ediDraftOption: 'Yüklenen Excel (kaydedilmedi)',
           ediDraftStatus: 'Excel: {file} · henüz kaydedilmedi: adı yazıp Kaydet’e basın.',
           ediQtyTitle: 'Miktarlar',
+          ediChartTitle: 'Eğilim',
+          ediChartPick: 'Grafikte göstermek veya gizlemek için dokunun',
+          ediChartEmpty: 'Eğilimini görmek için tablolardaki bir satır adına dokunun (ör. 6W, LEATHER).',
+          ediChartRemove: 'Grafikten kaldır',
           ediModeQty: 'Sayılar',
           ediPctTitle: 'Yüzdeler',
           ediDelete: 'Bu EDI’yi sil',
@@ -9087,6 +9179,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         ediCompareSel: root.querySelector('#mod-edi-compare'),
         ediRename: root.querySelector('#mod-edi-rename'),
         ediQtyBox: root.querySelector('#mod-edi-qty-box'),
+        ediChartBlock: root.querySelector('#mod-edi-chart-block'),
+        ediChart: root.querySelector('#mod-edi-chart'),
         ediMenu: root.querySelector('#mod-edi-menu'),
         ediCurrent: root.querySelector('#mod-edi-current'),
         ediDelete: root.querySelector('#mod-edi-delete'),
@@ -14561,7 +14655,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         button.addEventListener('click', () => {
           ediMode = button.dataset.ediMode;
           try { window.localStorage.setItem('martur-edi-mode', ediMode); } catch (e) {}
-          applyEdiMode();
+          renderEdi(); // anche il grafico passa da Numeri a %
         });
       });
 
@@ -14620,7 +14714,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         return '<div class="mod-edi-wrap"><table class="mod-edi-table">' +
           ediWeekHead(data, t(pctMode ? 'ediTotal' : 'ediTotalQty')) +
           '<tbody>' + m.rows.map((row) =>
-            '<tr><th scope="row">' + escapeHtml(row.label) + '</th>' +
+            '<tr><th scope="row" class="mod-edi-rowpick' + (ediChartKeys.has(row.key) ? ' mod-edi-rowpick-on' : '') + '" data-row-key="' + escapeHtml(row.key) + '" style="--pick:' + ediColor(row.key) + '" title="' + escapeHtml(t('ediChartPick')) + '">' +
+              '<span class="mod-edi-swatch" aria-hidden="true"></span>' + escapeHtml(row.label) + '</th>' +
               row.cells.map((v, i) => cell(v, oldOf(row.key, m.weeks[i]), pctMode)).join('') +
               // Il totale copre settimane diverse da EDI a EDI: non si confronta.
               '<td class="mod-edi-total">' + fmt(row.total, pctMode) + '</td></tr>'
@@ -14630,6 +14725,162 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             '<td class="mod-edi-total">' + (pctMode ? '100%' : fmt(m.footTotal, false)) + '</td></tr></tfoot>' +
           '</table></div>';
       }
+
+      // ---- Grafico "Andamento" sotto le tabelle EDI ----
+      // Le righe si scelgono toccandone il nome nelle tabelle. Ogni riga ha
+      // sempre lo stesso colore (dall'ordine fisso delle righe, non da quante
+      // ne sono scelte), uguale nel pallino della tabella e nella linea.
+      const EDI_COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7', '#e34948'];
+      const EDI_COLOR_OTHER = '#8a857a';
+      let ediChartKeys = new Set(['W:6W', 'COLORE:LE']);
+      try {
+        const savedKeys = JSON.parse(window.localStorage.getItem('martur-edi-chart') || 'null');
+        if (Array.isArray(savedKeys)) ediChartKeys = new Set(savedKeys);
+      } catch (e) {}
+      function ediColor(key) {
+        const [group, code] = String(key).split(':');
+        const i = EDI_KNOWN.findIndex((k) => k[0] === group && k[1] === code);
+        return i >= 0 && i < EDI_COLORS.length ? EDI_COLORS[i] : EDI_COLOR_OTHER;
+      }
+      function toggleEdiChartKey(key) {
+        if (ediChartKeys.has(key)) ediChartKeys.delete(key); else ediChartKeys.add(key);
+        try { window.localStorage.setItem('martur-edi-chart', JSON.stringify(Array.from(ediChartKeys))); } catch (e) {}
+        renderEdi();
+      }
+      const ediWeekNum = (w) => Number((/(\d+)/.exec(String(w)) || [0, 0])[1]);
+
+      // main = EDI aperto (linea piena); older = EDI di confronto (tratteggio).
+      function renderEdiChart(main, older, mode) {
+        if (!main) { el.ediChartBlock.hidden = true; return; }
+        el.ediChartBlock.hidden = false;
+        const pctMode = mode === 'pct';
+        const m = ediMatrix(main, mode);
+        const o = older ? ediMatrix(older, mode) : null;
+        const keys = m.rows.filter((r) => ediChartKeys.has(r.key)).map((r) => r.key);
+        if (!keys.length) {
+          el.ediChart.innerHTML = '<div class="mod-edi-chart-hint">' + escapeHtml(t('ediChartEmpty')) + '</div>';
+          return;
+        }
+        const weeks = Array.from(new Set(m.weeks.concat(o ? o.weeks : [])))
+          .sort((a, b) => ediWeekNum(a) - ediWeekNum(b));
+        const valueAt = (mat, key, week) => {
+          if (!mat) return NaN;
+          const row = mat.rows.find((r) => r.key === key);
+          const i = mat.weeks.indexOf(week);
+          return row && i >= 0 ? row.cells[i] : NaN;
+        };
+        const series = [];
+        keys.forEach((key) => {
+          const row = m.rows.find((r) => r.key === key);
+          series.push({ key, label: row.label, color: ediColor(key), dashed: false, values: weeks.map((w) => valueAt(m, key, w)) });
+          if (o) series.push({ key, label: row.label, color: ediColor(key), dashed: true, values: weeks.map((w) => valueAt(o, key, w)) });
+        });
+        const all = [].concat.apply([], series.map((s) => s.values)).filter(Number.isFinite);
+        let max = all.length ? Math.max.apply(null, all) : 1;
+        if (pctMode) max = Math.min(100, Math.ceil(max / 20) * 20 || 20);
+        else {
+          const step = Math.pow(10, Math.floor(Math.log10(max || 1)));
+          max = Math.ceil(max / step) * step || 1;
+        }
+        // Disegnato alla larghezza vera del riquadro: scritte e linee hanno la
+        // loro misura anche sul telefono (niente rimpicciolimento).
+        const W = Math.max(320, Math.round((el.ediChart.clientWidth || 1000) - 20));
+        const narrow = W < 600;
+        const H = narrow ? 240 : 300, L = narrow ? 42 : 56, R = narrow ? 64 : 120, T = 14, B = 34;
+        const x = (i) => L + (weeks.length === 1 ? (W - L - R) / 2 : i * (W - L - R) / (weeks.length - 1));
+        const y = (v) => T + (1 - v / max) * (H - T - B);
+        const fmt = (v) => Number.isFinite(v) ? formatNumber(Math.round(v)) + (pctMode ? '%' : '') : '—';
+        let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mod-edi-svg" role="img" aria-label="' + escapeHtml(t('ediChartTitle')) + '">';
+        for (let g = 0; g <= 4; g++) {
+          const v = max * g / 4;
+          svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '" class="mod-edi-grid"></line>' +
+            '<text x="' + (L - 10) + '" y="' + (y(v) + 4) + '" text-anchor="end" class="mod-edi-axis">' + escapeHtml(fmt(v)) + '</text>';
+        }
+        weeks.forEach((w, i) => {
+          // Settimane: sul telefono solo il numero, e se sono fitte una si' e una no.
+          const gapX = weeks.length > 1 ? (W - L - R) / (weeks.length - 1) : W;
+          const every = Math.max(1, Math.ceil((narrow ? 26 : 44) / gapX));
+          if (i % every !== 0 && i !== weeks.length - 1) return;
+          svg += '<text x="' + x(i) + '" y="' + (H - 10) + '" text-anchor="middle" class="mod-edi-axis">' + escapeHtml(narrow ? String(ediWeekNum(w)) : w) + '</text>';
+        });
+        svg += '<line class="mod-edi-cross" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '" visibility="hidden"></line>';
+        // Prima le linee tratteggiate (EDI vecchio), sopra quelle piene.
+        series.slice().sort((a, b) => Number(b.dashed) - Number(a.dashed)).forEach((s) => {
+          let d = '';
+          let pen = false;
+          s.values.forEach((v, i) => {
+            if (!Number.isFinite(v)) { pen = false; return; }
+            d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1) + ' ';
+            pen = true;
+          });
+          svg += '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="' + (s.dashed ? 2 : 2.5) + '"' +
+            (s.dashed ? ' stroke-dasharray="6 5" opacity="0.75"' : '') + ' stroke-linecap="round" stroke-linejoin="round"></path>';
+          if (!s.dashed) {
+            s.values.forEach((v, i) => {
+              if (Number.isFinite(v)) svg += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="4" fill="' + s.color + '" class="mod-edi-dot"></circle>';
+            });
+          }
+        });
+        // Nome della riga accanto all'ultimo punto (fino a 4 linee).
+        const solid = series.filter((s) => !s.dashed);
+        if (solid.length <= 4) {
+          const ends = solid.map((s) => {
+            let i = s.values.length - 1;
+            while (i >= 0 && !Number.isFinite(s.values[i])) i--;
+            return i >= 0 ? { s, yy: y(s.values[i]), xx: x(i) } : null;
+          }).filter(Boolean).sort((a, b) => a.yy - b.yy);
+          for (let k = 1; k < ends.length; k++) if (ends[k].yy - ends[k - 1].yy < 16) ends[k].yy = ends[k - 1].yy + 16;
+          ends.forEach((e) => {
+            svg += '<text x="' + (e.xx + 10) + '" y="' + (e.yy + 4) + '" class="mod-edi-endlabel">' + escapeHtml(e.s.label) + '</text>';
+          });
+        }
+        // Zone invisibili per settimana: passandoci sopra si leggono i valori.
+        weeks.forEach((w, i) => {
+          const half = weeks.length === 1 ? (W - L - R) / 2 : (W - L - R) / (weeks.length - 1) / 2;
+          svg += '<rect class="mod-edi-hit" data-i="' + i + '" x="' + (x(i) - half) + '" y="' + T + '" width="' + (half * 2) + '" height="' + (H - T - B) + '"></rect>';
+        });
+        svg += '</svg>';
+
+        const legend = '<div class="mod-edi-legend">' + solid.map((s) =>
+          '<button type="button" class="mod-edi-legend-item" data-row-key="' + escapeHtml(s.key) + '" title="' + escapeHtml(t('ediChartRemove')) + '">' +
+          '<span class="mod-edi-swatch" style="background:' + s.color + '"></span>' + escapeHtml(s.label) + ' <span aria-hidden="true">×</span></button>').join('') +
+          (o ? '<span class="mod-edi-legend-note"><span class="mod-edi-line-solid"></span>' + escapeHtml(main.name) +
+            '<span class="mod-edi-line-dash"></span>' + escapeHtml(older.name) + '</span>' : '') + '</div>';
+        el.ediChart.innerHTML = legend + '<div class="mod-edi-wrap mod-edi-chart-wrap">' + svg + '<div class="mod-edi-tip" hidden></div></div>';
+
+        const wrap = el.ediChart.querySelector('.mod-edi-chart-wrap');
+        const tip = wrap.querySelector('.mod-edi-tip');
+        const cross = wrap.querySelector('.mod-edi-cross');
+        const show = (i) => {
+          cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
+          tip.innerHTML = '<div class="mod-edi-tip-title">' + escapeHtml(weeks[i]) + '</div>' + series.map((s) =>
+            '<div class="mod-edi-tip-row"><span class="mod-edi-swatch' + (s.dashed ? ' mod-edi-swatch-dash' : '') + '" style="background:' + s.color + '"></span>' +
+            escapeHtml(s.label) + (o ? ' · ' + escapeHtml(s.dashed ? older.name : main.name) : '') + '<b>' + escapeHtml(fmt(s.values[i])) + '</b></div>').join('');
+          tip.hidden = false;
+          const svgEl = wrap.querySelector('svg');
+          const scale = svgEl.getBoundingClientRect().width / W;
+          const box = svgEl.getBoundingClientRect().width;
+          let left = x(i) * scale + 14;
+          if (left + tip.offsetWidth > box - 6) left = x(i) * scale - tip.offsetWidth - 14;
+          tip.style.left = Math.max(6, left) + 'px';
+        };
+        wrap.querySelectorAll('.mod-edi-hit').forEach((r) => {
+          r.addEventListener('mouseenter', () => show(Number(r.dataset.i)));
+          r.addEventListener('click', () => show(Number(r.dataset.i)));
+        });
+        wrap.addEventListener('mouseleave', () => { tip.hidden = true; cross.setAttribute('visibility', 'hidden'); });
+      }
+      let ediResizeTimer = null;
+      window.addEventListener('resize', () => {
+        if (state.view !== 'edi') return;
+        clearTimeout(ediResizeTimer);
+        ediResizeTimer = setTimeout(renderEdi, 200);
+      });
+      // Tocco sul nome di una riga (tabelle) o su una voce della legenda.
+      el.ediScreen.addEventListener('click', (event) => {
+        const pick = event.target.closest('[data-row-key]');
+        if (pick && el.ediScreen.contains(pick)) toggleEdiChartKey(pick.dataset.rowKey);
+      });
 
       // Ordine della tendina: settimana EDI piu' recente in alto (41, 40,
       // 39...). La settimana e' la prima del file; l'anno viene dalla data di
@@ -14685,6 +14936,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             escapeHtml(t(admin ? 'ediEmpty' : 'ediEmptyView')) + '</td></tr></tbody></table></div>';
           el.ediQtyBox.innerHTML = empty;
           el.ediPctBox.innerHTML = empty;
+          el.ediChartBlock.hidden = true;
           el.ediStatus.textContent = '';
           el.ediStatus.classList.remove('mod-negative');
           return;
@@ -14700,6 +14952,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             (mode === 'qty' ? el.ediQtyBox : el.ediPctBox).innerHTML = '<div class="mod-edi-compare-grid">' +
               panel(pair[0], mode, null) + panel(pair[1], mode, pair[0]) + '</div>';
           });
+          renderEdiChart(pair[1], pair[0], ediMode);
           el.ediStatus.textContent = '';
           el.ediStatus.classList.remove('mod-negative');
           return;
@@ -14707,6 +14960,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
         el.ediQtyBox.innerHTML = ediTableHtml(data, 'qty', null);
         el.ediPctBox.innerHTML = ediTableHtml(data, 'pct', null);
+        renderEdiChart(data, null, ediMode);
 
         if (ediDraft) {
           const missing = (data.missing || []).map((g) => ({ W: '6W/4W', COLORE: 'Colore', BACK: 'Back 50/100', HEAT: 'Heater' })[g]);
