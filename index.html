@@ -2608,6 +2608,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-edi-line-dash { border-top-style: dashed; opacity: 0.7; }
     #martur-operations-dashboard .mod-edi-wrap.mod-edi-chart-wrap { position: relative; padding: 10px 8px 4px; width: auto; margin-inline: 0; }
     #martur-operations-dashboard .mod-edi-wrap:has(.mod-edi-empty) { width: auto; }
+    /* Tabella singola: larga quanto lo schermo (come il grafico sotto). Nel
+       confronto invece ogni tabella resta larga quanto il suo contenuto. */
+    #martur-operations-dashboard :is(#mod-edi-qty-box, #mod-edi-pct-box) > .mod-edi-wrap { width: auto; margin-inline: 0; }
+    #martur-operations-dashboard :is(#mod-edi-qty-box, #mod-edi-pct-box) > .mod-edi-wrap > .mod-edi-table { width: 100%; }
+    /* Si scorre di lato col dito o col mouse, senza barra visibile. */
+    #martur-operations-dashboard .mod-edi-wrap { scrollbar-width: none; }
+    #martur-operations-dashboard .mod-edi-wrap::-webkit-scrollbar { display: none; }
     #martur-operations-dashboard .mod-edi-svg { display: block; width: 100%; height: auto; }
     #martur-operations-dashboard .mod-edi-grid { stroke: var(--border); stroke-width: 1; }
     #martur-operations-dashboard .mod-edi-axis { fill: var(--muted-foreground); font-size: 13px; font-variant-numeric: tabular-nums; }
