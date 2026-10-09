@@ -1136,6 +1136,26 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 :root.martur-officina #martur-operations-dashboard :is(.mod-rework-rank-badge, .mod-tabbtn, .mod-kpi-trend, .viz-badge, .mod-edi-mode-btn, .mod-pill-icon, .mod-datenav .mod-period-nav, .mod-note-add, .mod-note-add-plus, .mod-period-note-delta, .mod-anomaly-pending) {
   border-radius: 6px !important;
 }
+/* Card con gli stessi angoli del menu (10 px), non piu' tondeggianti. */
+:root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-anomaly-wrap, .mod-task-card, .mod-period-note, .mod-task-col, .mod-report-card, .mod-edi-wrap) {
+  border-radius: 10px !important;
+}
+/* Telefono: calendario piu' grande, tendina della vista piu' piccola. */
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina #martur-operations-dashboard .mod-datenav,
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster.mod-cal-open .mod-datenav {
+    height: 54px;
+    min-height: 54px;
+    font-size: 16px;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-view-subselect {
+    height: 42px;
+    min-height: 42px;
+    font-size: 16px; /* sotto i 16 px Safari ingrandisce la pagina al tocco */
+    font-weight: 600;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-datenav .mod-period-overlay { font-size: 17px !important; }
+}
 /* Chiusura di settimana / mese: stesso bordo oro delle card. */
 :root.martur-officina #martur-operations-dashboard .mod-period-note {
   border: 3px solid var(--off-edge);
