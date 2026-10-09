@@ -1163,6 +1163,19 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    trascinamento, tastiera), solo che la barra a destra non si vede. */
 html, html * { scrollbar-width: none; }
 html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+/* Riga in testa alle card turno (turno, orario, nomi): piu' grande e al
+   centro esatto fra il bordo e la linea sotto (sopra c'erano 8 px, sotto 13). */
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head {
+  padding-top: 5px;
+}
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head .mod-shift-card-name {
+  font-size: 19px;
+  font-weight: 600;
+}
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head .mod-shift-card-name * { font-size: inherit; }
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head .mod-shift-card-name { font-size: 15.5px; }
+}
 /* Voci del menu in nero; quella aperta resta in oro. */
 :root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn, button):not([aria-pressed="true"]),
 :root.martur-officina #martur-operations-dashboard .mod-datenav button {
