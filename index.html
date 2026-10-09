@@ -998,6 +998,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 :root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn) {
   border-radius: 6px;
 }
+/* Calendario accanto al menu (PC): stessa forma, squadrato e senza bordo. */
+@media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
+  :root.martur-officina #martur-operations-dashboard .mod-datenav {
+    background: var(--card);
+    border: 0 !important;
+    padding: 4px;
+    border-radius: 10px;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-datenav :is(.mod-period-nav, .mod-period-picker, .mod-period-overlay, button) {
+    border-radius: 6px;
+  }
+}
 :root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab[aria-pressed="true"],
 :root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab-icon[aria-pressed="true"] {
   color: var(--gold);
