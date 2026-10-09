@@ -2721,7 +2721,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     }
     #martur-operations-dashboard .mod-edi-table th,
     #martur-operations-dashboard .mod-edi-table td {
-      padding: 11px 12px;
+      padding: 7px 8px;
       text-align: center;
       vertical-align: middle;
       white-space: nowrap;
@@ -2729,7 +2729,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       border-right: 1px solid var(--border);
     }
     #martur-operations-dashboard .mod-edi-table tr > :last-child { border-right: 0; }
-    #martur-operations-dashboard .mod-edi-table tr > :first-child { text-align: center; padding-inline: 14px; }
+    /* Colonna dei nomi stretta quanto il nome piu' lungo: lo spazio avanza
+       alle settimane. Numeri piu' grandi e pieni, righe piu' basse. */
+    #martur-operations-dashboard .mod-edi-table tr > :first-child { text-align: center; padding-inline: 10px; width: 1%; }
+    #martur-operations-dashboard .mod-edi-table td { font-size: 1.12em; font-weight: 600; font-variant-numeric: tabular-nums; }
     #martur-operations-dashboard .mod-edi-table thead th {
       background: var(--gold);
       color: light-dark(rgb(255 255 255), rgb(0 0 0));
@@ -7251,10 +7254,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditMany: 'cambia in {n} punti dell’app',
           ediTab: 'EDI',
           ediUpload: 'Carica Excel',
-          ediOptions: 'EDI Stellantis',
+          ediOptions: 'EDI',
           ediTotalQty: 'Totale',
           ediTotal: 'Totale %',
-          ediTotalVolume: 'Volume totale',
+          ediTotalVolume: 'Totale',
           ediEmpty: 'Carica un Excel, oppure scegli un EDI salvato dal menu EDI in alto.',
           ediNew: 'Nuovo (carica Excel)',
           ediNoneSaved: 'Nessun EDI salvato',
@@ -7854,10 +7857,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditMany: 'changes {n} places in the app',
           ediTab: 'EDI',
           ediUpload: 'Upload Excel',
-          ediOptions: 'EDI Stellantis',
+          ediOptions: 'EDI',
           ediTotalQty: 'Total',
           ediTotal: 'Total %',
-          ediTotalVolume: 'Total volume',
+          ediTotalVolume: 'Total',
           ediEmpty: 'Upload an Excel, or choose a saved EDI from the EDI menu at the top.',
           ediNew: 'New (upload Excel)',
           ediNoneSaved: 'No saved EDI',
@@ -8457,10 +8460,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           textEditMany: 'uygulamada {n} yeri değiştirir',
           ediTab: 'EDI',
           ediUpload: 'Excel yükle',
-          ediOptions: 'EDI Stellantis',
+          ediOptions: 'EDI',
           ediTotalQty: 'Toplam',
           ediTotal: 'Toplam %',
-          ediTotalVolume: 'Toplam hacim',
+          ediTotalVolume: 'Toplam',
           ediEmpty: 'Bir Excel yükleyin veya üstteki EDI menüsünden kayıtlı bir EDI seçin.',
           ediNew: 'Yeni (Excel yükle)',
           ediNoneSaved: 'Kayıtlı EDI yok',
@@ -14888,6 +14891,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         const admin = state.isAdmin;
         el.ediUpload.hidden = !admin;
         renderEdiMenu();
+        updateViewSubselect(); // la tendina del telefono segue l'EDI aperto
         const saved = !ediDraft && ediReports.find((r) => r.id === ediSelectedId) || null;
         el.ediDelete.hidden = !admin || !saved;
         el.ediRename.hidden = !admin || !saved;
