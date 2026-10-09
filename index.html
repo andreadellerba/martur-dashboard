@@ -910,7 +910,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 }
 /* Titoli delle KPI: grigio caldo, un filo piu' pieni (stessa misura). */
 :root.martur-officina #martur-operations-dashboard .mod-kpi-tile > .text-muted:not(.text-small) {
-  color: var(--muted-foreground);
+  color: var(--off-ink);
+  text-transform: uppercase;
+  letter-spacing: 0;
   font-weight: 700;
 }
 /* Numeri: tutti in Barlow Semi Condensed, piu' pieni. */
@@ -944,7 +946,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 }
 /* Etichette dei turni: grigio caldo invece del nero pieno. */
 :root.martur-officina #martur-operations-dashboard .mod-shift-metric .text-small {
-  color: var(--muted-foreground);
+  color: var(--off-ink);
+  text-transform: uppercase;
+  letter-spacing: 0;
   font-weight: 600;
 }
 /* Card dei turni: bordo largo uguale (2px), ma color carta invece dell'oro. */
