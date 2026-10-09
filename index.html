@@ -976,8 +976,20 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 }
 /* Bordo esterno di card, menu, calendario e pillole: tutti uguali, 3 px
    d'oro. Le linee dentro grafici e tabelle restano chiare (--off-line). */
-:root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-pillnav, .mod-anomaly-wrap, .mod-rework-ranking li) {
+:root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-pillnav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card) {
   border: 3px solid var(--off-edge);
+}
+/* Telefono: stesso bordo anche sul menu in basso e sulla tendina della vista. */
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina #martur-operations-dashboard :is(.mod-tabbar-pill, .mod-pillnav > .mod-view-subselect) {
+    border: 3px solid var(--off-edge);
+  }
+}
+/* Attivita': titolo della colonna ("IN CORSO", "COMPLETATA") nel suo colore
+   ma scurito, altrimenti l'azzurro chiaro sul fondo sabbia non si legge. */
+:root.martur-officina #martur-operations-dashboard .mod-task-col-head {
+  color: light-dark(color-mix(in srgb, var(--col-color) 55%, #000), var(--col-color));
+  border-bottom-color: light-dark(color-mix(in srgb, var(--col-color) 55%, #000), var(--col-color));
 }
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
