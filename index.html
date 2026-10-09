@@ -3999,6 +3999,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     #martur-operations-dashboard .mod-note-more svg { width: 14px; height: 14px; }
     #martur-operations-dashboard .mod-note-more.mod-note-more-on { display: inline-grid; }
     #martur-operations-dashboard .mod-capture .mod-note-more { display: none; }
+    /* Nota a elenco (1) 2) 3) ...): una voce per riga, allineate a sinistra. */
+    #martur-operations-dashboard .mod-shift-note-list { justify-content: flex-start; }
+    #martur-operations-dashboard .mod-shift-note-list .mod-shift-note-text { white-space: pre-line; text-align: left; }
     /* Immagine per Outlook: le note escono sempre intere, non tagliate a due righe. */
     #martur-operations-dashboard .mod-capture .mod-shift-note { height: auto !important; min-height: 2.6em; }
     #martur-operations-dashboard .mod-capture .mod-shift-note-text { display: block; -webkit-line-clamp: unset; overflow: visible; white-space: pre-wrap; padding-inline: 0 !important; }
@@ -11727,7 +11730,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
             // piccola icona la allarga sul posto con tutto il testo; ritoccata
             // la riporta a due righe (la mostra updateNoteMore).
             ((shift.note || '').trim()
-              ? '<div class="mod-shift-note' + (openShiftNotes.has(row.date + ':' + shiftKey) ? ' mod-shift-note-open' : '') + '">' +
+              ? '<div class="mod-shift-note' + (shift.note.trim().includes('\n') ? ' mod-shift-note-list' : '') + (openShiftNotes.has(row.date + ':' + shiftKey) ? ' mod-shift-note-open' : '') + '">' +
                 '<span class="mod-shift-note-text">' + escapeHtml(shift.note.trim()) + '</span>' +
                 '<button type="button" class="mod-note-more" data-note-key="' + escapeHtml(row.date + ':' + shiftKey) +
                   '" title="' + escapeHtml(t('noteMore')) + '" aria-label="' + escapeHtml(t('noteMore')) + '">' +
@@ -16749,6 +16752,44 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         button.addEventListener('click', () => { applyStyle(button.dataset.style); renderAll(); });
       });
       applyStyle(document.documentElement.classList.contains('martur-officina') ? 'officina' : 'classic');
+      // ---- Note dei turni a elenco: 1) 2) 3) ... ----
+      // Nel campo della nota ogni riga e' una voce numerata: entrando nel campo
+      // vuoto compare "1) ", con Invio si passa alla voce dopo; uscendo dal
+      // campo le voci vuote spariscono e i numeri si rimettono in ordine.
+      const NOTE_NUM = /^\s*\d+[).]\s*/;
+      function renumberNote(text) {
+        return String(text || '').split('\n').map((line) => line.replace(NOTE_NUM, '').trim()).filter((line) => line)
+          .map((line, i) => (i + 1) + ') ' + line).join('\n');
+      }
+      [el.entryNoteShift1, el.entryNoteShift2].forEach((area) => {
+        if (!area) return;
+        const refresh = () => area.dispatchEvent(new Event('input', { bubbles: true }));
+        area.addEventListener('focus', () => {
+          if (!area.value.trim()) { area.value = '1) '; refresh(); }
+          else if (!NOTE_NUM.test(area.value)) { area.value = renumberNote(area.value); refresh(); }
+          const end = area.value.length;
+          area.setSelectionRange(end, end);
+        });
+        area.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+          event.preventDefault();
+          const pos = area.selectionStart;
+          const before = area.value.slice(0, pos);
+          const after = area.value.slice(area.selectionEnd);
+          const n = before.split('\n').length + 1;
+          const insert = '\n' + n + ') ';
+          // i numeri delle voci sotto scalano di uno
+          const rest = after.replace(/\n\s*(\d+)\)/g, (m, d) => '\n' + (Number(d) + 1) + ')');
+          area.value = before + insert + rest;
+          const caret = pos + insert.length;
+          area.setSelectionRange(caret, caret);
+          refresh();
+        });
+        area.addEventListener('blur', () => {
+          const clean = renumberNote(area.value);
+          if (clean !== area.value) { area.value = clean; refresh(); }
+        });
+      });
       // ---- Colore dello sfondo ----
       // Una riga (colore scelto + nome); la tendina sotto ha tutti i colori.
       const BG_LIST = window.MARTUR_BGS || [];
