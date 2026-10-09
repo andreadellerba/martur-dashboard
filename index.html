@@ -986,24 +986,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 @media (min-width: 1420px) {
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster { --topbar-gap: 14px; }
 }
-/* Menu (PC): bianco, squadrato come le card, senza bordo (lo spessore del
-   bordo diventa spazio interno, cosi' le misure restano 718 x 43). La voce
+/* Menu (PC): bianco, squadrato come le card, con il bordo oro delle card (il
+   bordo prende il posto dello spazio interno: misure sempre 718 x 43). La voce
    aperta ha un contorno oro e un fondo oro chiaro. */
 :root.martur-officina #martur-operations-dashboard .mod-pillnav {
   background: var(--card);
-  border: 0 !important;
-  padding: 4px;
+  border: 3px solid var(--off-edge) !important;
+  padding: 1px;
   border-radius: 10px;
 }
 :root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn) {
   border-radius: 6px;
 }
-/* Calendario accanto al menu (PC): stessa forma, squadrato e senza bordo. */
+/* Calendario accanto al menu (PC): stessa forma e stesso bordo. */
 @media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
   :root.martur-officina #martur-operations-dashboard .mod-datenav {
     background: var(--card);
-    border: 0 !important;
-    padding: 4px;
+    border: 3px solid var(--off-edge) !important;
+    padding: 1px;
     border-radius: 10px;
   }
   :root.martur-officina #martur-operations-dashboard .mod-datenav :is(.mod-period-nav, .mod-period-picker, .mod-period-overlay, button) {
