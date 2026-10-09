@@ -4728,20 +4728,72 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
     }
-    /* Nota a elenco: il "+" sotto il campo aggiunge la voce dopo la 5). */
-    #martur-operations-dashboard .mod-note-field { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
-    #martur-operations-dashboard .mod-note-field > .form-label { width: 100%; }
-    #martur-operations-dashboard .mod-note-add {
-      width: 34px;
-      height: 34px;
-      padding: 0;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 20px;
+    /* Nota a elenco: una riga per voce, il numero fisso a sinistra (non si
+       puo' cancellare) e il testo accanto; in fondo al riquadro "+ Aggiungi
+       una nota" per andare oltre la 5). */
+    #martur-operations-dashboard .mod-note-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    #martur-operations-dashboard .mod-note-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      height: auto;
+      padding: 6px 10px;
+    }
+    #martur-operations-dashboard .mod-note-row { display: flex; align-items: flex-start; gap: 6px; }
+    #martur-operations-dashboard .mod-note-num {
+      flex: none;
+      min-width: 1.6em;
+      padding-top: 5px;
       font-weight: 700;
+      color: var(--muted-foreground);
+      user-select: none;
+    }
+    #martur-operations-dashboard .mod-entry-notes .mod-note-input {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 4px 2px;
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      line-height: 1.35;
+      text-transform: uppercase;
+      resize: none;
+      overflow: hidden;
+      outline: none;
+    }
+    #martur-operations-dashboard .mod-entry-notes .mod-note-input:focus { border-bottom-color: var(--gold); }
+    #martur-operations-dashboard .mod-note-add {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      padding: 4px 10px 4px 4px;
+      border: 0;
+      border-radius: 999px;
+      background: none;
+      color: var(--gold);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #martur-operations-dashboard .mod-note-add:hover { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+    #martur-operations-dashboard .mod-note-add-plus {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--gold-foreground);
+      font-size: 17px;
       line-height: 1;
     }
-    #martur-operations-dashboard .mod-entry-notes textarea {
+    #martur-operations-dashboard .mod-entry-notes textarea:not(.mod-note-input) {
       min-height: 44px;
       resize: none;
       overflow: hidden;
@@ -6416,18 +6468,22 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 
       <div class="mod-entry-notes">
         <div class="mod-note-field">
-          <label class="form-label">
-            <span data-i18n="shift1NoteLabel">Nota 1° turno</span>
-            <textarea id="mod-s1-note" class="form-control mod-autogrow" rows="5"></textarea>
-          </label>
-          <button type="button" class="btn btn-ghost mod-note-add" data-note-for="mod-s1-note" title="Aggiungi una voce" aria-label="Aggiungi una voce">+</button>
+          <span class="form-label" data-i18n="shift1NoteLabel">Nota 1° turno</span>
+          <!-- Il testo vero sta nel campo nascosto (lo legge il salvataggio);
+               sopra, una riga per voce con il numero fisso, non cancellabile. -->
+          <textarea id="mod-s1-note" hidden></textarea>
+          <div class="mod-note-box form-control" data-note-for="mod-s1-note">
+            <div class="mod-note-rows"></div>
+            <button type="button" class="mod-note-add"><span class="mod-note-add-plus" aria-hidden="true">+</span><span data-i18n="noteAddItem">Aggiungi una nota</span></button>
+          </div>
         </div>
         <div class="mod-note-field">
-          <label class="form-label">
-            <span data-i18n="shift2NoteLabel">Nota 2° turno</span>
-            <textarea id="mod-s2-note" class="form-control mod-autogrow" rows="5"></textarea>
-          </label>
-          <button type="button" class="btn btn-ghost mod-note-add" data-note-for="mod-s2-note" title="Aggiungi una voce" aria-label="Aggiungi una voce">+</button>
+          <span class="form-label" data-i18n="shift2NoteLabel">Nota 2° turno</span>
+          <textarea id="mod-s2-note" hidden></textarea>
+          <div class="mod-note-box form-control" data-note-for="mod-s2-note">
+            <div class="mod-note-rows"></div>
+            <button type="button" class="mod-note-add"><span class="mod-note-add-plus" aria-hidden="true">+</span><span data-i18n="noteAddItem">Aggiungi una nota</span></button>
+          </div>
         </div>
       </div>
       <div class="mod-form-actions">
@@ -7604,6 +7660,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           efficiencyFormulaMonthly: 'Media Efficienza Mensile',
           supplyGap: 'Delta Martur / Stellantis',
           kpiGapTitle: 'Delta',
+          noteAddItem: 'Aggiungi una nota',
           convocati: 'Convocati Diretti',
           presence: 'Presenze',
           calcOvertime: 'Calcola straordinario',
@@ -8209,6 +8266,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           efficiencyFormulaMonthly: 'Monthly Efficiency Average',
           supplyGap: 'Martur / Stellantis delta',
           kpiGapTitle: 'Delta',
+          noteAddItem: 'Add a note',
           convocati: 'Called Up',
           presence: 'Present',
           calcOvertime: 'Calculate overtime',
@@ -8814,6 +8872,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           efficiencyFormulaMonthly: 'Aylık Verimlilik Ortalaması',
           supplyGap: 'Martur / Stellantis farkı',
           kpiGapTitle: 'Fark',
+          noteAddItem: 'Not ekle',
           convocati: 'Çağrılan',
           presence: 'Mevcut',
           calcOvertime: 'Fazla mesaiyi hesapla',
@@ -12337,8 +12396,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         updateReworkLauncherPreview('shift2');
         updateLossLauncherPreview('shift1');
         updateLossLauncherPreview('shift2');
-        el.entryNoteShift1.value = noteForEdit('');
-        el.entryNoteShift2.value = noteForEdit('');
+        setNoteValue(el.entryNoteShift1, '');
+        setNoteValue(el.entryNoteShift2, '');
         autoGrow(el.entryNoteShift1);
         autoGrow(el.entryNoteShift2);
         fillEntryOee(el.entryDate.value, null);
@@ -12376,8 +12435,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         updateReworkLauncherPreview('shift2');
         updateLossLauncherPreview('shift1');
         updateLossLauncherPreview('shift2');
-        el.entryNoteShift1.value = noteForEdit(row.shift1.note);
-        el.entryNoteShift2.value = noteForEdit(row.shift2.note);
+        setNoteValue(el.entryNoteShift1, row.shift1.note);
+        setNoteValue(el.entryNoteShift2, row.shift2.note);
         autoGrow(el.entryNoteShift1);
         autoGrow(el.entryNoteShift2);
         fillEntryOee(el.entryDate.value, row);
@@ -16802,49 +16861,65 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       function renumberNote(text) {
         return noteItems(text).map((line, i) => (i + 1) + ') ' + line).join('\n');
       }
-      function noteForEdit(text) {
-        const lines = noteItems(text).map((line, i) => (i + 1) + ') ' + line);
-        while (lines.length < 5) lines.push((lines.length + 1) + ') ');
-        return lines.join('\n');
+      // Editor delle note: una riga per voce con il numero fisso davanti. Il
+      // testo completo ("1) ...\n2) ...") resta nel campo nascosto, che e'
+      // quello letto dal salvataggio.
+      function noteBoxFor(area) {
+        return area ? root.querySelector('.mod-note-box[data-note-for="' + area.id + '"]') : null;
       }
-      // Cursore alla fine della riga "index" (0 = prima riga).
-      function noteCaretToLine(area, index) {
-        const lines = area.value.split('\n');
-        let pos = 0;
-        for (let i = 0; i < index && i < lines.length; i++) pos += lines[i].length + 1;
-        pos += (lines[Math.min(index, lines.length - 1)] || '').length;
-        area.setSelectionRange(pos, pos);
+      function syncNoteArea(area) {
+        const box = noteBoxFor(area);
+        if (!box) return;
+        area.value = Array.from(box.querySelectorAll('.mod-note-input'))
+          .map((input, i) => (i + 1) + ') ' + input.value.replace(/\s*\n\s*/g, ' ').trim()).join('\n');
       }
-      function addNoteItem(area) {
-        const lines = area.value.split('\n');
-        lines.push((lines.length + 1) + ') ');
-        area.value = lines.join('\n');
-        area.dispatchEvent(new Event('input', { bubbles: true }));
-        area.focus();
-        noteCaretToLine(area, lines.length - 1);
+      function growNoteInput(input) {
+        input.style.height = 'auto';
+        input.style.height = input.scrollHeight + 'px';
+      }
+      function noteRowHtml(n, text) {
+        return '<div class="mod-note-row"><span class="mod-note-num">' + n + ')</span>' +
+          '<textarea class="mod-note-input" rows="1" aria-label="' + n + ')">' + escapeHtml(text) + '</textarea></div>';
+      }
+      // Riempie l'editor: le voci salvate e poi le vuote fino alla 5).
+      function setNoteValue(area, text) {
+        if (!area) return;
+        const items = noteItems(text);
+        while (items.length < 5) items.push('');
+        const box = noteBoxFor(area);
+        if (box) {
+          box.querySelector('.mod-note-rows').innerHTML = items.map((line, i) => noteRowHtml(i + 1, line)).join('');
+          requestAnimationFrame(() => box.querySelectorAll('.mod-note-input').forEach(growNoteInput));
+        }
+        syncNoteArea(area);
+      }
+      function addNoteRow(area) {
+        const box = noteBoxFor(area);
+        if (!box) return;
+        const rows = box.querySelector('.mod-note-rows');
+        rows.insertAdjacentHTML('beforeend', noteRowHtml(rows.children.length + 1, ''));
+        syncNoteArea(area);
+        rows.lastElementChild.querySelector('.mod-note-input').focus();
       }
       [el.entryNoteShift1, el.entryNoteShift2].forEach((area) => {
-        if (!area) return;
-        area.addEventListener('focus', () => {
-          if (!noteNumRe().test(area.value)) {
-            area.value = noteForEdit(area.value);
-            area.dispatchEvent(new Event('input', { bubbles: true }));
-          }
+        const box = noteBoxFor(area);
+        if (!box) return;
+        box.addEventListener('input', (event) => {
+          if (!event.target.classList.contains('mod-note-input')) return;
+          growNoteInput(event.target);
+          syncNoteArea(area);
         });
-        area.addEventListener('keydown', (event) => {
-          if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+        // Invio: alla voce dopo (o una nuova se era l'ultima).
+        box.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' || event.isComposing || !event.target.classList.contains('mod-note-input')) return;
           event.preventDefault();
-          const line = area.value.slice(0, area.selectionStart).split('\n').length - 1;
-          const total = area.value.split('\n').length;
-          if (line + 1 < total) noteCaretToLine(area, line + 1);
-          else addNoteItem(area);
+          const row = event.target.closest('.mod-note-row');
+          const next = row.nextElementSibling;
+          if (next) next.querySelector('.mod-note-input').focus();
+          else addNoteRow(area);
         });
-      });
-      root.querySelectorAll('.mod-note-add').forEach((button) => {
-        button.addEventListener('click', () => {
-          const area = root.querySelector('#' + button.dataset.noteFor);
-          if (area) addNoteItem(area);
-        });
+        box.querySelector('.mod-note-add').addEventListener('click', () => addNoteRow(area));
+        if (!box.querySelector('.mod-note-input')) setNoteValue(area, area.value);
       });
       // ---- Colore dello sfondo ----
       // Una riga (colore scelto + nome); la tendina sotto ha tutti i colori.
