@@ -988,6 +988,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    ":root" davanti serve a vincere sulle regole del telefono piu' vecchie,
    che stanno piu' in basso nel foglio. */
 #martur-operations-dashboard .mod-tabbar { display: none; }
+/* Niente "+": per inserire o modificare i dati del giorno c'e' la matita. */
+#martur-operations-dashboard #mod-entry-view-btn { display: none !important; }
 /* Scritte "vuote" (nessun dato, nessuna attivita', nessun fermo...): sempre
    al centro del loro riquadro, anche dentro le tabelle. */
 #martur-operations-dashboard :is(td.mod-empty, .mod-oee-empty, .mod-task-empty) { text-align: center !important; }
@@ -1023,24 +1025,24 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
        contenuti, e il logo attaccato in cima veniva sfocato. */
     padding-top: calc(env(safe-area-inset-top, 0px) + 26px);
   }
-  /* Prima riga: riepilogo e modifica a sinistra del logo, + e impostazioni
-     a destra, in posti fissi (il logo resta al centro anche senza matita).
+  /* Prima riga: matita a sinistra del logo, impostazioni a destra, in posti
+     fissi (il logo resta al centro anche senza matita). Sul telefono niente
+     tasto dell'immagine di riepilogo.
      Sotto: calendario, poi la tendina della vista. Il vecchio "stadio" del
      menu si scioglie ("display: contents") e i suoi pezzi vanno nella
      griglia. */
   :root #martur-operations-dashboard .mod-topbar-cluster {
     display: grid;
-    grid-template-columns: 36px 36px minmax(0, 1fr) 36px 36px;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
     align-items: center;
     column-gap: 4px;
     row-gap: 12px;
   }
-  :root #martur-operations-dashboard .mod-topbar-left { grid-column: 3; grid-row: 1; min-width: 0; }
+  :root #martur-operations-dashboard .mod-topbar-left { grid-column: 2; grid-row: 1; min-width: 0; }
   :root #martur-operations-dashboard .mod-pillnav { display: contents; }
-  :root #martur-operations-dashboard .mod-pillnav > #mod-back-btn { grid-column: 1; grid-row: 1; }
-  :root #martur-operations-dashboard .mod-pillnav > .mod-daily-admin-actions > * { grid-column: 2; grid-row: 1; }
-  :root #martur-operations-dashboard .mod-pillnav > #mod-entry-view-btn { grid-column: 4; grid-row: 1; }
-  :root #martur-operations-dashboard .mod-pillnav > .mod-appmenu-wrap { grid-column: 5; grid-row: 1; }
+  :root #martur-operations-dashboard .mod-pillnav > #mod-back-btn { display: none !important; }
+  :root #martur-operations-dashboard .mod-pillnav > .mod-daily-admin-actions > * { grid-column: 1; grid-row: 1; }
+  :root #martur-operations-dashboard .mod-pillnav > .mod-appmenu-wrap { grid-column: 3; grid-row: 1; }
   :root #martur-operations-dashboard .mod-pillnav > #mod-view-select { display: none; }
   :root #martur-operations-dashboard .mod-datenav,
   :root #martur-operations-dashboard .mod-topbar-cluster.mod-cal-open .mod-datenav { grid-column: 1 / -1; grid-row: 2; }
