@@ -1519,24 +1519,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       outline: 2px solid var(--ring);
       outline-offset: 2px;
     }
-    /* Il logo prende lo spazio che avanza ai lati del gruppo logo + menu +
-       calendario: grande sugli schermi larghi, piu' piccolo sui laptop
-       stretti dove quello spazio serve al menu. */
+    /* Logo alto quanto il menu (43 px = 518 px di larghezza); sui laptop
+       stretti si rimpicciolisce per lasciare spazio a menu e calendario. */
     #martur-operations-dashboard .mod-brand-logo {
       display: block;
-      width: 300px;
+      width: clamp(165px, calc(100vw - 1120px), 518px);
       height: auto;
       border-radius: var(--radius-sm);
-    }
-    @media (max-width: 1440px) {
-      #martur-operations-dashboard .mod-brand-logo {
-        width: 225px;
-      }
-    }
-    @media (max-width: 1360px) {
-      #martur-operations-dashboard .mod-brand-logo {
-        width: 165px;
-      }
     }
     /* Il logo ha il fondo trasparente, quindi ne basta uno solo per tutti e
        due i temi: prima ce n'erano due, uno per tema, perche' l'immagine si
@@ -9080,7 +9069,52 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         try {
           window.localStorage.setItem(THEME_STORAGE_KEY, theme);
         } catch (error) {}
+        syncLogoGold();
       }
+
+      // L'oro di "MARTUR" nel logo prende lo stesso colore del menu (--gold),
+      // che cambia con tema e stile: i pixel oro dell'immagine vengono
+      // ricolorati in proporzione; rosso, verde, bianco e contorno restano.
+      const logoGoldCache = {};
+      let logoGoldSrc = null;
+      function syncLogoGold() {
+        const img = root.querySelector('.mod-brand-logo');
+        if (!img) return;
+        if (!logoGoldSrc) logoGoldSrc = img.getAttribute('src');
+        const probe = document.createElement('span');
+        probe.style.cssText = 'position:absolute;visibility:hidden;color:var(--gold)';
+        root.appendChild(probe);
+        const target = (getComputedStyle(probe).color.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+        probe.remove();
+        if (target.length < 3) return;
+        const key = target.join(',');
+        if (logoGoldCache[key]) { img.src = logoGoldCache[key]; return; }
+        const src = new Image();
+        src.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = src.naturalWidth; c.height = src.naturalHeight;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(src, 0, 0);
+          const data = ctx.getImageData(0, 0, c.width, c.height);
+          const d = data.data;
+          const isGold = (i) => d[i + 3] > 0 && d[i] > 90 && d[i + 1] > d[i] * 0.68 && d[i + 1] < d[i] * 0.95 && d[i + 2] < d[i] * 0.62;
+          let n = 0, r = 0, g = 0, b = 0;
+          for (let i = 0; i < d.length; i += 4) if (isGold(i)) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+          if (!n) return;
+          const k = [target[0] / (r / n), target[1] / (g / n), target[2] / (b / n)];
+          for (let i = 0; i < d.length; i += 4) {
+            if (!isGold(i)) continue;
+            d[i] = Math.min(255, d[i] * k[0]); d[i + 1] = Math.min(255, d[i + 1] * k[1]); d[i + 2] = Math.min(255, d[i + 2] * k[2]);
+          }
+          ctx.putImageData(data, 0, 0);
+          logoGoldCache[key] = c.toDataURL('image/png');
+          img.src = logoGoldCache[key];
+        };
+        src.src = logoGoldSrc;
+      }
+      try {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => syncLogoGold());
+      } catch (error) {}
 
       function applyDensity(density) {
         state.density = density === 'compact' ? 'compact' : 'comfort';
@@ -16524,6 +16558,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           button.setAttribute('aria-pressed', String((button.dataset.style === 'officina') === officina));
         });
         try { window.localStorage.setItem('martur-dashboard-style', officina ? 'officina' : 'classic'); } catch (e) {}
+        syncLogoGold();
       }
       root.querySelectorAll('.mod-style-choice').forEach((button) => {
         button.addEventListener('click', () => { applyStyle(button.dataset.style); renderAll(); });
