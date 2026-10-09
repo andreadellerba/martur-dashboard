@@ -1038,6 +1038,25 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   :root #martur-operations-dashboard .mod-pillnav > :is(#mod-back-btn, #mod-entry-view-btn, .mod-appmenu-wrap),
   :root #martur-operations-dashboard .mod-pillnav > .mod-daily-admin-actions > * { order: 2; }
   :root #martur-operations-dashboard .mod-pillnav > #mod-view-select { display: none; }
+  /* Controlli su un'unica riga (EDI e Attivita' > Pianificazione): sul
+     telefono i pulsanti diventano solo icone e le tendine si stringono. */
+  :root #martur-operations-dashboard .mod-edi-head { flex-wrap: nowrap; gap: 6px; }
+  :root #martur-operations-dashboard .mod-edi-head .mod-edi-current { display: none; }
+  :root #martur-operations-dashboard :is(#mod-edi-compare-btn, #mod-edi-upload) > span { display: none; }
+  :root #martur-operations-dashboard :is(#mod-edi-compare-btn, #mod-edi-upload) { padding-inline: 10px; min-height: 40px; }
+  :root #martur-operations-dashboard .mod-edi-head .mod-edi-mode-btn { min-width: 0; padding-inline: 12px; }
+  :root #martur-operations-dashboard .mod-edi-head:has(#mod-edi-compare:not([hidden])) { flex-wrap: wrap; }
+  :root #martur-operations-dashboard .mod-edi-head #mod-edi-compare { order: 9; flex: 1 1 100%; }
+  :root #martur-operations-dashboard #mod-summary-screen .mod-summary-tools { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; width: 100%; }
+  :root #martur-operations-dashboard #mod-task-actions { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; }
+  :root #martur-operations-dashboard #mod-task-actions[hidden] { display: none; }
+  :root #martur-operations-dashboard #mod-task-actions .mod-task-sort { flex: 1 1 0; min-width: 0; }
+  :root #martur-operations-dashboard #mod-task-actions .mod-task-sort .form-select { width: 100%; min-width: 0; padding-inline: 8px 22px; font-size: 13px; }
+  :root #martur-operations-dashboard :is(#mod-task-pdf, #mod-task-excel) > span { display: none; }
+  :root #martur-operations-dashboard :is(#mod-task-pdf, #mod-task-excel, #mod-task-add) { flex: none; padding-inline: 8px; min-height: 40px; }
+  :root #martur-operations-dashboard #mod-task-add { font-size: 0; min-width: 40px; }
+  :root #martur-operations-dashboard #mod-task-add::before { content: "+"; font-size: 22px; line-height: 1; }
+  :root #martur-operations-dashboard #mod-summary-edit { flex: none; }
   :root #martur-operations-dashboard .mod-pillnav :is(#mod-back-btn, #mod-entry-view-btn, .mod-appmenu-btn, .mod-daily-admin-actions .btn) {
     width: 44px;
     height: 44px;
@@ -14643,8 +14662,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           (ediReports.length ? ediReports.map((r) => item(r.id, r.name)).join('')
             : '<span class="mod-nav-drop-item mod-edi-menu-empty">' + escapeHtml(t('ediNoneSaved')) + '</span>');
       }
+      let ediChoseNew = false;
       function openEdi(id) {
         ediSelectedId = id || '';
+        // "Nuovo (carica Excel)" scelto apposta: pagina vuota, niente EDI di default.
+        ediChoseNew = !id;
         ediDraft = null;
         if (state.view !== 'edi') navigateTo('edi'); else renderEdi();
       }
@@ -14905,6 +14927,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       let ediCompareId = '';
 
       function renderEdi() {
+        // Di standard si vede l'ultimo EDI caricato (il primo della lista).
+        if (!ediSelectedId && !ediDraft && !ediChoseNew && ediReports.length) ediSelectedId = ediReports[0].id;
         subscribeEdi();
         applyEdiMode();
         const admin = state.isAdmin;
