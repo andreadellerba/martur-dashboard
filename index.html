@@ -1173,6 +1173,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   font-weight: 600;
 }
 :root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head .mod-shift-card-name * { font-size: inherit; }
+/* Immagine per Outlook (larga 720 px): la riga del turno sta tutta su una riga. */
+:root.martur-officina #martur-operations-dashboard .mod-capture .mod-daily-shift-card > .mod-shift-card-head .mod-shift-card-name { font-size: 16.5px; flex-wrap: nowrap; white-space: nowrap; }
+:root.martur-officina #martur-operations-dashboard .mod-capture .mod-shift-card-name .mod-shift-title-part { flex-wrap: nowrap; white-space: nowrap; }
 @media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
   :root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head .mod-shift-card-name { font-size: 15.5px; }
 }
