@@ -816,7 +816,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 :root.martur-officina {
   --gold: light-dark(#86672c, #c9a55f);
   --gold-foreground: light-dark(#ffffff, #1b1a17);
-  --background: light-dark(#e9e2d3, #0f0e0c);
+  --background: light-dark(#d8cdb5, #0f0e0c);
+  /* bordo esterno delle card: piu' scuro dello sfondo sabbia */
+  --off-edge: light-dark(#b9a682, #3d382f);
   --card: light-dark(#ffffff, #1f1d1a);
   --popover: light-dark(#ffffff, #24221e);
   --border: light-dark(#d5c8ab, rgb(255 255 255 / 11%));
@@ -971,6 +973,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   background: var(--card);
   border: 3px solid var(--off-line);
   border-radius: var(--radius-2xl);
+}
+/* Bordo esterno di card, menu e calendario: piu' scuro dello sfondo. Le
+   linee dentro grafici e tabelle restano chiare (--off-line). */
+:root.martur-officina #martur-operations-dashboard :is(.card, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-pillnav, .mod-anomaly-wrap, .mod-rework-ranking li) {
+  border-color: var(--off-edge);
 }
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
@@ -4264,6 +4271,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       text-transform: uppercase;
       color: var(--gold);
     }
+    #martur-operations-dashboard .mod-rework-shift-head {
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    #martur-operations-dashboard .mod-rework-shift-head .mod-rework-shift-label { font-size: inherit; }
+    #martur-operations-dashboard .mod-rework-shift-dot { color: var(--gold); margin: 0 6px; }
+    :is(#mod-daily-rework-section, #mod-daily-loss-section):has(.mod-rework-shift-head) > .mod-section-head { display: none !important; }
     #martur-operations-dashboard .mod-rework-ranking-name {
       min-width: 0;
       overflow-wrap: anywhere;
@@ -11273,6 +11287,15 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
           : '<tr><td colspan="4" class="mod-empty">' + t('noAbsenceLog') + '</td></tr>';
       }
 
+      // Titolo di colonna su una riga: "| 1° TURNO • I 3 rework ...". Quando
+      // ci sono le due colonne il titolo unico della sezione si nasconde.
+      function shiftHeadHtml(shiftKey, titleKey) {
+        return '<div class="mod-section-label mod-rework-shift-head">' +
+          '<span class="mod-rework-shift-label">' + escapeHtml(t(shiftKey)) + '</span>' +
+          '<span class="mod-rework-shift-dot" aria-hidden="true">•</span>' +
+          '<span>' + escapeHtml(t(titleKey)) + '</span></div>';
+      }
+
       // I 3 rework maggiori, una riga per turno. Le giornate di prima, che
       // hanno solo la classifica unica senza turni, restano su una riga sola.
       function renderDailyTopReworks(row) {
@@ -11299,7 +11322,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         el.dailyReworkList.innerHTML = [['shift1', shift1], ['shift2', shift2]].map(([key, list]) =>
           '<div class="mod-rework-shift">' +
-            '<div class="mod-rework-shift-label">' + escapeHtml(t(key)) + '</div>' +
+            shiftHeadHtml(key, 'dailyTopReworks') +
             '<ol class="mod-rework-ranking">' + items(list) + '</ol>' +
           '</div>'
         ).join('');
@@ -11373,7 +11396,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
         }
         el.dailyLossList.innerHTML = ['shift1', 'shift2'].map((key) =>
           '<div class="mod-rework-shift">' +
-            '<div class="mod-rework-shift-label">' + escapeHtml(t(key)) + '</div>' +
+            shiftHeadHtml(key, 'dailyTopLosses') +
             '<ol class="mod-rework-ranking">' + items(listFor(key)) + '</ol>' +
           '</div>'
         ).join('');
