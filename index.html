@@ -27,12 +27,43 @@
     // Stile grafico: Officina salvo scelta diversa (Impostazioni > Stile).
     if (window.localStorage.getItem('martur-dashboard-style') !== 'classic') document.documentElement.classList.add('martur-officina');
     // Colore dello sfondo (Impostazioni > Sfondo) e tono dei testi sopra.
-    window.marturApplyBg = function (bg) {
+    // [id, nome, colore per il tema chiaro, colore per il tema scuro (se manca:
+    // lo stesso scurito)]. "sabbia" e' lo sfondo normale dello stile.
+    window.MARTUR_BGS = [
+      ['sabbia', 'Sabbia', '#d8cdb5', '#0f0e0c'], ['avorio', 'Avorio', '#f1ece1', '#e6dfd0'],
+      ['grigio', 'Grigio', '#c9ccd1'], ['salvia', 'Salvia', '#b8c2ae'], ['menta', 'Menta', '#a8e6cf'],
+      ['cielo', 'Cielo', '#a9d6f5'], ['lavanda', 'Lavanda', '#c9b6ee'], ['rosa', 'Rosa', '#ff9ebb'],
+      ['pesca', 'Pesca', '#ffb38a'], ['giallo', 'Giallo', '#ffd23f'], ['lime', 'Lime', '#b5e61d'],
+      ['arancio', 'Arancio', '#ff7a00'], ['rosso', 'Rosso', '#e01e37'], ['magenta', 'Magenta', '#e0007a'],
+      ['viola', 'Viola', '#8a2be2'], ['blu', 'Blu', '#1f5fe0'], ['azzurro', 'Azzurro', '#1fa2ff'],
+      ['turchese', 'Turchese', '#00c2c7'], ['smeraldo', 'Smeraldo', '#00a86b'], ['verde', 'Verde', '#2f9e44'],
+      ['oliva', 'Oliva', '#6b7a2a'], ['petrolio', 'Petrolio', '#0f5257'], ['notte', 'Blu notte', '#1f3150', '#111a2b'],
+      ['burgundy', 'Burgundy', '#6e1f2c', '#3a1119'], ['cioccolato', 'Cioccolato', '#5a3825'],
+      ['grafite', 'Grafite', '#3f4045', '#1c1d20'], ['nero', 'Nero', '#121212', '#080808']
+    ];
+    window.marturBgColors = function (b) {
+      var hex = function (h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16); }); };
+      var toHex = function (c) { return '#' + c.map(function (v) { return ('0' + Math.round(v).toString(16)).slice(-2); }).join(''); };
+      var dark = b[3] || toHex(hex(b[2]).map(function (v) { return v * 0.42 + 11 * 0.58; }));
+      return [b[2], dark];
+    };
+    window.marturApplyBg = function (id) {
       var el = document.documentElement;
-      var tones = { burgundy: ['dark', 'dark'], notte: ['dark', 'dark'], grafite: ['dark', 'dark'], salvia: ['light', 'dark'], avorio: ['light', 'light'] };
-      if (!tones[bg]) { el.removeAttribute('data-bg'); el.removeAttribute('data-bgtone'); return; }
-      el.setAttribute('data-bg', bg);
-      el.setAttribute('data-bgtone', tones[bg][el.getAttribute('data-theme') === 'dark' ? 1 : 0]);
+      var b = null;
+      window.MARTUR_BGS.forEach(function (x) { if (x[0] === id) b = x; });
+      if (!b || id === 'sabbia') {
+        el.removeAttribute('data-bg'); el.removeAttribute('data-bgtone'); el.style.removeProperty('--bg-pick'); return;
+      }
+      var cols = window.marturBgColors(b);
+      var now = cols[el.getAttribute('data-theme') === 'dark' ? 1 : 0];
+      var c = [1, 3, 5].map(function (i) { var v = parseInt(now.substr(i, 2), 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      var lum = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+      el.setAttribute('data-bg', id);
+      // colore gia' risolto per il tema attuale: dentro le zone a schema girato
+      // un light-dark() prenderebbe il ramo sbagliato
+      el.style.setProperty('--bg-pick', now);
+      // testi neri se lo sfondo e' chiaro, bianchi se e' scuro (soglia di contrasto)
+      el.setAttribute('data-bgtone', lum > 0.18 ? 'light' : 'dark');
     };
     window.marturApplyBg(window.localStorage.getItem('martur-dashboard-bg'));
   } catch (e) {
@@ -1005,57 +1036,80 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    restano come sono; cambiano solo i testi scritti direttamente sullo
    sfondo: chiari se lo sfondo e' scuro, scuri se e' chiaro (data-bgtone,
    calcolato dall'app guardando il colore vero dello sfondo). */
-:root.martur-officina[data-bg="burgundy"] { --background: light-dark(#6e1f2c, #3a1119); }
-:root.martur-officina[data-bg="notte"]    { --background: light-dark(#1f3150, #111a2b); }
-:root.martur-officina[data-bg="grafite"]  { --background: light-dark(#3f4045, #1c1d20); }
-:root.martur-officina[data-bg="salvia"]   { --background: light-dark(#b8c2ae, #2a3226); }
-:root.martur-officina[data-bg="avorio"]   { --background: light-dark(#f1ece1, #e6dfd0); }
-:root.martur-officina[data-bgtone="dark"] #martur-operations-dashboard {
-  --foreground: #ffffff;
-  --off-ink: #ffffff;
-  --muted-foreground: rgb(255 255 255 / 78%);
-  --gold: #e2c07a;
-  color: #ffffff;
-}
-:root.martur-officina[data-bgtone="light"] #martur-operations-dashboard {
-  --foreground: rgb(8 9 11);
-  --off-ink: #1b1a17;
-  --muted-foreground: #5f574a;
-  --gold: #86672c;
-  color: rgb(8 9 11);
-}
-/* Dentro card, menu, finestre e tendine tornano i colori normali del tema. */
-:root.martur-officina[data-bgtone] #martur-operations-dashboard :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, .mod-capture, [role="dialog"], [role="menu"], [role="listbox"]) {
-  --foreground: light-dark(rgb(8 9 11), rgb(255 255 255));
-  --off-ink: light-dark(#1b1a17, #f4efe4);
-  --muted-foreground: light-dark(#6f6656, #b3a994);
-  --gold: light-dark(#86672c, #c9a55f);
+:root.martur-officina[data-bg] { --background: var(--bg-pick); }
+/* Testi sullo sfondo: invece di correggerli uno per uno, la zona fuori dalle
+   card prende lo schema di colori opposto (tutti i colori dell'app scritti
+   con light-dark() si girano da soli: neri -> bianchi e viceversa). Card,
+   menu, finestre e tendine tengono lo schema del tema. */
+:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard,
+:root.martur-officina[data-bgtone="light"][data-theme="dark"] :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, [role="dialog"], [role="menu"], [role="listbox"]) {
+  color-scheme: dark;
   color: var(--foreground);
 }
-/* Campi e tendine: solo i colori, il testo lo decide il campo (quello della data e' nascosto apposta). */
-:root.martur-officina[data-bgtone] #martur-operations-dashboard :is(select, input, textarea) {
-  --foreground: light-dark(rgb(8 9 11), rgb(255 255 255));
-  --off-ink: light-dark(#1b1a17, #f4efe4);
-  --muted-foreground: light-dark(#6f6656, #b3a994);
-  --gold: light-dark(#86672c, #c9a55f);
+:root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard,
+:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, [role="dialog"], [role="menu"], [role="listbox"]) {
+  color-scheme: light;
+  color: var(--foreground);
 }
+/* Campi e tendine: solo lo schema (il testo lo decide il campo: quello della data e' nascosto apposta). */
+:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard :is(select, input, textarea) { color-scheme: light; }
+:root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard :is(select, input, textarea) { color-scheme: dark; }
+/* L'immagine per Outlook resta sempre chiara. */
+:root.martur-officina[data-bgtone] #martur-operations-dashboard .mod-capture { color-scheme: light; }
+/* Menu in alto (PC): e' una card bianca, tiene lo schema del tema. */
 @media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
-  :root.martur-officina[data-bgtone] #martur-operations-dashboard .mod-pillnav {
-    --foreground: light-dark(rgb(8 9 11), rgb(255 255 255));
-    --off-ink: light-dark(#1b1a17, #f4efe4);
-    --muted-foreground: light-dark(#6f6656, #b3a994);
-    --gold: light-dark(#86672c, #c9a55f);
-    color: var(--foreground);
-  }
+  :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard .mod-pillnav { color-scheme: light; color: var(--foreground); }
+  :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard .mod-pillnav { color-scheme: dark; color: var(--foreground); }
 }
 :root:not(.martur-officina) #martur-operations-dashboard .mod-bg-sec { display: none; }
-#martur-operations-dashboard .mod-bg-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Sfondo: una riga sola (colore scelto + nome); toccandola si apre la tendina
+   con tutti i colori. */
+#martur-operations-dashboard .mod-bg-pick { position: relative; }
+#martur-operations-dashboard .mod-bg-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--popover);
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#martur-operations-dashboard .mod-bg-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid rgb(0 0 0 / 18%);
+  background: var(--sw, #d8cdb5);
+  flex: none;
+}
+#martur-operations-dashboard .mod-bg-caret { font-size: 11px; color: var(--muted-foreground); }
+#martur-operations-dashboard .mod-bg-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: repeat(6, 30px);
+  gap: 8px;
+  padding: 10px;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px -12px rgb(0 0 0 / 45%);
+}
+#martur-operations-dashboard .mod-bg-pop[hidden] { display: none; }
 #martur-operations-dashboard .mod-bg-choice {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   border-radius: 999px;
-  border: 2px solid var(--border);
+  border: 1px solid rgb(0 0 0 / 18%);
   background: var(--sw);
   cursor: pointer;
 }
@@ -5880,13 +5934,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       </div>
       <div class="mod-app-menu-sec mod-bg-sec">
         <span class="mod-app-menu-label" data-i18n="bgLabel">Sfondo</span>
-        <div class="mod-app-menu-choices mod-bg-choices">
-          <button type="button" class="mod-bg-choice" data-bg="sabbia" title="Sabbia" style="--sw:#d8cdb5"></button>
-          <button type="button" class="mod-bg-choice" data-bg="burgundy" title="Burgundy" style="--sw:#6e1f2c"></button>
-          <button type="button" class="mod-bg-choice" data-bg="notte" title="Blu notte" style="--sw:#1f3150"></button>
-          <button type="button" class="mod-bg-choice" data-bg="grafite" title="Grafite" style="--sw:#3f4045"></button>
-          <button type="button" class="mod-bg-choice" data-bg="salvia" title="Salvia" style="--sw:#b8c2ae"></button>
-          <button type="button" class="mod-bg-choice" data-bg="avorio" title="Avorio" style="--sw:#f1ece1"></button>
+        <div class="mod-bg-pick">
+          <button type="button" class="mod-bg-current" aria-expanded="false" aria-haspopup="true">
+            <span class="mod-bg-dot"></span><span class="mod-bg-name">Sabbia</span><span class="mod-bg-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="mod-bg-pop" role="menu" hidden></div>
         </div>
       </div>
       <div class="mod-app-menu-sec">
@@ -16691,20 +16743,52 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
       });
       applyStyle(document.documentElement.classList.contains('martur-officina') ? 'officina' : 'classic');
       // ---- Colore dello sfondo ----
+      // Una riga (colore scelto + nome); la tendina sotto ha tutti i colori.
+      const BG_LIST = window.MARTUR_BGS || [];
+      const bgPop = root.querySelector('.mod-bg-pop');
+      const bgCurrent = root.querySelector('.mod-bg-current');
       function currentBg() {
         try { return window.localStorage.getItem('martur-dashboard-bg') || 'sabbia'; } catch (e) { return 'sabbia'; }
       }
+      if (bgPop) {
+        bgPop.innerHTML = BG_LIST.map((b) =>
+          '<button type="button" class="mod-bg-choice" role="menuitemradio" data-bg="' + b[0] + '" title="' + escapeHtml(b[1]) + '" aria-label="' + escapeHtml(b[1]) + '" style="--sw:' + b[2] + '"></button>'
+        ).join('');
+      }
+      function setBgPop(open) {
+        if (!bgPop) return;
+        bgPop.hidden = !open;
+        bgCurrent.setAttribute('aria-expanded', String(open));
+      }
       function applyBg(bg) {
-        try { window.localStorage.setItem('martur-dashboard-bg', bg); } catch (e) {}
-        if (window.marturApplyBg) window.marturApplyBg(bg);
+        const item = BG_LIST.find((b) => b[0] === bg) || BG_LIST[0];
+        if (!item) return;
+        try { window.localStorage.setItem('martur-dashboard-bg', item[0]); } catch (e) {}
+        if (window.marturApplyBg) window.marturApplyBg(item[0]);
         syncLogoGold();
         root.querySelectorAll('.mod-bg-choice').forEach((button) => {
-          button.setAttribute('aria-pressed', String(button.dataset.bg === bg));
+          button.setAttribute('aria-checked', String(button.dataset.bg === item[0]));
+          button.setAttribute('aria-pressed', String(button.dataset.bg === item[0]));
         });
+        if (bgCurrent) {
+          bgCurrent.querySelector('.mod-bg-dot').style.setProperty('--sw', item[2]);
+          bgCurrent.querySelector('.mod-bg-name').textContent = item[1];
+        }
       }
-      root.querySelectorAll('.mod-bg-choice').forEach((button) => {
-        button.addEventListener('click', () => applyBg(button.dataset.bg));
-      });
+      if (bgCurrent) {
+        bgCurrent.addEventListener('click', (event) => {
+          event.stopPropagation();
+          setBgPop(bgPop.hidden);
+        });
+        bgPop.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const pick = event.target.closest('.mod-bg-choice');
+          if (!pick) return;
+          applyBg(pick.dataset.bg);
+          setBgPop(false);
+        });
+        document.addEventListener('click', () => setBgPop(false));
+      }
       applyBg(currentBg());
       // ---- Modifica testi ----
       // Chi ha il permesso accende la modalita' dal menu: passando sopra un
