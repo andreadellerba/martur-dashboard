@@ -974,10 +974,10 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   border: 3px solid var(--off-line);
   border-radius: var(--radius-2xl);
 }
-/* Bordo esterno di card, menu e calendario: piu' scuro dello sfondo. Le
-   linee dentro grafici e tabelle restano chiare (--off-line). */
-:root.martur-officina #martur-operations-dashboard :is(.card, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-pillnav, .mod-anomaly-wrap, .mod-rework-ranking li) {
-  border-color: var(--off-edge);
+/* Bordo esterno di card, menu, calendario e pillole: tutti uguali, 3 px
+   d'oro. Le linee dentro grafici e tabelle restano chiare (--off-line). */
+:root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-pillnav, .mod-anomaly-wrap, .mod-rework-ranking li) {
+  border: 3px solid var(--off-edge);
 }
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
@@ -988,7 +988,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 }
 /* Menu (PC): bianco, squadrato come le card, con il bordo oro delle card (il
    bordo prende il posto dello spazio interno: misure sempre 718 x 43). La voce
-   aperta ha un contorno oro e un fondo oro chiaro. */
+   aperta ha un fondo oro chiaro. */
 :root.martur-officina #martur-operations-dashboard .mod-pillnav {
   background: var(--card);
   border: 3px solid var(--off-edge) !important;
@@ -1014,7 +1014,6 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 :root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab-icon[aria-pressed="true"] {
   color: var(--gold);
   background: color-mix(in srgb, var(--gold) 14%, transparent);
-  box-shadow: inset 0 0 0 2px var(--gold);
 }
 </style>
 <style>
