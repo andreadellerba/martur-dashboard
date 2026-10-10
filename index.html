@@ -1627,6 +1627,15 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
      effetto nella web app) */
   :root.martur-officina { background-image: none; }
 }
+/* Modalita' Modifica: le caselle delle card turno si trascinano. */
+#martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
+  cursor: grab;
+  outline: 1.5px dashed color-mix(in srgb, var(--gold) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+#martur-operations-dashboard .mod-shift-metric.mod-metric-dragging { opacity: 0.35; }
+#martur-operations-dashboard .mod-shift-metric.mod-metric-over { outline: 2.5px solid var(--gold) !important; background: color-mix(in srgb, var(--gold) 10%, transparent); }
 /* (18) Colore d'accento scelto: prende il posto dell'oro ovunque. */
 :root.martur-officina[data-accent] {
   --gold: light-dark(var(--acc-l), var(--acc-d));
@@ -6577,7 +6586,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         <i data-lucide="maximize" aria-hidden="true"></i><span id="mod-fullscreen-text" data-i18n="fullscreenOn">Schermo intero</span>
       </button>
       <button type="button" class="mod-app-menu-item" id="mod-text-edit-btn" hidden>
-        <i data-lucide="type" aria-hidden="true"></i><span data-i18n="textEditMode">Modifica testi</span>
+        <i data-lucide="type" aria-hidden="true"></i><span data-i18n="textEditMode">Modifica</span>
       </button>
       <button type="button" class="mod-app-menu-item" id="mod-export-pdf" title="Esporta PDF" data-i18n-title="exportPdf">
         <i data-lucide="file-down" aria-hidden="true"></i><span data-i18n="exportPdf">Esporta PDF</span>
@@ -8155,7 +8164,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           userCanEditTextsShort: 'Modifica',
           auditUserTexts: 'Permesso modifica testi cambiato',
           auditTextsUpdate: 'Testo modificato',
-          textEditMode: 'Modifica testi',
+          textEditMode: 'Modifica',
           textEditHint: 'Modifica testi: tocca un testo per cambiarlo',
           textEditDone: 'Fine',
           textEditTitle: 'Modifica testo',
@@ -8255,6 +8264,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Media Efficienza Mensile',
           supplyGap: 'Delta Martur / Stellantis',
           kpiGapTitle: 'Delta',
+          cardLayoutChanged: 'Ordine caselle card turno',
           targetLineLabel: 'Target Linea (Turno)',
           targetDmcLabel: 'Target DMC (Turno)',
           cardAbarthSch: 'Abarth schienali',
@@ -8783,7 +8793,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           userCanEditTextsShort: 'Edit',
           auditUserTexts: 'Text editing permission changed',
           auditTextsUpdate: 'Text changed',
-          textEditMode: 'Edit texts',
+          textEditMode: 'Edit',
           textEditHint: 'Edit texts: tap a text to change it',
           textEditDone: 'Done',
           textEditTitle: 'Edit text',
@@ -8883,6 +8893,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Monthly Efficiency Average',
           supplyGap: 'Martur / Stellantis delta',
           kpiGapTitle: 'Delta',
+          cardLayoutChanged: 'Shift card box order',
           targetLineLabel: 'Line target (Shift)',
           targetDmcLabel: 'DMC target (Shift)',
           cardAbarthSch: 'Abarth backrests',
@@ -9411,7 +9422,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           userCanEditTextsShort: 'Düzenle',
           auditUserTexts: 'Metin düzenleme izni değiştirildi',
           auditTextsUpdate: 'Metin değiştirildi',
-          textEditMode: 'Metinleri düzenle',
+          textEditMode: 'Düzenle',
           textEditHint: 'Metin düzenleme: değiştirmek için bir metne dokunun',
           textEditDone: 'Bitti',
           textEditTitle: 'Metni düzenle',
@@ -9511,6 +9522,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Aylık Verimlilik Ortalaması',
           supplyGap: 'Martur / Stellantis farkı',
           kpiGapTitle: 'Fark',
+          cardLayoutChanged: 'Vardiya kartı kutu sırası',
           targetLineLabel: 'Hat hedefi (Vardiya)',
           targetDmcLabel: 'DMC hedefi (Vardiya)',
           cardAbarthSch: 'Abarth sırtlık',
@@ -12453,35 +12465,38 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             dummyCls = shift.dummy <= 30 ? 'mod-metric-bad' : shift.dummy <= 50 ? 'mod-metric-yellow' : 'mod-metric-good';
           }
           const goldCls = 'mod-metric-gold';
-          const metric = (label, value, cls) => '<div class="mod-shift-metric"><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
+          // Ogni casella ha una chiave: l'ordine si puo' cambiare trascinandole
+          // (modalita' Modifica) ed e' uguale per tutti.
+          const metric = (label, value, cls, key) => '<div class="mod-shift-metric" data-mkey="' + key + '"' + (root.classList.contains('mod-text-editing') ? ' draggable="true"' : '') + '><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
           return '<article class="card mod-daily-shift-card" aria-label="' + escapeHtml(t(shiftKey)) + '">' +
             '<div class="mod-shift-card-head">' +
               '<span class="mod-shift-card-name">' + titleHtml + '</span>' +
             '</div>' +
-            '<div class="mod-shift-grid-4col">' +
-              metric(seqFirstLabelHtml(t('seqMarturFirst')), formatSequenceNumber(shift.firstSeqMartur), goldCls) +
-              metric(seqFirstLabelHtml(t('seqMarturLast')), formatSequenceNumber(shift.lastSeqMartur), goldCls) +
-              metric(seqFirstLabelHtml(t('seqStellFirst')), formatSequenceNumber(shift.firstSeqStellantis), goldCls) +
-              metric(seqFirstLabelHtml(t('seqStellLast')), formatSequenceNumber(shift.lastSeqStellantis), goldCls) +
-              metric(t('frontLine'), formatOptionalNumber(shift.front), frontCls) +
-              metric(t('rearLine'), formatOptionalNumber(shift.rear), rearCls) +
-              metric('Stellantis', formatOptionalNumber(shift.stellantisCars), stellCls) +
-              metric(t('gap'), formatSigned(gap), gapCls) +
+            '<div class="mod-shift-grid-4col">' + orderShiftMetrics([
+              metric(seqFirstLabelHtml(t('seqMarturFirst')), formatSequenceNumber(shift.firstSeqMartur), goldCls, 'seqMf'),
+              metric(seqFirstLabelHtml(t('seqMarturLast')), formatSequenceNumber(shift.lastSeqMartur), goldCls, 'seqMl'),
+              metric(seqFirstLabelHtml(t('seqStellFirst')), formatSequenceNumber(shift.firstSeqStellantis), goldCls, 'seqSf'),
+              metric(seqFirstLabelHtml(t('seqStellLast')), formatSequenceNumber(shift.lastSeqStellantis), goldCls, 'seqSl'),
+              metric(t('frontLine'), formatOptionalNumber(shift.front), frontCls, 'front'),
+              metric(t('rearLine'), formatOptionalNumber(shift.rear), rearCls, 'rear'),
+              metric('Stellantis', formatOptionalNumber(shift.stellantisCars), stellCls, 'stell'),
+              metric(t('gap'), formatSigned(gap), gapCls, 'gap'),
               // DMC e Abarth del turno: dai dati della pagina DMC / Abarth.
               // DMC colorato rispetto al target DMC del turno; Abarth neutro.
               metric(t('secDmc'), formatOptionalNumber(sectionGetFor(row.date, 'dmc.' + shiftKey)),
-                targetCls(sectionGetFor(row.date, 'dmc.' + shiftKey), dmcShiftTargetFor(row.date))) +
-              metric(t('cardAbarthSch'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.schienali')), goldCls) +
-              metric(t('cardAbarthKit'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.kit')), goldCls) +
-              metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
-              metric(t('dummySeats'), formatOptionalNumber(shift.dummy), dummyCls) +
-              metric(t('coda'), formatOptionalNumber(shift.coda), codaCls) +
-              metric(t('overtime'), overtimeText, otCls) +
-              metric(t('palletIn'), reworkText, reworkCls) +
-              metric(t('cardConvocati'), formatOptionalNumber(shift.convocati), goldCls) +
-              metric(t('cardPresent'), formatOptionalNumber(shift.presence), goldCls) +
-              metric(t('absent'), formatOptionalNumber(shift.absent), absentCls) +
-              metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
+                targetCls(sectionGetFor(row.date, 'dmc.' + shiftKey), dmcShiftTargetFor(row.date)), 'dmc'),
+              metric(t('cardAbarthSch'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.schienali')), goldCls, 'absch'),
+              metric(t('cardAbarthKit'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.kit')), goldCls, 'abkit'),
+              metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls, 'eff'),
+              metric(t('dummySeats'), formatOptionalNumber(shift.dummy), dummyCls, 'dummy'),
+              metric(t('coda'), formatOptionalNumber(shift.coda), codaCls, 'coda'),
+              metric(t('overtime'), overtimeText, otCls, 'ot'),
+              metric(t('palletIn'), reworkText, reworkCls, 'pallet'),
+              metric(t('cardConvocati'), formatOptionalNumber(shift.convocati), goldCls, 'conv'),
+              metric(t('cardPresent'), formatOptionalNumber(shift.presence), goldCls, 'pres'),
+              metric(t('absent'), formatOptionalNumber(shift.absent), absentCls, 'absent'),
+              metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls, 'absPct')
+            ]) +
             '</div>' +
             // Senza nota si legge "Nessuna nota inserita" (in grigio): appena
             // se ne scrive una, al suo posto c'e' il testo inserito.
@@ -13396,6 +13411,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
             subscribeEntries();
+            subscribeShiftLayout();
             subscribeTasks();
             subscribeAnomalies();
             subscribeEdi();
@@ -13416,6 +13432,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             state.authUsername = null;
             updateAdminUI();
             subscribeEntries();
+            subscribeShiftLayout();
             renderAll();
           });
         });
@@ -17953,9 +17970,73 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         textHoverNode = node;
         if (node) node.classList.add('mod-text-hover');
       }
+      // ---- Ordine delle caselle delle card turno ----
+      // Uguale per tutti: sta in config/shiftCardLayout. In modalita' Modifica
+      // le caselle si trascinano una sull'altra per scambiare il posto.
+      var shiftCardOrder = null; // var: serve gia' al primo disegno, prima di arrivare qui
+      var shiftLayoutUnsub = null;
+      function subscribeShiftLayout() {
+        if (!db || shiftLayoutUnsub) return;
+        shiftLayoutUnsub = db.collection('config').doc('shiftCardLayout').onSnapshot((doc) => {
+          const order = doc.exists ? doc.data().order : null;
+          shiftCardOrder = Array.isArray(order) && order.length ? order : null;
+          if (state.view === 'daily' || state.view === 'weekly' || state.view === 'monthly') renderAll();
+        }, () => {});
+      }
+      // Le caselle nell'ordine salvato; quelle nuove (non ancora nell'ordine)
+      // restano in fondo, nel loro ordine di base.
+      function orderShiftMetrics(list) {
+        const html = Array.isArray(list) ? list : [];
+        if (!shiftCardOrder) return html.join('');
+        const keyOf = (h) => (/data-mkey="([^"]+)"/.exec(h) || [])[1] || '';
+        const pos = (h) => { const i = shiftCardOrder.indexOf(keyOf(h)); return i < 0 ? 1000 + html.indexOf(h) : i; };
+        return html.slice().sort((a, b) => pos(a) - pos(b)).join('');
+      }
+      var draggedMetricKey = null;
+      root.addEventListener('dragstart', (event) => {
+        const m = event.target.closest && event.target.closest('.mod-shift-metric[data-mkey]');
+        if (!m || !root.classList.contains('mod-text-editing')) return;
+        draggedMetricKey = m.dataset.mkey;
+        m.classList.add('mod-metric-dragging');
+        try { event.dataTransfer.setData('text/plain', draggedMetricKey); event.dataTransfer.effectAllowed = 'move'; } catch (e) {}
+      });
+      root.addEventListener('dragend', () => {
+        draggedMetricKey = null;
+        root.querySelectorAll('.mod-metric-dragging, .mod-metric-over').forEach((n) => n.classList.remove('mod-metric-dragging', 'mod-metric-over'));
+      });
+      root.addEventListener('dragover', (event) => {
+        if (!draggedMetricKey) return;
+        const m = event.target.closest && event.target.closest('.mod-shift-metric[data-mkey]');
+        if (!m) return;
+        event.preventDefault();
+        root.querySelectorAll('.mod-metric-over').forEach((n) => { if (n !== m) n.classList.remove('mod-metric-over'); });
+        m.classList.add('mod-metric-over');
+      });
+      root.addEventListener('drop', (event) => {
+        if (!draggedMetricKey) return;
+        const m = event.target.closest && event.target.closest('.mod-shift-metric[data-mkey]');
+        if (!m) return;
+        event.preventDefault();
+        const grid = m.closest('.mod-shift-grid-4col');
+        const keys = Array.from(grid.querySelectorAll('.mod-shift-metric[data-mkey]')).map((n) => n.dataset.mkey);
+        const from = keys.indexOf(draggedMetricKey);
+        const to = keys.indexOf(m.dataset.mkey);
+        if (from < 0 || to < 0 || from === to) return;
+        // scambio di posto fra le due caselle
+        [keys[from], keys[to]] = [keys[to], keys[from]];
+        const before = shiftCardOrder;
+        shiftCardOrder = keys;
+        renderAll();
+        if (db && state.canEditTexts) {
+          db.collection('config').doc('shiftCardLayout').set({ order: keys, updatedAt: new Date().toISOString(), updatedBy: state.authUsername || '' })
+            .then(() => logAudit('texts.update', t('cardLayoutChanged'), [{ field: t('cardLayoutChanged'), from: before ? before.join(', ') : null, to: keys.join(', ') }]))
+            .catch(() => {});
+        }
+      });
       function setTextEditing(on) {
         textEditing = Boolean(on && state.canEditTexts);
         root.classList.toggle('mod-text-editing', textEditing);
+        root.querySelectorAll('.mod-shift-metric[data-mkey]').forEach((m) => { m.draggable = textEditing; });
         el.textEditBar.hidden = !textEditing;
         if (!textEditing) setTextHover(null);
         if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
