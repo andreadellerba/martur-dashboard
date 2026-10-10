@@ -1436,24 +1436,27 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     font-size: 13px !important;
   }
 }
-/* Note dei turni (e di DMC/Abarth) sempre intere, su un fondo chiarissimo
-   del colore d'accento. */
+/* Note dei turni su un fondo chiarissimo del colore d'accento: si vedono due
+   righe, il tasto a destra le apre per intero (e le richiude). */
 :root.martur-officina #martur-operations-dashboard .mod-shift-note:is(:not(.mod-shift-note-empty), .mod-daily-shift-card > .mod-shift-note-empty) {
-  height: auto !important;
   box-sizing: border-box;
+  height: auto !important;
+  min-height: calc(2.6em + 20px);
   margin-top: 2px;
   padding: 10px 14px !important;
   border-top: 0 !important;
   border-radius: 18px;
   background: var(--note-bg, color-mix(in srgb, var(--gold) 9%, var(--card)));
 }
-:root.martur-officina #martur-operations-dashboard .mod-shift-note:not(.mod-shift-note-empty) .mod-shift-note-text {
-  display: block !important;
-  -webkit-line-clamp: unset !important;
-  overflow: visible !important;
-  padding-inline: 0 !important;
+:root.martur-officina #martur-operations-dashboard .mod-shift-note:not(.mod-shift-note-empty):not(.mod-shift-note-open) .mod-shift-note-text {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden !important;
+  max-height: 2.6em;
 }
-:root.martur-officina #martur-operations-dashboard .mod-shift-note .mod-note-more { display: none !important; }
+:root.martur-officina #martur-operations-dashboard .mod-shift-note:has(.mod-note-more-on) .mod-shift-note-text { padding-right: 34px !important; padding-left: 0 !important; }
+:root.martur-officina #martur-operations-dashboard .mod-shift-note .mod-note-more { right: 8px; bottom: 8px; }
 /* OLE e Perdite dentro una card intera, titolo compreso, con la stanghetta
    come rework e perdite; i riquadri di dentro non hanno piu' bordo. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) {
