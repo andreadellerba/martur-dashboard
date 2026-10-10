@@ -1653,7 +1653,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     align-items: center;
     gap: 10px;
     white-space: nowrap;
-    font-size: 14px;
+    /* stessa scritta del menu */
+    font-family: -apple-system, system-ui, "Segoe UI", sans-serif;
+    font-size: 15px;
     font-weight: 500;
     color: var(--off-ink, var(--foreground));
     font-variant-numeric: tabular-nums;
@@ -1668,6 +1670,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   #martur-operations-dashboard .mod-world-flag { width: 34px; height: 23px; flex: none; border-radius: 4px; box-shadow: 0 0 0 1px rgb(0 0 0 / 15%); }
   #martur-operations-dashboard .mod-world-text b { font-weight: 700; letter-spacing: 0.04em; }
   #martur-operations-dashboard .mod-world-weather { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+  #martur-operations-dashboard .mod-world-weather svg { width: 19px !important; height: 19px !important; }
   #martur-operations-dashboard .mod-world-weather svg { width: 18px; height: 18px; color: var(--gold); }
   #martur-operations-dashboard .mod-world-weather:empty { display: none; }
   /* solo bandiere finche' lo schermo non e' abbastanza largo */
@@ -1686,11 +1689,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 @media (min-width: 1360px) and (pointer: fine), (min-width: 1360px) and (hover: hover) {
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster { --topbar-gap: 10px; justify-content: space-between; }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-datenav .mod-period-nav { width: 26px; min-width: 26px; padding: 0; }
-  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-header-picker .mod-period-picker { width: 178px; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-header-picker .mod-period-picker { width: 236px; } /* ci sta anche "MERCOLEDÌ 30 SETTEMBRE 2026" */
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-pillnav .mod-pill-sep { margin: 3px 2px; }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-pillnav :is(#mod-back-btn, .mod-appmenu-btn, .mod-daily-admin-actions .btn) { padding-inline: 6px; min-width: 0; }
-  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > .mod-topbar-left { flex: 1 1 0; max-width: 470px; min-width: 0; }
-  :root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: 100% !important; max-width: 470px; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > .mod-topbar-left { flex: 1 1 0; max-width: 420px; min-width: 0; }
+  :root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: 100% !important; max-width: 420px; }
 }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
