@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'self' blob: data: https://api.open-meteo.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'self' blob: data: https://api.open-meteo.com https://translate.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Martur Italy Operations Dashboard</title>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
@@ -10563,6 +10563,48 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       // tutti e stanno sopra la traduzione standard, lingua per lingua.
       let textOverrides = { it: {}, en: {}, tr: {} };
       const t = (key) => (textOverrides[state.lang] && textOverrides[state.lang][key]) || translations[state.lang][key] || key;
+      // ---- Traduzione automatica dei testi scritti dalle persone ----
+      // Note, motivi rework/perdite, attivita' e anomalie si scrivono in
+      // italiano: in inglese e turco si mostrano tradotti (Google Traduttore).
+      // Ogni testo si traduce una volta sola per dispositivo e resta in memoria.
+      const AUTO_TR_KEY = 'martur-auto-translations-v1';
+      let autoTrCache = {};
+      try { autoTrCache = JSON.parse(window.localStorage.getItem(AUTO_TR_KEY) || '{}') || {}; } catch (e) { autoTrCache = {}; }
+      const autoTrPending = new Set();
+      let autoTrSaveTimer = null;
+      let autoTrRenderTimer = null;
+      function googleTranslate(text, target) {
+        const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=it&tl=' + target + '&dt=t&q=' + encodeURIComponent(text);
+        return fetch(url).then((r) => r.json()).then((data) =>
+          Array.isArray(data) && Array.isArray(data[0]) ? data[0].map((part) => part && part[0] ? part[0] : '').join('') : null);
+      }
+      // Testo da mostrare nella lingua scelta. Se la traduzione non c'e' ancora
+      // si vede l'italiano e la pagina si ridisegna appena arriva.
+      function trText(text) {
+        const lang = state.lang;
+        const s = String(text == null ? '' : text);
+        if (lang === 'it' || !s.trim() || !/[a-zàèéìòù]{2}/i.test(s)) return s;
+        const key = lang + '|' + s;
+        if (autoTrCache[key]) return autoTrCache[key];
+        if (!autoTrPending.has(key)) {
+          autoTrPending.add(key);
+          // il maiuscolo confonde il traduttore: si traduce in minuscolo e si
+          // rimette maiuscolo se l'originale lo era
+          const upper = s === s.toUpperCase();
+          googleTranslate(upper ? s.toLowerCase() : s, lang).then((out) => {
+            autoTrPending.delete(key);
+            if (!out) return;
+            autoTrCache[key] = upper ? out.toUpperCase() : out;
+            clearTimeout(autoTrSaveTimer);
+            autoTrSaveTimer = setTimeout(() => {
+              try { window.localStorage.setItem(AUTO_TR_KEY, JSON.stringify(autoTrCache)); } catch (e) {}
+            }, 1000);
+            clearTimeout(autoTrRenderTimer);
+            autoTrRenderTimer = setTimeout(() => { if (state.lang === lang) renderAll(); }, 300);
+          }).catch(() => autoTrPending.delete(key));
+        }
+        return s;
+      }
       const locale = () => state.lang === 'it' ? 'it-IT' : state.lang === 'tr' ? 'tr-TR' : 'en-GB';
       const isNumber = (value) => typeof value === 'number' && Number.isFinite(value);
       const valueOrZero = (value) => isNumber(value) ? value : 0;
@@ -12317,7 +12359,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const topReworks = normalizeTopReworks(items);
         if (!topReworks.length) return '\u2014';
         return '<ol class="mod-rework-cell-list">' + topReworks.map((item) =>
-          '<li>' + escapeHtml(item.reason) + (isNumber(item.count) ? ' (' + formatNumber(item.count) + ')' : '') + '</li>'
+          '<li>' + escapeHtml(trText(item.reason)) + (isNumber(item.count) ? ' (' + formatNumber(item.count) + ')' : '') + '</li>'
         ).join('') + '</ol>';
       }
 
@@ -12390,7 +12432,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const items = (list) => list.length
           ? list.map((item) => '<li><span class="mod-rework-rank-badge" title="' + escapeHtml(t('cases')) + '">' +
               (isNumber(item.count) ? escapeHtml(formatNumber(item.count)) : '—') + '</span>' +
-              '<span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span></li>').join('')
+              '<span class="mod-rework-ranking-name">' + escapeHtml(trText(item.reason)) + '</span></li>').join('')
           : '<li class="mod-empty">' + t('noReworkReasons') + '</li>';
         const shift1 = normalizeTopReworks(row.shift1 && row.shift1.topReworks);
         const shift2 = normalizeTopReworks(row.shift2 && row.shift2.topReworks);
@@ -12458,7 +12500,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const items = (list) => list.length
           ? list.map((item) => '<li><span class="mod-rework-rank-badge" title="' + escapeHtml(t('downtimeMinutes')) + '">' +
               (isNumber(item.minutes) ? escapeHtml(formatNumber(item.minutes)) : '—') + '</span>' +
-              '<span class="mod-rework-ranking-name">' + escapeHtml(item.reason) + '</span></li>').join('')
+              '<span class="mod-rework-ranking-name">' + escapeHtml(trText(item.reason)) + '</span></li>').join('')
           : '<li class="mod-empty">' + t('noLossReasons') + '</li>';
         /* Se le perdite sono state scritte a mano nell'inserimento dati sono
            quelle a comandare; altrimenti si ricavano dai fermi linea
@@ -12612,10 +12654,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
                   ? shift.note.trim().split('\n').filter((line) => line.trim()).map((line) => {
                       const m = /^\s*(\d+[).])\s*(.*)$/.exec(line);
                       return m
-                        ? '<span class="mod-note-li"><span class="mod-note-n">' + escapeHtml(m[1]) + '</span>' + escapeHtml(m[2]) + '</span>'
-                        : '<span class="mod-note-li">' + escapeHtml(line.trim()) + '</span>';
+                        ? '<span class="mod-note-li"><span class="mod-note-n">' + escapeHtml(m[1]) + '</span>' + escapeHtml(trText(m[2])) + '</span>'
+                        : '<span class="mod-note-li">' + escapeHtml(trText(line.trim())) + '</span>';
                     }).join('')
-                  : escapeHtml(shift.note.trim())) + '</span>' +
+                  : escapeHtml(trText(shift.note.trim()))) + '</span>' +
                 '<button type="button" class="mod-note-more" data-note-key="' + escapeHtml(row.date + ':' + shiftKey) +
                   '" title="' + escapeHtml(t('noteMore')) + '" aria-label="' + escapeHtml(t('noteMore')) + '">' +
                   '<i data-lucide="maximize-2" class="mod-note-ico-open" aria-hidden="true"></i>' +
@@ -13694,7 +13736,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               '</span>' +
               // La descrizione tiene sempre due righe, anche se e' corta o
               // manca: cosi' le card restano tutte della stessa altezza.
-              '<span class="mod-task-desc">' + escapeHtml(task.description || '') + '</span>' +
+              '<span class="mod-task-desc">' + escapeHtml(trText(task.description || '')) + '</span>' +
               '<span class="mod-task-cells">' +
                 cell(t('taskOpenedShort'), dm(task.openedAt)) +
                 cell(t('taskClosedShort'), dm(task.closedAt)) +
@@ -13869,7 +13911,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           return '<tr>' +
             '<td><span class="tag" style="background:' + cat.color + '">' + escapeHtml(t(cat.key)) + '</span></td>' +
             '<td class="forte">' + escapeHtml(task.people || t('taskNoPeople')) + '</td>' +
-            '<td>' + escapeHtml(task.description || '—') + '</td>' +
+            '<td>' + escapeHtml(trText(task.description || '—')) + '</td>' +
             '<td><span class="tag" style="background:' + prio.color + '">' + escapeHtml(t(prio.key)) + '</span></td>' +
             '<td><span class="tag" style="background:' + st.color + '">' + escapeHtml(t(st.key)) + '</span></td>' +
             '<td class="num">' + (task.openedAt ? escapeHtml(formatDateNumeric(task.openedAt)) : '—') + '</td>' +
@@ -14255,8 +14297,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             '<td class="mod-anomaly-name" data-label="' + escapeHtml(anomalyLabel('reporter')) + '">' + escapeHtml(item.reporter || '—') + '</td>' +
             '<td class="mod-anomaly-num" data-label="' + escapeHtml(anomalyLabel('machine')) + '">' + escapeHtml(item.machine || '—') + '</td>' +
             '<td class="mod-anomaly-date" data-label="' + escapeHtml(anomalyLabel('openedAt')) + '">' + date(item.openedAt) + '</td>' +
-            '<td class="mod-anomaly-text" data-label="' + escapeHtml(anomalyLabel('description')) + '">' + escapeHtml(item.description || '—') + '</td>' +
-            '<td class="mod-anomaly-text" data-label="' + escapeHtml(anomalyLabel('action')) + '">' + escapeHtml(item.action || '—') + '</td>' +
+            '<td class="mod-anomaly-text" data-label="' + escapeHtml(anomalyLabel('description')) + '">' + escapeHtml(trText(item.description || '—')) + '</td>' +
+            '<td class="mod-anomaly-text" data-label="' + escapeHtml(anomalyLabel('action')) + '">' + escapeHtml(trText(item.action || '—')) + '</td>' +
             '<td class="mod-anomaly-name" data-label="' + escapeHtml(anomalyLabel('owner')) + '">' + escapeHtml(item.owner || '—') + '</td>' +
             '<td data-label="' + escapeHtml(anomalyLabel('department')) + '">' + escapeHtml(departmentLabel(item.department) || '—') + '</td>' +
             '<td class="mod-anomaly-date" data-label="' + escapeHtml(anomalyLabel('closedAt')) + '">' + date(item.closedAt) + '</td>' +
@@ -14583,8 +14625,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             '<td class="forte">' + up(item.reporter) + '</td>' +
             '<td class="c">' + up(item.machine) + '</td>' +
             '<td class="c">' + date(item.openedAt) + '</td>' +
-            '<td>' + up(item.description) + '</td>' +
-            '<td>' + up(item.action) + '</td>' +
+            '<td>' + up(trText(item.description)) + '</td>' +
+            '<td>' + up(trText(item.action)) + '</td>' +
             '<td class="forte">' + up(item.owner) + '</td>' +
             '<td class="c">' + up(departmentLabel(item.department)) + '</td>' +
             '<td class="c">' + date(item.closedAt) + '</td>' +
@@ -18137,6 +18179,41 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       let textEditTarget = null; // { keys, text }
       let appTextsUnsub = null;
 
+      // ---- Testi cambiati con Modifica: traduzione automatica ----
+      // Quello che si scrive in italiano va tradotto e salvato anche per
+      // inglese e turco (appTexts/en e appTexts/tr). value null = ripristino:
+      // si tolgono le modifiche anche nelle altre lingue.
+      function translateKeepCase(text, lang) {
+        const upper = text === text.toUpperCase() && /[A-ZÀ-Ý]/.test(text);
+        return googleTranslate(upper ? text.toLowerCase() : text, lang).then((out) => (out ? (upper ? out.toUpperCase() : out) : null));
+      }
+      function syncTextTranslations(keys, value) {
+        if (!db || !state.canEditTexts || !keys || !keys.length) return Promise.resolve();
+        return Promise.all(['en', 'tr'].map((lang) => {
+          if (value === null) {
+            const patch = {};
+            keys.forEach((k) => { patch[k] = firebase.firestore.FieldValue.delete(); });
+            return db.collection('appTexts').doc(lang).set(patch, { merge: true }).catch(() => {});
+          }
+          return translateKeepCase(value, lang).then((out) => {
+            if (!out) return null;
+            const patch = {};
+            keys.forEach((k) => { patch[k] = out; });
+            return db.collection('appTexts').doc(lang).set(patch, { merge: true });
+          }).catch(() => {});
+        }));
+      }
+      // Testi gia' cambiati in italiano ma non ancora tradotti: li traduce
+      // una volta chi ha il permesso di Modifica, appena apre l'app.
+      let textBackfillDone = false;
+      function backfillTextTranslations() {
+        if (textBackfillDone || !state.canEditTexts || !db) return;
+        const it = textOverrides.it || {};
+        const missing = Object.keys(it).filter((k) => typeof it[k] === 'string' && (!(textOverrides.en || {})[k] || !(textOverrides.tr || {})[k]));
+        textBackfillDone = true;
+        missing.forEach((k, i) => setTimeout(() => syncTextTranslations([k], it[k]), i * 250));
+      }
+
       function subscribeAppTexts() {
         if (!db || appTextsUnsub) return;
         appTextsUnsub = db.collection('appTexts').onSnapshot((snap) => {
@@ -18144,6 +18221,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           snap.forEach((doc) => { if (next[doc.id]) next[doc.id] = doc.data() || {}; });
           textOverrides = next;
           if (REPORT_MODE) setTranslations(); else renderAll();
+          backfillTextTranslations();
         }, () => {});
       }
 
@@ -18276,6 +18354,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       function updateTextEditAccess() {
         el.textEditBtn.hidden = !state.canEditTexts;
         if (!state.canEditTexts && textEditing) setTextEditing(false);
+        backfillTextTranslations();
       }
 
       function openTextDialog(found) {
@@ -18306,6 +18385,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         db.collection('appTexts').doc(state.lang).set(patch, { merge: true }).then(() => {
           el.textDialog.close();
           logAudit('texts.update', found.keys.join(', '), [{ field: state.lang.toUpperCase(), from: before, to: reset ? dict[found.keys[0]] : value }]);
+          // Cambiato in italiano: inglese e turco si aggiornano da soli.
+          if (state.lang === 'it') syncTextTranslations(found.keys, reset ? null : value);
         }).catch(() => {
           el.textSave.disabled = false;
           alert(t('userCreateError'));
