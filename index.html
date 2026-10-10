@@ -1603,6 +1603,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     height: 44px !important;
     min-height: 44px !important;
   }
+  /* correzione ottica: la punta della matita lascia piu' vuoto verso il logo
+     dell'ingranaggio, il logo si sposta di un pelo verso la matita */
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { translate: 1.5px 0; }
   :root.martur-officina body #martur-operations-dashboard .mod-pillnav :is(.mod-appmenu-btn, .mod-daily-admin-actions .btn, #mod-none) {
     justify-self: center;
     width: 30px !important;
