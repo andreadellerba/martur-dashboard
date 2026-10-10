@@ -6838,7 +6838,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       <div class="mod-section-head">
         <div>
           <div class="mod-section-label" data-i18n="savedEntries">Dati inseriti</div>
-          <div class="text-small text-muted" data-i18n="savedHint">Le modifiche sono salvate in questo browser.</div>
+          <div class="text-small text-muted" data-i18n="savedHint">Salvati online: li vedono tutti, da qualsiasi dispositivo.</div>
         </div>
         <span id="mod-manual-count" class="viz-badge"></span>
       </div>
@@ -6858,6 +6858,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           <tbody id="mod-manual-body"></tbody>
         </table>
       </div>
+      <!-- Si caricano solo gli ultimi 31 giorni: gli altri arrivano a richiesta. -->
+      <button type="button" id="mod-manual-more" class="btn btn-ghost mod-audit-more" data-i18n="manualLoadMore">Carica i 3 mesi precedenti</button>
     </section>
   </section>
 
@@ -7913,6 +7915,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Media Efficienza Mensile',
           supplyGap: 'Delta Martur / Stellantis',
           kpiGapTitle: 'Delta',
+          manualLoadMore: 'Carica i 3 mesi precedenti',
           kpiDmcAbarth: 'DMC / Abarth',
           cardLayoutChanged: 'Ordine caselle card turno',
           targetLineLabel: 'Target Linea (Turno)',
@@ -8194,7 +8197,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           exportPdf: 'Esporta PDF',
           applySelection: 'Applica selezione',
           savedEntries: 'Dati inseriti',
-          savedHint: 'Le modifiche sono salvate in questo browser.',
+          savedHint: 'Salvati online: li vedono tutti, da qualsiasi dispositivo.',
           actions: 'Azioni',
           edit: 'Modifica',
           delete: 'Elimina',
@@ -8536,6 +8539,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Monthly Efficiency Average',
           supplyGap: 'Martur / Stellantis delta',
           kpiGapTitle: 'Delta',
+          manualLoadMore: 'Load the previous 3 months',
           kpiDmcAbarth: 'DMC / Abarth',
           cardLayoutChanged: 'Shift card box order',
           targetLineLabel: 'Line target (Shift)',
@@ -8817,7 +8821,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           exportPdf: 'Export PDF',
           applySelection: 'Apply selection',
           savedEntries: 'Saved entries',
-          savedHint: 'Changes are stored in this browser.',
+          savedHint: 'Saved online: everyone sees them, from any device.',
           actions: 'Actions',
           edit: 'Edit',
           delete: 'Delete',
@@ -9159,6 +9163,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Aylık Verimlilik Ortalaması',
           supplyGap: 'Martur / Stellantis farkı',
           kpiGapTitle: 'Fark',
+          manualLoadMore: 'Önceki 3 ayı yükle',
           kpiDmcAbarth: 'DMC / Abarth',
           cardLayoutChanged: 'Vardiya kartı kutu sırası',
           targetLineLabel: 'Hat hedefi (Vardiya)',
@@ -9440,7 +9445,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           exportPdf: 'PDF olarak dışa aktar',
           applySelection: 'Seçimi uygula',
           savedEntries: 'Girilen veriler',
-          savedHint: 'Değişiklikler bu tarayıcıda kaydedilir.',
+          savedHint: 'Çevrimiçi kaydedilir: herkes her cihazdan görür.',
           actions: 'İşlemler',
           edit: 'Düzenle',
           delete: 'Sil',
@@ -12884,6 +12889,17 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         el.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
+      // "Carica i 3 mesi precedenti": l'app tiene in memoria solo gli ultimi 31
+      // giorni (meno letture); le giornate piu' vecchie sono sul database e
+      // arrivano qui a richiesta, tre mesi alla volta.
+      const manualMoreBtn = root.querySelector('#mod-manual-more');
+      if (manualMoreBtn) {
+        manualMoreBtn.addEventListener('click', () => {
+          const oldest = historyFrom || historyCutoff();
+          const d = parseDate(oldest);
+          ensureHistoryFrom(isoDate(new Date(d.getFullYear(), d.getMonth() - 3, d.getDate())));
+        });
+      }
       function renderManualEntries() {
         const rows = state.manual.slice().sort((a, b) => b.date.localeCompare(a.date)).map(deriveRow);
         el.manualCount.textContent = formatNumber(rows.length) + ' ' + t('manualEntries');
@@ -12905,6 +12921,17 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             if (state.editingDate === button.dataset.date) resetEntry(button.dataset.date);
             persistManual();
             deleteEntryFromCloud(button.dataset.date);
+            // Con la giornata si cancellano anche DMC e Abarth di quel giorno
+            // (stanno in un documento a parte, "sections"); Q Gate e il resto restano.
+            if (db) {
+              db.collection('sections').doc(button.dataset.date).set({
+                dmc: firebase.firestore.FieldValue.delete(),
+                abarth: firebase.firestore.FieldValue.delete(),
+                updatedAt: new Date().toISOString(),
+                updatedBy: state.authUsername || ''
+              }, { merge: true }).catch(() => {});
+              dmcKpiCache.key = '';
+            }
             // Si registra cosa c'era, cosi' una giornata cancellata per errore
             // si puo' ricostruire dal registro.
             logAudit('entry.delete', formatDateNumeric(button.dataset.date), entryAuditChanges(gone, null));
