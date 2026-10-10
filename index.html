@@ -8161,6 +8161,13 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditPageView: 'Pagina aperta',
           auditExportImage: 'Immagine riepilogo',
           auditGroupViews: 'Pagine aperte',
+          auditGroupPrefs: 'Impostazioni',
+          auditSettingsOpen: 'Impostazioni aperte',
+          auditPrefTheme: 'Tema cambiato',
+          auditPrefStyle: 'Stile cambiato',
+          auditPrefDensity: 'Spaziatura cambiata',
+          auditPrefBg: 'Sfondo cambiato',
+          auditPrefAccent: 'Accento cambiato',
           auditEdit: 'Modifica dato',
           auditDelete: 'Eliminazione dato',
           auditLogEmpty: 'Nessun evento registrato.',
@@ -8775,6 +8782,13 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditPageView: 'Page opened',
           auditExportImage: 'Summary image',
           auditGroupViews: 'Pages opened',
+          auditGroupPrefs: 'Settings',
+          auditSettingsOpen: 'Settings opened',
+          auditPrefTheme: 'Theme changed',
+          auditPrefStyle: 'Style changed',
+          auditPrefDensity: 'Spacing changed',
+          auditPrefBg: 'Background changed',
+          auditPrefAccent: 'Accent changed',
           auditEdit: 'Data edit',
           auditDelete: 'Data delete',
           auditLogEmpty: 'No events logged yet.',
@@ -9389,6 +9403,13 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditPageView: 'Sayfa açıldı',
           auditExportImage: 'Özet görseli',
           auditGroupViews: 'Açılan sayfalar',
+          auditGroupPrefs: 'Ayarlar',
+          auditSettingsOpen: 'Ayarlar açıldı',
+          auditPrefTheme: 'Tema değişti',
+          auditPrefStyle: 'Stil değişti',
+          auditPrefDensity: 'Aralık değişti',
+          auditPrefBg: 'Arka plan değişti',
+          auditPrefAccent: 'Vurgu rengi değişti',
           auditEdit: 'Veri düzenleme',
           auditDelete: 'Veri silme',
           auditLogEmpty: 'Henüz kayıtlı olay yok.',
@@ -16875,6 +16896,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         'login': ['auditLogin', 'access'], 'logout': ['auditLogout', 'access'],
         'app.open': ['auditAppOpen', 'access'], 'app.resume': ['auditAppResume', 'access'],
         'page.view': ['auditPageView', 'views'], 'export.image': ['auditExportImage', 'exports'],
+        'settings.open': ['auditSettingsOpen', 'prefs'], 'pref.theme': ['auditPrefTheme', 'prefs'], 'pref.style': ['auditPrefStyle', 'prefs'],
+        'pref.density': ['auditPrefDensity', 'prefs'], 'pref.bg': ['auditPrefBg', 'prefs'], 'pref.accent': ['auditPrefAccent', 'prefs'],
         'entry.create': ['auditEntryCreate', 'data'], 'entry.update': ['auditEntryUpdate', 'data'],
         'entry.delete': ['auditEntryDelete', 'data'], 'section.update': ['auditSectionUpdate', 'data'], 'edit': ['auditEdit', 'data'], 'delete': ['auditDelete', 'data'],
         'stoppage.create': ['auditStoppageCreate', 'stoppages'], 'stoppage.update': ['auditStoppageUpdate', 'stoppages'],
@@ -16896,7 +16919,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       const AUDIT_GROUPS = {
         access: 'auditGroupAccess', data: 'auditGroupData', stoppages: 'auditGroupStoppages',
         tasks: 'auditGroupTasks', anomalies: 'auditGroupAnomalies', settings: 'auditGroupSettings',
-        users: 'auditGroupUsers', exports: 'auditGroupExports', views: 'auditGroupViews'
+        users: 'auditGroupUsers', exports: 'auditGroupExports', views: 'auditGroupViews', prefs: 'auditGroupPrefs'
       };
       const auditInfo = (type) => AUDIT_ACTIONS[type] || [null, 'data'];
       let auditRows = [];
@@ -17518,11 +17541,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       root.querySelectorAll('.mod-theme').forEach((button) => {
         button.addEventListener('click', () => {
           applyTheme(button.dataset.themeChoice);
+          if (state.authUser) logAudit('pref.theme', button.dataset.themeChoice === 'dark' ? 'Scuro' : 'Chiaro');
           setTranslations();
         });
       });
       root.querySelectorAll('.mod-density').forEach((button) => {
-        button.addEventListener('click', () => applyDensity(button.dataset.density));
+        button.addEventListener('click', () => { applyDensity(button.dataset.density); if (state.authUser) logAudit('pref.density', button.dataset.density === 'compact' ? 'Compatta' : 'Normale'); });
       });
       applyDensity(state.density);
       // Stile grafico (Impostazioni > Stile): Classico o Officina. Cambia
@@ -17537,7 +17561,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         syncLogoGold();
       }
       root.querySelectorAll('.mod-style-choice').forEach((button) => {
-        button.addEventListener('click', () => { applyStyle(button.dataset.style); renderAll(); });
+        button.addEventListener('click', () => { applyStyle(button.dataset.style); renderAll(); if (state.authUser) logAudit('pref.style', button.dataset.style === 'classic' ? 'Classico' : 'Officina'); });
       });
       applyStyle(document.documentElement.classList.contains('martur-officina') ? 'officina' : 'classic');
       // ---- Note dei turni a elenco: 1) 2) 3) ... ----
@@ -17622,7 +17646,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       // ---- Tendine dei colori: Sfondo e Accento ----
       // Una riga (colore scelto + nome); toccandola si apre la tendina con
       // tutti i colori. Stesso codice per le due scelte.
-      function setupColorPicker(box, list, storageKey, fallback, apply) {
+      function setupColorPicker(box, list, storageKey, fallback, apply, auditType) {
         if (!box || !list.length) return;
         const pop = box.querySelector('.mod-bg-pop');
         const current = box.querySelector('.mod-bg-current');
@@ -17657,6 +17681,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           const pick = event.target.closest('.mod-bg-choice');
           if (!pick) return;
           choose(pick.dataset.pick);
+          const picked = list.find((b) => b[0] === pick.dataset.pick);
+          if (auditType && state.authUser && picked) logAudit(auditType, picked[1]);
           setOpen(false);
         });
         document.addEventListener('click', () => setOpen(false));
@@ -17665,9 +17691,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         choose(saved);
       }
       setupColorPicker(root.querySelector('.mod-bg-sec .mod-bg-pick'), window.MARTUR_BGS || [],
-        'martur-dashboard-bg', 'sabbia', (id) => { if (window.marturApplyBg) window.marturApplyBg(id); });
+        'martur-dashboard-bg', 'sabbia', (id) => { if (window.marturApplyBg) window.marturApplyBg(id); }, 'pref.bg');
       setupColorPicker(root.querySelector('.mod-acc-sec .mod-bg-pick'), window.MARTUR_ACCENTS || [],
-        'martur-dashboard-accent', 'oro', (id) => { if (window.marturApplyAccent) window.marturApplyAccent(id); });
+        'martur-dashboard-accent', 'oro', (id) => { if (window.marturApplyAccent) window.marturApplyAccent(id); }, 'pref.accent');
       // ---- Modifica testi ----
       // Chi ha il permesso accende la modalita' dal menu: passando sopra un
       // testo questo si evidenzia, toccandolo si cambia. Il testo nuovo va su
@@ -17836,6 +17862,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       el.appMenuBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         toggleAppMenu();
+        if (!el.appMenu.hidden && state.authUser) logAudit('settings.open', auditDeviceInfo());
       });
       document.addEventListener('click', (event) => {
         if (el.appMenu.hidden) return;
