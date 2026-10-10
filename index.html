@@ -1603,7 +1603,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     height: 44px !important;
     min-height: 44px !important;
   }
-  :root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-appmenu-btn, .mod-daily-admin-actions .btn) {
+  :root.martur-officina body #martur-operations-dashboard .mod-pillnav :is(.mod-appmenu-btn, .mod-daily-admin-actions .btn, #mod-none) {
+    justify-self: center;
     width: 30px !important;
     height: 30px !important;
     min-width: 30px !important;
@@ -1612,7 +1613,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   /* la tendina della vista, sotto la pillola, larga quanto la pillola */
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-pillnav > .mod-view-subselect { margin-inline: -10px; width: calc(100% + 20px); max-width: none; margin-top: 16px; }
   /* la pillola parte piu' in basso: sotto orologio e notch il telefono sfuma i contenuti */
-  :root.martur-officina #martur-operations-dashboard .mod-topbar { padding-top: calc(env(safe-area-inset-top, 0px) + 42px); }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar { padding-top: calc(env(safe-area-inset-top, 0px) + 60px); }
   /* la pillola e' bianca: dentro, i colori normali del tema anche su sfondi scuri */
   :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard .mod-topbar-cluster { color-scheme: light; color: var(--foreground); }
   :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard .mod-topbar-cluster { color-scheme: dark; color: var(--foreground); }
