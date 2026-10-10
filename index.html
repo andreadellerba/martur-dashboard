@@ -1128,13 +1128,13 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   cursor: pointer;
 }
 #martur-operations-dashboard .mod-bg-choice[aria-pressed="true"] { outline: 3px solid var(--gold); outline-offset: 2px; }
-/* Forme squadrate come menu e calendario: niente piu' pillole tonde. I
-   riquadri hanno angoli da 10 px, i pezzi dentro (numeri, tasti, badge) da 6. */
+/* Angoli "tondi" (scelta del 10/10): card 28 px, pillole, menu e calendario
+   22 px, i pezzi dentro (numeri, tasti, badge) 14 px. */
 :root.martur-officina #martur-operations-dashboard :is(.mod-rework-ranking li, .mod-datenav, .mod-pillnav > .mod-view-subselect, .mod-tabbar-pill, .mod-bg-current, .mod-edi-mode, .mod-edi-legend-item, .mod-shiftmode-opt, .mod-welcome-lang, .mod-anomaly-pick, .mod-cfg-chip, .mod-greeting-btn, .mod-summary-edit, .mod-task-quick, .mod-legend-toggle) {
-  border-radius: 10px !important;
+  border-radius: 22px !important;
 }
 :root.martur-officina #martur-operations-dashboard :is(.mod-rework-rank-badge, .mod-tabbtn, .mod-kpi-trend, .viz-badge, .mod-edi-mode-btn, .mod-pill-icon, .mod-datenav .mod-period-nav, .mod-note-add, .mod-note-add-plus, .mod-period-note-delta, .mod-anomaly-pending) {
-  border-radius: 6px !important;
+  border-radius: 14px !important;
 }
 /* PC: logo, menu e calendario dentro un'unica barra bianca col bordo oro,
    larga quanto le card e con tutto centrato. Menu e calendario dentro non
@@ -1145,7 +1145,7 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
     padding: 6px 14px;
     background: var(--card);
     border: 3px solid var(--off-edge);
-    border-radius: 10px;
+    border-radius: 28px;
     justify-content: center;
   }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster :is(.mod-pillnav, .mod-datenav) {
@@ -1184,9 +1184,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 :root.martur-officina #martur-operations-dashboard .mod-datenav button {
   color: var(--off-ink);
 }
-/* Card con gli stessi angoli del menu (10 px), non piu' tondeggianti. */
+/* Card con angoli da 28 px. */
 :root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-anomaly-wrap, .mod-task-card, .mod-period-note, .mod-task-col, .mod-report-card, .mod-edi-wrap) {
-  border-radius: 10px !important;
+  border-radius: 28px !important;
 }
 /* Telefono: calendario piu' grande, tendina della vista piu' piccola. */
 @media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
@@ -1227,10 +1227,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   background: var(--card);
   border: 3px solid var(--off-edge) !important;
   padding: 1px;
-  border-radius: 10px;
+  border-radius: 22px;
 }
 :root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-nav-tab, .mod-nav-tab-icon, .mod-appmenu-btn) {
-  border-radius: 6px;
+  border-radius: 14px;
 }
 /* Calendario accanto al menu (PC): stessa forma e stesso bordo. */
 @media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
@@ -1238,10 +1238,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     background: var(--card);
     border: 3px solid var(--off-edge) !important;
     padding: 1px;
-    border-radius: 10px;
+    border-radius: 22px;
   }
   :root.martur-officina #martur-operations-dashboard .mod-datenav :is(.mod-period-nav, .mod-period-picker, .mod-period-overlay, button) {
-    border-radius: 6px;
+    border-radius: 14px;
   }
 }
 :root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab[aria-pressed="true"],
