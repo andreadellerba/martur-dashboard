@@ -1423,7 +1423,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     letter-spacing: 0.08em !important;
     color: var(--muted-foreground) !important;
   }
-  :root.martur-officina #martur-operations-dashboard .mod-kpi-grid > .mod-kpi-tile:last-child { grid-column: 1 / -1; }
+  /* (con 6 card le righe sono pari: nessuna a tutta larghezza) */
   /* (21) Telefono: pillole di rework e perdite compatte. */
   :root.martur-officina #martur-operations-dashboard .mod-rework-ranking li {
     font-size: 13px !important;
@@ -1629,6 +1629,13 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 }
 /* Voci di menu nascoste (DMC / Abarth): non devono comparire nemmeno dove il tasto ha un display suo. */
 #martur-operations-dashboard :is(.mod-tabbtn, .mod-nav-tab)[hidden] { display: none !important; }
+/* Card KPI DMC / Abarth: due meta' affiancate, ognuna col suo totale e il suo grafico. */
+#martur-operations-dashboard .mod-kpi-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; }
+#martur-operations-dashboard .mod-kpi-duo-col { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+#martur-operations-dashboard .mod-kpi-duo-col + .mod-kpi-duo-col { border-left: 1px solid var(--off-line, var(--border)); padding-left: 8px; }
+#martur-operations-dashboard .mod-kpi-duo-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); }
+#martur-operations-dashboard .mod-kpi-duo .mod-kpi-value-row { flex-wrap: wrap; justify-content: center; }
+#martur-operations-dashboard .mod-kpi-duo .mod-kpi-spark { width: 100%; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
@@ -2644,7 +2651,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     }
     @media (min-width: 901px) {
       #martur-operations-dashboard .mod-kpi-grid {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
       }
     }
     #martur-operations-dashboard .mod-kpi-tile {
@@ -6620,6 +6627,23 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         <span id="mod-kpi-cars-context" class="text-small text-muted"></span>
         <div id="mod-kpi-cars-spark" class="mod-kpi-spark" aria-hidden="true"></div>
       </div>
+      <!-- DMC / Abarth: due totali (DMC e Abarth kit) con i loro due grafici. -->
+      <div class="card viz-stat mod-kpi-tile mod-kpi-tile-6">
+        <i class="mod-kpi-icon" data-lucide="layers" aria-hidden="true"></i>
+        <span class="text-muted" data-i18n="kpiDmcAbarth">DMC / Abarth</span>
+        <div class="mod-kpi-duo">
+          <div class="mod-kpi-duo-col">
+            <span class="mod-kpi-duo-label" data-i18n="secDmc">DMC</span>
+            <span class="mod-kpi-value-row"><span id="mod-kpi-dmc" class="viz-stat-value">—</span><span id="mod-kpi-dmc-trend" class="mod-kpi-trend"></span></span>
+            <div id="mod-kpi-dmc-spark" class="mod-kpi-spark" aria-hidden="true"></div>
+          </div>
+          <div class="mod-kpi-duo-col">
+            <span class="mod-kpi-duo-label" data-i18n="cardAbarthKit">Abarth kit</span>
+            <span class="mod-kpi-value-row"><span id="mod-kpi-abkit" class="viz-stat-value">—</span><span id="mod-kpi-abkit-trend" class="mod-kpi-trend"></span></span>
+            <div id="mod-kpi-abkit-spark" class="mod-kpi-spark" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
       <div class="card viz-stat mod-kpi-tile mod-kpi-tile-4">
         <i class="mod-kpi-icon" data-lucide="arrow-left-right" aria-hidden="true"></i>
         <span class="text-muted" data-i18n="kpiGapTitle">Delta</span>
@@ -8267,6 +8291,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Media Efficienza Mensile',
           supplyGap: 'Delta Martur / Stellantis',
           kpiGapTitle: 'Delta',
+          kpiDmcAbarth: 'DMC / Abarth',
           cardLayoutChanged: 'Ordine caselle card turno',
           targetLineLabel: 'Target Linea (Turno)',
           targetDmcLabel: 'Target DMC (Turno)',
@@ -8896,6 +8921,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Monthly Efficiency Average',
           supplyGap: 'Martur / Stellantis delta',
           kpiGapTitle: 'Delta',
+          kpiDmcAbarth: 'DMC / Abarth',
           cardLayoutChanged: 'Shift card box order',
           targetLineLabel: 'Line target (Shift)',
           targetDmcLabel: 'DMC target (Shift)',
@@ -9525,6 +9551,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Aylık Verimlilik Ortalaması',
           supplyGap: 'Martur / Stellantis farkı',
           kpiGapTitle: 'Fark',
+          kpiDmcAbarth: 'DMC / Abarth',
           cardLayoutChanged: 'Vardiya kartı kutu sırası',
           targetLineLabel: 'Hat hedefi (Vardiya)',
           targetDmcLabel: 'DMC hedefi (Vardiya)',
@@ -10189,6 +10216,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         kpiTile4: root.querySelector('.mod-kpi-tile-4'),
         kpiTile5: root.querySelector('.mod-kpi-tile-5'),
         kpiTile3: root.querySelector('.mod-kpi-tile-3'),
+        kpiTile6: root.querySelector('.mod-kpi-tile-6'),
         oeeSection: root.querySelector('#mod-oee-section'),
         oeeSubtitle: root.querySelector('#mod-oee-subtitle'),
         oeeGauge: root.querySelector('#mod-oee-gauge'),
@@ -12527,6 +12555,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       }
 
       function positionKpiTiles(sideBySide) {
+        // Sul telefono le card stanno sempre sotto, come con i due turni.
+        if (window.matchMedia('(max-width: 720px), (max-width: 950px) and (pointer: coarse)').matches) sideBySide = false;
         // Turno unico (giornaliero): le tile KPI si spostano a sx/dx della card,
         // due per parte. Il Delta Martur / Stellantis qui non si mostra: serve
         // solo a tenere le due colonne pari, il dato resta nei conti del
@@ -12542,15 +12572,14 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           const card = el.dailyShiftGrid.querySelector('.mod-daily-shift-card');
           el.dailyShiftGrid.insertBefore(el.kpiLeftSlot, card);
           el.dailyShiftGrid.appendChild(el.kpiRightSlot);
-          el.kpiLeftSlot.append(el.kpiTile1, el.kpiTile2);
-          el.kpiRightSlot.append(el.kpiTile5, el.kpiTile3);
-          el.kpiGrid.append(el.kpiTile4);
-          el.kpiTile4.hidden = true;
+          el.kpiLeftSlot.append(el.kpiTile1, el.kpiTile2, el.kpiTile6);
+          el.kpiRightSlot.append(el.kpiTile5, el.kpiTile3, el.kpiTile4);
+          el.kpiTile4.hidden = false;
           el.kpiGrid.hidden = true;
         } else {
           el.kpiTile4.hidden = false;
           el.kpiGrid.hidden = false;
-          el.kpiGrid.append(el.kpiTile1, el.kpiTile2, el.kpiTile4, el.kpiTile5, el.kpiTile3);
+          el.kpiGrid.append(el.kpiTile1, el.kpiTile2, el.kpiTile6, el.kpiTile4, el.kpiTile5, el.kpiTile3);
         }
       }
 
@@ -12677,7 +12706,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           : subtitle;
         setKpiText(el.kpiEfficiency, formatPercent(summary.efficiency));
         el.kpiEfficiencyContext.textContent = t(state.view === 'weekly' ? 'efficiencyFormulaWeekly' : state.view === 'monthly' ? 'efficiencyFormulaMonthly' : 'efficiencyFormula');
-        setKpiText(el.kpiGap, formatSigned(summary.supplyGap) + ' ' + t('pieces'));
+        // vuoto: solo il trattino, senza "Kit"
+        setKpiText(el.kpiGap, isNumber(summary.supplyGap) ? formatSigned(summary.supplyGap) + ' ' + t('pieces') : '—');
         el.kpiGap.classList.toggle('text-destructive', isNumber(summary.supplyGap) && summary.supplyGap < 0);
         if (state.view === 'daily') {
           el.kpiGapContext.textContent = subtitle;
@@ -15298,6 +15328,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         sectionUnsubDate = date;
         sectionUnsub = db.collection('sections').doc(date).onSnapshot((doc) => {
           state.sectionDoc = doc.exists ? (doc.data() || {}) : {};
+          dmcKpiCache.key = ''; // i totali della card DMC / Abarth vanno riletti
           if (state.view === 'abarth') renderAbarthDmc();
           if (state.view === 'dmc') renderQGate();
           if (state.view === 'daily') renderDashboard();
@@ -16920,7 +16951,89 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         return rows.filter((r) => hasOperationalData(r) && r.date <= state.selectedDate).slice(-8);
       }
 
+      // ---- Card KPI DMC / Abarth kit ----
+      // Totali del periodo (giorno, settimana o mese) e andamento sugli stessi
+      // periodi delle altre card. I numeri stanno nei documenti "sections",
+      // letti in un colpo solo per tutto l'intervallo del grafico.
+      let dmcKpiCache = { key: '', rows: [] };
+      let dmcKpiReq = 0;
+      function dmcKpiWindows() {
+        if (state.view === 'weekly') {
+          const monday = mondayOf(parseDate(state.selectedDate));
+          const out = [];
+          for (let i = 9; i >= 0; i--) {
+            const start = addDays(monday, -7 * i);
+            out.push([isoDate(start), isoDate(addDays(start, 6))]);
+          }
+          return out;
+        }
+        if (state.view === 'monthly') {
+          const [y, m] = state.selectedMonth.split('-').map(Number);
+          const out = [];
+          for (let i = 11; i >= 0; i--) {
+            const first = new Date(y, (m - 1) - i, 1);
+            const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);
+            out.push([isoDate(first), isoDate(last)]);
+          }
+          return out;
+        }
+        // giornaliero: gli ultimi 8 giorni con dati, fino a quello scelto
+        const days = getDailyRows().filter((r) => hasOperationalData(r) && r.date <= state.selectedDate).slice(-8).map((r) => r.date);
+        if (days[days.length - 1] !== state.selectedDate) days.push(state.selectedDate);
+        return days.slice(-8).map((d) => [d, d]);
+      }
+      function renderDmcKpi() {
+        if (!el.kpiTile6) return;
+        const windows = dmcKpiWindows();
+        if (!windows.length || !db) return;
+        const from = windows[0][0];
+        const to = windows[windows.length - 1][1];
+        const key = from + '_' + to;
+        const draw = (rows) => {
+          const sum = (w, pick) => {
+            const vals = rows.filter((r) => r.date >= w[0] && r.date <= w[1]).map(pick).filter(isNumber);
+            return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
+          };
+          const both = (a, b) => (isNumber(a) || isNumber(b)) ? valueOrZero(a) + valueOrZero(b) : null;
+          const dmcOf = (r) => both(summaryPick(r, 'dmc.shift1'), summaryPick(r, 'dmc.shift2'));
+          const kitOf = (r) => both(summaryPick(r, 'abarth.shift1.kit'), summaryPick(r, 'abarth.shift2.kit'));
+          [['mod-kpi-dmc', dmcOf], ['mod-kpi-abkit', kitOf]].forEach(([id, pick]) => {
+            const series = windows.map((w) => sum(w, pick));
+            const cur = series[series.length - 1];
+            const valueNode = root.querySelector('#' + id);
+            const trendNode = root.querySelector('#' + id + '-trend');
+            valueNode.textContent = isNumber(cur) ? formatNumber(cur) : '—';
+            const valid = series.filter(isNumber);
+            let dir = null;
+            if (valid.length >= 2) {
+              const d = valid[valid.length - 1] - valid[valid.length - 2];
+              dir = Math.abs(d) < 0.5 ? 'flat' : (d > 0 ? 'up' : 'down');
+            }
+            root.querySelector('#' + id + '-spark').innerHTML = sparklineSvg(series, dir);
+            const prev = series[series.length - 2];
+            if (isNumber(cur) && isNumber(prev)) renderTrendBadge(trendNode, cur, prev, 'int', false);
+            else { trendNode.textContent = ''; trendNode.className = 'mod-kpi-trend'; }
+          });
+        };
+        if (dmcKpiCache.key === key) { draw(dmcKpiCache.rows); return; }
+        const req = ++dmcKpiReq;
+        const idField = firebase.firestore.FieldPath.documentId();
+        db.collection('sections').where(idField, '>=', from).where(idField, '<=', to).get()
+          .then((snap) => {
+            const rows = [];
+            snap.forEach((doc) => rows.push(Object.assign({ date: doc.id }, doc.data() || {})));
+            return rows;
+          })
+          .catch(() => [])
+          .then((rows) => {
+            if (req !== dmcKpiReq) return;
+            dmcKpiCache = { key, rows };
+            draw(rows);
+          });
+      }
+
       function renderKpiTrends() {
+        renderDmcKpi();
         const metrics = [
           { trend: el.kpiSetsTrend, spark: el.kpiSetsSpark, get: (r) => r.completeKits, kind: 'int' },
           { trend: el.kpiCarsTrend, spark: el.kpiCarsSpark, get: (r) => r.stellantisCars, kind: 'int' },
