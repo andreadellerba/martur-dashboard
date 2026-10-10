@@ -2816,6 +2816,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     }
     #martur-operations-dashboard .mod-audit-filters .form-select { width: auto; min-width: 170px; }
     #martur-operations-dashboard .mod-audit-more { display: block; margin: 10px auto 0; text-transform: uppercase; font-weight: 700; }
+    /* nella sua finestra il titolo c'e' gia' in alto */
+    #martur-operations-dashboard #mod-audit-dialog #mod-audit-log > .mod-section-label { display: none; }
+    #martur-operations-dashboard #mod-audit-dialog { width: min(900px, calc(100vw - 32px)); max-width: none; }
     #martur-operations-dashboard .mod-audit-list {
       display: flex;
       flex-direction: column;
@@ -6561,6 +6564,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       <button type="button" class="mod-app-menu-item" id="mod-admin-lock" title="Accesso amministratore" data-i18n-title="adminAccess">
         <i id="mod-admin-lock-icon" data-lucide="lock" aria-hidden="true"></i><span id="mod-admin-lock-text" data-i18n="adminAccess">Accesso amministratore</span>
       </button>
+      <button type="button" class="mod-app-menu-item" id="mod-audit-btn" hidden>
+        <i data-lucide="history" aria-hidden="true"></i><span data-i18n="auditLog">Registro attività</span>
+      </button>
       <button type="button" class="mod-app-menu-item" id="mod-stoppage-settings-btn" title="Impostazioni" data-i18n-title="appSettings">
         <i data-lucide="sliders-horizontal" aria-hidden="true"></i><span data-i18n="appSettings">Impostazioni app</span>
       </button>
@@ -7614,6 +7620,24 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     </div>
   </dialog>
 
+  <!-- Registro attivita': finestra a parte, si apre dal menu (solo Amministratore). -->
+  <dialog id="mod-audit-dialog" class="card mod-selection-dialog" aria-labelledby="mod-audit-dialog-title">
+    <div class="mod-dialog-shell">
+      <div class="mod-dialog-head">
+        <div class="mod-selection-copy">
+          <h2 id="mod-audit-dialog-title" class="mod-dialog-title" data-i18n="auditLog">Registro attività</h2>
+        </div>
+        <button id="mod-close-audit-dialog" type="button" class="btn btn-ghost">
+          <i data-lucide="x" aria-hidden="true"></i>
+          <span data-i18n="close">Chiudi</span>
+        </button>
+      </div>
+      <div class="mod-dialog-scroll">
+        <div id="mod-audit-log" class="mod-stoppage-admin mod-cfg-section-first"></div>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="mod-stoppage-settings-dialog" class="card mod-selection-dialog" aria-labelledby="mod-stoppage-settings-title">
     <div class="mod-dialog-shell">
       <div class="mod-dialog-head">
@@ -7656,7 +7680,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         <div id="mod-stoppage-admin" class="mod-stoppage-admin"></div>
         <div id="mod-rework-admin" class="mod-stoppage-admin mod-cfg-section-first"></div>
         <div id="mod-loss-admin" class="mod-stoppage-admin mod-cfg-section-first"></div>
-        <div id="mod-audit-log" class="mod-stoppage-admin mod-cfg-section-first"></div>
+
       </div>
     </div>
   </dialog>
@@ -13149,6 +13173,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       }
 
       function updateAdminUI() {
+        const auditMenuBtn = root.querySelector('#mod-audit-btn');
+        if (auditMenuBtn) auditMenuBtn.hidden = !state.isConfigAdmin; // registro: solo Amministratore
         el.entryViewBtn.disabled = !canUseEntryButtons();
         root.classList.toggle('mod-admin-on', state.isAdmin);
         root.classList.toggle('mod-config-on', state.isConfigAdmin);
@@ -18053,12 +18079,25 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       el.filterCause.addEventListener('change', () => { state.stoppageFilters.cause = el.filterCause.value; renderStoppages(); });
       el.filterReporter.addEventListener('change', () => { state.stoppageFilters.reporter = el.filterReporter.value; renderStoppages(); });
       el.exportStoppages.addEventListener('click', exportStoppagesCsv);
+      // Registro attivita': voce del menu sopra "Impostazioni app", solo per
+      // l'Amministratore; si apre nella sua finestra.
+      const auditBtn = root.querySelector('#mod-audit-btn');
+      const auditDialog = root.querySelector('#mod-audit-dialog');
+      if (auditBtn && auditDialog) {
+        auditBtn.addEventListener('click', () => {
+          if (!state.isConfigAdmin) return;
+          toggleAppMenu(false);
+          renderAuditLog();
+          auditDialog.showModal();
+        });
+        root.querySelector('#mod-close-audit-dialog').addEventListener('click', () => auditDialog.close());
+      }
       el.stoppageSettingsBtn.addEventListener('click', () => {
         if (!state.authUser) return;
         renderUserAdmin();
         renderReworkAdmin();
         renderLossAdmin();
-        renderAuditLog();
+
         el.oeePlanned.value = state.oeeConfig.plannedMinPerShift;
         el.oeeTarget.value = state.oeeConfig.targetKitPerShift;
         el.stoppageSettingsDialog.showModal();
