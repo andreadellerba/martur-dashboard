@@ -14806,7 +14806,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       };
 
       // Come sectionGet, ma solo se i dati caricati sono proprio di quella data.
+      let summarySectionOverride = null; // dati DMC/Abarth usati mentre si prepara l'immagine Outlook
       function sectionGetFor(date, path) {
+        if (summarySectionOverride && summarySectionOverride.date === date) return summaryPick(summarySectionOverride.doc, path);
         return sectionUnsubDate === date ? sectionGet(path) : null;
       }
       function sectionGet(path) {
@@ -14932,6 +14934,15 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         return isNumber(value) ? value : null;
       }
       async function buildSummaryHtml(date, shiftChoice) {
+        // DMC e Abarth del giorno, letti subito: ora stanno dentro le card turno.
+        let summarySections = {};
+        if (db) {
+          try {
+            const snapEarly = await db.collection('sections').doc(date).get();
+            summarySections = snapEarly.exists ? (snapEarly.data() || {}) : {};
+          } catch (e) { /* offline: DMC / Abarth restano col trattino */ }
+        }
+        summarySectionOverride = { date, doc: summarySections };
         const dailyRow = getDailyRows().find((r) => r.date === date) ||
           deriveRow({ date, shift1: emptyShift(), shift2: emptyShift() });
         // Turno unico: non c'e' scelta, la card e' sempre quella sola.
@@ -15022,7 +15033,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           heading = 'Martur Italy · ' + escapeHtml(longDate) + ' · ' +
             escapeHtml(single ? t('uniqueShift') : t(key));
         }
-        return '<div class="mod-summary-heading">' + heading + '</div>' + dailyCardsHtml + sectionsHtml;
+        summarySectionOverride = null;
+        // DMC e Abarth non hanno piu' card a parte nell'immagine: sono dentro le card turno.
+        void sectionsHtml;
+        return '<div class="mod-summary-heading">' + heading + '</div>' + dailyCardsHtml;
       }
       let summaryToastEl = null;
       let summaryToastTimer = null;
