@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'self' blob: data: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com https://www.gstatic.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'self' blob: data: https://api.open-meteo.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com; manifest-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Martur Italy Operations Dashboard</title>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
@@ -1662,13 +1662,18 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   #martur-operations-dashboard .mod-topbar-cluster > .mod-world-clock-tr { order: 99; margin-left: auto; }
   #martur-operations-dashboard .mod-world-flag { width: 34px; height: 23px; flex: none; border-radius: 4px; box-shadow: 0 0 0 1px rgb(0 0 0 / 15%); }
   #martur-operations-dashboard .mod-world-text b { font-weight: 700; letter-spacing: 0.04em; }
+  #martur-operations-dashboard .mod-world-weather { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+  #martur-operations-dashboard .mod-world-weather svg { width: 18px; height: 18px; color: var(--gold); }
+  #martur-operations-dashboard .mod-world-weather:empty { display: none; }
   /* solo bandiere finche' lo schermo non e' abbastanza largo */
-  #martur-operations-dashboard .mod-world-text { display: none; }
+  #martur-operations-dashboard :is(.mod-world-text, .mod-world-weather) { display: none; }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: clamp(80px, calc(100vw - 1305px), 422px); }
 }
-@media (min-width: 1780px) and (pointer: fine), (min-width: 1780px) and (hover: hover) {
+@media (min-width: 1860px) and (pointer: fine), (min-width: 1860px) and (hover: hover) {
   #martur-operations-dashboard .mod-world-text { display: inline; }
-  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: clamp(80px, calc(100vw - 1520px), 422px); }
+  #martur-operations-dashboard .mod-world-weather { display: inline-flex; }
+  #martur-operations-dashboard .mod-world-weather:empty { display: none; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: clamp(80px, calc(100vw - 1640px), 422px); }
 }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
@@ -6475,9 +6480,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       <!-- Italia e Turchia ai lati della barra (solo PC): bandiera e ora locale. -->
       <div class="mod-world-clock mod-world-clock-it" aria-label="Italia">
         <svg viewBox="0 0 3 2" class="mod-world-flag" aria-hidden="true"><rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ce2b37"/></svg>
-        <span class="mod-world-text"><b>TORINO</b> <span class="mod-world-time" data-tz="Europe/Rome">--:--</span></span>
+        <span class="mod-world-text"><b>GRUGLIASCO</b> <span class="mod-world-time" data-tz="Europe/Rome">--:--</span></span>
+        <span class="mod-world-weather" data-lat="45.068" data-lon="7.578"></span>
       </div>
       <div class="mod-world-clock mod-world-clock-tr" aria-label="Türkiye">
+        <span class="mod-world-weather" data-lat="40.183" data-lon="29.067"></span>
         <span class="mod-world-text"><b>BURSA</b> <span class="mod-world-time" data-tz="Europe/Istanbul">--:--</span></span>
         <svg viewBox="0 0 30 20" class="mod-world-flag" aria-hidden="true"><rect width="30" height="20" fill="#e30a17"/><circle cx="10.6" cy="10" r="5" fill="#fff"/><circle cx="11.85" cy="10" r="4" fill="#e30a17"/><polygon fill="#fff" points="15.2,10 19.4,8.6 16.8,12.2 16.8,7.8 19.4,11.4"/></svg>
       </div>
@@ -17812,6 +17819,41 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       }
       updateWorldClocks();
       setInterval(updateWorldClocks, 15000);
+      // Meteo di Grugliasco e Bursa (Open-Meteo, senza chiave): icona e gradi,
+      // aggiornati ogni 30 minuti. Solo quando la barra e' visibile su PC.
+      const WEATHER_ICONS = [
+        [[0], 'sun'], [[1], 'sun-medium'], [[2], 'cloud-sun'], [[3], 'cloud'],
+        [[45, 48], 'cloud-fog'], [[51, 53, 55, 56, 57], 'cloud-drizzle'],
+        [[61, 63, 65, 66, 67, 80, 81, 82], 'cloud-rain'], [[71, 73, 75, 77, 85, 86], 'cloud-snow'],
+        [[95, 96, 99], 'cloud-lightning']
+      ];
+      function weatherIcon(code, isDay) {
+        const found = WEATHER_ICONS.find(([codes]) => codes.indexOf(code) >= 0);
+        const name = found ? found[1] : 'cloud';
+        if (!isDay && (name === 'sun' || name === 'sun-medium')) return 'moon';
+        if (!isDay && name === 'cloud-sun') return 'cloud-moon';
+        return name;
+      }
+      function updateWorldWeather() {
+        const nodes = Array.from(root.querySelectorAll('.mod-world-weather[data-lat]'));
+        // solo se la scritta con citta' e ora si vede (schermi larghi)
+        const text = root.querySelector('.mod-world-text');
+        if (!nodes.length || !text || getComputedStyle(text).display === 'none' || text.offsetParent === null) return;
+        nodes.forEach((node) => {
+          const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + node.dataset.lat + '&longitude=' + node.dataset.lon +
+            '&current=temperature_2m,weather_code,is_day&timezone=auto';
+          fetch(url).then((r) => r.json()).then((data) => {
+            const cur = data && data.current;
+            if (!cur || !isNumber(cur.temperature_2m)) return;
+            node.innerHTML = '<i data-lucide="' + weatherIcon(cur.weather_code, cur.is_day === 1) + '" aria-hidden="true"></i>' +
+              '<span>' + Math.round(cur.temperature_2m) + '°</span>';
+            if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 18, height: 18 } });
+          }).catch(() => {});
+        });
+      }
+      setTimeout(updateWorldWeather, 1500);
+      setInterval(updateWorldWeather, 30 * 60 * 1000);
+      window.addEventListener('resize', () => { clearTimeout(window.__wwTimer); window.__wwTimer = setTimeout(updateWorldWeather, 800); });
 
       // ---- Registro: aperture dell'app e pagine viste ----
       // Dispositivo in breve: sistema, app installata o browser, schermo.
