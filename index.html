@@ -1087,12 +1087,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    con light-dark() si girano da soli: neri -> bianchi e viceversa). Card,
    menu, finestre e tendine tengono lo schema del tema. */
 :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard,
-:root.martur-officina[data-bgtone="light"][data-theme="dark"] :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, [role="dialog"], [role="menu"], [role="listbox"]) {
+:root.martur-officina[data-bgtone="light"][data-theme="dark"] :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section, .mod-edi-head, [role="dialog"], [role="menu"], [role="listbox"]) {
   color-scheme: dark;
   color: var(--foreground);
 }
 :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard,
-:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, [role="dialog"], [role="menu"], [role="listbox"]) {
+:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section, .mod-edi-head, [role="dialog"], [role="menu"], [role="listbox"]) {
   color-scheme: light;
   color: var(--foreground);
 }
@@ -1385,6 +1385,101 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     font-size: 13px !important;
   }
 }
+/* Note dei turni (e di DMC/Abarth) sempre intere, su un fondo chiarissimo
+   del colore d'accento. */
+:root.martur-officina #martur-operations-dashboard .mod-shift-note:not(.mod-shift-note-empty) {
+  height: auto !important;
+  box-sizing: border-box;
+  margin-top: 2px;
+  padding: 10px 14px !important;
+  border-top: 0 !important;
+  border-radius: 18px;
+  background: var(--note-bg, color-mix(in srgb, var(--gold) 9%, var(--card)));
+}
+:root.martur-officina #martur-operations-dashboard .mod-shift-note:not(.mod-shift-note-empty) .mod-shift-note-text {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  overflow: visible !important;
+  padding-inline: 0 !important;
+}
+:root.martur-officina #martur-operations-dashboard .mod-shift-note .mod-note-more { display: none !important; }
+/* OLE e Perdite dentro una card intera, titolo compreso, con la stanghetta
+   come rework e perdite; i riquadri di dentro non hanno piu' bordo. */
+:root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) {
+  background: var(--card);
+  border: 1.5px solid var(--off-edge);
+  border-radius: 28px;
+  padding: 14px 18px;
+  box-shadow: 0 10px 24px -12px var(--off-shadow-c), 0 2px 4px -2px var(--off-shadow-c);
+  align-content: start;
+}
+:root.martur-officina #martur-operations-dashboard :is(#mod-oee-section > .mod-oee-layout, #mod-waterfall-wrap) {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 4px 0 0 !important;
+  transform: none !important;
+}
+:root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) > .mod-section-head {
+  justify-content: flex-start;
+  text-align: left;
+}
+:root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 10px !important; }
+:root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: block !important; }
+@media (hover: hover) and (pointer: fine) {
+  :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) { transition: transform 0.18s ease, box-shadow 0.18s ease; }
+  :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px -14px var(--off-shadow-c), 0 3px 6px -3px var(--off-shadow-c);
+  }
+}
+/* DMC / Abarth: una card sola, DMC a sinistra e Abarth a destra divisi da
+   una linea leggera; i titoli delle due meta' nel colore d'accento. */
+#martur-operations-dashboard .mod-sec-wide { grid-column: 1 / -1; }
+#martur-operations-dashboard .mod-sec-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#martur-operations-dashboard .mod-sec-duo-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 2px 16px 4px; }
+#martur-operations-dashboard .mod-sec-duo-col + .mod-sec-duo-col { border-left: 1px solid var(--off-line, var(--border)); }
+#martur-operations-dashboard .mod-sec-duo-col > .mod-shift-note { margin-top: auto; }
+#martur-operations-dashboard .mod-sec-duo-title {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  #martur-operations-dashboard .mod-sec-duo { grid-template-columns: minmax(0, 1fr); }
+  #martur-operations-dashboard .mod-sec-duo-col { padding: 4px 4px; }
+  #martur-operations-dashboard .mod-sec-duo-col + .mod-sec-duo-col { border-left: 0; border-top: 1px solid var(--off-line, var(--border)); padding-top: 14px; margin-top: 10px; }
+}
+/* EDI: i tasti sopra le tabelle in una pillola che si allarga con quello
+   che c'e' dentro (con "Confronta" compare anche la tendina). */
+:root.martur-officina #martur-operations-dashboard .mod-edi-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  background: var(--card);
+  border: 1.5px solid var(--off-edge);
+  border-radius: 22px;
+  box-shadow: 0 6px 14px -9px var(--off-shadow-c);
+}
+#martur-operations-dashboard .mod-edi-table th.mod-edi-opt-head { text-align: center !important; }
+/* Il messaggio "nessun EDI" e' una frase, non un numero: carattere normale. */
+:root.martur-officina #martur-operations-dashboard .mod-edi-table td.mod-edi-empty { font-family: var(--font-sans); font-weight: 600; }
+/* Nota vuota (DMC/Abarth senza nota): non si disegna il riquadro colorato vuoto. */
+#martur-operations-dashboard .mod-shift-note:has(> .mod-shift-note-text:empty) { display: none !important; }
+/* Pianificazione: niente piu' titolo "IN CORSO" azzurro con la riga; i
+   filtri stanno in cima alla card. */
+#martur-operations-dashboard .mod-summary-board .mod-task-col-head { display: none; }
+#martur-operations-dashboard .mod-summary-head.mod-summary-head-in { margin: 0 0 6px; }
 /* (18) Colore d'accento scelto: prende il posto dell'oro ovunque. */
 :root.martur-officina[data-accent] {
   --gold: light-dark(var(--acc-l), var(--acc-d));
@@ -7881,7 +7976,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           textEditMany: 'cambia in {n} punti dell’app',
           ediTab: 'EDI',
           ediUpload: 'Carica Excel',
-          ediOptions: 'EDI',
+          ediOptions: 'Opzioni',
           ediTotalQty: 'Totale',
           ediTotal: 'Totale %',
           ediTotalVolume: 'Totale',
@@ -7958,6 +8053,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Media Efficienza Mensile',
           supplyGap: 'Delta Martur / Stellantis',
           kpiGapTitle: 'Delta',
+          secDuoDmc: 'Produzione DMC',
+          secDuoAbarth: 'Produzione Abarth',
           noteAddItem: 'Aggiungi una nota',
           convocati: 'Convocati Diretti',
           presence: 'Presenze',
@@ -8488,7 +8585,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           textEditMany: 'changes {n} places in the app',
           ediTab: 'EDI',
           ediUpload: 'Upload Excel',
-          ediOptions: 'EDI',
+          ediOptions: 'Options',
           ediTotalQty: 'Total',
           ediTotal: 'Total %',
           ediTotalVolume: 'Total',
@@ -8565,6 +8662,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Monthly Efficiency Average',
           supplyGap: 'Martur / Stellantis delta',
           kpiGapTitle: 'Delta',
+          secDuoDmc: 'DMC production',
+          secDuoAbarth: 'Abarth production',
           noteAddItem: 'Add a note',
           convocati: 'Called Up',
           presence: 'Present',
@@ -9095,7 +9194,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           textEditMany: 'uygulamada {n} yeri değiştirir',
           ediTab: 'EDI',
           ediUpload: 'Excel yükle',
-          ediOptions: 'EDI',
+          ediOptions: 'Seçenekler',
           ediTotalQty: 'Toplam',
           ediTotal: 'Toplam %',
           ediTotalVolume: 'Toplam',
@@ -9172,6 +9271,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Aylık Verimlilik Ortalaması',
           supplyGap: 'Martur / Stellantis farkı',
           kpiGapTitle: 'Fark',
+          secDuoDmc: 'DMC üretimi',
+          secDuoAbarth: 'Abarth üretimi',
           noteAddItem: 'Not ekle',
           convocati: 'Çağrılan',
           presence: 'Mevcut',
@@ -13080,8 +13181,32 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         }, () => {});
       }
 
+      // Pianificazione: filtri e tasti stanno dentro la card della colonna.
+      // La barra e' la stessa delle Anomalie, quindi prima di ridisegnare (o
+      // passando alle Anomalie) torna al suo posto, sopra.
+      let summaryHeadHome = null;
+      function restoreSummaryHead() {
+        const head = el.summaryScreen && el.summaryScreen.querySelector('.mod-summary-head');
+        if (!head) return;
+        if (!summaryHeadHome) {
+          summaryHeadHome = document.createComment('mod-summary-head');
+          head.parentNode.insertBefore(summaryHeadHome, head);
+          return;
+        }
+        if (head.previousSibling !== summaryHeadHome) summaryHeadHome.parentNode.insertBefore(head, summaryHeadHome.nextSibling);
+        head.classList.remove('mod-summary-head-in');
+      }
+      function placeSummaryHeadInBoard() {
+        if (state.summaryTab === 'anomalies') return;
+        const head = el.summaryScreen && el.summaryScreen.querySelector('.mod-summary-head');
+        const col = el.summaryBoard && el.summaryBoard.querySelector('.mod-task-col');
+        if (!head || !col) return;
+        col.prepend(head);
+        head.classList.add('mod-summary-head-in');
+      }
       function renderSummaryBoard() {
         if (!el.summaryBoard) return;
+        restoreSummaryHead();
         const tasks = Array.isArray(state.tasks) ? state.tasks : [];
         // Una sola colonna alla volta: quella scelta col filtro. Le completate
         // non stanno piu' in mezzo alle attivita' aperte.
@@ -13140,6 +13265,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               : '<div class="mod-task-empty">' + escapeHtml(t('taskNone')) + '</div>') +
           '</div>';
         }).join('');
+        placeSummaryHeadInBoard();
         // Pulsante rapido: completa (o riapre) senza aprire la scheda.
         el.summaryBoard.querySelectorAll('[data-task-done]').forEach((node) => {
           const run = (event) => {
@@ -13804,6 +13930,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 
       function applySummaryTab() {
         const anomalies = state.summaryTab === 'anomalies';
+        restoreSummaryHead();
         if (!state.isAdmin) state.summaryEdit = false;
         el.summaryEdit.hidden = !state.isAdmin;
         el.anomalyQr.hidden = !state.isAdmin;
@@ -14645,6 +14772,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             officina['--off-edge'] = accent;
             const accRgb = [1, 3, 5].map((i) => parseInt(accent.substr(i, 2), 16));
             officina['--shift-head-bg'] = 'rgb(' + accRgb.map((v) => Math.round(v * 0.13 + 255 * 0.87)).join(', ') + ')';
+            officina['--note-bg'] = 'rgb(' + accRgb.map((v) => Math.round(v * 0.09 + 255 * 0.91)).join(', ') + ')';
             Object.keys(officina).forEach((k) => wrap.style.setProperty(k, officina[k]));
           }
           wrap.innerHTML = html;
@@ -14859,9 +14987,29 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             abarthCol(t('secSchienali'), 'schienali') +
             abarthCol(t('secKit'), 'kit') +
           '</div>';
-        el.abarthCards.innerHTML =
-          sectionCard(t('secDmc'), dmcHero + sectionNote('dmc.note')) +
-          sectionCard(t('secAbarth'), abarthHero + sectionNote('abarth.note'));
+        /* Una card sola: in testa la riga dei turni (come le card turno), sotto
+           DMC a sinistra e Abarth a destra, divisi da una linea leggera. La
+           riga dei turni sopra la card non serve piu'. */
+        const shiftsTitle = single
+          ? '<i data-lucide="sun" aria-hidden="true"></i><span class="mod-shift-title-main">' + escapeHtml(t('uniqueShift')) + '</span>'
+          : ['shift1', 'shift2']
+            .map((shiftKey, index) => '<span class="mod-sec-shift-item">' + shiftTitleHtml(shiftKey, index, state.selectedDate, false) + '</span>')
+            .join('<span class="mod-shift-title-main mod-sec-shift-sep">—</span>');
+        el.abarthShifts.innerHTML = '';
+        el.abarthShifts.hidden = true;
+        el.abarthCards.innerHTML = sectionCardHtml(shiftsTitle,
+          '<div class="mod-sec-duo">' +
+            '<div class="mod-sec-duo-col">' +
+              '<div class="mod-sec-duo-title">' + escapeHtml(t('secDuoDmc')) + '</div>' +
+              dmcHero + sectionNote('dmc.note') +
+            '</div>' +
+            '<div class="mod-sec-duo-col">' +
+              '<div class="mod-sec-duo-title">' + escapeHtml(t('secDuoAbarth')) + '</div>' +
+              abarthHero + sectionNote('abarth.note') +
+            '</div>' +
+          '</div>', '', t('secDmc') + ' / ' + t('secAbarth'));
+        el.abarthCards.firstElementChild.classList.add('mod-sec-wide');
+        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
         syncSectionButtons();
       }
 
@@ -15343,7 +15491,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       }
 
       function ediWeekHead(data, extra) {
-        return '<thead><tr><th>' + escapeHtml(t('ediOptions')) + '</th>' +
+        return '<thead><tr><th class="mod-edi-opt-head">' + escapeHtml(t('ediOptions')) + '</th>' +
           data.weeks.map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
           (extra ? '<th class="mod-edi-total">' + escapeHtml(extra) + '</th>' : '') + '</tr></thead>';
       }
