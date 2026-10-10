@@ -1487,6 +1487,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 }
 /* DMC / Abarth: una card sola, DMC a sinistra e Abarth a destra divisi da
    una linea leggera; i titoli delle due meta' nel colore d'accento. */
+/* Inserimento dati: Target Linea e Target DMC divisi a meta' nello spazio di un campo. */
+#martur-operations-dashboard .mod-entry-target-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-width: 0; }
+#martur-operations-dashboard .mod-entry-oee .mod-entry-fields > * { flex: 1 1 0; min-width: 0; }
 #martur-operations-dashboard .mod-sec-wide { grid-column: 1 / -1; }
 #martur-operations-dashboard .mod-sec-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 #martur-operations-dashboard .mod-sec-duo-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 2px 16px 4px; }
@@ -6896,6 +6899,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="firstSeqStellantis">Prima Sequenza Stellantis</span><input id="mod-s1-firstseqs" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="lastSeqStellantis">Ultima Sequenza Stellantis</span><input id="mod-s1-lastseqs" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
+            <!-- Produzione DMC / Abarth del turno: va negli stessi dati della pagina DMC / Abarth. -->
+            <label class="form-label"><span data-i18n="secDmc">DMC</span><input id="mod-s1-dmc" class="form-control mod-entry-sec" data-sec-path="dmc.shift1" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="cardAbarthSch">Abarth schienali</span><input id="mod-s1-absch" class="form-control mod-entry-sec" data-sec-path="abarth.shift1.schienali" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="cardAbarthKit">Abarth kit</span><input id="mod-s1-abkit" class="form-control mod-entry-sec" data-sec-path="abarth.shift1.kit" type="number" min="0" step="1"></label>
           </div>
           <section class="mod-selection-launcher" aria-labelledby="mod-rework-selection-title-1">
             <div class="mod-selection-head">
@@ -6958,6 +6966,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="firstSeqStellantis">Prima Sequenza Stellantis</span><input id="mod-s2-firstseqs" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label"><span data-i18n="lastSeqStellantis">Ultima Sequenza Stellantis</span><input id="mod-s2-lastseqs" class="form-control" type="number" min="0" step="1"></label>
+            <span class="mod-row-break" aria-hidden="true"></span>
+            <!-- Produzione DMC / Abarth del turno: va negli stessi dati della pagina DMC / Abarth. -->
+            <label class="form-label"><span data-i18n="secDmc">DMC</span><input id="mod-s2-dmc" class="form-control mod-entry-sec" data-sec-path="dmc.shift2" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="cardAbarthSch">Abarth schienali</span><input id="mod-s2-absch" class="form-control mod-entry-sec" data-sec-path="abarth.shift2.schienali" type="number" min="0" step="1"></label>
+            <label class="form-label"><span data-i18n="cardAbarthKit">Abarth kit</span><input id="mod-s2-abkit" class="form-control mod-entry-sec" data-sec-path="abarth.shift2.kit" type="number" min="0" step="1"></label>
           </div>
           <section class="mod-selection-launcher" aria-labelledby="mod-rework-selection-title-2">
             <div class="mod-selection-head">
@@ -6997,7 +7010,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         <legend class="mod-field-title" data-i18n="dayOeeParams">Parametri OEE della giornata</legend>
         <div class="viz-controls mod-entry-fields">
           <label class="form-label"><span data-i18n="effectiveMinLabel">Minuti effettivi / turno</span><input id="mod-entry-planned" class="form-control" type="number" min="1" step="1"></label>
-          <label class="form-label"><span data-i18n="targetKitLabel">Target Kit / turno</span><input id="mod-entry-target" class="form-control" type="number" min="1" step="1"></label>
+          <div class="mod-entry-target-pair">
+            <label class="form-label"><span data-i18n="targetLineLabel">Target Linea (Turno)</span><input id="mod-entry-target" class="form-control" type="number" min="1" step="1"></label>
+            <label class="form-label"><span data-i18n="targetDmcLabel">Target DMC (Turno)</span><input id="mod-entry-target-dmc" class="form-control" type="number" min="1" step="1"></label>
+          </div>
         </div>
         <div class="text-small text-muted" data-i18n="dayOeeHint">Lascia vuoto per usare i valori delle impostazioni. Quello che scrivi qui vale solo per questa giornata.</div>
       </fieldset>
@@ -7670,8 +7686,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               <input id="mod-oee-planned" class="form-control" type="number" min="1" step="1">
             </label>
             <label>
-              <span data-i18n="targetKitPerShiftLabel">Target Kit / turno</span>
+              <span data-i18n="targetLineLabel">Target Linea (Turno)</span>
               <input id="mod-oee-target" class="form-control" type="number" min="1" step="1">
+            </label>
+            <label>
+              <span data-i18n="targetDmcLabel">Target DMC (Turno)</span>
+              <input id="mod-oee-target-dmc" class="form-control" type="number" min="1" step="1">
             </label>
             <button id="mod-oee-save" type="button" class="btn btn-primary" data-i18n="save">Salva</button>
           </div>
@@ -8235,6 +8255,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Media Efficienza Mensile',
           supplyGap: 'Delta Martur / Stellantis',
           kpiGapTitle: 'Delta',
+          targetLineLabel: 'Target Linea (Turno)',
+          targetDmcLabel: 'Target DMC (Turno)',
+          cardAbarthSch: 'Abarth schienali',
+          cardAbarthKit: 'Abarth kit',
+          cardConvocati: 'Convocati',
+          cardPresent: 'Presenti',
           secDuoDmc: 'Produzione DMC',
           secDuoAbarth: 'Produzione Abarth',
           noteAddItem: 'Aggiungi una nota',
@@ -8857,6 +8883,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Monthly Efficiency Average',
           supplyGap: 'Martur / Stellantis delta',
           kpiGapTitle: 'Delta',
+          targetLineLabel: 'Line target (Shift)',
+          targetDmcLabel: 'DMC target (Shift)',
+          cardAbarthSch: 'Abarth backrests',
+          cardAbarthKit: 'Abarth kit',
+          cardConvocati: 'Called in',
+          cardPresent: 'Present',
           secDuoDmc: 'DMC production',
           secDuoAbarth: 'Abarth production',
           noteAddItem: 'Add a note',
@@ -9479,6 +9511,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           efficiencyFormulaMonthly: 'Aylık Verimlilik Ortalaması',
           supplyGap: 'Martur / Stellantis farkı',
           kpiGapTitle: 'Fark',
+          targetLineLabel: 'Hat hedefi (Vardiya)',
+          targetDmcLabel: 'DMC hedefi (Vardiya)',
+          cardAbarthSch: 'Abarth sırtlık',
+          cardAbarthKit: 'Abarth kit',
+          cardConvocati: 'Çağrılan',
+          cardPresent: 'Mevcut',
           secDuoDmc: 'DMC üretimi',
           secDuoAbarth: 'Abarth üretimi',
           noteAddItem: 'Not ekle',
@@ -10820,6 +10858,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         out.push({ field: t('absentOperators'), from: before && before.absentOperators, to: after && after.absentOperators });
         out.push({ field: t('effectiveMinLabel'), from: before && before.plannedMinPerShift, to: after && after.plannedMinPerShift });
         out.push({ field: t('targetKitLabel'), from: before && before.targetKitPerShift, to: after && after.targetKitPerShift });
+        out.push({ field: t('targetDmcLabel'), from: before && before.targetDmcPerShift, to: after && after.targetDmcPerShift });
         return out;
       }
 
@@ -10834,6 +10873,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           absentOperators: Array.isArray(row.absentOperators) ? row.absentOperators : [],
           plannedMinPerShift: isNumber(row.plannedMinPerShift) ? row.plannedMinPerShift : null,
           targetKitPerShift: isNumber(row.targetKitPerShift) ? row.targetKitPerShift : null,
+          targetDmcPerShift: isNumber(row.targetDmcPerShift) ? row.targetDmcPerShift : null,
           updatedAt: row.updatedAt || new Date().toISOString()
         }).catch(() => {});
       }
@@ -10936,6 +10976,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             absentOperators: Array.isArray(d.absentOperators) ? d.absentOperators : [],
             plannedMinPerShift: isNumber(d.plannedMinPerShift) ? d.plannedMinPerShift : null,
             targetKitPerShift: isNumber(d.targetKitPerShift) ? d.targetKitPerShift : null,
+            targetDmcPerShift: isNumber(d.targetDmcPerShift) ? d.targetDmcPerShift : null,
             updatedAt: d.updatedAt || null
           });
         });
@@ -12426,14 +12467,21 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               metric(t('rearLine'), formatOptionalNumber(shift.rear), rearCls) +
               metric('Stellantis', formatOptionalNumber(shift.stellantisCars), stellCls) +
               metric(t('gap'), formatSigned(gap), gapCls) +
-              metric(t('presence'), formatOptionalNumber(shift.presence), goldCls) +
-              metric(t('absent'), formatOptionalNumber(shift.absent), absentCls) +
-              metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
-              metric(t('palletIn'), reworkText, reworkCls) +
+              // DMC e Abarth del turno: dai dati della pagina DMC / Abarth.
+              // DMC colorato rispetto al target DMC del turno; Abarth neutro.
+              metric(t('secDmc'), formatOptionalNumber(sectionGetFor(row.date, 'dmc.' + shiftKey)),
+                targetCls(sectionGetFor(row.date, 'dmc.' + shiftKey), dmcShiftTargetFor(row.date))) +
+              metric(t('cardAbarthSch'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.schienali')), goldCls) +
+              metric(t('cardAbarthKit'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.kit')), goldCls) +
+              metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
               metric(t('dummySeats'), formatOptionalNumber(shift.dummy), dummyCls) +
               metric(t('coda'), formatOptionalNumber(shift.coda), codaCls) +
               metric(t('overtime'), overtimeText, otCls) +
-              metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls) +
+              metric(t('palletIn'), reworkText, reworkCls) +
+              metric(t('cardConvocati'), formatOptionalNumber(shift.convocati), goldCls) +
+              metric(t('cardPresent'), formatOptionalNumber(shift.presence), goldCls) +
+              metric(t('absent'), formatOptionalNumber(shift.absent), absentCls) +
+              metric(t('absenteeism'), isNumber(absenteeism) ? formatPercent(absenteeism) : '—', absCls) +
             '</div>' +
             // Senza nota si legge "Nessuna nota inserita" (in grigio): appena
             // se ne scrive una, al suo posto c'e' il testo inserito.
@@ -12931,6 +12979,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         });
         entry.plannedMinPerShift = readInput('mod-entry-planned');
         entry.targetKitPerShift = readInput('mod-entry-target');
+        entry.targetDmcPerShift = readInput('mod-entry-target-dmc');
         entry.shift1.topReworks = state.shift1TopReworks;
         entry.shift2.topReworks = state.shift2TopReworks;
         entry.shift1.topLosses = state.shift1TopLosses;
@@ -13005,6 +13054,71 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         el.entryTarget.placeholder = base ? String(base.targetKitPerShift) : '';
         el.entryPlanned.value = row && isNumber(row.plannedMinPerShift) ? row.plannedMinPerShift : '';
         el.entryTarget.value = row && isNumber(row.targetKitPerShift) ? row.targetKitPerShift : '';
+        const dmcTargetInput = root.querySelector('#mod-entry-target-dmc');
+        if (dmcTargetInput) {
+          dmcTargetInput.placeholder = String(dmcShiftTargetBase(date || isoDate(new Date())));
+          dmcTargetInput.value = row && isNumber(row.targetDmcPerShift) ? row.targetDmcPerShift : '';
+        }
+        fillEntrySections(date || isoDate(new Date()));
+      }
+
+      // ---- Target DMC per turno ----
+      // Dalle impostazioni (con lo storico per data, come il target linea);
+      // la singola giornata lo puo' cambiare dall'inserimento dati.
+      function dmcShiftTargetBase(date) {
+        const base = oeeConfigBaseFor(date);
+        return base && isNumber(base.targetDmcPerShift) && base.targetDmcPerShift > 0 ? base.targetDmcPerShift : 200;
+      }
+      function dmcShiftTargetFor(date) {
+        const day = (state.manual || []).find((item) => item && item.date === date);
+        if (day && isNumber(day.targetDmcPerShift) && day.targetDmcPerShift > 0) return day.targetDmcPerShift;
+        return dmcShiftTargetBase(date);
+      }
+      // Rosso sotto il target, giallo pari, verde sopra.
+      function targetCls(value, target) {
+        if (!isNumber(value) || !isNumber(target)) return '';
+        if (value === target) return 'mod-metric-yellow';
+        return value > target ? 'mod-metric-good' : 'mod-metric-bad';
+      }
+
+      // ---- DMC / Abarth dall'inserimento dati ----
+      // Sono gli stessi numeri della pagina DMC / Abarth (documento "sections"
+      // della giornata): si leggono e si scrivono li', cosi' le due pagine
+      // mostrano sempre la stessa cosa.
+      function fillEntrySections(date) {
+        const inputs = root.querySelectorAll('.mod-entry-sec');
+        inputs.forEach((input) => { input.value = ''; });
+        if (!db || !date) return;
+        db.collection('sections').doc(date).get().then((doc) => {
+          if (el.entryDate.value !== date) return;
+          const data = doc.exists ? (doc.data() || {}) : {};
+          inputs.forEach((input) => {
+            const value = input.dataset.secPath.split('.').reduce((acc, key) => (acc && typeof acc === 'object') ? acc[key] : undefined, data);
+            input.value = isNumber(value) ? value : '';
+          });
+          root.querySelectorAll('.mod-entry-sec').forEach((input) => { input.dataset.before = input.value; });
+        }).catch(() => {});
+      }
+      function saveEntrySections(date, single) {
+        if (!db || !date || !state.authUser) return;
+        const payload = { updatedAt: new Date().toISOString(), updatedBy: state.authUsername || '' };
+        const changes = [];
+        let touched = false;
+        root.querySelectorAll('.mod-entry-sec').forEach((input) => {
+          if (single && /shift2/.test(input.dataset.secPath)) return;
+          const raw = input.value.trim();
+          const value = raw === '' ? null : Number(raw);
+          const before = input.dataset.before === undefined || input.dataset.before === '' ? null : Number(input.dataset.before);
+          if (value === before) return;
+          touched = true;
+          sectionSet(payload, input.dataset.secPath, isNumber(value) ? value : null);
+          changes.push({ field: input.closest('label').querySelector('span').textContent + ' · ' + t(input.dataset.secPath.indexOf('shift2') >= 0 ? 'shift2' : 'shift1'), from: before, to: value });
+          input.dataset.before = raw;
+        });
+        if (!touched) return;
+        db.collection('sections').doc(date).set(payload, { merge: true })
+          .then(() => logAudit('section.update', t('secDmc') + ' / ' + t('secAbarth') + ' · ' + formatDateNumeric(date), changes))
+          .catch(() => {});
       }
 
       function resetEntry(date) {
@@ -14643,7 +14757,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               // Il target non sta nel documento della giornata ma nelle
               // impostazioni (vale da questa data in avanti): si compila qui
               // ma si salva per conto suo.
-              { path: 'dmcTarget', label: 'secTargetLabel', special: 'dmcTarget' },
               { path: 'dmc.note', label: 'secNote', type: 'text' }
             ] },
             { label: 'secAbarth', fields: [
@@ -14692,6 +14805,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         }
       };
 
+      // Come sectionGet, ma solo se i dati caricati sono proprio di quella data.
+      function sectionGetFor(date, path) {
+        return sectionUnsubDate === date ? sectionGet(path) : null;
+      }
       function sectionGet(path) {
         const value = String(path).split('.').reduce((acc, key) => (acc && typeof acc === 'object') ? acc[key] : undefined, state.sectionDoc || {});
         return isNumber(value) ? value : null;
@@ -14720,12 +14837,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           '<span class="text-small text-muted">' + escapeHtml(label) + '</span>' +
           '<strong' + (cls ? ' class="' + cls + '"' : '') + '>' + escapeHtml(sectionText(value)) + '</strong>' +
         '</div>';
-      // Produzione DMC vs target: sopra = verde, sotto = rosso, esattamente al
-      // target = oro (stesso colore delle sequenze, non e' un "buono/cattivo").
+      // Produzione DMC vs target: sopra = verde, sotto = rosso, pari = giallo.
       function dmcTotalCls(totalValue, target) {
-        if (!isNumber(totalValue) || !isNumber(target)) return '';
-        if (totalValue === target) return 'mod-metric-gold';
-        return totalValue > target ? 'mod-metric-good' : 'mod-metric-bad';
+        return targetCls(totalValue, target);
       }
       const sectionCard = (title, inner, namesHtml) =>
         sectionCardHtml(escapeHtml(title), inner, namesHtml, title);
@@ -15152,6 +15266,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           state.sectionDoc = doc.exists ? (doc.data() || {}) : {};
           if (state.view === 'abarth') renderAbarthDmc();
           if (state.view === 'dmc') renderQGate();
+          if (state.view === 'daily') renderDashboard();
         }, () => {});
       }
 
@@ -15176,7 +15291,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         /* Stessa grafica delle card Q Gate: il numero grande al centro con la
            sua etichetta, e sotto, in piccolo, il dettaglio dei due turni. */
         const single = isSingleShiftDay(state.selectedDate);
-        const target = dmcTargetFor(state.selectedDate);
+        // target DMC: quello del turno (inserimento dati o impostazioni) per i turni del giorno
+        const target = dmcShiftTargetFor(state.selectedDate) * (single ? 1 : 2);
         const dmcTotal = sectionSum(['dmc.shift1', 'dmc.shift2']);
         // Il target non si vede piu' sulla card: si imposta dal modulo (il "+"
         // o la matita). Serve comunque qui per colorare la produzione totale.
@@ -17578,7 +17694,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           renderQualityPeriod();
           loadQualitySections();
         }
-        else renderDashboard();
+        else {
+          // le card turno mostrano anche DMC / Abarth del turno
+          if (state.view === 'daily') subscribeSection(state.selectedDate);
+          renderDashboard();
+        }
         if (globalThis.lucide) {
           globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
         }
@@ -18100,6 +18220,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 
         el.oeePlanned.value = state.oeeConfig.plannedMinPerShift;
         el.oeeTarget.value = state.oeeConfig.targetKitPerShift;
+        root.querySelector('#mod-oee-target-dmc').value = isNumber(state.oeeConfig.targetDmcPerShift) ? state.oeeConfig.targetDmcPerShift : 200;
         el.stoppageSettingsDialog.showModal();
       });
       el.oeeSave.addEventListener('click', () => {
@@ -18108,15 +18229,20 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         if (!Number.isFinite(planned) || planned <= 0 || !Number.isFinite(target) || target <= 0) return;
         const today = isoDate(new Date());
         const latest = state.oeeConfigHistory[state.oeeConfigHistory.length - 1];
+        const dmcRaw = Number(root.querySelector('#mod-oee-target-dmc').value);
+        const latestDmc = latest && isNumber(latest.targetDmcPerShift) ? latest.targetDmcPerShift : 200;
+        const dmcTarget = Number.isFinite(dmcRaw) && dmcRaw > 0 ? Math.round(dmcRaw) : latestDmc;
         logAudit('oee.update', t('auditFromDate') + ' ' + formatDateNumeric(today), [
           { field: t('effectiveMinLabel'), from: latest ? latest.plannedMinPerShift : null, to: Math.round(planned) },
-          { field: t('targetKitLabel'), from: latest ? latest.targetKitPerShift : null, to: Math.round(target) }
+          { field: t('targetLineLabel'), from: latest ? latest.targetKitPerShift : null, to: Math.round(target) },
+          { field: t('targetDmcLabel'), from: latestDmc, to: dmcTarget }
         ]);
         if (latest && latest.effectiveFrom === today) {
           latest.plannedMinPerShift = Math.round(planned);
           latest.targetKitPerShift = Math.round(target);
+          latest.targetDmcPerShift = dmcTarget;
         } else {
-          state.oeeConfigHistory.push({ effectiveFrom: today, plannedMinPerShift: Math.round(planned), targetKitPerShift: Math.round(target) });
+          state.oeeConfigHistory.push({ effectiveFrom: today, plannedMinPerShift: Math.round(planned), targetKitPerShift: Math.round(target), targetDmcPerShift: dmcTarget });
           state.oeeConfigHistory.sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
         }
         state.oeeConfig = state.oeeConfigHistory[state.oeeConfigHistory.length - 1];
@@ -18473,6 +18599,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           // valgono quelli delle impostazioni
           plannedMinPerShift: entry.plannedMinPerShift,
           targetKitPerShift: entry.targetKitPerShift,
+          targetDmcPerShift: entry.targetDmcPerShift,
           updatedAt: entry.updatedAt
         };
         state.manual = state.manual.filter((row) => row.date !== entry.date);
@@ -18480,6 +18607,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         state.manual.sort((a, b) => a.date.localeCompare(b.date));
         const persisted = persistManual();
         pushEntryToCloud(storedEntry);
+        saveEntrySections(entry.date, formIsSingleShift());
         logAudit(wasExisting ? 'entry.update' : 'entry.create',
           formatDateNumeric(entry.date), entryAuditChanges(beforeRow, storedEntry));
         setEntryMode(entry.date);
