@@ -1658,8 +1658,13 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     color: var(--off-ink, var(--foreground));
     font-variant-numeric: tabular-nums;
   }
-  #martur-operations-dashboard .mod-topbar-cluster > .mod-world-clock-it { order: -99; margin-right: auto; }
-  #martur-operations-dashboard .mod-topbar-cluster > .mod-world-clock-tr { order: 99; margin-left: auto; }
+  #martur-operations-dashboard .mod-topbar-cluster > .mod-world-clock-it { order: -99; }
+  #martur-operations-dashboard .mod-topbar-cluster > .mod-world-clock-tr { order: 99; }
+  /* niente spazi vuoti: il logo prende tutto lo spazio che avanza (fino alla sua misura piena),
+     il calendario e' largo quanto la data */
+  #martur-operations-dashboard .mod-topbar-cluster > .mod-topbar-left { flex: 1 1 0; min-width: 0; justify-content: center; }
+  :root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: 100% !important; max-width: 422px; margin-left: 0 !important; }
+  #martur-operations-dashboard .mod-topbar-cluster .mod-header-picker .mod-period-picker { width: 196px; }
   #martur-operations-dashboard .mod-world-flag { width: 34px; height: 23px; flex: none; border-radius: 4px; box-shadow: 0 0 0 1px rgb(0 0 0 / 15%); }
   #martur-operations-dashboard .mod-world-text b { font-weight: 700; letter-spacing: 0.04em; }
   #martur-operations-dashboard .mod-world-weather { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
@@ -1669,7 +1674,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   #martur-operations-dashboard :is(.mod-world-text, .mod-world-weather) { display: none; }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: clamp(80px, calc(100vw - 1305px), 422px); }
 }
-@media (min-width: 1860px) and (pointer: fine), (min-width: 1860px) and (hover: hover) {
+@media (min-width: 1600px) and (pointer: fine), (min-width: 1600px) and (hover: hover) {
   #martur-operations-dashboard .mod-world-text { display: inline; }
   #martur-operations-dashboard .mod-world-weather { display: inline-flex; }
   #martur-operations-dashboard .mod-world-weather:empty { display: none; }
