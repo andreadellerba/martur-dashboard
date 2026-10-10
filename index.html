@@ -1222,10 +1222,11 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   right: 0;
   z-index: 60;
   display: grid;
-  grid-template-columns: repeat(8, 28px);
-  max-height: min(360px, 60vh);
-  overflow-y: auto;
-  gap: 8px;
+  /* tutti i colori visibili insieme, senza scorrere: tendina larga */
+  grid-template-columns: repeat(14, 24px);
+  max-height: none;
+  overflow: visible;
+  gap: 6px;
   padding: 10px;
   background: var(--popover);
   border: 1px solid var(--border);
@@ -1233,9 +1234,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   box-shadow: 0 12px 30px -12px rgb(0 0 0 / 45%);
 }
 #martur-operations-dashboard .mod-bg-pop[hidden] { display: none; }
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  #martur-operations-dashboard .mod-bg-pop { grid-template-columns: repeat(10, 24px); }
+}
 #martur-operations-dashboard .mod-bg-choice {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border-radius: 999px;
   border: 1px solid rgb(0 0 0 / 18%);
