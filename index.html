@@ -1946,7 +1946,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     align-items: stretch;
   }
   :root #martur-operations-dashboard.mod-locked .mod-tabbar,
-  :root #martur-operations-dashboard.mod-tv-on .mod-tabbar { display: none; }
   :root #martur-operations-dashboard .mod-tabbar-pill {
     display: flex;
     padding: 5px;
@@ -2565,7 +2564,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     }
     #martur-operations-dashboard .mod-brand-copy,
     #martur-operations-dashboard .mod-section,
-    #martur-operations-dashboard .mod-attendance-screen,
     #martur-operations-dashboard .mod-entry-screen,
     #martur-operations-dashboard .mod-entry-card,
     #martur-operations-dashboard .mod-field-group {
@@ -2657,7 +2655,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     }
     #martur-operations-dashboard.mod-compact #mod-dashboard-screen,
     #martur-operations-dashboard.mod-compact .mod-summary-screen,
-    #martur-operations-dashboard.mod-compact .mod-attendance-screen { gap: 8px; }
     #martur-operations-dashboard.mod-compact .card { padding: 8px; }
     #martur-operations-dashboard.mod-compact .mod-section { gap: 5px; }
     #martur-operations-dashboard.mod-compact .mod-kpi-grid,
@@ -2671,9 +2668,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     #martur-operations-dashboard.mod-compact .mod-rework-shifts,
     #martur-operations-dashboard.mod-compact .mod-two-col { gap: 8px; }
     #martur-operations-dashboard.mod-compact .mod-rework-ranking li { padding-bottom: 4px; }
-    #martur-operations-dashboard .mod-attendance-screen {
-      gap: 14px;
-    }
     #martur-operations-dashboard .mod-view-context,
     #martur-operations-dashboard .mod-view-actions {
       display: flex;
@@ -4042,117 +4036,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       color: var(--muted-foreground);
       font-weight: 600;
     }
-    /* ---- Modalita' TV ----
-       Si guarda da lontano: tutto piu' grande (basta muovere la base della
-       scala), contrasti piu' netti e nessun effetto al passaggio del mouse,
-       che su un televisore non serve e fa solo sfarfallare. */
-    #martur-operations-dashboard.mod-tv-on {
-      --font-size-base: 19px;
-      --muted-foreground: light-dark(rgb(52 58 70), rgb(216 222 234));
-      --border: light-dark(rgb(120 130 148), rgb(126 136 154));
-    }
-    #martur-operations-dashboard.mod-tv-on *,
-    #martur-operations-dashboard.mod-tv-on *::before,
-    #martur-operations-dashboard.mod-tv-on *::after {
-      transition: none !important;
-    }
-    #martur-operations-dashboard.mod-tv-on .mod-kpi-tile:hover,
-    #martur-operations-dashboard.mod-tv-on .card:hover,
-    #martur-operations-dashboard.mod-tv-on .mod-tv-tile:hover,
-    #martur-operations-dashboard.mod-tv-on tbody tr:hover td {
-      transform: none;
-      box-shadow: none;
-      background: var(--card);
-      border-color: var(--border);
-    }
-    #martur-operations-dashboard.mod-tv-on .mod-tv-tile {
-      border-left-width: 10px;
-      border: 1px solid var(--border);
-      border-left: 10px solid var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-tv-screen {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    #martur-operations-dashboard .mod-tv-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 10px;
-    }
-    #martur-operations-dashboard .mod-tv-title {
-      font-size: calc(var(--font-size-normal) * 2);
-      font-weight: 800;
-      letter-spacing: 0.04em;
-    }
-    #martur-operations-dashboard .mod-tv-date {
-      font-size: calc(var(--font-size-normal) * 1.6);
-      font-weight: 700;
-      color: var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-tv-grid {
-      display: grid;
-      grid-template-columns: minmax(240px, 360px) 1fr;
-      gap: 24px;
-      align-items: center;
-    }
-    #martur-operations-dashboard .mod-tv-oee svg {
-      width: 100%;
-      max-width: 360px;
-      height: auto;
-    }
-    #martur-operations-dashboard .mod-tv-oee .mod-oee-gauge-value {
-      font-size: calc(var(--font-size-normal) * 3.4);
-    }
-    #martur-operations-dashboard .mod-tv-kpis {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-    #martur-operations-dashboard .mod-tv-tile {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 22px 24px;
-      border-radius: var(--radius-2xl);
-      background: var(--card);
-      border-left: 6px solid var(--muted-foreground);
-    }
-    #martur-operations-dashboard .mod-tv-tile-value {
-      font-size: calc(var(--font-size-normal) * 2.6);
-      font-weight: 800;
-      line-height: 1.05;
-    }
-    #martur-operations-dashboard .mod-tv-tile-label {
-      font-size: calc(var(--font-size-normal) * 1.1);
-      color: var(--muted-foreground);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    #martur-operations-dashboard .mod-tv-blue { border-left-color: var(--viz-series-1); }
-    #martur-operations-dashboard .mod-tv-blue .mod-tv-tile-value { color: var(--viz-series-1); }
-    #martur-operations-dashboard .mod-tv-green { border-left-color: var(--viz-series-3); }
-    #martur-operations-dashboard .mod-tv-green .mod-tv-tile-value { color: var(--viz-series-3); }
-    #martur-operations-dashboard .mod-tv-red { border-left-color: light-dark(rgb(211 47 47), rgb(255 99 99)); }
-    #martur-operations-dashboard .mod-tv-red .mod-tv-tile-value { color: light-dark(rgb(211 47 47), rgb(255 99 99)); }
-    #martur-operations-dashboard .mod-tv-violet { border-left-color: var(--viz-series-5); }
-    #martur-operations-dashboard .mod-tv-violet .mod-tv-tile-value { color: var(--viz-series-5); }
-    #martur-operations-dashboard .mod-tv-fermi .mod-section-label {
-      font-size: calc(var(--font-size-normal) * 1.2);
-      margin-bottom: 12px;
-    }
-    @media (max-width: 760px) {
-      #martur-operations-dashboard .mod-tv-grid {
-        grid-template-columns: 1fr;
-      }
-      #martur-operations-dashboard .mod-tv-kpis {
-        grid-template-columns: 1fr;
-      }
-    }
     /* Centra verticalmente i KPI della cascata cosi' si allineano con le 3 barre dell'OLE (che sono centrate nella loro card). */
     #martur-operations-dashboard #mod-waterfall-section {
       display: flex;
@@ -4245,165 +4128,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       text-overflow: ellipsis;
       max-width: 100%;
       white-space: nowrap;
-    }
-    #martur-operations-dashboard .mod-chat-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 17px;
-      height: 17px;
-      margin-left: 5px;
-      padding: 0 5px;
-      border-radius: var(--radius-full);
-      background: light-dark(rgb(211 47 47), rgb(255 99 99));
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      line-height: 1;
-      vertical-align: middle;
-    }
-    #martur-operations-dashboard .mod-chat-screen {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-width: 0;
-    }
-    #martur-operations-dashboard .mod-chat-messages {
-      height: calc(100vh - 260px);
-      height: calc(100dvh - 260px);
-      min-height: 320px;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 6px 4px;
-    }
-    #martur-operations-dashboard .mod-chat-empty {
-      margin: auto;
-      color: var(--muted-foreground);
-      font-size: var(--font-size-small);
-    }
-    #martur-operations-dashboard .mod-chat-day {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 8px 0 2px;
-    }
-    #martur-operations-dashboard .mod-chat-day span {
-      padding: 2px 12px;
-      border-radius: var(--radius-full);
-      background: var(--muted);
-      color: var(--muted-foreground);
-      font-size: var(--font-size-small);
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-    #martur-operations-dashboard .mod-chat-msg {
-      display: grid;
-      justify-items: start;
-      max-width: min(78%, 560px);
-      margin-right: auto;
-    }
-    #martur-operations-dashboard .mod-chat-own {
-      justify-items: end;
-      margin-right: 0;
-      margin-left: auto;
-    }
-    #martur-operations-dashboard .mod-chat-author {
-      font-size: var(--font-size-small);
-      font-weight: 700;
-      color: var(--primary);
-      margin: 0 8px 1px;
-    }
-    #martur-operations-dashboard .mod-chat-bubble {
-      padding: 7px 11px;
-      border-radius: 14px;
-      background: var(--muted);
-      color: var(--foreground);
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
-    }
-    #martur-operations-dashboard .mod-chat-own .mod-chat-bubble {
-      background: var(--primary);
-      color: var(--primary-foreground);
-      border-bottom-right-radius: 4px;
-    }
-    #martur-operations-dashboard .mod-chat-msg:not(.mod-chat-own) .mod-chat-bubble {
-      border-bottom-left-radius: 4px;
-    }
-    #martur-operations-dashboard .mod-chat-mentioned .mod-chat-bubble {
-      box-shadow: 0 0 0 2px light-dark(rgb(207 143 15), rgb(240 189 96));
-    }
-    #martur-operations-dashboard .mod-chat-mention {
-      color: light-dark(rgb(23 121 227), rgb(131 195 255));
-      font-weight: 700;
-    }
-    #martur-operations-dashboard .mod-chat-own .mod-chat-mention {
-      color: light-dark(rgb(255 236 190), rgb(255 236 190));
-    }
-    #martur-operations-dashboard .mod-chat-time {
-      font-size: 10px;
-      color: var(--muted-foreground);
-      margin: 1px 8px 0;
-    }
-    #martur-operations-dashboard .mod-chat-composer {
-      position: sticky;
-      bottom: 0;
-      z-index: 5;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding-top: 8px;
-      padding-bottom: 8px;
-      background: var(--background);
-    }
-    #martur-operations-dashboard .mod-chat-composer-row {
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-    }
-    #martur-operations-dashboard .mod-chat-input {
-      flex: 1 1 auto;
-      resize: none;
-      max-height: 120px;
-      overflow-y: auto;
-      min-height: 38px;
-    }
-    #martur-operations-dashboard .mod-chat-send {
-      flex: 0 0 auto;
-      min-height: 38px;
-      padding: 0 14px;
-    }
-    #martur-operations-dashboard .mod-chat-suggest {
-      position: absolute;
-      left: 0;
-      bottom: calc(100% + 4px);
-      z-index: 5;
-      display: flex;
-      flex-direction: column;
-      min-width: 200px;
-      max-height: 200px;
-      overflow-y: auto;
-      background: var(--popover);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 8px 24px -12px rgb(0 0 0 / 35%);
-      padding: 4px;
-    }
-    #martur-operations-dashboard .mod-chat-suggest-item {
-      border: 0;
-      background: none;
-      text-align: left;
-      padding: 7px 10px;
-      border-radius: var(--radius-md);
-      color: var(--foreground);
-      cursor: pointer;
-      font: inherit;
-    }
-    #martur-operations-dashboard .mod-chat-suggest-item:hover {
-      background: var(--muted);
     }
     #martur-operations-dashboard .mod-report-title {
       font-size: calc(var(--font-size-normal) * 1.15);
@@ -6296,10 +6020,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       #martur-operations-dashboard #mod-dashboard-screen {
         margin-top: 6px;
       }
-      #martur-operations-dashboard .mod-chat-messages {
-        height: calc(100vh - 340px);
-        height: calc(100dvh - 340px);
-      }
       #martur-operations-dashboard .mod-report-title {
         letter-spacing: 0;
         white-space: nowrap;
@@ -6497,8 +6217,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       #martur-operations-dashboard .mod-row-actions {
         display: none !important;
       }
-      #martur-operations-dashboard .mod-entry-screen,
-      #martur-operations-dashboard .mod-attendance-screen {
+      #martur-operations-dashboard .mod-entry-screen {
         display: none !important;
       }
     }
@@ -6594,7 +6313,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               <button type="button" class="mod-nav-tab mod-summary-tab mod-nav-drop-item" role="menuitem" data-drop-group="summary" data-drop-target="anomalies" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="summaryAnomalyTab">Report anomalie</span></button>
             </div>
           </span>
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="tv" aria-pressed="false" data-i18n="tvMode" hidden>TV</button>
         </nav>
         <select id="mod-view-select" class="mod-view-select" aria-label="Dashboard views">
           <option value="daily" data-i18n="production">ANTERIORE / POSTERIORE</option>
@@ -6896,63 +6614,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 
   </main>
 
-  <section id="mod-attendance-screen" class="mod-attendance-screen" hidden>
-    <div class="mod-view-context">
-      <div class="mod-view-copy">
-        <div class="mod-view-title" data-i18n="attendanceTracking">Rilevazione presenze</div>
-        <div class="text-small text-muted" data-i18n="attendanceDescription">Assenze identificate per operatore in tutti i dati giornalieri salvati</div>
-      </div>
-    </div>
-
-    <section id="mod-operator-absence-section" class="mod-section mod-boxed" aria-labelledby="mod-operator-absence-title">
-      <div class="mod-section-head">
-        <div>
-          <div id="mod-operator-absence-title" class="mod-section-label" data-i18n="operatorAbsenceTracking">Assenteismo per operatore</div>
-          <div id="mod-operator-absence-subtitle" class="text-small text-muted"></div>
-        </div>
-        <span id="mod-operator-absence-count" class="viz-badge"></span>
-      </div>
-      <div class="mod-table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th data-i18n="operator">Operatore</th>
-              <th data-i18n="personnelNumber">Matricola</th>
-              <th data-i18n="shift1">1° turno</th>
-              <th data-i18n="shift2">2° turno</th>
-              <th data-i18n="absenceDays">Giorni assenza</th>
-              <th data-i18n="lastAbsence">Ultima assenza</th>
-            </tr>
-          </thead>
-          <tbody id="mod-operator-absence-body"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="mod-section mod-boxed" aria-labelledby="mod-attendance-log-title">
-      <div class="mod-section-head">
-        <div>
-          <div id="mod-attendance-log-title" class="mod-section-label" data-i18n="absenceLog">Registro assenze</div>
-          <div class="text-small text-muted" data-i18n="absenceLogDescription">Elenco giornaliero delle assenze con operatore e turno</div>
-        </div>
-        <span id="mod-attendance-log-count" class="viz-badge"></span>
-      </div>
-      <div class="mod-table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th data-i18n="date">Data</th>
-              <th data-i18n="operator">Operatore</th>
-              <th data-i18n="personnelNumber">Matricola</th>
-              <th data-i18n="shift">Turno</th>
-            </tr>
-          </thead>
-          <tbody id="mod-attendance-log-body"></tbody>
-        </table>
-      </div>
-    </section>
-  </section>
-
   <section id="mod-entry-screen" class="mod-entry-screen" hidden>
     <form id="mod-entry-form" class="card mod-entry-card">
       <div class="mod-entry-head">
@@ -7196,44 +6857,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     </section>
   </section>
 
-  <section id="mod-stoppages-screen" class="mod-stoppages-screen" hidden>
-    <div id="mod-stoppages-schema" class="mod-stoppages-schema"></div>
-    <section class="mod-section mod-boxed">
-      <div class="mod-section-head">
-        <div>
-          <div class="mod-section-label" data-i18n="recordedStoppages">Fermi registrati</div>
-          <div id="mod-stoppages-total" class="text-small text-muted"></div>
-        </div>
-        <button id="mod-export-stoppages" type="button" class="btn btn-ghost" title="Export CSV">
-          <i data-lucide="download" aria-hidden="true"></i><span>CSV</span>
-        </button>
-      </div>
-      <div class="mod-stoppage-filters">
-        <input id="mod-filter-date" class="form-control" type="date" aria-label="Giorno">
-        <select id="mod-filter-line" class="form-select" aria-label="Linea"></select>
-        <select id="mod-filter-cause" class="form-select" aria-label="Causa"></select>
-        <select id="mod-filter-reporter" class="form-select" aria-label="Chi segnala"></select>
-      </div>
-      <div class="mod-table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th data-i18n="duration">Durata</th>
-              <th data-i18n="startTime">Ora inizio</th>
-              <th data-i18n="endTime">Ora fine</th>
-              <th class="mod-stoppage-line-col" data-i18n="line">Linea</th>
-              <th data-i18n="operation">Postazione</th>
-              <th data-i18n="stoppageCause">Causa</th>
-              <th data-i18n="reporter">Segnalatore</th>
-              <th data-i18n="note">Note</th>
-              <th class="mod-stoppage-act-col" data-i18n="actions">Azioni</th>
-            </tr>
-          </thead>
-          <tbody id="mod-stoppages-body"></tbody>
-        </table>
-      </div>
-    </section>
-  </section>
 
   <!-- ABARTH - DMC e Q GATE: stesse card del Giornaliero, dati diversi.
        I numeri si inseriscono col "+" e valgono per la data scelta in alto. -->
@@ -7283,21 +6906,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     </div>
   </dialog>
 
-  <section id="mod-tv-screen" class="mod-tv-screen" hidden></section>
-
-  <section id="mod-chat-screen" class="mod-chat-screen" hidden>
-    <div id="mod-chat-messages" class="mod-chat-messages"></div>
-    <div class="mod-chat-composer">
-      <div id="mod-chat-suggest" class="mod-chat-suggest" hidden></div>
-      <div id="mod-chat-composer-row" class="mod-chat-composer-row">
-        <textarea id="mod-chat-input" class="form-control mod-chat-input" rows="1" maxlength="600" data-i18n-placeholder="chatPlaceholder" placeholder="Scrivi un messaggio… usa @ per citare"></textarea>
-        <button id="mod-chat-send" type="button" class="btn btn-primary mod-chat-send" title="Invia" data-i18n-title="chatSend">
-          <i data-lucide="send" aria-hidden="true"></i>
-        </button>
-      </div>
-      <div id="mod-chat-hint" class="text-small text-muted mod-chat-hint"></div>
-    </div>
-  </section>
 
   <!-- Segnalazione anomalia da QR (?anomalia): unica cosa visibile, senza
        login. Niente menu, niente link: solo il modulo e la conferma. -->
@@ -7820,68 +7428,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     </div>
   </dialog>
 
-  <dialog id="mod-stoppage-dialog" class="card mod-selection-dialog" aria-labelledby="mod-stoppage-dialog-title">
-    <div class="mod-dialog-shell">
-      <div class="mod-dialog-head">
-        <div class="mod-selection-copy">
-          <h2 id="mod-stoppage-dialog-title" class="mod-dialog-title" data-i18n="newStoppage">Nuovo fermo</h2>
-          <span id="mod-stoppage-target" class="text-small text-muted"></span>
-        </div>
-        <button id="mod-close-stoppage-dialog" type="button" class="btn btn-ghost">
-          <i data-lucide="x" aria-hidden="true"></i>
-          <span data-i18n="close">Chiudi</span>
-        </button>
-      </div>
-      <form id="mod-stoppage-form">
-        <div class="mod-dialog-scroll">
-          <div id="mod-stoppage-lines-group" class="form-label">
-            <span data-i18n="affectedLines">Linee coinvolte</span>
-            <div id="mod-stoppage-lines" class="mod-stoppage-causes"></div>
-          </div>
-          <div class="form-label">
-            <span data-i18n="stoppageCause">Causa del fermo</span>
-            <div id="mod-stoppage-causes" class="mod-stoppage-causes"></div>
-          </div>
-          <div class="mod-stoppage-duration">
-            <label class="form-label">
-              <span data-i18n="date">Data</span>
-              <input id="mod-stoppage-date" class="form-control" type="date" required>
-            </label>
-            <label class="form-label">
-              <span data-i18n="startTime">Ora inizio</span>
-              <input id="mod-stoppage-time" class="form-control" type="time" required>
-            </label>
-          </div>
-          <div class="mod-stoppage-duration">
-            <label class="form-label">
-              <span data-i18n="duration">Durata</span>
-              <input id="mod-stoppage-duration" class="form-control" type="number" min="0" step="1" required>
-            </label>
-            <label class="form-label">
-              <span>&nbsp;</span>
-              <select id="mod-stoppage-unit" class="form-select">
-                <option value="min" data-i18n="minutes">Minuti</option>
-                <option value="hours" data-i18n="hours">Ore</option>
-              </select>
-            </label>
-          </div>
-          <label class="form-label">
-            <span data-i18n="reporter">Chi segnala</span>
-            <input id="mod-stoppage-reporter" class="form-control" type="text" readonly>
-          </label>
-          <label class="form-label">
-            <span data-i18n="note">Note</span>
-            <textarea id="mod-stoppage-note" class="form-control" rows="2"></textarea>
-          </label>
-          <div id="mod-stoppage-error" class="text-small mod-negative" hidden data-i18n="stoppageInvalid">Compila causa, durata e chi segnala.</div>
-        </div>
-        <div class="mod-dialog-actions">
-          <button id="mod-cancel-stoppage-dialog" type="button" class="btn" data-i18n="cancel">Annulla</button>
-          <button type="submit" class="btn btn-primary" data-i18n="save">Salva</button>
-        </div>
-      </form>
-    </div>
-  </dialog>
 
   <dialog id="mod-welcome-dialog" class="card mod-selection-dialog" aria-labelledby="mod-welcome-title">
     <div class="mod-dialog-shell">
@@ -8092,13 +7638,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           newVersionReload: '🔄 Nuova versione disponibile · tocca per aggiornare',
           greeting: 'Buongiorno',
           logout: 'Esci',
-          chat: 'Comunicazioni',
-          tvMode: 'TV',
-          chatPlaceholder: 'Scrivi un messaggio… usa @ per citare',
-          chatSend: 'Invia',
-          chatEmpty: 'Nessun messaggio. Scrivi il primo!',
-          chatLoginRequired: 'Accedi per scrivere in chat.',
-          chatUnavailable: 'Chat non disponibile (connessione assente).',
           today: 'Oggi',
           yesterday: 'Ieri',
           previousPeriod: 'Periodo precedente',
@@ -8722,13 +8261,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           newVersionReload: '🔄 New version available · tap to update',
           greeting: 'Hello',
           logout: 'Log out',
-          chat: 'Communications',
-          tvMode: 'TV',
-          chatPlaceholder: 'Write a message… use @ to mention',
-          chatSend: 'Send',
-          chatEmpty: 'No messages yet. Write the first one!',
-          chatLoginRequired: 'Sign in to write in the chat.',
-          chatUnavailable: 'Chat unavailable (no connection).',
           today: 'Today',
           yesterday: 'Yesterday',
           previousPeriod: 'Previous period',
@@ -9352,13 +8884,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           newVersionReload: '🔄 Yeni sürüm mevcut · güncellemek için dokunun',
           greeting: 'Günaydın',
           logout: 'Çıkış',
-          chat: 'İletişim',
-          tvMode: 'TV',
-          chatPlaceholder: 'Mesaj yaz… bahsetmek için @ kullan',
-          chatSend: 'Gönder',
-          chatEmpty: 'Henüz mesaj yok. İlkini sen yaz!',
-          chatLoginRequired: 'Sohbete yazmak için giriş yap.',
-          chatUnavailable: 'Sohbet kullanılamıyor (bağlantı yok).',
           today: 'Bugün',
           yesterday: 'Dün',
           previousPeriod: 'Önceki dönem',
@@ -10009,7 +9534,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       const STOPPAGE_STORAGE_KEY = 'martur-stoppages-v1';
       const STOPPAGE_CONFIG_KEY = 'martur-stoppage-config-v1';
       const OEE_CONFIG_KEY = 'martur-oee-config-v1';
-      const CHAT_SEEN_KEY = 'martur-chat-seen-v1';
       const REWORK_STORAGE_KEY = 'martur-rework-options-v1';
       const LOSS_STORAGE_KEY = 'martur-loss-options-v1';
       const OEE_DEFAULTS = { plannedMinPerShift: 450, targetKitPerShift: 170 };
@@ -10060,11 +9584,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         anomalySettings: {},
         sectionDoc: {},
         dmcTargetHistory: [],
-        chatMessages: [],
-        chatUsers: [],
-        chatUnsub: null,
-        chatUsersLoaded: false,
-        chatSeenTs: 0,
         themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
         // Compatta di default per tutti: chi preferisce l'altra la sceglie
         // dal menu impostazioni e resta memorizzata sul suo dispositivo.
@@ -10174,9 +9693,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 
       const el = {
         dashboardScreen: root.querySelector('#mod-dashboard-screen'),
-        attendanceScreen: root.querySelector('#mod-attendance-screen'),
         entryScreen: root.querySelector('#mod-entry-screen'),
-        stoppagesScreen: root.querySelector('#mod-stoppages-screen'),
         abarthScreen: root.querySelector('#mod-abarth-screen'),
         abarthCards: root.querySelector('#mod-abarth-cards'),
         abarthShifts: root.querySelector('#mod-abarth-shifts'),
@@ -10194,14 +9711,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         sectionClose: root.querySelector('#mod-section-close'),
         sectionCancel: root.querySelector('#mod-section-cancel'),
         dmcScreen: root.querySelector('#mod-dmc-screen'),
-        tvScreen: root.querySelector('#mod-tv-screen'),
-        chatScreen: root.querySelector('#mod-chat-screen'),
-        chatMessages: root.querySelector('#mod-chat-messages'),
-        chatInput: root.querySelector('#mod-chat-input'),
-        chatSend: root.querySelector('#mod-chat-send'),
-        chatSuggest: root.querySelector('#mod-chat-suggest'),
-        chatHint: root.querySelector('#mod-chat-hint'),
-        chatBadge: root.querySelector('#mod-chat-badge'),
         viewSelect: root.querySelector('#mod-view-select'),
         viewSubselect: root.querySelector('#mod-view-subselect'),
         stoppagesSchema: root.querySelector('#mod-stoppages-schema'),
@@ -10465,11 +9974,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         absChartWrap: root.querySelector('#mod-abs-chart-wrap'),
         absChart: root.querySelector('#mod-abs-chart'),
         absAxis: root.querySelector('#mod-abs-axis'),
-        operatorAbsenceSubtitle: root.querySelector('#mod-operator-absence-subtitle'),
-        operatorAbsenceCount: root.querySelector('#mod-operator-absence-count'),
-        operatorAbsenceBody: root.querySelector('#mod-operator-absence-body'),
-        attendanceLogCount: root.querySelector('#mod-attendance-log-count'),
-        attendanceLogBody: root.querySelector('#mod-attendance-log-body'),
         shiftPeriod: root.querySelector('#mod-shift-period'),
         shiftQualityPeriod: root.querySelector('#mod-shift-quality-period'),
         shiftProductionBody: root.querySelector('#mod-shift-production-body'),
@@ -12381,49 +11885,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         }).join('') + '</ul>';
       }
 
-      function operatorAbsenceStats(rows, periods) {
-        const selectedDates = new Set(periods.map((period) => period.key));
-        const stats = new Map();
-        rows.forEach((row) => {
-          if (!selectedDates.has(row.date)) return;
-          normalizeAbsentOperators(row.absentOperators).forEach((item) => {
-            const operator = OPERATOR_BY_ID.get(item.id);
-            if (!stats.has(item.id)) {
-              stats.set(item.id, { id: item.id, name: operator.name, shift1: 0, shift2: 0, total: 0, lastDate: row.date });
-            }
-            const stat = stats.get(item.id);
-            stat[item.shift] += 1;
-            stat.total += 1;
-            if (row.date > stat.lastDate) stat.lastDate = row.date;
-          });
-        });
-        return Array.from(stats.values()).sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
-      }
-
-      function renderOperatorAbsenceTracking(rows, periods, subtitle) {
-        const stats = operatorAbsenceStats(rows, periods);
-        const absenceDays = stats.reduce((sum, stat) => sum + stat.total, 0);
-        el.operatorAbsenceSubtitle.textContent = subtitle + ' · ' + t('identifiedAbsencesOnly');
-        el.operatorAbsenceCount.textContent = formatNumber(stats.length) + ' ' + t('operators') + ' · ' + formatNumber(absenceDays) + ' ' + t('absenceRecords');
-        el.operatorAbsenceBody.innerHTML = stats.length
-          ? stats.map((stat) => '<tr><td>' + escapeHtml(stat.name) + '</td><td>' + escapeHtml(stat.id) + '</td><td>' + formatNumber(stat.shift1) + '</td><td>' + formatNumber(stat.shift2) + '</td><td><strong>' + formatNumber(stat.total) + '</strong></td><td>' + formatDate(stat.lastDate) + '</td></tr>').join('')
-          : '<tr><td colspan="6" class="mod-empty">' + t('noIdentifiedAbsences') + '</td></tr>';
-      }
-
-      function renderAttendanceScreen(rows) {
-        const periods = rows.map((row) => ({ key: row.date }));
-        renderOperatorAbsenceTracking(rows, periods, t('allRecordedAbsences'));
-        const logs = rows.flatMap((row) => normalizeAbsentOperators(row.absentOperators).map((item) => {
-          const operator = OPERATOR_BY_ID.get(item.id);
-          return { date: row.date, id: item.id, name: operator.name, shift: item.shift };
-        })).sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name));
-
-        el.attendanceLogCount.textContent = formatNumber(logs.length) + ' ' + t('recordedAbsences');
-        el.attendanceLogBody.innerHTML = logs.length
-          ? logs.map((log) => '<tr><td>' + formatDate(log.date) + '</td><td>' + escapeHtml(log.name) + '</td><td>' + escapeHtml(log.id) + '</td><td>' + escapeHtml(t(log.shift)) + '</td></tr>').join('')
-          : '<tr><td colspan="4" class="mod-empty">' + t('noAbsenceLog') + '</td></tr>';
-      }
-
       // Titolo di colonna su una riga: "| 1° TURNO • I 3 rework ...". Quando
       // ci sono le due colonne il titolo unico della sezione si nasconde.
       function shiftHeadHtml(shiftKey, titleKey) {
@@ -13519,7 +12980,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             applyAuthRole(null);
             updateTextEditAccess();
             state.authUsername = null;
-            unsubscribeChat();
             if (state.view === 'entry') state.view = 'daily';
             // Uscendo non deve restare niente a schermo per chi prende in mano
             // il dispositivo dopo. La copia su questo device resta al suo posto:
@@ -13574,8 +13034,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             subscribeStoppageConfig();
             subscribeReworkOptions();
             subscribeLossOptions();
-            loadChatUsers();
-            subscribeChat();
             migrateLocalEntriesToCloud();
             renderAll();
             // Dopo l'accesso, cosi' non si sovrappone alla schermata di login.
@@ -13590,16 +13048,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             renderAll();
           });
         });
-      }
-
-      function loadChatUsers() {
-        if (!db || state.chatUsersLoaded) return;
-        db.collection('users').get().then((snap) => {
-          const names = [];
-          snap.forEach((doc) => { const u = doc.data().username; if (u) names.push(u); });
-          state.chatUsers = names.sort((a, b) => a.localeCompare(b));
-          state.chatUsersLoaded = true;
-        }).catch(() => {});
       }
 
       /* ---- Riepilogo attivita' ---- */
@@ -15813,120 +15261,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           });
       }
 
-      function subscribeChat() {
-        if (!db || state.chatUnsub) return;
-        state.chatUnsub = db.collection('messages').orderBy('createdAt', 'asc').limit(300).onSnapshot((snap) => {
-          const msgs = [];
-          snap.forEach((doc) => {
-            const d = doc.data();
-            msgs.push({
-              id: doc.id,
-              username: d.username || '?',
-              text: d.text || '',
-              createdAt: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : new Date()
-            });
-          });
-          state.chatMessages = msgs;
-          if (state.view === 'chat') {
-            markChatSeen();
-            renderChatMessages();
-          } else {
-            updateChatBadge();
-          }
-        }, () => {});
-      }
-
-      function unsubscribeChat() {
-        if (state.chatUnsub) { state.chatUnsub(); state.chatUnsub = null; }
-      }
-
-      function chatUnreadCount() {
-        const me = (state.authUsername || '').toLowerCase();
-        return state.chatMessages.filter((m) => m.createdAt.getTime() > state.chatSeenTs && m.username.toLowerCase() !== me).length;
-      }
-
-      function updateChatBadge() {
-        // La chat non ha piu' una scheda nel menu (sostituita da RIEPILOGO),
-        // quindi il pallino dei non letti non esiste piu'.
-        if (!el.chatBadge) return;
-        const count = state.view === 'chat' ? 0 : chatUnreadCount();
-        if (count > 0) {
-          el.chatBadge.textContent = count > 99 ? '99+' : String(count);
-          el.chatBadge.hidden = false;
-        } else {
-          el.chatBadge.textContent = '';
-          el.chatBadge.hidden = true;
-        }
-      }
-
-      function markChatSeen() {
-        const newest = state.chatMessages.length ? state.chatMessages[state.chatMessages.length - 1].createdAt.getTime() : Date.now();
-        state.chatSeenTs = Math.max(state.chatSeenTs, newest);
-        try { window.localStorage.setItem(CHAT_SEEN_KEY, String(state.chatSeenTs)); } catch (e) {}
-        updateChatBadge();
-      }
-
-      function chatDayLabel(date) {
-        const today = new Date(); today.setHours(0, 0, 0, 0);
-        const d = new Date(date); d.setHours(0, 0, 0, 0);
-        const diff = Math.round((today - d) / 86400000);
-        if (diff === 0) return t('today');
-        if (diff === 1) return t('yesterday');
-        try { return new Intl.DateTimeFormat(locale(), { weekday: 'long', day: '2-digit', month: 'long' }).format(date); } catch (e) { return ''; }
-      }
-
-      function chatTimeLabel(date) {
-        try { return new Intl.DateTimeFormat(locale(), { hour: '2-digit', minute: '2-digit' }).format(date); } catch (e) { return ''; }
-      }
-
-      function renderChatText(text) {
-        const userSet = new Set(state.chatUsers.map((u) => u.toLowerCase()));
-        return escapeHtml(text).replace(/@([a-z0-9._-]+)/gi, (match, name) =>
-          userSet.has(name.toLowerCase()) ? '<span class="mod-chat-mention">@' + escapeHtml(name) + '</span>' : match
-        );
-      }
-
-      function renderChatMessages() {
-        const me = state.authUsername;
-        if (!state.chatMessages.length) {
-          el.chatMessages.innerHTML = '<div class="mod-chat-empty">' + escapeHtml(db ? t('chatEmpty') : t('chatUnavailable')) + '</div>';
-        } else {
-          let html = '';
-          let lastDay = '';
-          state.chatMessages.forEach((msg) => {
-            const dayKey = msg.createdAt.toISOString().slice(0, 10);
-            if (dayKey !== lastDay) {
-              html += '<div class="mod-chat-day"><span>' + escapeHtml(chatDayLabel(msg.createdAt)) + '</span></div>';
-              lastDay = dayKey;
-            }
-            const own = me && msg.username.toLowerCase() === me.toLowerCase();
-            const mentionsMe = me && new RegExp('@' + me.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![a-z0-9._-])', 'i').test(msg.text);
-            html += '<div class="mod-chat-msg' + (own ? ' mod-chat-own' : '') + (mentionsMe ? ' mod-chat-mentioned' : '') + '">' +
-              (own ? '' : '<span class="mod-chat-author">' + escapeHtml(msg.username) + '</span>') +
-              '<span class="mod-chat-bubble">' + renderChatText(msg.text) + '</span>' +
-              '<span class="mod-chat-time">' + escapeHtml(chatTimeLabel(msg.createdAt)) + '</span>' +
-            '</div>';
-          });
-          el.chatMessages.innerHTML = html;
-        }
-        el.chatMessages.scrollTop = el.chatMessages.scrollHeight;
-        const canWrite = Boolean(state.authUsername && db);
-        el.chatInput.disabled = !canWrite;
-        el.chatSend.disabled = !canWrite;
-        el.chatHint.textContent = !db ? t('chatUnavailable') : (!state.authUsername ? t('chatLoginRequired') : '');
-      }
-
-      function sizeChatMessages() {
-        // Misura lo spazio realmente disponibile (invece di indovinare una costante CSS)
-        // cosi' i messaggi riempiono sempre tutto lo schermo fino al composer, su
-        // qualunque dispositivo/altezza di header.
-        if (!el.chatMessages || el.chatScreen.hidden) return;
-        const top = el.chatMessages.getBoundingClientRect().top;
-        const available = window.innerHeight - top - 12;
-        el.chatMessages.style.height = Math.max(240, Math.round(available)) + 'px';
-      }
-      window.addEventListener('resize', () => { if (!el.chatScreen.hidden) sizeChatMessages(); });
-
       // ---- EDI ----
       // Dal foglio dell'Excel EDI con una riga per codice materiale (colonne
       // Material, W, Colore, Back, Heat e una colonna per settimana) si
@@ -16596,95 +15930,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       });
       el.ediDelete.addEventListener('click', deleteEdi);
 
-      function renderChat() {
-        subscribeChat();
-        loadChatUsers();
-        markChatSeen();
-        renderChatMessages();
-        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
-        sizeChatMessages();
-      }
-
-      function renderTv() {
-        const rows = getDailyRows();
-        const summary = rows.find((r) => r.date === state.selectedDate) || deriveRow({ date: state.selectedDate, shift1: emptyShift(), shift2: emptyShift() });
-        const stoppages = getPeriodStoppages();
-        const downtime = stoppages.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
-        const sw = (valueOrZero(summary.shift1 && summary.shift1.front) > 0 ? 1 : 0) + (valueOrZero(summary.shift2 && summary.shift2.front) > 0 ? 1 : 0) || (summary.completeKits > 0 ? 2 : 0);
-        const cfg = oeeConfigFor(state.selectedDate);
-        const oee = computeOee(summary.completeKits, summary.rework, downtime, cfg.plannedMinPerShift * sw, cfg.targetKitPerShift * sw);
-        const tiles = [
-          { label: t('marturSets'), value: formatNumber(summary.completeKits) + ' Kit', cls: 'mod-tv-blue' },
-          { label: t('stellantisProduction'), value: formatNumber(summary.stellantisCars) + ' Kit', cls: 'mod-tv-green' },
-          { label: t('supplyGap'), value: formatSigned(summary.supplyGap) + ' Kit', cls: (isNumber(summary.supplyGap) && summary.supplyGap < 0) ? 'mod-tv-red' : 'mod-tv-green' },
-          { label: t('efficiency'), value: formatPercent(summary.efficiency), cls: 'mod-tv-violet' }
-        ];
-        el.tvScreen.innerHTML =
-          '<div class="mod-tv-head"><span class="mod-tv-title">MARTUR ITALY PRODUCTION DASHBOARD</span><span class="mod-tv-date">' + escapeHtml(formatDate(state.selectedDate)) + '</span></div>' +
-          '<div class="mod-tv-grid">' +
-            '<div class="mod-tv-oee">' + (oee ? oeeGaugeSvg(oee.oee) : '<div class="mod-oee-empty">' + escapeHtml(t('oeeNoData')) + '</div>') + '</div>' +
-            '<div class="mod-tv-kpis">' + tiles.map((tl) =>
-              '<div class="mod-tv-tile ' + tl.cls + '"><span class="mod-tv-tile-value">' + escapeHtml(tl.value) + '</span><span class="mod-tv-tile-label">' + escapeHtml(tl.label) + '</span></div>'
-            ).join('') + '</div>' +
-          '</div>' +
-          '<div class="mod-tv-fermi"><div class="mod-section-label">' + escapeHtml(t('downtimeTitle')) + '</div>' +
-            (stoppages.length ? downtimeParetoHtml(stoppages, 3) : '<div class="mod-empty">' + escapeHtml(t('noStoppagesPeriod')) + '</div>') +
-          '</div>';
-      }
-
-      function sendChatMessage() {
-        const text = el.chatInput.value.trim();
-        if (!text || !state.authUsername || !db) return;
-        el.chatInput.value = '';
-        autoGrow(el.chatInput);
-        hideChatSuggest();
-        db.collection('messages').add({
-          username: state.authUsername,
-          text: text,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(() => {});
-      }
-
-      function currentMentionPrefix() {
-        const val = el.chatInput.value;
-        const caret = el.chatInput.selectionStart == null ? val.length : el.chatInput.selectionStart;
-        const before = val.slice(0, caret);
-        const match = before.match(/@([a-z0-9._-]*)$/i);
-        return match ? { prefix: match[1], start: caret - match[1].length - 1, caret } : null;
-      }
-
-      function updateChatSuggest() {
-        const info = currentMentionPrefix();
-        if (!info) { hideChatSuggest(); return; }
-        const prefix = info.prefix.toLowerCase();
-        const matches = state.chatUsers.filter((u) => u.toLowerCase().startsWith(prefix)).slice(0, 6);
-        if (!matches.length) { hideChatSuggest(); return; }
-        el.chatSuggest.innerHTML = matches.map((u) => '<button type="button" class="mod-chat-suggest-item" data-user="' + escapeHtml(u) + '">@' + escapeHtml(u) + '</button>').join('');
-        el.chatSuggest.hidden = false;
-        el.chatSuggest.querySelectorAll('.mod-chat-suggest-item').forEach((btn) => {
-          btn.addEventListener('mousedown', (event) => { event.preventDefault(); insertMention(btn.dataset.user); });
-        });
-      }
-
-      function insertMention(username) {
-        const info = currentMentionPrefix();
-        if (!info) return;
-        const val = el.chatInput.value;
-        const before = val.slice(0, info.start);
-        const after = val.slice(info.caret);
-        const inserted = before + '@' + username + ' ';
-        el.chatInput.value = inserted + after;
-        el.chatInput.setSelectionRange(inserted.length, inserted.length);
-        el.chatInput.focus();
-        hideChatSuggest();
-        autoGrow(el.chatInput);
-      }
-
-      function hideChatSuggest() {
-        el.chatSuggest.hidden = true;
-        el.chatSuggest.innerHTML = '';
-      }
-
       function stoppageLineName(lineId) {
         const line = STOPPAGE_LINES.find((item) => item.id === lineId);
         return line ? line.name : lineId;
@@ -16741,125 +15986,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           const isPrimary = line.id === primaryLineId;
           return '<label class="form-check" for="' + id + '"><input id="' + id + '" class="form-check-input mod-stoppage-line-check" type="checkbox" value="' + escapeHtml(line.id) + '"' + (isPrimary ? ' checked disabled' : '') + '><span class="form-check-label">' + escapeHtml(line.name) + '</span></label>';
         }).join('');
-      }
-
-      function fillStoppageSelects(lineId, selectedCauses, selectedReporter) {
-        const sel = selectedCauses || [];
-        const causes = lineCauses(lineId).slice();
-        sel.forEach((c) => { if (!causes.includes(c)) causes.push(c); });
-        el.stoppageCauses.innerHTML = causes.map((cause, i) => {
-          const id = 'mod-cause-chk-' + i;
-          return '<label class="form-check" for="' + id + '"><input id="' + id + '" class="form-check-input mod-cause-check" type="checkbox" value="' + escapeHtml(cause) + '"' + (sel.includes(cause) ? ' checked' : '') + '><span class="form-check-label">' + escapeHtml(cause) + '</span></label>';
-        }).join('');
-        el.stoppageReporter.value = selectedReporter || state.authUsername || '';
-      }
-
-      function setStoppageDateTime(date) {
-        const d = date instanceof Date && !isNaN(date) ? date : new Date();
-        el.stoppageDate.value = isoDate(d);
-        el.stoppageTime.value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-      }
-
-      function stoppageTimestampFromInputs() {
-        const dateStr = el.stoppageDate.value;
-        const timeStr = el.stoppageTime.value || '00:00';
-        if (!dateStr) return null;
-        const dp = dateStr.split('-').map(Number);
-        const tp = timeStr.split(':').map(Number);
-        const d = new Date(dp[0], (dp[1] || 1) - 1, dp[2] || 1, tp[0] || 0, tp[1] || 0);
-        return isNaN(d) ? null : d.toISOString();
-      }
-
-      function openStoppageDialog(lineId, op) {
-        if (!state.authUser) {
-          promptAdminLogin();
-          return;
-        }
-        state.stoppageTarget = { lineId, op };
-        state.stoppageEditingIds = null;
-        el.stoppageTargetLabel.textContent = stoppageLineName(lineId) + ' · ' + op;
-        el.stoppageLinesGroup.hidden = false;
-        fillStoppageLines(lineId);
-        fillStoppageSelects(lineId, [], '');
-        setStoppageDateTime(new Date());
-        el.stoppageDuration.value = '';
-        el.stoppageUnit.value = 'min';
-        el.stoppageNote.value = '';
-        el.stoppageError.hidden = true;
-        el.stoppageDialog.showModal();
-        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
-      }
-
-      function openStoppageEdit(ids) {
-        if (!state.authUser) return;
-        const idList = Array.isArray(ids) ? ids : [ids];
-        const rec = state.stoppages.find((s) => s.id === idList[0]);
-        if (!rec) return;
-        state.stoppageTarget = { lineId: rec.lineId, op: rec.op };
-        state.stoppageEditingIds = idList;
-        const lineNames = idList.map((id) => {
-          const r = state.stoppages.find((s) => s.id === id);
-          return r ? (r.line || stoppageLineName(r.lineId)) : null;
-        }).filter(Boolean).join(', ');
-        el.stoppageTargetLabel.textContent = lineNames + ' · ' + rec.op;
-        el.stoppageLinesGroup.hidden = true;
-        el.stoppageLines.innerHTML = '';
-        fillStoppageSelects(rec.lineId, stoppageCauseList(rec), rec.reporter);
-        setStoppageDateTime(new Date(rec.timestamp));
-        el.stoppageDuration.value = rec.durationMin;
-        el.stoppageUnit.value = 'min';
-        el.stoppageNote.value = rec.note || '';
-        el.stoppageError.hidden = true;
-        el.stoppageDialog.showModal();
-        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
-      }
-
-      function submitStoppage() {
-        if (!state.authUser) { el.stoppageDialog.close(); return; }
-        const causes = Array.from(el.stoppageCauses.querySelectorAll('.mod-cause-check:checked')).map((input) => input.value);
-        const durationRaw = Number(el.stoppageDuration.value);
-        const reporter = el.stoppageReporter.value;
-        const timestamp = stoppageTimestampFromInputs();
-        if (!causes.length || !reporter || !timestamp || !Number.isFinite(durationRaw) || durationRaw <= 0 || !state.stoppageTarget) {
-          el.stoppageError.hidden = false;
-          return;
-        }
-        const durationMin = el.stoppageUnit.value === 'hours' ? durationRaw * 60 : durationRaw;
-        const note = el.stoppageNote.value.trim();
-        if (state.stoppageEditingIds) {
-          state.stoppageEditingIds.forEach((id) => {
-            const rec = state.stoppages.find((s) => s.id === id);
-            if (rec) {
-              const before = Object.assign({}, rec);
-              rec.causes = causes; rec.cause = causes.join(', '); rec.durationMin = durationMin;
-              rec.reporter = reporter; rec.note = note; rec.timestamp = timestamp;
-              saveStoppageDoc(rec);
-              logAudit('stoppage.update', stoppageAuditName(rec), stoppageAuditChanges(before, rec));
-            }
-          });
-          persistStoppages();
-        } else {
-          const selectedLines = Array.from(el.stoppageLines.querySelectorAll('.mod-stoppage-line-check:checked')).map((input) => input.value);
-          const targetLines = selectedLines.length ? selectedLines : [state.stoppageTarget.lineId];
-          targetLines.forEach((lineId) => {
-            addStoppage({
-              id: (globalThis.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2) + lineId,
-              lineId,
-              line: stoppageLineName(lineId),
-              op: state.stoppageTarget.op,
-              causes,
-              cause: causes.join(', '),
-              durationMin,
-              reporter,
-              note,
-              timestamp
-            });
-          });
-        }
-        state.stoppageTarget = null;
-        state.stoppageEditingIds = null;
-        el.stoppageDialog.close();
-        renderStoppages();
       }
 
       function getPeriodStoppages() {
@@ -17279,17 +16405,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         );
       }
 
-      function renderStoppageFilters() {
-        el.filterDate.value = state.stoppageFilters.date || '';
-        const opt = (value, label, selected) => '<option value="' + escapeHtml(value) + '"' + (selected ? ' selected' : '') + '>' + escapeHtml(label) + '</option>';
-        el.filterLine.innerHTML = opt('', t('filterAll') + ' · ' + t('line'), !state.stoppageFilters.line) +
-          STOPPAGE_LINES.map((l) => opt(l.id, l.name, state.stoppageFilters.line === l.id)).join('');
-        el.filterCause.innerHTML = opt('', t('filterAll') + ' · ' + t('stoppageCause'), !state.stoppageFilters.cause) +
-          allConfiguredCauses().map((c) => opt(c, c, state.stoppageFilters.cause === c)).join('');
-        el.filterReporter.innerHTML = opt('', t('filterAll') + ' · ' + t('reporter'), !state.stoppageFilters.reporter) +
-          allReporterNames().map((r) => opt(r, r, state.stoppageFilters.reporter === r)).join('');
-      }
-
       function renderUserAdmin() {
         el.account.hidden = !state.authUser;
         el.pwMsg.hidden = true;
@@ -17691,135 +16806,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         return [header.map(esc).join(';')].concat(lines).join('\r\n');
       }
 
-      function exportStoppagesCsv() {
-        logAudit('export.csv', t('stoppages'));
-        const list = getFilteredStoppages().slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-        const csv = '﻿' + stoppagesToCsv(list);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'fermi-martur-' + isoDate(new Date()) + '.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      }
-
+      // La pagina dei fermi non c'e' piu': i fermi restano solo come dati per le perdite.
       function renderStoppages() {
-        ensureHistoryFrom(neededHistoryStart());
-        const now = Date.now();
-        const todayIso = isoDate(new Date());
-        const recentByKey = new Set();
-        const todayByLine = {};
-        state.stoppages.forEach((s) => {
-          if (now - new Date(s.timestamp).getTime() < 2 * 60 * 60 * 1000) {
-            recentByKey.add(s.lineId + '|' + s.op);
-          }
-          if (String(s.timestamp).slice(0, 10) === todayIso) {
-            todayByLine[s.lineId] = (todayByLine[s.lineId] || 0) + (isNumber(s.durationMin) ? s.durationMin : 0);
-          }
-        });
-        el.stoppagesSchema.innerHTML = STOPPAGE_LINES.map((line) => {
-          const status = lineStatus(todayByLine[line.id] || 0);
-          return '<details class="mod-stoppage-line"' + (state.stoppageOpenLines.has(line.id) ? ' open' : '') + ' data-line="' + escapeHtml(line.id) + '">' +
-            '<summary class="mod-stoppage-line-name"><span class="mod-line-status" data-status="' + status + '"></span>' + escapeHtml(line.name) + '</summary>' +
-            '<div class="mod-stoppage-ops">' +
-              lineOps(line.id).map((op) =>
-                '<button type="button" class="btn mod-stoppage-op" data-line="' + escapeHtml(line.id) + '" data-op="' + escapeHtml(op) + '" data-recent="' + (recentByKey.has(line.id + '|' + op) ? 'true' : 'false') + '">' + escapeHtml(op) + '</button>'
-              ).join('') +
-            '</div>' +
-          '</details>';
-        }).join('');
-        el.stoppagesSchema.querySelectorAll('.mod-stoppage-line').forEach((details) => {
-          details.addEventListener('toggle', () => {
-            if (details.open) state.stoppageOpenLines.add(details.dataset.line);
-            else state.stoppageOpenLines.delete(details.dataset.line);
-          });
-        });
-        el.stoppagesSchema.querySelectorAll('.mod-stoppage-op').forEach((button) => {
-          button.addEventListener('click', () => openStoppageDialog(button.dataset.line, button.dataset.op));
-        });
-
-        renderStoppageAdmin();
-        renderStoppageFilters();
-
-        const filtered = getFilteredStoppages();
-        const sorted = filtered.slice().sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-        const totalMin = filtered.reduce((sum, s) => sum + (isNumber(s.durationMin) ? s.durationMin : 0), 0);
-        el.stoppagesTotal.textContent = t('totalDowntime') + ': ' + stoppageDurationText(totalMin);
-
-        if (!sorted.length) {
-          el.stoppagesBody.innerHTML = '<tr><td colspan="8" class="mod-empty">' + t('noStoppages') + '</td></tr>';
-          return;
-        }
-        const groups = [];
-        const byDay = new Map();
-        sorted.forEach((s) => {
-          const day = s.timestamp.slice(0, 10);
-          if (!byDay.has(day)) {
-            const group = { day, items: [], total: 0 };
-            byDay.set(day, group);
-            groups.push(group);
-          }
-          const group = byDay.get(day);
-          group.items.push(s);
-          if (isNumber(s.durationMin)) group.total += s.durationMin;
-        });
-        const lineOrder = (lineId) => {
-          const i = STOPPAGE_LINES.findIndex((line) => line.id === lineId);
-          return i === -1 ? 999 : i;
-        };
-        const mergeRecords = (items) => {
-          const byKey = new Map();
-          const order = [];
-          items.forEach((s) => {
-            const key = [s.timestamp, s.op, stoppageCauseText(s), s.durationMin, s.reporter, s.note || ''].join('|');
-            if (!byKey.has(key)) {
-              byKey.set(key, { records: [], ids: [] });
-              order.push(key);
-            }
-            const entry = byKey.get(key);
-            entry.records.push(s);
-            entry.ids.push(s.id);
-          });
-          return order.map((key) => {
-            const entry = byKey.get(key);
-            const first = entry.records[0];
-            const lines = entry.records.slice().sort((a, b) => lineOrder(a.lineId) - lineOrder(b.lineId))
-              .map((s) => s.line || stoppageLineName(s.lineId)).join(', ');
-            return Object.assign({}, first, { line: lines, ids: entry.ids });
-          });
-        };
-        el.stoppagesBody.innerHTML = groups.map((group) =>
-          '<tr class="mod-stoppage-day"><td colspan="9">' + escapeHtml(formatStoppageDay(group.items[0].timestamp)) +
-            ' · ' + escapeHtml(stoppageDurationText(group.total)) + '</td></tr>' +
-          mergeRecords(group.items).map((s) =>
-            '<tr>' +
-              '<td>' + escapeHtml(stoppageDurationText(s.durationMin)) + '</td>' +
-              '<td>' + escapeHtml(formatStoppageClock(s.timestamp)) + '</td>' +
-              '<td>' + escapeHtml(formatStoppageEndClock(s.timestamp, s.durationMin)) + '</td>' +
-              '<td class="mod-stoppage-line-col">' + escapeHtml(s.line) + '</td>' +
-              '<td>' + escapeHtml(s.op) + '</td>' +
-              '<td>' + escapeHtml(stoppageCauseText(s)) + '</td>' +
-              '<td>' + escapeHtml(s.reporter) + '</td>' +
-              '<td class="mod-note-col">' + escapeHtml(s.note || '') + '</td>' +
-              '<td class="mod-stoppage-act-col"><button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-edit" data-ids="' + escapeHtml(s.ids.join(',')) + '" title="' + escapeHtml(t('edit')) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' +
-                '<button type="button" class="btn btn-ghost mod-stoppage-act mod-stoppage-del" data-ids="' + escapeHtml(s.ids.join(',')) + '" title="' + escapeHtml(t('delete')) + '"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>' +
-            '</tr>'
-          ).join('')
-        ).join('');
-        el.stoppagesBody.querySelectorAll('.mod-stoppage-edit').forEach((button) => {
-          button.addEventListener('click', () => openStoppageEdit(button.dataset.ids.split(',')));
-        });
-        el.stoppagesBody.querySelectorAll('.mod-stoppage-del').forEach((button) => {
-          button.addEventListener('click', () => {
-            if (!window.confirm(t('confirmDeleteStoppage'))) return;
-            button.dataset.ids.split(',').forEach((id) => deleteStoppage(id));
-            renderStoppages();
-          });
-        });
-        if (globalThis.lucide) globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
       }
 
       function renderScreens() {
@@ -17839,9 +16827,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const isDashboard = !isEntry && !isAttendance && !isStoppages && !isPlaceholder && !isChat && !isSummary && !isTv && !isEdi;
         el.ediScreen.hidden = !isEdi;
         el.dashboardScreen.hidden = !isDashboard;
-        el.attendanceScreen.hidden = !isAttendance;
         el.entryScreen.hidden = !isEntry;
-        el.stoppagesScreen.hidden = !isStoppages;
         el.abarthScreen.hidden = !isAbarth;
         el.dmcScreen.hidden = !isDmc;
         // Dentro Qualita': le card della giornata oppure il riepilogo del
@@ -17849,10 +16835,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const qualityDaily = state.view === 'dmc';
         el.dmcDaily.hidden = !isDmc || !qualityDaily;
         el.qualityPeriod.hidden = !isDmc || qualityDaily;
-        el.chatScreen.hidden = !isChat;
         el.summaryScreen.hidden = !isSummary;
         if (isSummary) applySummaryTab();
-        el.tvScreen.hidden = !isTv;
         // Il calendario resta sempre visibile: header identico in ogni pagina
         // (prima spariva in "+"/Comunicazioni/ecc. e il resto del gruppo si ricentrava).
         el.contextBar.hidden = false;
@@ -17864,8 +16848,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         el.entryViewBtn.disabled = !canUseEntryButtons();
         renderDailyAdminActions();
         el.stoppageSettingsBtn.hidden = !state.authUser;
-        root.classList.toggle('mod-tv-on', isTv);
-        if (!isChat) updateChatBadge();
         // Il <select> del telefono ha solo le voci di testa (PRODUZIONE,
         // Abarth, DMC, ATTIVITA', Fermi linea): settimanale/mensile e le tre
         // viste di Qualita' ricadono sulla testa del loro gruppo, altrimenti
@@ -17992,11 +16974,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         if (state.view === 'entry') {
           updateLiveSummary();
           updateReworkSelectionState();
-        } else if (state.view === 'attendance') renderAttendanceScreen(rows);
-        else if (state.view === 'stoppages') renderStoppages();
-        else if (state.view === 'chat') renderChat();
+        }
         else if (state.view === 'edi') renderEdi();
-        else if (state.view === 'tv') renderTv();
         else if (state.view === 'abarth' || state.view === 'dmc') {
           subscribeSection(state.selectedDate);
           subscribeDmcTarget();
@@ -18605,17 +17584,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       });
       el.closeAdminDialog.addEventListener('click', () => el.adminDialog.close());
       el.cancelAdminDialog.addEventListener('click', () => el.adminDialog.close());
-      el.stoppageForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        submitStoppage();
-      });
-      el.closeStoppageDialog.addEventListener('click', () => el.stoppageDialog.close());
-      el.cancelStoppageDialog.addEventListener('click', () => el.stoppageDialog.close());
-      el.filterDate.addEventListener('change', () => { state.stoppageFilters.date = el.filterDate.value; renderStoppages(); });
-      el.filterLine.addEventListener('change', () => { state.stoppageFilters.line = el.filterLine.value; renderStoppages(); });
-      el.filterCause.addEventListener('change', () => { state.stoppageFilters.cause = el.filterCause.value; renderStoppages(); });
-      el.filterReporter.addEventListener('change', () => { state.stoppageFilters.reporter = el.filterReporter.value; renderStoppages(); });
-      el.exportStoppages.addEventListener('click', exportStoppagesCsv);
       // Registro attivita': voce del menu sopra "Impostazioni app", solo per
       // l'Amministratore; si apre nella sua finestra.
       const auditBtn = root.querySelector('#mod-audit-btn');
@@ -18833,13 +17801,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         logAudit('export.pdf', t(viewMeta().title) + ' · ' + selectedPeriodLabel());
         window.print();
       });
-      el.chatSend.addEventListener('click', sendChatMessage);
-      el.chatInput.addEventListener('input', () => { autoGrow(el.chatInput); updateChatSuggest(); });
-      el.chatInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }
-        else if (event.key === 'Escape') hideChatSuggest();
-      });
-      el.chatInput.addEventListener('blur', () => { window.setTimeout(hideChatSuggest, 150); });
       root.querySelectorAll('.mod-legend-toggle').forEach((button) => {
         button.addEventListener('click', () => {
           const series = button.dataset.series;
@@ -19079,7 +18040,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       loadStoppages();
       loadStoppageConfig();
       loadOeeConfig();
-      try { state.chatSeenTs = Number(window.localStorage.getItem(CHAT_SEEN_KEY)) || 0; } catch (e) {}
       clearForm();
       // Testi cambiati dall'app: li leggono tutti, anche il modulo QR.
       subscribeAppTexts();
