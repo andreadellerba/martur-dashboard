@@ -2815,6 +2815,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       margin: 6px 0 10px;
     }
     #martur-operations-dashboard .mod-audit-filters .form-select { width: auto; min-width: 170px; }
+    #martur-operations-dashboard .mod-audit-more { display: block; margin: 10px auto 0; text-transform: uppercase; font-weight: 700; }
     #martur-operations-dashboard .mod-audit-list {
       display: flex;
       flex-direction: column;
@@ -8162,6 +8163,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditExportImage: 'Immagine riepilogo',
           auditGroupViews: 'Pagine aperte',
           auditGroupPrefs: 'Impostazioni',
+          auditLoadMore: 'Carica altre 20',
           auditSettingsOpen: 'Impostazioni aperte',
           auditPrefTheme: 'Tema cambiato',
           auditPrefStyle: 'Stile cambiato',
@@ -8783,6 +8785,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditExportImage: 'Summary image',
           auditGroupViews: 'Pages opened',
           auditGroupPrefs: 'Settings',
+          auditLoadMore: 'Load 20 more',
           auditSettingsOpen: 'Settings opened',
           auditPrefTheme: 'Theme changed',
           auditPrefStyle: 'Style changed',
@@ -9404,6 +9407,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditExportImage: 'Özet görseli',
           auditGroupViews: 'Açılan sayfalar',
           auditGroupPrefs: 'Ayarlar',
+          auditLoadMore: '20 tane daha yükle',
           auditSettingsOpen: 'Ayarlar açıldı',
           auditPrefTheme: 'Tema değişti',
           auditPrefStyle: 'Stil değişti',
@@ -16925,23 +16929,37 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       let auditRows = [];
       const auditFilter = { user: '', group: '' };
 
+      // Registro: all'apertura solo le ultime 20 righe; "Carica altre" porta
+      // le 20 precedenti. Ogni riga caricata e' una lettura su Firestore.
+      const AUDIT_PAGE = 20;
+      let auditLastDoc = null;
+      let auditHasMore = false;
+      function auditRowFrom(doc) {
+        const d = doc.data();
+        return {
+          type: d.type,
+          username: d.username || '?',
+          detail: d.detail || '',
+          changes: Array.isArray(d.changes) ? d.changes : [],
+          when: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null
+        };
+      }
+      function loadAuditPage(more) {
+        let query = db.collection('auditLog').orderBy('createdAt', 'desc');
+        if (more && auditLastDoc) query = query.startAfter(auditLastDoc);
+        return query.limit(AUDIT_PAGE).get().then((snap) => {
+          if (!more) auditRows = [];
+          snap.forEach((doc) => auditRows.push(auditRowFrom(doc)));
+          if (snap.docs.length) auditLastDoc = snap.docs[snap.docs.length - 1];
+          auditHasMore = snap.docs.length === AUDIT_PAGE;
+          drawAuditLog();
+        });
+      }
       function renderAuditLog() {
         if (!state.isConfigAdmin || !db) { el.auditLog.innerHTML = ''; return; }
         el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div><div class="text-small text-muted">' + escapeHtml(t('loadingUsers')) + '</div>';
-        db.collection('auditLog').orderBy('createdAt', 'desc').limit(1500).get().then((snap) => {
-          auditRows = [];
-          snap.forEach((doc) => {
-            const d = doc.data();
-            auditRows.push({
-              type: d.type,
-              username: d.username || '?',
-              detail: d.detail || '',
-              changes: Array.isArray(d.changes) ? d.changes : [],
-              when: d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null
-            });
-          });
-          drawAuditLog();
-        }).catch(() => {
+        auditLastDoc = null;
+        loadAuditPage(false).catch(() => {
           el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div><div class="text-small mod-negative">' + escapeHtml(t('userListError')) + '</div>';
         });
       }
@@ -16992,9 +17010,16 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         }).join('') : '<div class="text-small text-muted">' + escapeHtml(t('auditLogEmpty')) + '</div>';
 
         el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div>' + filtri +
-          '<div class="mod-audit-list">' + lista + '</div>';
+          '<div class="mod-audit-list">' + lista + '</div>' +
+          (auditHasMore ? '<button type="button" class="btn btn-ghost mod-audit-more" id="mod-audit-more">' + escapeHtml(t('auditLoadMore')) + '</button>' : '');
         el.auditLog.querySelector('#mod-audit-user').addEventListener('change', (e) => { auditFilter.user = e.target.value; drawAuditLog(); });
         el.auditLog.querySelector('#mod-audit-group').addEventListener('change', (e) => { auditFilter.group = e.target.value; drawAuditLog(); });
+        const moreBtn = el.auditLog.querySelector('#mod-audit-more');
+        if (moreBtn) moreBtn.addEventListener('click', () => {
+          moreBtn.disabled = true;
+          moreBtn.textContent = t('loadingUsers');
+          loadAuditPage(true).catch(() => { moreBtn.disabled = false; moreBtn.textContent = t('auditLoadMore'); });
+        });
       }
 
       // Permessi singoli che l'Amministratore da' a chi vuole, con una spunta.
