@@ -8156,6 +8156,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditNoChanges: 'nessun campo cambiato',
           auditLegacyNote: 'Voce registrata prima del registro dettagliato: i campi cambiati non erano stati salvati.',
           auditLogin: 'Accesso',
+          auditAppOpen: 'Apertura app',
+          auditAppResume: 'Ritorno nell’app',
+          auditPageView: 'Pagina aperta',
+          auditExportImage: 'Immagine riepilogo',
+          auditGroupViews: 'Pagine aperte',
           auditEdit: 'Modifica dato',
           auditDelete: 'Eliminazione dato',
           auditLogEmpty: 'Nessun evento registrato.',
@@ -8765,6 +8770,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditNoChanges: 'no field changed',
           auditLegacyNote: 'Logged before the detailed log: the changed fields were not saved.',
           auditLogin: 'Sign in',
+          auditAppOpen: 'App opened',
+          auditAppResume: 'Back in the app',
+          auditPageView: 'Page opened',
+          auditExportImage: 'Summary image',
+          auditGroupViews: 'Pages opened',
           auditEdit: 'Data edit',
           auditDelete: 'Data delete',
           auditLogEmpty: 'No events logged yet.',
@@ -9374,6 +9384,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           auditNoChanges: 'değişen alan yok',
           auditLegacyNote: 'Ayrıntılı kayıttan önce: değişen alanlar kaydedilmemişti.',
           auditLogin: 'Giriş',
+          auditAppOpen: 'Uygulama açıldı',
+          auditAppResume: 'Uygulamaya dönüş',
+          auditPageView: 'Sayfa açıldı',
+          auditExportImage: 'Özet görseli',
+          auditGroupViews: 'Açılan sayfalar',
           auditEdit: 'Veri düzenleme',
           auditDelete: 'Veri silme',
           auditLogEmpty: 'Henüz kayıtlı olay yok.',
@@ -13211,6 +13226,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             state.canEditTexts = state.isConfigAdmin || Boolean(doc.exists && doc.data().canEditTexts === true);
             updateTextEditAccess();
             state.authUsername = doc.exists ? doc.data().username : null;
+            auditAppOpen();
+            trackPageView();
             if (!state.isAdmin && state.view === 'entry') state.view = 'daily';
             updateAdminUI();
             subscribeEntries();
@@ -14075,6 +14092,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       function applySummaryTab() {
         const anomalies = state.summaryTab === 'anomalies';
         restoreSummaryHead();
+        trackPageView();
         if (!state.isAdmin) state.summaryEdit = false;
         el.summaryEdit.hidden = !state.isAdmin;
         el.anomalyQr.hidden = !state.isAdmin;
@@ -14951,7 +14969,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         showSummaryToast(t('summaryImageBuilding'));
         const item = new ClipboardItem({ 'image/png': summaryImageBlob(state.selectedDate, shiftChoice) });
         navigator.clipboard.write([item])
-          .then(() => showSummaryToast(t('summaryImageCopied')))
+          .then(() => { showSummaryToast(t('summaryImageCopied')); logAudit('export.image', formatDate(state.selectedDate) + ' · ' + (shiftChoice === 'both' ? t('shift1') + ' + ' + t('shift2') : t(shiftChoice))); })
           .catch(() => showSummaryToast(t('summaryImageError')))
           .finally(() => {
             el.backBtn.disabled = false;
@@ -15915,6 +15933,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       let ediCompareId = '';
 
       function renderEdi() {
+        trackPageView();
         // Di standard si vede l'ultimo EDI caricato (il primo della lista).
         if (!ediSelectedId && !ediDraft && !ediChoseNew && ediReports.length) ediSelectedId = ediReports[0].id;
         subscribeEdi();
@@ -16854,6 +16873,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       // Le voci "edit" e "delete" sono quelle scritte prima di questo registro.
       const AUDIT_ACTIONS = {
         'login': ['auditLogin', 'access'], 'logout': ['auditLogout', 'access'],
+        'app.open': ['auditAppOpen', 'access'], 'app.resume': ['auditAppResume', 'access'],
+        'page.view': ['auditPageView', 'views'], 'export.image': ['auditExportImage', 'exports'],
         'entry.create': ['auditEntryCreate', 'data'], 'entry.update': ['auditEntryUpdate', 'data'],
         'entry.delete': ['auditEntryDelete', 'data'], 'section.update': ['auditSectionUpdate', 'data'], 'edit': ['auditEdit', 'data'], 'delete': ['auditDelete', 'data'],
         'stoppage.create': ['auditStoppageCreate', 'stoppages'], 'stoppage.update': ['auditStoppageUpdate', 'stoppages'],
@@ -16875,7 +16896,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       const AUDIT_GROUPS = {
         access: 'auditGroupAccess', data: 'auditGroupData', stoppages: 'auditGroupStoppages',
         tasks: 'auditGroupTasks', anomalies: 'auditGroupAnomalies', settings: 'auditGroupSettings',
-        users: 'auditGroupUsers', exports: 'auditGroupExports'
+        users: 'auditGroupUsers', exports: 'auditGroupExports', views: 'auditGroupViews'
       };
       const auditInfo = (type) => AUDIT_ACTIONS[type] || [null, 'data'];
       let auditRows = [];
@@ -16884,7 +16905,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       function renderAuditLog() {
         if (!state.isConfigAdmin || !db) { el.auditLog.innerHTML = ''; return; }
         el.auditLog.innerHTML = '<div class="mod-section-label">' + escapeHtml(t('auditLog')) + '</div><div class="text-small text-muted">' + escapeHtml(t('loadingUsers')) + '</div>';
-        db.collection('auditLog').orderBy('createdAt', 'desc').limit(500).get().then((snap) => {
+        db.collection('auditLog').orderBy('createdAt', 'desc').limit(1500).get().then((snap) => {
           auditRows = [];
           snap.forEach((doc) => {
             const d = doc.data();
@@ -17401,7 +17422,63 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         if (isEntry) renderManualEntries();
       }
 
+      // ---- Registro: aperture dell'app e pagine viste ----
+      // Dispositivo in breve: sistema, app installata o browser, schermo.
+      function auditDeviceInfo() {
+        const ua = navigator.userAgent || '';
+        const os = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android'
+          : /Windows/.test(ua) ? 'Windows' : /Mac OS X/.test(ua) ? 'Mac' : 'Altro';
+        const browser = /Edg\//.test(ua) ? 'Edge' : /CriOS|Chrome\//.test(ua) ? 'Chrome'
+          : /FxiOS|Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'browser';
+        let installed = false;
+        try { installed = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) {}
+        return os + ' · ' + (installed ? 'app installata' : browser) + ' · ' + screen.width + '×' + screen.height;
+      }
+      let auditAppOpenLogged = false;
+      let auditJustLoggedIn = false;
+      // Una riga per ogni apertura, anche con l'accesso gia' fatto (la
+      // pagina che si ricarica o l'app che riparte).
+      function auditAppOpen() {
+        if (auditAppOpenLogged || !state.authUser || !state.authUsername) return;
+        auditAppOpenLogged = true;
+        if (auditJustLoggedIn) return; // appena entrato: c'e' gia' la riga "Accesso"
+        logAudit('app.open', auditDeviceInfo());
+      }
+      // Sul telefono l'app spesso non si ricarica: torna dove era. Se e'
+      // rimasta chiusa almeno 5 minuti, il ritorno conta come una nuova apertura.
+      let auditHiddenAt = 0;
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') { auditHiddenAt = Date.now(); return; }
+        if (!auditHiddenAt || !state.authUser || !state.authUsername) return;
+        const away = Math.round((Date.now() - auditHiddenAt) / 60000);
+        auditHiddenAt = 0;
+        if (away >= 5) {
+          logAudit('app.resume', auditDeviceInfo() + ' · dopo ' + away + ' min');
+          lastAuditedPage = '';
+          trackPageView();
+        }
+      });
+      // Ogni pagina aperta (con la vista scelta sotto: settimanale, l'EDI
+      // aperto, anomalie...). Una riga solo quando la pagina cambia.
+      let lastAuditedPage = '';
+      let trackPageTimer = null;
+      function trackPageView() {
+        clearTimeout(trackPageTimer);
+        trackPageTimer = setTimeout(() => {
+          if (!state.authUser || !state.authUsername) return;
+          const nav = root.querySelector('.mod-pillnav .mod-nav-tab[aria-pressed="true"]');
+          let label = state.view === 'entry' ? t('dataEntry') : (nav ? nav.textContent.trim() : state.view);
+          const sub = el.viewSubselect && !el.viewSubselect.hidden && el.viewSubselect.selectedOptions[0]
+            ? el.viewSubselect.selectedOptions[0].textContent.trim() : '';
+          const page = label + (sub && sub !== label ? ' · ' + sub : '');
+          if (!page || page === lastAuditedPage) return;
+          lastAuditedPage = page;
+          logAudit('page.view', page);
+        }, 600);
+      }
+
       function renderAll() {
+        trackPageView();
         setTranslations();
         renderScreens();
         const rows = getDailyRows();
@@ -17899,6 +17976,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             .then((doc) => (doc.exists && doc.data().email) || fallback)
             .catch(() => fallback)
           : Promise.resolve(fallback);
+        auditJustLoggedIn = true;
         findEmail.then((email) => auth.signInWithEmailAndPassword(email, password))
           .then(() => {
             el.adminPassword.value = '';
