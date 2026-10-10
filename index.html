@@ -1456,6 +1456,15 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   max-height: 2.6em;
 }
 :root.martur-officina #martur-operations-dashboard .mod-shift-note:has(.mod-note-more-on) .mod-shift-note-text { padding-right: 34px !important; padding-left: 0 !important; }
+/* Immagine per Outlook: note sempre intere, mai tagliate a due righe. */
+:root.martur-officina body #martur-operations-dashboard .mod-capture .mod-shift-note .mod-shift-note-text {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+}
+:root.martur-officina body #martur-operations-dashboard .mod-capture .mod-shift-note { height: auto !important; }
 :root.martur-officina #martur-operations-dashboard .mod-shift-note .mod-note-more { right: 8px; bottom: 8px; }
 /* OLE e Perdite dentro una card intera, titolo compreso, con la stanghetta
    come rework e perdite; i riquadri di dentro non hanno piu' bordo. */
