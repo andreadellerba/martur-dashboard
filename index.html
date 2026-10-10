@@ -1680,6 +1680,18 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   #martur-operations-dashboard .mod-world-weather:empty { display: none; }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: clamp(80px, calc(100vw - 1640px), 422px); }
 }
+/* Barra in alto (PC): spazi vuoti al minimo. Frecce del calendario strette,
+   data larga quanto il testo, tasti vicini; quello che avanza si divide in
+   parti uguali fra i pezzi (niente buchi in un punto solo). */
+@media (min-width: 1500px) and (pointer: fine), (min-width: 1500px) and (hover: hover) {
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster { --topbar-gap: 10px; justify-content: space-between; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-datenav .mod-period-nav { width: 26px; min-width: 26px; padding: 0; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-header-picker .mod-period-picker { width: 178px; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-pillnav .mod-pill-sep { margin: 3px 2px; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-pillnav :is(#mod-back-btn, .mod-appmenu-btn, .mod-daily-admin-actions .btn) { padding-inline: 6px; min-width: 0; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > .mod-topbar-left { flex: 1 1 0; max-width: 470px; min-width: 0; }
+  :root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: 100% !important; max-width: 470px; }
+}
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
@@ -6483,14 +6495,14 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   <header class="mod-topbar">
     <div class="mod-topbar-cluster">
       <!-- Italia e Turchia ai lati della barra (solo PC): bandiera e ora locale. -->
-      <div class="mod-world-clock mod-world-clock-it" aria-label="Italia">
+      <div class="mod-world-clock mod-world-clock-it" aria-label="Grugliasco">
         <svg viewBox="0 0 3 2" class="mod-world-flag" aria-hidden="true"><rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ce2b37"/></svg>
-        <span class="mod-world-text"><b>GRUGLIASCO</b> <span class="mod-world-time" data-tz="Europe/Rome">--:--</span></span>
+        <span class="mod-world-text"><span class="mod-world-time" data-tz="Europe/Rome">--:--</span></span>
         <span class="mod-world-weather" data-lat="45.068" data-lon="7.578"></span>
       </div>
-      <div class="mod-world-clock mod-world-clock-tr" aria-label="Türkiye">
+      <div class="mod-world-clock mod-world-clock-tr" aria-label="Bursa">
         <span class="mod-world-weather" data-lat="40.183" data-lon="29.067"></span>
-        <span class="mod-world-text"><b>BURSA</b> <span class="mod-world-time" data-tz="Europe/Istanbul">--:--</span></span>
+        <span class="mod-world-text"><span class="mod-world-time" data-tz="Europe/Istanbul">--:--</span></span>
         <svg viewBox="0 0 30 20" class="mod-world-flag" aria-hidden="true"><rect width="30" height="20" fill="#e30a17"/><circle cx="10.6" cy="10" r="5" fill="#fff"/><circle cx="11.85" cy="10" r="4" fill="#e30a17"/><polygon fill="#fff" points="15.2,10 19.4,8.6 16.8,12.2 16.8,7.8 19.4,11.4"/></svg>
       </div>
       <div class="mod-topbar-left">
