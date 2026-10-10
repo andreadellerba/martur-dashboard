@@ -15508,7 +15508,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               // Il totale copre settimane diverse da EDI a EDI: non si confronta.
               '<td class="mod-edi-total">' + fmt(row.total, pctMode) + '</td></tr>'
           ).join('') + '</tbody>' +
-          '<tfoot><tr><th scope="row">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
+          '<tfoot><tr><th scope="row" class="mod-edi-opt-head">' + escapeHtml(t('ediTotalVolume')) + '</th>' +
             m.foot.map((v, i) => cell(v, oldFoot(m.weeks[i]), false)).join('') +
             '<td class="mod-edi-total">' + (pctMode ? '100%' : fmt(m.footTotal, false)) + '</td></tr></tfoot>' +
           '</table></div>';
