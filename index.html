@@ -76,6 +76,37 @@
       el.setAttribute('data-bgtone', lum > 0.18 ? 'light' : 'dark');
     };
     window.marturApplyBg(window.localStorage.getItem('martur-dashboard-bg'));
+    // Colore d'accento (Impostazioni > Accento): bordi, menu, numeri nei
+    // cerchi, "MARTUR" nel logo. Tutti abbastanza scuri da leggersi come
+    // testo sul bianco; nel tema scuro si usa la stessa tinta schiarita.
+    // "oro" e' quello normale dello stile.
+    window.MARTUR_ACCENTS = [
+      ['oro', 'Oro', '#86672c'], ['ambra', 'Ambra', '#8a5a00'], ['bronzo', 'Bronzo', '#7c4f24'],
+      ['rame', 'Rame', '#9a4a24'], ['terracotta', 'Terracotta', '#a0442c'], ['mattone', 'Mattone', '#9b2f22'],
+      ['rosso', 'Rosso', '#b3261e'], ['bordeaux', 'Bordeaux', '#7d1d2c'], ['magenta', 'Magenta', '#a1145c'],
+      ['prugna', 'Prugna', '#6d2c5c'], ['viola', 'Viola', '#5b2a9a'], ['indaco', 'Indaco', '#3730a3'],
+      ['notte', 'Blu notte', '#1f3a68'], ['blu', 'Blu', '#1d4ed8'], ['acciaio', 'Blu acciaio', '#2f5d8a'],
+      ['azzurro', 'Azzurro scuro', '#0b6aa2'], ['petrolio', 'Petrolio', '#0f5e66'], ['ottanio', 'Ottanio', '#0e6655'],
+      ['smeraldo', 'Smeraldo', '#0b7a4b'], ['bosco', 'Verde bosco', '#2e6b4f'], ['verde', 'Verde', '#2b7a1f'],
+      ['oliva', 'Oliva', '#5d6b1f'], ['grafite', 'Grafite', '#44474d'], ['nero', 'Nero', '#1b1a17']
+    ];
+    window.marturApplyAccent = function (id) {
+      var el = document.documentElement;
+      var a = null;
+      window.MARTUR_ACCENTS.forEach(function (x) { if (x[0] === id) a = x; });
+      if (!a || id === 'oro') {
+        el.removeAttribute('data-accent');
+        ['--acc-l', '--acc-d', '--acc-e'].forEach(function (p) { el.style.removeProperty(p); });
+        return;
+      }
+      var rgb = [1, 3, 5].map(function (i) { return parseInt(a[2].substr(i, 2), 16); });
+      var mix = function (t, w) { return 'rgb(' + rgb.map(function (v) { return Math.round(v + (t - v) * w); }).join(' ') + ')'; };
+      el.setAttribute('data-accent', id);
+      el.style.setProperty('--acc-l', a[2]);
+      el.style.setProperty('--acc-d', mix(255, 0.45));  // tema scuro: piu' chiaro, si legge sul nero
+      el.style.setProperty('--acc-e', mix(0, 0.25));    // tema scuro: bordo delle card un po' piu' spento
+    };
+    window.marturApplyAccent(window.localStorage.getItem('martur-dashboard-accent'));
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'light');
     document.documentElement.classList.add('martur-officina');
@@ -855,7 +886,7 @@ svg {
 html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@500;600;700;800&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@500;600;700;800&amp;family=Oswald:wght@500;600;700&amp;display=swap">
 <style>
 /* ---- Stile grafico "Officina" ----
    Solo un vestito sopra lo stile classico: stessi posti, stesse misure.
@@ -866,18 +897,18 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 :root.martur-officina {
   --gold: light-dark(#86672c, #c9a55f);
   --gold-foreground: light-dark(#ffffff, #1b1a17);
-  --background: light-dark(#d8cdb5, #0f0e0c);
+  --background: light-dark(#d8cdb5, #12100c);
   /* bordo esterno delle card: lo stesso oro del contorno della voce aperta nel menu */
-  --off-edge: light-dark(#86672c, #3d382f);
-  --card: light-dark(#ffffff, #1f1d1a);
-  --popover: light-dark(#ffffff, #24221e);
+  --off-edge: light-dark(#86672c, #7a6230);
+  --card: light-dark(#ffffff, #1e1b16);
+  --popover: light-dark(#ffffff, #26221b);
   --border: light-dark(#d5c8ab, rgb(255 255 255 / 11%));
   --muted: light-dark(rgb(120 100 60 / 9%), rgb(255 240 210 / 8%));
   --muted-foreground: light-dark(#6f6656, #b3a994);
-  --off-line: light-dark(#d5c8ab, #3d382f);
+  --off-line: light-dark(#d5c8ab, #3a3328);
   --off-ink: light-dark(#1b1a17, #f4efe4);
   --font-sans: 'Barlow', -apple-system, system-ui, "Segoe UI", sans-serif;
-  --off-num: 'Barlow Semi Condensed', 'Barlow', sans-serif;
+  --off-num: 'Oswald', 'Barlow Semi Condensed', 'Barlow', sans-serif;
   /* Tutto un po' piu' grande: testi e numeri crescono insieme. */
   --font-size-base: 15px;
 }
@@ -1056,12 +1087,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    con light-dark() si girano da soli: neri -> bianchi e viceversa). Card,
    menu, finestre e tendine tengono lo schema del tema. */
 :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard,
-:root.martur-officina[data-bgtone="light"][data-theme="dark"] :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, [role="dialog"], [role="menu"], [role="listbox"]) {
+:root.martur-officina[data-bgtone="light"][data-theme="dark"] :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, [role="dialog"], [role="menu"], [role="listbox"]) {
   color-scheme: dark;
   color: var(--foreground);
 }
 :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard,
-:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, [role="dialog"], [role="menu"], [role="listbox"]) {
+:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, [role="dialog"], [role="menu"], [role="listbox"]) {
   color-scheme: light;
   color: var(--foreground);
 }
@@ -1213,6 +1244,167 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 @media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
   :root #martur-operations-dashboard .mod-shift-note { font-size: 14px; }
 }
+/* ==== Pacchetto grafico del 10/10 (proposte 3, 4, 7, 9, 10, 11, 14, 15,
+   20, 21, 23, 28) ==== */
+:root.martur-officina {
+  /* colore dell'ombra delle card (non light-dark: deve restare uguale anche
+     nelle zone con lo schema girato dallo sfondo scuro/chiaro) */
+  --off-shadow-c: rgb(70 45 10 / 38%);
+  /* sfumatura dello sfondo (14): luce in alto, piu' scuro in basso, su
+     qualsiasi colore scelto */
+  --bg-shade-img: radial-gradient(ellipse 120% 80% at 50% 0%, rgb(255 255 255 / 28%) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 35%, rgb(0 0 0 / 12%) 100%);
+}
+:root.martur-officina[data-theme="dark"] {
+  --off-shadow-c: rgb(0 0 0 / 65%);
+  --bg-shade-img: radial-gradient(ellipse 120% 80% at 50% 0%, rgb(255 240 210 / 7%) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 35%, rgb(0 0 0 / 30%) 100%);
+}
+/* (14) Sfondo sfumato: sulla pagina, sotto tutto; le card restano piene. */
+:root.martur-officina {
+  background-color: var(--background);
+  background-image: var(--bg-shade-img);
+  background-attachment: fixed;
+}
+:root.martur-officina body { background: transparent; }
+/* La barra in alto del PC resta ferma mentre la pagina scorre: stesso
+   sfondo sfumato, fissato allo schermo, cosi' combacia con quello dietro. */
+:root.martur-officina #martur-operations-dashboard .mod-topbar {
+  background-color: var(--background);
+  background-image: var(--bg-shade-img);
+  background-attachment: fixed;
+}
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina #martur-operations-dashboard .mod-topbar { background: transparent; }
+}
+/* (3) Bordo oro sottile (1,5 px) e ombra morbida sotto, ovunque. */
+:root.martur-officina #martur-operations-dashboard :is(.card:not(dialog), .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-anomaly-wrap, .mod-task-card, .mod-period-note, .mod-topbar-cluster, #mod-daily-rework-section, #mod-daily-loss-section) {
+  border-width: 1.5px !important;
+  box-shadow: 0 10px 24px -12px var(--off-shadow-c), 0 2px 4px -2px var(--off-shadow-c) !important;
+}
+:root.martur-officina #martur-operations-dashboard :is(.mod-rework-ranking li, .mod-datenav, .mod-pillnav > .mod-view-subselect, .mod-tabbar-pill) {
+  border-width: 1.5px !important;
+}
+:root.martur-officina #martur-operations-dashboard :is(.mod-rework-ranking li, .mod-pillnav > .mod-view-subselect, .mod-tabbar-pill) {
+  box-shadow: 0 6px 14px -9px var(--off-shadow-c);
+}
+/* Dentro la barra in alto il calendario non ha ne' bordo ne' ombra. */
+:root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-datenav { box-shadow: none; }
+/* (23) Le card si sollevano un poco passando col mouse. */
+@media (hover: hover) and (pointer: fine) {
+  :root.martur-officina #martur-operations-dashboard :is(.mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-task-card, .mod-period-note, #mod-daily-rework-section, #mod-daily-loss-section) {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  :root.martur-officina #martur-operations-dashboard :is(.mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-task-card, .mod-period-note, #mod-daily-rework-section, #mod-daily-loss-section):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px -14px var(--off-shadow-c), 0 3px 6px -3px var(--off-shadow-c) !important;
+  }
+}
+/* (4) Testata del turno su una fascia oro chiaro, a tutta larghezza in
+   cima alla card; niente piu' riga fra la testata e i numeri. --sc-px e'
+   lo spazio ai lati della card (diverso fra vista normale, compatta e
+   telefono): la fascia lo "mangia" per arrivare ai bordi. */
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card {
+  --sc-px: 14px;
+  padding-top: 0 !important;
+  padding-left: var(--sc-px) !important;
+  padding-right: var(--sc-px) !important;
+}
+:root.martur-officina #martur-operations-dashboard.mod-compact .mod-daily-shift-card { --sc-px: 10px; }
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina #martur-operations-dashboard .mod-daily-shift-card,
+  :root.martur-officina #martur-operations-dashboard.mod-compact .mod-daily-shift-card { --sc-px: 6px; }
+}
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head {
+  margin: 0 calc(-1 * var(--sc-px)) !important;
+  padding: 12px var(--sc-px) 11px !important;
+  background: var(--shift-head-bg, color-mix(in srgb, var(--gold) 13%, var(--card)));
+  border-radius: 26.5px 26.5px 0 0;
+}
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card > .mod-shift-card-head + * { border-top: 0 !important; }
+/* (10) Rework e perdite dentro una card, come il resto della pagina; le
+   pillole dentro su un fondo caldo leggero. */
+:root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section) {
+  background: var(--card);
+  border: 1.5px solid var(--off-edge);
+  border-radius: 28px;
+  padding: 14px 18px;
+}
+:root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section) .mod-rework-ranking li {
+  background: var(--muted) !important;
+  border-color: transparent !important;
+  box-shadow: none;
+}
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section) { padding: 10px 10px; }
+}
+/* (9) Classifica a podio: il cerchio col numero prende oro, argento, bronzo. */
+:root.martur-officina #martur-operations-dashboard .mod-rework-ranking li:nth-child(1) .mod-rework-rank-badge { background: #c8961e; color: #fff; }
+:root.martur-officina #martur-operations-dashboard .mod-rework-ranking li:nth-child(2) .mod-rework-rank-badge { background: #8d939c; color: #fff; }
+:root.martur-officina #martur-operations-dashboard .mod-rework-ranking li:nth-child(3) .mod-rework-rank-badge { background: #a2653c; color: #fff; }
+/* (11) Titoli di sezione piu' forti: piu' grandi, neri, stanghetta spessa. */
+:root.martur-officina #martur-operations-dashboard :is(.mod-section-label, .mod-rework-shift-head) {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--off-ink);
+}
+:root.martur-officina #martur-operations-dashboard .mod-section-label::before { width: 5px; }
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina #martur-operations-dashboard :is(.mod-section-label, .mod-rework-shift-head) { font-size: 13px; }
+}
+/* (7) Numeri "industriali" (Oswald) ovunque. */
+:root.martur-officina #martur-operations-dashboard :is(.viz-stat-value, .mod-shift-metric strong, .mod-oee-gauge-value, .mod-sec-value, .mod-sec-hero-value, .mod-loss-kpi-val, .mod-period-note-value, .mod-rework-rank-badge, .mod-edi-table td, .mod-edi-table tfoot th) {
+  font-family: var(--off-num);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+/* (15) Grafico Martur vs Stellantis: barre arrotondate, Stellantis in blu
+   ardesia (si sposa con l'oro). */
+:root.martur-officina #martur-operations-dashboard .mod-main-chart .mod-bar { rx: 5px; ry: 5px; }
+:root.martur-officina #martur-operations-dashboard .mod-main-chart .mod-stellantis-bar { fill: light-dark(#6f8fae, #8fb0cf); }
+:root.martur-officina #martur-operations-dashboard .mod-swatch-client { background: light-dark(#6f8fae, #8fb0cf); }
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  /* (20) Telefono: numeri KPI grandi, titolo come piccola etichetta, e
+     l'ultima KPI (che restava da sola a meta' riga) a tutta larghezza. */
+  :root.martur-officina #martur-operations-dashboard .mod-kpi-tile .viz-stat-value { font-size: 30px !important; line-height: 1.1; }
+  :root.martur-officina #martur-operations-dashboard .mod-kpi-tile > .text-muted:not(.text-small) {
+    font-size: 11px !important;
+    letter-spacing: 0.08em !important;
+    color: var(--muted-foreground) !important;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-kpi-grid > .mod-kpi-tile:last-child { grid-column: 1 / -1; }
+  /* (21) Telefono: pillole di rework e perdite compatte. */
+  :root.martur-officina #martur-operations-dashboard .mod-rework-ranking li {
+    font-size: 13px !important;
+    min-height: 36px !important;
+    padding: 2px 10px 2px 3px !important;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-rework-rank-badge {
+    min-width: 28px !important;
+    height: 28px !important;
+    font-size: 13px !important;
+  }
+}
+/* (18) Colore d'accento scelto: prende il posto dell'oro ovunque. */
+:root.martur-officina[data-accent] {
+  --gold: light-dark(var(--acc-l), var(--acc-d));
+  --off-edge: light-dark(var(--acc-l), var(--acc-e));
+}
+/* ...anche nei numeri "oro" delle card turno, che hanno un oro tutto loro. */
+:root.martur-officina[data-accent] #martur-operations-dashboard :is(.mod-shift-metric, .mod-sec-hero) {
+  --gold: light-dark(var(--acc-l), var(--acc-d));
+}
+/* (26) Fascia dietro il giorno di oggi nei grafici; (27) valore sopra le barre. */
+#martur-operations-dashboard .mod-today-band { fill: color-mix(in srgb, var(--gold) 14%, transparent); }
+#martur-operations-dashboard .mod-bar-value {
+  fill: var(--off-ink, var(--foreground));
+  font-family: var(--off-num, inherit);
+  font-weight: 600;
+  pointer-events: none;
+}
+/* Immagine per Outlook: html2canvas disegna male le ombre, li' niente ombre. */
+/* (l'id finto nella lista alza la priorita' sopra la regola che mette le ombre) */
+:root.martur-officina #martur-operations-dashboard .mod-capture :is(.card, .mod-kpi-tile, .mod-daily-shift-card, .mod-rework-ranking li, #mod-capture-none), :root.martur-officina #martur-operations-dashboard .mod-capture :is(.card, .mod-kpi-tile, .mod-daily-shift-card, #mod-capture-none) * { box-shadow: none !important; transform: none !important; }
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: none; }
@@ -6112,6 +6304,15 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           <div class="mod-bg-pop" role="menu" hidden></div>
         </div>
       </div>
+      <div class="mod-app-menu-sec mod-bg-sec mod-acc-sec">
+        <span class="mod-app-menu-label" data-i18n="accentLabel">Accento</span>
+        <div class="mod-bg-pick">
+          <button type="button" class="mod-bg-current" aria-expanded="false" aria-haspopup="true">
+            <span class="mod-bg-dot"></span><span class="mod-bg-name">Oro</span><span class="mod-bg-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="mod-bg-pop" role="menu" hidden></div>
+        </div>
+      </div>
       <div class="mod-app-menu-sec">
         <span class="mod-app-menu-label" data-i18n="language">Lingua</span>
         <button type="button" class="btn btn-ghost mod-lang-btn" id="mod-lang-btn" title="Lingua">🇮🇹</button>
@@ -7728,6 +7929,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           density: 'Spaziatura',
           styleLabel: 'Stile',
           bgLabel: 'Sfondo',
+          accentLabel: 'Accento',
           styleClassic: 'Classico',
           styleOfficina: 'Officina',
           densityComfort: 'Normale',
@@ -8334,6 +8536,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           density: 'Spacing',
           styleLabel: 'Style',
           bgLabel: 'Background',
+          accentLabel: 'Accent',
           styleClassic: 'Classic',
           styleOfficina: 'Workshop',
           densityComfort: 'Normal',
@@ -8941,6 +9144,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           styleLabel: 'Stil',
           styleClassic: 'Klasik',
           bgLabel: 'Arka plan',
+          accentLabel: 'Vurgu rengi',
           styleOfficina: 'Atölye',
           densityComfort: 'Normal',
           densityCompact: 'Kompakt',
@@ -11444,7 +11648,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 
       function renderMainChart(periods) {
         const axisWidth = 52;
-        const margin = { top: 16, right: 12, bottom: 40, left: 16 };
+        // In alto un po' di spazio in piu': sopra le barre c'e' scritto il valore.
+        const margin = { top: 24, right: 12, bottom: 40, left: 16 };
         const wrapWidth = Math.max(300, Math.round(el.mainChartWrap.getBoundingClientRect().width || 640));
         const width = Math.max(wrapWidth, margin.left + margin.right + periods.length * 96);
         el.mainChart.style.width = width > wrapWidth ? width + 'px' : '';
@@ -11489,6 +11694,16 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           el.mainAxis.innerHTML = axisParts.join('');
         }
 
+        // Il giorno di oggi ha dietro una fascia oro chiaro (si trova subito).
+        const todayKey = isoDate(new Date());
+        const todayIndex = periods.findIndex((period) => period.key === todayKey);
+        if (todayIndex >= 0) {
+          parts.push('<rect class="mod-today-band" x="' + (margin.left + todayIndex * step + 2) + '" y="' + (margin.top - 18) + '" width="' + Math.max(4, step - 4) + '" height="' + (innerHeight + 18) + '" rx="10"></rect>');
+        }
+        // Valore scritto sopra ogni barra: carattere piu' piccolo quando le
+        // barre sono strette (vista mensile).
+        const valueFont = Math.max(8, Math.min(12, barWidth * 0.62));
+        const valueParts = [];
         periods.forEach((period, index) => {
           const groupX = margin.left + index * step + (step - groupWidth) / 2;
           visibleSeries.forEach((series, seriesIndex) => {
@@ -11500,8 +11715,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             const old = previous.get(key);
             const tooltip = period.label + ' · ' + series.label + ': ' + formatNumber(value) + ' ' + t('pieces');
             parts.push('<rect class="mod-bar ' + series.cls + '" data-bar-key="' + key + '" data-final-y="' + finalY + '" data-final-height="' + finalHeight + '" x="' + x + '" y="' + (old ? old.y : finalY) + '" width="' + barWidth + '" height="' + (old ? old.height : finalHeight) + '" data-tooltip="' + escapeHtml(tooltip) + '"></rect>');
+            if (value > 0) {
+              valueParts.push('<text class="mod-bar-value" x="' + (x + barWidth / 2) + '" y="' + (finalY - 4) + '" text-anchor="middle" font-size="' + valueFont.toFixed(1) + '">' + formatNumber(value) + '</text>');
+            }
           });
         });
+        parts.push(...valueParts);
 
         const tickCount = Math.max(2, Math.min(Math.floor(innerWidth / 82), periods.length));
         const tickIndexes = new Set();
@@ -11557,6 +11776,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           config.axis.innerHTML = axisParts.join('');
         }
 
+        // Fascia oro chiaro dietro il giorno di oggi, come nel grafico a barre.
+        const todayIndex = periods.findIndex((period) => period.key === isoDate(new Date()));
+        if (todayIndex >= 0) {
+          parts.push('<rect class="mod-today-band" x="' + (margin.left + todayIndex * step + 2) + '" y="' + margin.top + '" width="' + Math.max(4, step - 4) + '" height="' + innerHeight + '" rx="10"></rect>');
+        }
         const available = periods.map((period, index) => ({ period, index, value: period[config.key] })).filter((item) => isNumber(item.value));
         if (available.length) {
           const points = available.map((item) => {
@@ -14413,6 +14637,14 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               '--muted-foreground': '#6f6656', '--off-ink': '#1b1a17',
               '--off-edge': '#86672c', '--foreground': 'rgb(8, 9, 11)'
             };
+            // Colore d'accento scelto (al posto dell'oro) e fascia della
+            // testata del turno gia' calcolata: html2canvas non sa leggere
+            // color-mix().
+            const accent = document.documentElement.style.getPropertyValue('--acc-l').trim() || '#86672c';
+            officina['--gold'] = accent;
+            officina['--off-edge'] = accent;
+            const accRgb = [1, 3, 5].map((i) => parseInt(accent.substr(i, 2), 16));
+            officina['--shift-head-bg'] = 'rgb(' + accRgb.map((v) => Math.round(v * 0.13 + 255 * 0.87)).join(', ') + ')';
             Object.keys(officina).forEach((k) => wrap.style.setProperty(k, officina[k]));
           }
           wrap.innerHTML = html;
@@ -17018,54 +17250,55 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         box.querySelector('.mod-note-add').addEventListener('click', () => addNoteRow(area));
         if (!box.querySelector('.mod-note-input')) setNoteValue(area, area.value);
       });
-      // ---- Colore dello sfondo ----
-      // Una riga (colore scelto + nome); la tendina sotto ha tutti i colori.
-      const BG_LIST = window.MARTUR_BGS || [];
-      const bgPop = root.querySelector('.mod-bg-pop');
-      const bgCurrent = root.querySelector('.mod-bg-current');
-      function currentBg() {
-        try { return window.localStorage.getItem('martur-dashboard-bg') || 'sabbia'; } catch (e) { return 'sabbia'; }
-      }
-      if (bgPop) {
-        bgPop.innerHTML = BG_LIST.map((b) =>
-          '<button type="button" class="mod-bg-choice" role="menuitemradio" data-bg="' + b[0] + '" title="' + escapeHtml(b[1]) + '" aria-label="' + escapeHtml(b[1]) + '" style="--sw:' + b[2] + '"></button>'
+      // ---- Tendine dei colori: Sfondo e Accento ----
+      // Una riga (colore scelto + nome); toccandola si apre la tendina con
+      // tutti i colori. Stesso codice per le due scelte.
+      function setupColorPicker(box, list, storageKey, fallback, apply) {
+        if (!box || !list.length) return;
+        const pop = box.querySelector('.mod-bg-pop');
+        const current = box.querySelector('.mod-bg-current');
+        pop.innerHTML = list.map((b) =>
+          '<button type="button" class="mod-bg-choice" role="menuitemradio" data-pick="' + b[0] + '" title="' + escapeHtml(b[1]) + '" aria-label="' + escapeHtml(b[1]) + '" style="--sw:' + b[2] + '"></button>'
         ).join('');
-      }
-      function setBgPop(open) {
-        if (!bgPop) return;
-        bgPop.hidden = !open;
-        bgCurrent.setAttribute('aria-expanded', String(open));
-      }
-      function applyBg(bg) {
-        const item = BG_LIST.find((b) => b[0] === bg) || BG_LIST[0];
-        if (!item) return;
-        try { window.localStorage.setItem('martur-dashboard-bg', item[0]); } catch (e) {}
-        if (window.marturApplyBg) window.marturApplyBg(item[0]);
-        syncLogoGold();
-        root.querySelectorAll('.mod-bg-choice').forEach((button) => {
-          button.setAttribute('aria-checked', String(button.dataset.bg === item[0]));
-          button.setAttribute('aria-pressed', String(button.dataset.bg === item[0]));
-        });
-        if (bgCurrent) {
-          bgCurrent.querySelector('.mod-bg-dot').style.setProperty('--sw', item[2]);
-          bgCurrent.querySelector('.mod-bg-name').textContent = item[1];
-        }
-      }
-      if (bgCurrent) {
-        bgCurrent.addEventListener('click', (event) => {
+        const setOpen = (open) => {
+          pop.hidden = !open;
+          current.setAttribute('aria-expanded', String(open));
+        };
+        const choose = (id) => {
+          const item = list.find((b) => b[0] === id) || list[0];
+          try { window.localStorage.setItem(storageKey, item[0]); } catch (e) {}
+          apply(item[0]);
+          syncLogoGold();
+          pop.querySelectorAll('.mod-bg-choice').forEach((button) => {
+            const on = String(button.dataset.pick === item[0]);
+            button.setAttribute('aria-checked', on);
+            button.setAttribute('aria-pressed', on);
+          });
+          current.querySelector('.mod-bg-dot').style.setProperty('--sw', item[2]);
+          current.querySelector('.mod-bg-name').textContent = item[1];
+        };
+        current.addEventListener('click', (event) => {
           event.stopPropagation();
-          setBgPop(bgPop.hidden);
+          // una tendina aperta alla volta
+          root.querySelectorAll('.mod-bg-pop').forEach((other) => { if (other !== pop) other.hidden = true; });
+          setOpen(pop.hidden);
         });
-        bgPop.addEventListener('click', (event) => {
+        pop.addEventListener('click', (event) => {
           event.stopPropagation();
           const pick = event.target.closest('.mod-bg-choice');
           if (!pick) return;
-          applyBg(pick.dataset.bg);
-          setBgPop(false);
+          choose(pick.dataset.pick);
+          setOpen(false);
         });
-        document.addEventListener('click', () => setBgPop(false));
+        document.addEventListener('click', () => setOpen(false));
+        let saved = fallback;
+        try { saved = window.localStorage.getItem(storageKey) || fallback; } catch (e) {}
+        choose(saved);
       }
-      applyBg(currentBg());
+      setupColorPicker(root.querySelector('.mod-bg-sec .mod-bg-pick'), window.MARTUR_BGS || [],
+        'martur-dashboard-bg', 'sabbia', (id) => { if (window.marturApplyBg) window.marturApplyBg(id); });
+      setupColorPicker(root.querySelector('.mod-acc-sec .mod-bg-pick'), window.MARTUR_ACCENTS || [],
+        'martur-dashboard-accent', 'oro', (id) => { if (window.marturApplyAccent) window.marturApplyAccent(id); });
       // ---- Modifica testi ----
       // Chi ha il permesso accende la modalita' dal menu: passando sopra un
       // testo questo si evidenzia, toccandolo si cambia. Il testo nuovo va su
