@@ -155,6 +155,39 @@
       el.style.setProperty('--acc-d', mix(255, 0.45));  // tema scuro: piu' chiaro, si legge sul nero
       el.style.setProperty('--acc-e', mix(0, 0.25));    // tema scuro: bordo delle card un po' piu' spento
     };
+    // Una tavolozza sola per Sfondo e Accento: tutti i colori delle due liste,
+    // senza doppioni, in ordine di colore (rossi, arancio, gialli, verdi,
+    // azzurri, blu, viola, rosa) e in fondo i neutri dal chiaro allo scuro.
+    // Come accento i colori chiari si scuriscono da soli (vedi sopra).
+    (function () {
+      var seenHex = {}, seenId = {}, all = [];
+      window.MARTUR_BGS.concat(window.MARTUR_ACCENTS).forEach(function (c) {
+        var hex = c[2].toLowerCase();
+        if (seenHex[hex]) return;
+        var item = c.slice();
+        if (seenId[item[0]]) item[0] = item[0] + '-2';
+        seenHex[hex] = true; seenId[item[0]] = true;
+        all.push(item);
+      });
+      var hsl = function (hex) {
+        var r = parseInt(hex.substr(1, 2), 16) / 255, g = parseInt(hex.substr(3, 2), 16) / 255, b = parseInt(hex.substr(5, 2), 16) / 255;
+        var max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min, h = 0;
+        var s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+        if (d) h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+        h = (h * 60 + 360) % 360;
+        return [h, s, l];
+      };
+      all.sort(function (a, b) {
+        var A = hsl(a[2]), B = hsl(b[2]);
+        var na = A[1] < 0.14, nb = B[1] < 0.14; // neutri in fondo
+        if (na !== nb) return na ? 1 : -1;
+        if (na) return B[2] - A[2];
+        var ha = Math.floor(A[0] / 15), hb = Math.floor(B[0] / 15);
+        return ha !== hb ? ha - hb : B[2] - A[2];
+      });
+      window.MARTUR_BGS = all;
+      window.MARTUR_ACCENTS = all;
+    })();
     window.marturApplyAccent(window.localStorage.getItem('martur-dashboard-accent'));
   } catch (e) {
     document.documentElement.setAttribute('data-theme', 'light');
