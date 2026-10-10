@@ -1627,6 +1627,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
      effetto nella web app) */
   :root.martur-officina { background-image: none; }
 }
+/* Voci di menu nascoste (DMC / Abarth): non devono comparire nemmeno dove il tasto ha un display suo. */
+#martur-operations-dashboard :is(.mod-tabbtn, .mod-nav-tab)[hidden] { display: none !important; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
@@ -6478,7 +6480,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               <button type="button" class="mod-nav-drop-item" role="menuitem" data-drop-group="production" data-drop-target="monthly" aria-pressed="false"><svg class="mod-nav-drop-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span data-i18n="monthly">Mensile</span></button>
             </div>
           </span>
-          <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" aria-pressed="false" data-i18n="abarth">Abarth</button>
+          <!-- DMC / Abarth tolto dal menu: i numeri sono nelle card turno (la pagina resta, non si apre piu' dal menu) -->
+          <button type="button" class="mod-nav-tab mod-view-btn" data-view="abarth" hidden aria-pressed="false" data-i18n="abarth">Abarth</button>
           <span class="mod-nav-drop" data-nav-drop="quality">
             <button type="button" class="mod-nav-tab mod-view-btn mod-nav-drop-btn" data-view="dmc" data-view-group="dmc qualityWeekly qualityMonthly" aria-pressed="false" aria-haspopup="true" aria-expanded="false">
               <span data-i18n="dmcSection">DMC</span><svg class="mod-nav-drop-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
@@ -7275,7 +7278,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   <nav class="mod-tabbar" id="mod-tabbar" aria-label="Sezioni">
     <div class="mod-tabbar-pill mod-tabbar-main">
       <button type="button" class="mod-tabbtn" data-tab="production" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 21h20"></path><path d="M3 21V11l5 3v-3l5 3v-3l5 3V4h3v17"></path><path d="M7 17h2M12 17h2"></path></svg><span data-i18n="tabProduction">Produzione</span></button>
-      <button type="button" class="mod-tabbtn" data-tab="abarth" aria-pressed="false"><i data-lucide="car" aria-hidden="true"></i><span data-i18n="tabAbarth">Abarth</span></button>
+      <button type="button" class="mod-tabbtn" data-tab="abarth" aria-pressed="false" hidden><i data-lucide="car" aria-hidden="true"></i><span data-i18n="tabAbarth">Abarth</span></button>
       <button type="button" class="mod-tabbtn" data-tab="quality" aria-pressed="false"><i data-lucide="shield-check" aria-hidden="true"></i><span data-i18n="tabQuality">Qualità</span></button>
       <button type="button" class="mod-tabbtn" data-tab="edi" aria-pressed="false"><i data-lucide="file-spreadsheet" aria-hidden="true"></i><span data-i18n="tabEdi">EDI</span></button>
       <button type="button" class="mod-tabbtn" data-tab="summary" aria-pressed="false"><i data-lucide="clipboard-list" aria-hidden="true"></i><span data-i18n="tabSummary">Attività</span></button>
