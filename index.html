@@ -49,7 +49,30 @@
       ['turchese', 'Turchese', '#00c2c7'], ['smeraldo', 'Smeraldo', '#00a86b'], ['verde', 'Verde', '#2f9e44'],
       ['oliva', 'Oliva', '#6b7a2a'], ['petrolio', 'Petrolio', '#0f5257'], ['notte', 'Blu notte', '#1f3150', '#111a2b'],
       ['burgundy', 'Burgundy', '#6e1f2c', '#3a1119'], ['cioccolato', 'Cioccolato', '#5a3825'],
-      ['grafite', 'Grafite', '#3f4045', '#1c1d20'], ['nero', 'Nero', '#121212', '#080808']
+      ['grafite', 'Grafite', '#3f4045', '#1c1d20'], ['nero', 'Nero', '#121212', '#080808'],
+      // Altri colori: neutri, pastello, tinte particolari, profondi e accesi.
+      ['bianco', 'Bianco latte', '#f6f4ef'], ['carta', 'Carta', '#ece4d4'], ['crema', 'Crema', '#f3e6c4'],
+      ['vaniglia', 'Vaniglia', '#efe2b4'], ['champagne', 'Champagne', '#e6d3b3'], ['lino', 'Lino', '#ddd3c2'],
+      ['cemento', 'Cemento', '#b4b2ad'], ['nebbia', 'Nebbia', '#d4d9dd'], ['argento', 'Argento', '#b9bdc2'],
+      ['fumo', 'Fumo', '#8f9196'], ['piombo', 'Piombo', '#6b6e74'], ['carbone', 'Carbone', '#2b2b2e'],
+      ['cipria', 'Cipria', '#f1d3d0'], ['rosaantico', 'Rosa antico', '#c9a3a0'], ['salmone', 'Salmone', '#f4a48f'],
+      ['corallo', 'Corallo', '#ff7f6b'], ['albicocca', 'Albicocca', '#f8b878'], ['zucca', 'Zucca', '#e07b2a'],
+      ['senape', 'Senape', '#d4a72c'], ['ocra', 'Ocra', '#c08a2e'], ['ottone', 'Ottone', '#a88b3a'],
+      ['cachi', 'Cachi', '#b9ad85'], ['sabbiascura', 'Sabbia scura', '#bfae8b'], ['caramello', 'Caramello', '#a86b34'],
+      ['tabacco', 'Tabacco', '#7a5532'], ['ruggine', 'Ruggine', '#a2462a'], ['ciliegia', 'Ciliegia', '#b2182b'],
+      ['granata', 'Granata', '#7e1f2b'], ['vinaccia', 'Vinaccia', '#5e1c32'], ['melanzana', 'Melanzana', '#4b2a45'],
+      ['fucsia', 'Fucsia', '#ff2fa6'], ['orchidea', 'Orchidea', '#c56fc9'], ['glicine', 'Glicine', '#b5a3d9'],
+      ['lilla', 'Lilla polvere', '#a99bb8'], ['ametista', 'Ametista', '#7b52ab'], ['indaco', 'Indaco', '#3b3b8f'],
+      ['pervinca', 'Pervinca', '#8c9eff'], ['fiordaliso', 'Fiordaliso', '#6495ed'], ['carta-zucchero', 'Carta da zucchero', '#a7bcd6'],
+      ['ceruleo', 'Ceruleo', '#2a8fbd'], ['cobalto', 'Cobalto', '#1f4fa8'], ['zaffiro', 'Zaffiro', '#1c3f7a'],
+      ['denim', 'Denim', '#3f5f8f'], ['marina', 'Blu marina', '#1b2a49'], ['inchiostro', 'Inchiostro', '#151c2c'],
+      ['ghiaccio', 'Ghiaccio', '#dcecf2'], ['acquamarina', 'Acquamarina', '#7fd4c1'], ['verdeacqua', 'Verde acqua', '#3fb8a6'],
+      ['giada', 'Giada', '#2e9c7c'], ['teal', 'Teal', '#14727a'], ['abisso', 'Abisso', '#0d3b40'],
+      ['pistacchio', 'Pistacchio', '#bcd59a'], ['salviachiara', 'Salvia chiara', '#cfd8c4'], ['muschio', 'Muschio', '#7d8a4d'],
+      ['felce', 'Felce', '#4f7942'], ['foresta', 'Foresta', '#264d33'], ['militare', 'Verde militare', '#4b5320'],
+      ['acido', 'Verde acido', '#9be22d'], ['neon', 'Giallo neon', '#f4ff52'], ['limone', 'Limone', '#fff176'],
+      ['tramonto', 'Tramonto', '#ff9a5a'], ['lampone', 'Lampone', '#d6336c'], ['elettrico', 'Blu elettrico', '#2b5bff'],
+      ['ciano', 'Ciano', '#00d5e6'], ['viola-neon', 'Viola neon', '#9b30ff'], ['smeraldo-scuro', 'Smeraldo scuro', '#0b6e4f']
     ];
     window.marturBgColors = function (b) {
       var hex = function (h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16); }); };
@@ -88,7 +111,25 @@
       ['notte', 'Blu notte', '#1f3a68'], ['blu', 'Blu', '#1d4ed8'], ['acciaio', 'Blu acciaio', '#2f5d8a'],
       ['azzurro', 'Azzurro scuro', '#0b6aa2'], ['petrolio', 'Petrolio', '#0f5e66'], ['ottanio', 'Ottanio', '#0e6655'],
       ['smeraldo', 'Smeraldo', '#0b7a4b'], ['bosco', 'Verde bosco', '#2e6b4f'], ['verde', 'Verde', '#2b7a1f'],
-      ['oliva', 'Oliva', '#5d6b1f'], ['grafite', 'Grafite', '#44474d'], ['nero', 'Nero', '#1b1a17']
+      ['oliva', 'Oliva', '#5d6b1f'], ['grafite', 'Grafite', '#44474d'], ['nero', 'Nero', '#1b1a17'],
+      // Colori base e tinte particolari. Quelli chiari (giallo, lime, rosa...)
+      // vengono scuriti da soli quanto basta per leggere le scritte.
+      ['giallo', 'Giallo', '#f2c500'], ['arancione', 'Arancione', '#f07b0a'], ['rosa', 'Rosa', '#e84f8a'],
+      ['fucsia', 'Fucsia', '#d81b8c'], ['lilla', 'Lilla', '#9c6ad6'], ['azzurro-chiaro', 'Azzurro', '#2196f3'],
+      ['ciano', 'Ciano', '#00acc1'], ['turchese', 'Turchese', '#00a69c'], ['lime', 'Lime', '#8bc34a'],
+      ['verde-prato', 'Verde prato', '#43a047'], ['marrone', 'Marrone', '#795548'], ['grigio', 'Grigio', '#757575'],
+      ['senape', 'Senape', '#c9a227'], ['ocra', 'Ocra', '#b8862b'], ['ottone', 'Ottone', '#9a7b2f'],
+      ['caramello', 'Caramello', '#a5652a'], ['tabacco', 'Tabacco', '#6f4a2a'], ['cioccolato', 'Cioccolato', '#4e2e1f'],
+      ['ruggine', 'Ruggine', '#a23e1f'], ['corallo', 'Corallo', '#e5583f'], ['salmone', 'Salmone', '#e07a5f'],
+      ['ciliegia', 'Ciliegia', '#c2185b'], ['granata', 'Granata', '#7b1e2b'], ['vinaccia', 'Vinaccia', '#5a1a33'],
+      ['melanzana', 'Melanzana', '#4a2545'], ['orchidea', 'Orchidea', '#a64ca6'], ['ametista', 'Ametista', '#7e57c2'],
+      ['pervinca', 'Pervinca', '#5c6bc0'], ['fiordaliso', 'Fiordaliso', '#4a7bd0'], ['cobalto', 'Cobalto', '#0d47a1'],
+      ['zaffiro', 'Zaffiro', '#123a75'], ['denim', 'Denim', '#3a5a8c'], ['marina', 'Blu marina', '#162447'],
+      ['ceruleo', 'Ceruleo', '#1b7fb0'], ['acquamarina', 'Acquamarina', '#26a69a'], ['giada', 'Giada', '#2e8b6e'],
+      ['teal', 'Teal', '#00695c'], ['abisso', 'Abisso', '#0b3d42'], ['menta', 'Menta', '#3cb48c'],
+      ['muschio', 'Muschio', '#6b7a32'], ['felce', 'Felce', '#4f7942'], ['foresta', 'Foresta', '#1f4d2e'],
+      ['militare', 'Verde militare', '#4b5320'], ['salvia', 'Salvia', '#6f8a6a'], ['ardesia', 'Ardesia', '#4f5d6b'],
+      ['piombo', 'Piombo', '#5f6368'], ['argento', 'Argento', '#8e9399'], ['inchiostro', 'Inchiostro', '#1b2233']
     ];
     window.marturApplyAccent = function (id) {
       var el = document.documentElement;
@@ -100,9 +141,17 @@
         return;
       }
       var rgb = [1, 3, 5].map(function (i) { return parseInt(a[2].substr(i, 2), 16); });
+      // Colori chiari: scuriti un passo alla volta finche' le scritte di
+      // quel colore si leggono sul bianco (contrasto almeno 3,6:1).
+      var lumOf = function (c) {
+        var l = c.map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+        return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2];
+      };
+      for (var n = 0; n < 20 && 1.05 / (lumOf(rgb) + 0.05) < 3.6; n++) rgb = rgb.map(function (v) { return Math.round(v * 0.9); });
+      var hexOf = function (c) { return '#' + c.map(function (v) { return ('0' + v.toString(16)).slice(-2); }).join(''); };
       var mix = function (t, w) { return 'rgb(' + rgb.map(function (v) { return Math.round(v + (t - v) * w); }).join(' ') + ')'; };
       el.setAttribute('data-accent', id);
-      el.style.setProperty('--acc-l', a[2]);
+      el.style.setProperty('--acc-l', hexOf(rgb));
       el.style.setProperty('--acc-d', mix(255, 0.45));  // tema scuro: piu' chiaro, si legge sul nero
       el.style.setProperty('--acc-e', mix(0, 0.25));    // tema scuro: bordo delle card un po' piu' spento
     };
@@ -1087,12 +1136,12 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
    con light-dark() si girano da soli: neri -> bianchi e viceversa). Card,
    menu, finestre e tendine tengono lo schema del tema. */
 :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard,
-:root.martur-officina[data-bgtone="light"][data-theme="dark"] :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section, .mod-edi-head, [role="dialog"], [role="menu"], [role="listbox"]) {
+:root.martur-officina[data-bgtone="light"][data-theme="dark"] :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section, .mod-edi-head, .mod-summary-head, [role="dialog"], [role="menu"], [role="listbox"]) {
   color-scheme: dark;
   color: var(--foreground);
 }
 :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard,
-:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section, .mod-edi-head, [role="dialog"], [role="menu"], [role="listbox"]) {
+:root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) :is(.card, dialog, .tooltip, .mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-datenav, .mod-anomaly-wrap, .mod-rework-ranking li, .mod-task-card, .mod-tabbar-pill, .mod-view-subselect, .mod-app-menu, .mod-nav-drop-menu, .mod-report-card, .mod-edi-legend-item, .mod-edi-tip, .mod-edi-wrap, .mod-period-note, .mod-tv-tile, .mod-chat-suggest, .mod-entry-shiftmode, .mod-selection-dialog, .mod-stoppage-line, #mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section, .mod-edi-head, .mod-summary-head, [role="dialog"], [role="menu"], [role="listbox"]) {
   color-scheme: light;
   color: var(--foreground);
 }
@@ -1140,7 +1189,9 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
   right: 0;
   z-index: 60;
   display: grid;
-  grid-template-columns: repeat(6, 30px);
+  grid-template-columns: repeat(8, 28px);
+  max-height: min(360px, 60vh);
+  overflow-y: auto;
   gap: 8px;
   padding: 10px;
   background: var(--popover);
@@ -1150,8 +1201,8 @@ html>body{width:100%;max-width:1760px;margin:0 auto;padding:14px 20px}</style>
 }
 #martur-operations-dashboard .mod-bg-pop[hidden] { display: none; }
 #martur-operations-dashboard .mod-bg-choice {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border-radius: 999px;
   border: 1px solid rgb(0 0 0 / 18%);
@@ -1293,10 +1344,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 /* (23) Le card si sollevano un poco passando col mouse. */
 @media (hover: hover) and (pointer: fine) {
   :root.martur-officina #martur-operations-dashboard :is(.mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-task-card, .mod-period-note, #mod-daily-rework-section, #mod-daily-loss-section) {
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    transition: translate 0.18s ease, box-shadow 0.18s ease;
   }
   :root.martur-officina #martur-operations-dashboard :is(.mod-kpi-tile, .mod-daily-shift-card, .mod-boxed, #mod-waterfall-wrap, #mod-oee-section > .mod-oee-layout, .mod-task-card, .mod-period-note, #mod-daily-rework-section, #mod-daily-loss-section):hover {
-    transform: translateY(-2px);
+    translate: 0 -2px;
     box-shadow: 0 18px 32px -14px var(--off-shadow-c), 0 3px 6px -3px var(--off-shadow-c) !important;
   }
 }
@@ -1419,6 +1470,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   background: transparent !important;
   padding: 4px 0 0 !important;
   transform: none !important;
+  translate: none !important;
 }
 :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) > .mod-section-head {
   justify-content: flex-start;
@@ -1427,9 +1479,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 10px !important; }
 :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: block !important; }
 @media (hover: hover) and (pointer: fine) {
-  :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) { transition: transform 0.18s ease, box-shadow 0.18s ease; }
+  :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section) { transition: translate 0.18s ease, box-shadow 0.18s ease; }
   :root.martur-officina #martur-operations-dashboard :is(#mod-oee-section, #mod-waterfall-section):hover {
-    transform: translateY(-2px);
+    translate: 0 -2px;
     box-shadow: 0 18px 32px -14px var(--off-shadow-c), 0 3px 6px -3px var(--off-shadow-c);
   }
 }
@@ -1476,10 +1528,41 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 :root.martur-officina #martur-operations-dashboard .mod-edi-table td.mod-edi-empty { font-family: var(--font-sans); font-weight: 600; }
 /* Nota vuota (DMC/Abarth senza nota): non si disegna il riquadro colorato vuoto. */
 #martur-operations-dashboard .mod-shift-note:has(> .mod-shift-note-text:empty) { display: none !important; }
-/* Pianificazione: niente piu' titolo "IN CORSO" azzurro con la riga; i
-   filtri stanno in cima alla card. */
+/* Pianificazione: niente piu' titolo "IN CORSO" azzurro con la riga, ne' la
+   card grande attorno alle attivita': restano solo le card delle attivita'. */
 #martur-operations-dashboard .mod-summary-board .mod-task-col-head { display: none; }
-#martur-operations-dashboard .mod-summary-head.mod-summary-head-in { margin: 0 0 6px; }
+:root.martur-officina #martur-operations-dashboard .mod-summary-board .mod-task-col {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+/* Pianificazione e Anomalie: filtri e tasti in una pillola centrata che si
+   allarga con quello che c'e' dentro (come in EDI). */
+:root.martur-officina #martur-operations-dashboard .mod-summary-head {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  box-sizing: border-box;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 6px 12px;
+  background: var(--card);
+  border: 1.5px solid var(--off-edge);
+  border-radius: 22px;
+  box-shadow: 0 6px 14px -9px var(--off-shadow-c);
+}
+:root.martur-officina #martur-operations-dashboard .mod-summary-head :is(.mod-summary-tools, .mod-summary-actions) { justify-content: center; }
+/* Dentro le pillole di EDI, Pianificazione e Anomalie: scritte in maiuscolo
+   e nere (tranne i tasti pieni, che hanno il loro colore). */
+:root.martur-officina #martur-operations-dashboard :is(.mod-edi-head, .mod-summary-head) :is(.btn, button, select, label, .mod-summary-count, .mod-edi-current):not(.btn-primary):not([aria-pressed="true"]) {
+  text-transform: uppercase;
+  color: var(--off-ink) !important;
+}
+:root.martur-officina #martur-operations-dashboard .mod-summary-head .mod-summary-count { font-weight: 700; }
+/* EDI: niente titoli "Quantita'" / "Percentuali" sopra le tabelle. */
+#martur-operations-dashboard .mod-edi-block > .mod-edi-title { display: none; }
 /* (18) Colore d'accento scelto: prende il posto dell'oro ovunque. */
 :root.martur-officina[data-accent] {
   --gold: light-dark(var(--acc-l), var(--acc-d));
@@ -1499,7 +1582,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 }
 /* Immagine per Outlook: html2canvas disegna male le ombre, li' niente ombre. */
 /* (l'id finto nella lista alza la priorita' sopra la regola che mette le ombre) */
-:root.martur-officina #martur-operations-dashboard .mod-capture :is(.card, .mod-kpi-tile, .mod-daily-shift-card, .mod-rework-ranking li, #mod-capture-none), :root.martur-officina #martur-operations-dashboard .mod-capture :is(.card, .mod-kpi-tile, .mod-daily-shift-card, #mod-capture-none) * { box-shadow: none !important; transform: none !important; }
+:root.martur-officina #martur-operations-dashboard .mod-capture :is(.card, .mod-kpi-tile, .mod-daily-shift-card, .mod-rework-ranking li, #mod-capture-none), :root.martur-officina #martur-operations-dashboard .mod-capture :is(.card, .mod-kpi-tile, .mod-daily-shift-card, #mod-capture-none) * { box-shadow: none !important; transform: none !important; translate: none !important; }
 /* Niente stanghetta oro davanti a questi quattro titoli centrati. */
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label { padding-left: 0; }
 :root.martur-officina #martur-operations-dashboard :is(#mod-daily-rework-section, #mod-daily-loss-section, #mod-oee-section, #mod-waterfall-section) .mod-section-head .mod-section-label::before { display: none; }
@@ -2495,12 +2578,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       box-shadow: 0 6px 20px -10px rgb(0 0 0 / 18%), 0 1px 2px rgb(0 0 0 / 5%);
       align-items: center;
       text-align: center;
-      transition: box-shadow 200ms ease, transform 200ms ease;
+      transition: box-shadow 200ms ease, translate 200ms ease;
       border: 2px solid var(--kpi-accent, var(--primary));
     }
     #martur-operations-dashboard .mod-kpi-tile:hover {
       box-shadow: 0 10px 26px -10px rgb(0 0 0 / 22%), 0 2px 4px rgb(0 0 0 / 6%);
-      transform: translateY(-2px);
+      translate: 0 -2px;
     }
     :root[data-theme="dark"] #martur-operations-dashboard .mod-kpi-tile {
       box-shadow: 0 6px 20px -10px rgb(0 0 0 / 45%), 0 1px 2px rgb(0 0 0 / 25%);
@@ -13265,7 +13348,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               : '<div class="mod-task-empty">' + escapeHtml(t('taskNone')) + '</div>') +
           '</div>';
         }).join('');
-        placeSummaryHeadInBoard();
+        // (la barra resta sopra, come pillola centrata: non entra piu' nella colonna)
         // Pulsante rapido: completa (o riapre) senza aprire la scheda.
         el.summaryBoard.querySelectorAll('[data-task-done]').forEach((node) => {
           const run = (event) => {
