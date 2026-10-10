@@ -1563,6 +1563,57 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 :root.martur-officina #martur-operations-dashboard .mod-summary-head .mod-summary-count { font-weight: 700; }
 /* EDI: niente titoli "Quantita'" / "Percentuali" sopra le tabelle. */
 #martur-operations-dashboard .mod-edi-block > .mod-edi-title { display: none; }
+/* PC: le due card turno sempre alte uguali; la nota piu' corta si allunga
+   fino all'altezza di quella piu' lunga. */
+@media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
+  :root.martur-officina #martur-operations-dashboard .mod-daily-shift-grid { align-items: stretch; }
+  :root.martur-officina #martur-operations-dashboard .mod-daily-shift-grid > .mod-daily-shift-card { display: flex; flex-direction: column; }
+  :root.martur-officina #martur-operations-dashboard .mod-daily-shift-grid > .mod-daily-shift-card > .mod-shift-note { flex: 1 1 auto; align-items: flex-start; }
+}
+/* Telefono: logo, matita, impostazioni e calendario in un'unica pillola
+   bianca (disegnata dietro le prime due righe della testata); la tendina
+   della vista resta sotto, a parte. Icone un filo piu' piccole. */
+@media (max-width: 720px), (max-width: 950px) and (pointer: coarse) {
+  :root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster:is(.mod-topbar-cluster, #mod-none) {
+    position: relative;
+    isolation: isolate;
+    padding-inline: 10px;
+    box-shadow: none !important;
+    grid-template-columns: 30px minmax(0, 1fr) 30px;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster::before {
+    content: "";
+    grid-column: 1 / -1;
+    grid-row: 1 / 3;
+    align-self: stretch;
+    margin: -8px -10px;
+    background: var(--card);
+    border: 1.5px solid var(--off-edge);
+    border-radius: 22px;
+    box-shadow: 0 6px 14px -9px var(--off-shadow-c);
+    z-index: -1;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-datenav,
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster.mod-cal-open .mod-datenav {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-appmenu-btn, .mod-daily-admin-actions .btn) {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav :is(.mod-appmenu-btn, .mod-daily-admin-actions .btn) svg { width: 17px !important; height: 17px !important; }
+  /* la tendina della vista, sotto la pillola, larga quanto la pillola */
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-pillnav > .mod-view-subselect { margin-inline: -10px; width: calc(100% + 20px); max-width: none; }
+  /* la pillola e' bianca: dentro, i colori normali del tema anche su sfondi scuri */
+  :root.martur-officina[data-bgtone="dark"]:not([data-theme="dark"]) #martur-operations-dashboard .mod-topbar-cluster { color-scheme: light; color: var(--foreground); }
+  :root.martur-officina[data-bgtone="light"][data-theme="dark"] #martur-operations-dashboard .mod-topbar-cluster { color-scheme: dark; color: var(--foreground); }
+  /* niente sfumatura dello sfondo sul telefono (in alto faceva un brutto
+     effetto nella web app) */
+  :root.martur-officina { background-image: none; }
+}
 /* (18) Colore d'accento scelto: prende il posto dell'oro ovunque. */
 :root.martur-officina[data-accent] {
   --gold: light-dark(var(--acc-l), var(--acc-d));
