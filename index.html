@@ -18592,10 +18592,16 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const more = event.target.closest('.mod-note-more');
         if (!more || !more.classList.contains('mod-note-more-on')) return;
         const note = more.closest('.mod-shift-note');
-        const key = more.dataset.noteKey;
         const open = !note.classList.contains('mod-shift-note-open');
-        note.classList.toggle('mod-shift-note-open', open);
-        if (open) openShiftNotes.add(key); else openShiftNotes.delete(key);
+        // Si aprono (e si chiudono) insieme le note di tutte e due le card,
+        // cosi' restano alte uguali.
+        el.dailyShiftGrid.querySelectorAll('.mod-shift-note:not(.mod-shift-note-empty)').forEach((n) => {
+          n.classList.toggle('mod-shift-note-open', open);
+          const btn = n.querySelector('.mod-note-more');
+          const key = btn && btn.dataset.noteKey;
+          if (!key) return;
+          if (open) openShiftNotes.add(key); else openShiftNotes.delete(key);
+        });
         updateNoteMore();
       });
       el.backBtn.addEventListener('click', openSummaryDialog);
