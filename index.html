@@ -1857,8 +1857,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 :root.martur-officina #martur-operations-dashboard :is(.viz-stat-value, .mod-shift-metric strong, .mod-oee-gauge-value, .mod-sec-hero-value, .mod-loss-kpi-val, .mod-rework-rank-badge, .mod-period-note-value) {
   text-shadow: 0 1px 1.5px rgb(0 0 0 / 16%);
 }
-/* Titoli delle card turno (data, turno, orario, nomi): carattere normale, piu' largo. */
-:root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name, :root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name * { font-family: 'Barlow', -apple-system, system-ui, sans-serif !important; }
+/* Etichette delle caselle nelle card turno (PRIMA MARTUR, ANTERIORE...): carattere normale, piu' largo. */
+:root.martur-officina #martur-operations-dashboard .mod-daily-shift-card .mod-shift-metric > .text-small { font-family: 'Barlow', -apple-system, system-ui, sans-serif !important; }
+/* su una riga sola: sui portatili piu' stretti un filo piu' piccole invece di andare a capo */
+@media (min-width: 951px) { :root.martur-officina #martur-operations-dashboard .mod-daily-shift-card .mod-shift-metric > .text-small { white-space: nowrap; font-size: clamp(12px, 0.98vw, 15px); } }
 /* nell'immagine per Outlook niente ombre sotto il testo (html2canvas le sporca) */
 :root.martur-officina #martur-operations-dashboard .mod-capture * { text-shadow: none !important; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
