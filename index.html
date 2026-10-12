@@ -6819,9 +6819,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="rework">Rework</span><input id="mod-s1-rework" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label mod-overtime-field-label">
-              <span data-i18n="overtimePct">Straordinario %</span>
+              <span data-i18n="overtimeHoursField">Straordinario (ore)</span>
               <div class="mod-overtime-field">
-                <input id="mod-s1-overtime" class="form-control" type="number" min="0" max="100" step="0.1" placeholder="%" title="Scrivi la percentuale oppure calcolala con il +">
+                <input id="mod-s1-overtime" class="form-control" type="number" min="0" step="any" placeholder="h" title="Scrivi le ore totali oppure calcolale con il +">
                 <button type="button" class="btn btn-ghost mod-overtime-btn" data-shift="shift1" data-i18n-title="calcOvertime" title="Calcola straordinario">+</button>
               </div>
             </label>
@@ -6886,9 +6886,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             <span class="mod-row-break" aria-hidden="true"></span>
             <label class="form-label"><span data-i18n="rework">Rework</span><input id="mod-s2-rework" class="form-control" type="number" min="0" step="1"></label>
             <label class="form-label mod-overtime-field-label">
-              <span data-i18n="overtimePct">Straordinario %</span>
+              <span data-i18n="overtimeHoursField">Straordinario (ore)</span>
               <div class="mod-overtime-field">
-                <input id="mod-s2-overtime" class="form-control" type="number" min="0" max="100" step="0.1" placeholder="%" title="Scrivi la percentuale oppure calcolala con il +">
+                <input id="mod-s2-overtime" class="form-control" type="number" min="0" step="any" placeholder="h" title="Scrivi le ore totali oppure calcolale con il +">
                 <button type="button" class="btn btn-ghost mod-overtime-btn" data-shift="shift2" data-i18n-title="calcOvertime" title="Calcola straordinario">+</button>
               </div>
             </label>
@@ -8187,6 +8187,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           downtimeMinutes: 'minuti di fermo',
           overtime: 'Straordinario',
           overtimePct: 'Straordinario %',
+          overtimeHoursField: 'Straordinario (ore)',
           dummySeats: 'Dummy',
           periodNoteWeek: 'Chiusura settimana',
           periodNoteMonth: 'Chiusura mese',
@@ -8811,6 +8812,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           downtimeMinutes: 'minutes of downtime',
           overtime: 'Overtime',
           overtimePct: 'Overtime %',
+          overtimeHoursField: 'Overtime (hours)',
           dummySeats: 'Dummy seats',
           periodNoteWeek: 'Week close',
           periodNoteMonth: 'Month close',
@@ -9435,6 +9437,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           downtimeMinutes: 'duruş dakikası',
           overtime: 'Fazla mesai',
           overtimePct: 'Fazla mesai %',
+          overtimeHoursField: 'Fazla mesai (saat)',
           dummySeats: 'Dummy koltuk',
           periodNoteWeek: 'Hafta kapanisi',
           periodNoteMonth: 'Ay kapanisi',
@@ -10209,7 +10212,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           presence: 'mod-s1-presence',
           absent: 'mod-s1-absent',
           rework: 'mod-s1-rework',
-          overtimePct: 'mod-s1-overtime',
+          overtimeH: 'mod-s1-overtime',
           dummy: 'mod-s1-dummy',
           coda: 'mod-s1-coda',
           stellantisCars: 'mod-s1-cars',
@@ -10225,7 +10228,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           presence: 'mod-s2-presence',
           absent: 'mod-s2-absent',
           rework: 'mod-s2-rework',
-          overtimePct: 'mod-s2-overtime',
+          overtimeH: 'mod-s2-overtime',
           dummy: 'mod-s2-dummy',
           coda: 'mod-s2-coda',
           stellantisCars: 'mod-s2-cars',
@@ -10383,6 +10386,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           absent: null,
           rework: null,
           overtimePct: null,
+          overtimeH: null,
           dummy: null,
           coda: null,
           stellantisCars: null,
@@ -11404,7 +11408,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           target._otRefBase = Math.max(valueOrZero(target._otRefBase), valueOrZero(source.otRefBase));
         } else {
           const presence = valueOrZero(source.presence);
-          if (isNumber(source.overtimePct)) target.otHours += source.overtimePct * presence * 8;
+          if (isNumber(source.overtimeH)) target.otHours += source.overtimeH;
+          else if (isNumber(source.overtimePct)) target.otHours += source.overtimePct * presence * 8;
           if (isWeekday) target.otBase += presence * 8;
         }
         if (shiftHasOperationalData(source) && isNumber(source.efficiency)) {
@@ -12561,6 +12566,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         if (!input || input.value === '') return null;
         const value = Number(input.value);
         if (!Number.isFinite(value) || value < 0) return null;
+        if (percent === 'raw') return Math.round(value * 100) / 100;
         return percent ? value / 100 : Math.round(value);
       }
 
@@ -12768,10 +12774,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 
       function updateOvertimeResult() {
         const totalHours = computeOvertimeHoursTotal();
-        const presenceInput = root.querySelector('#' + fieldIds[state.overtimeTarget].presence);
-        const presence = presenceInput.value === '' ? null : Number(presenceInput.value);
-        const pct = (isNumber(presence) && presence > 0) ? (totalHours / (presence * 8)) * 100 : null;
-        el.overtimeResult.textContent = t('totalOvertimeHours') + ': ' + formatNumber(Math.round(totalHours * 10) / 10) + ' h · ' + t('overtimePct') + ': ' + (pct != null ? formatNumber(Math.round(pct * 10) / 10) + '%' : '—');
+        el.overtimeResult.textContent = t('totalOvertimeHours') + ': ' + formatNumber(Math.round(totalHours * 10) / 10) + ' h';
       }
 
       function openOvertimeDialog(shiftName) {
@@ -12785,10 +12788,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       function closeOvertimeDialog(applyChanges) {
         if (applyChanges && state.overtimeTarget) {
           const totalHours = computeOvertimeHoursTotal();
-          const presenceInput = root.querySelector('#' + fieldIds[state.overtimeTarget].presence);
-          const presence = presenceInput.value === '' ? null : Number(presenceInput.value);
-          const pct = (isNumber(presence) && presence > 0) ? (totalHours / (presence * 8)) * 100 : 0;
-          root.querySelector('#' + fieldIds[state.overtimeTarget].overtimePct).value = Math.round(pct * 10) / 10;
+          root.querySelector('#' + fieldIds[state.overtimeTarget].overtimeH).value = Math.round(totalHours * 100) / 100;
           updateLiveSummary();
         }
         state.overtimeTarget = null;
@@ -12818,8 +12818,13 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         };
         ['shift1', 'shift2'].forEach((name) => {
           Object.keys(fieldIds[name]).forEach((key) => {
-            entry[name][key] = readInput(fieldIds[name][key], key === 'overtimePct');
+            entry[name][key] = readInput(fieldIds[name][key], key === 'overtimeH' ? 'raw' : false);
           });
+          // Lo straordinario si inserisce in ore; la % del turno resta salvata per
+          // compatibilita' (ore / presenti × 8).
+          const otH = entry[name].overtimeH;
+          const presence = entry[name].presence;
+          entry[name].overtimePct = isNumber(otH) ? (presence > 0 ? otH / (presence * 8) : null) : null;
         });
         entry.plannedMinPerShift = readInput('mod-entry-planned');
         entry.targetKitPerShift = readInput('mod-entry-target');
@@ -12855,8 +12860,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       function fillShift(name, shift) {
         Object.keys(fieldIds[name]).forEach((key) => {
           const input = root.querySelector('#' + fieldIds[name][key]);
-          const value = shift && isNumber(shift[key]) ? shift[key] : null;
-          input.value = value == null ? '' : key === 'overtimePct' ? Math.round(value * 1000) / 10 : value;
+          let value = shift && isNumber(shift[key]) ? shift[key] : null;
+          // Vecchie giornate salvate solo in %: ricava le ore dai presenti.
+          if (key === 'overtimeH' && value == null && shift && isNumber(shift.overtimePct) && isNumber(shift.presence)) {
+            value = Math.round(shift.overtimePct * shift.presence * 8 * 10) / 10;
+          }
+          input.value = value == null ? '' : value;
         });
       }
 
