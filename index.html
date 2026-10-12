@@ -84,6 +84,25 @@
       var el = document.documentElement;
       var b = null;
       window.MARTUR_BGS.forEach(function (x) { if (x[0] === id) b = x; });
+      // Colore dello sfondo "da scrivere" (nomi degli shift leader): stessa
+      // tinta, scurita (tema chiaro) o schiarita (tema scuro) finche' si legge
+      // sulla card.
+      (function () {
+        var base = (b ? b[2] : '#d8cdb5');
+        var rgb = [1, 3, 5].map(function (i) { return parseInt(base.substr(i, 2), 16); });
+        var lumOf = function (q) {
+          var l = q.map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+          return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2];
+        };
+        var dark = el.getAttribute('data-theme') === 'dark';
+        for (var n = 0; n < 30; n++) {
+          var L = lumOf(rgb);
+          if (!dark && 1.05 / (L + 0.05) >= 3.6) break;
+          if (dark && (L + 0.05) / 0.06 >= 4) break;
+          rgb = rgb.map(function (v) { return dark ? Math.round(v + (255 - v) * 0.12) : Math.round(v * 0.9); });
+        }
+        el.style.setProperty('--bg-ink', 'rgb(' + rgb.join(' ') + ')');
+      })();
       if (!b || id === 'sabbia') {
         el.removeAttribute('data-bg'); el.removeAttribute('data-bgtone'); el.style.removeProperty('--bg-pick'); return;
       }
@@ -1745,6 +1764,22 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > .mod-topbar-left { flex: 1 1 0; max-width: 420px; min-width: 0; }
   :root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { width: 100% !important; max-width: 420px; }
 }
+/* PC: dopo le voci del menu viene il calendario, e solo dopo le tre icone
+   (immagine, matita, impostazioni). Il contenitore del menu si "scioglie"
+   cosi' i suoi pezzi si possono mettere in ordine nella barra. */
+@media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > .mod-pillnav { display: contents; }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-main-nav { order: 2; }
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > #mod-context-bar { order: 3; }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-pill-sep { order: 4; align-self: center; height: 26px; }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > #mod-back-btn { order: 5; }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-daily-admin-actions { order: 6; }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-appmenu-wrap { order: 7; }
+}
+/* Nomi nelle testate dei turni: shift leader nel colore dello sfondo, team
+   leader nel colore d'accento. */
+:root.martur-officina #martur-operations-dashboard .mod-shift-lead { color: var(--bg-ink, #8a7550); font-weight: 700; }
+:root.martur-officina #martur-operations-dashboard .mod-shift-crew { color: var(--gold); }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
@@ -10505,8 +10540,27 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         return JSON.stringify(auditValue(a)) === JSON.stringify(auditValue(b));
       }
 
+      // Le azioni di chi controlla il registro non si registrano: nel registro
+      // compaiono solo gli altri.
+      var AUDIT_SKIP_USERS = ['andrea.dellerba'];
+      function auditSkipUser(name) {
+        return AUDIT_SKIP_USERS.indexOf(String(name || '').trim().toLowerCase()) >= 0;
+      }
+      // Righe vecchie di chi non va nel registro: si cancellano (a blocchi di
+      // 400) quando l'Amministratore apre il registro. Una volta pulito, la
+      // ricerca non trova piu' niente e costa una sola lettura.
+      function purgeSkippedAudit() {
+        if (!db || !state.isConfigAdmin) return Promise.resolve();
+        const purgeOne = (name) => db.collection('auditLog').where('username', '==', name).limit(400).get().then((snap) => {
+          if (snap.empty) return null;
+          const batch = db.batch();
+          snap.forEach((doc) => batch.delete(doc.ref));
+          return batch.commit().then(() => (snap.size === 400 ? purgeOne(name) : null));
+        });
+        return Promise.all(AUDIT_SKIP_USERS.map((name) => purgeOne(name).catch(() => null)));
+      }
       function logAudit(action, target, changes) {
-        if (!db) return Promise.resolve();
+        if (!db || auditSkipUser(state.authUsername)) return Promise.resolve();
         const uid = currentUid();
         const list = Array.isArray(changes)
           ? changes.filter((c) => c && !sameAuditValue(c.from, c.to)).slice(0, 60).map((c) => ({
@@ -10528,7 +10582,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       // Compatibilita' con le chiamate di prima (login, dove il nome utente non
       // e' ancora nello stato quando la riga parte).
       function logAuditEvent(type, usernameOverride, detail) {
-        if (!db) return Promise.resolve();
+        if (!db || auditSkipUser(usernameOverride || state.authUsername)) return Promise.resolve();
         return db.collection('auditLog').add({
           type: type,
           username: usernameOverride || state.authUsername || '?',
@@ -16359,7 +16413,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const series = kpiTrendSeries();
         // Il sabato (turno unico, ore variabili) non e' paragonabile ai giorni feriali:
         // niente freccia/delta, solo il valore e il grafico dell'andamento.
-        const skipBadge = state.view === 'daily' && isSingleShiftDay(state.selectedDate);
+        // Niente frecce nemmeno quando il giorno scelto non ha ancora dati (per
+        // esempio il lunedi' mattina): il confronto sarebbe fra due giorni vecchi.
+        const dayEmpty = state.view === 'daily' && !(series.length && series[series.length - 1].date === state.selectedDate);
+        const skipBadge = state.view === 'daily' && (isSingleShiftDay(state.selectedDate) || dayEmpty);
         // Lunedi: il giorno prima e' il fine settimana, quindi per l'assenteismo
         // il confronto non direbbe niente di utile. Resta il valore e la linea,
         // sparisce solo la variazione.
@@ -17660,7 +17717,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         auditBtn.addEventListener('click', () => {
           if (!state.isConfigAdmin) return;
           toggleAppMenu(false);
-          renderAuditLog();
+          purgeSkippedAudit().then(renderAuditLog);
           auditDialog.showModal();
         });
         root.querySelector('#mod-close-audit-dialog').addEventListener('click', () => auditDialog.close());
