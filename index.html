@@ -1857,6 +1857,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 :root.martur-officina #martur-operations-dashboard :is(.viz-stat-value, .mod-shift-metric strong, .mod-oee-gauge-value, .mod-sec-hero-value, .mod-loss-kpi-val, .mod-rework-rank-badge, .mod-period-note-value) {
   text-shadow: 0 1px 1.5px rgb(0 0 0 / 16%);
 }
+/* Titoli delle card turno (data, turno, orario, nomi): carattere normale, piu' largo. */
+:root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name, :root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name * { font-family: 'Barlow', -apple-system, system-ui, sans-serif !important; }
 /* nell'immagine per Outlook niente ombre sotto il testo (html2canvas le sporca) */
 :root.martur-officina #martur-operations-dashboard .mod-capture * { text-shadow: none !important; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
@@ -15870,16 +15872,18 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         }
 
         if (other) {
-          // A sinistra il piu' vecchio, a destra il piu' recente con i
-          // cambiamenti rispetto al primo.
-          const pair = ediSortKey(other) <= ediSortKey(saved) ? [other, saved] : [saved, other];
+          // A sinistra l'EDI aperto, a destra quello scelto per il confronto.
+          // Le variazioni stanno sempre sul piu' recente, rispetto al piu' vecchio.
+          const otherOlder = ediSortKey(other) <= ediSortKey(saved);
+          const newer = otherOlder ? saved : other;
+          const older = otherOlder ? other : saved;
           const panel = (d, mode, base) => '<div class="mod-edi-panel"><div class="mod-edi-panel-title">' + escapeHtml(d.name) +
             '</div>' + ediTableHtml(d, mode, base) + '</div>';
           ['qty', 'pct'].forEach((mode) => {
             (mode === 'qty' ? el.ediQtyBox : el.ediPctBox).innerHTML = '<div class="mod-edi-compare-grid">' +
-              panel(pair[0], mode, null) + panel(pair[1], mode, pair[0]) + '</div>';
+              panel(saved, mode, saved === newer ? older : null) + panel(other, mode, other === newer ? older : null) + '</div>';
           });
-          renderEdiChart(pair[1], pair[0], ediMode);
+          renderEdiChart(newer, older, ediMode);
           el.ediStatus.textContent = '';
           el.ediStatus.classList.remove('mod-negative');
           return;
@@ -16457,7 +16461,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               const d = valid[valid.length - 1] - valid[valid.length - 2];
               dir = Math.abs(d) < 0.5 ? 'flat' : (d > 0 ? 'up' : 'down');
             }
-            root.querySelector('#' + id + '-spark').innerHTML = sparklineSvg(series, dir);
+            // Solo i periodi con dati, come le altre card: la linea occupa tutta
+            // la larghezza invece di restare schiacciata a destra.
+            root.querySelector('#' + id + '-spark').innerHTML = sparklineSvg(valid, dir);
             const prev = series[series.length - 2];
             if (isNumber(cur) && isNumber(prev)) renderTrendBadge(trendNode, cur, prev, 'int', false);
             else { trendNode.textContent = ''; trendNode.className = 'mod-kpi-trend'; }
