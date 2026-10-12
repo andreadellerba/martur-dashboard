@@ -11347,7 +11347,40 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           }
         });
         state.manual.forEach((row) => merged.set(row.date, deriveRow(Object.assign({}, row, { manual: true }))));
-        return Array.from(merged.values()).sort((a, b) => a.date.localeCompare(b.date));
+        return applyWeeklyOvertime(merged, Array.from(merged.values()).sort((a, b) => a.date.localeCompare(b.date)));
+      }
+
+      // Straordinario % della singola giornata: ore di straordinario / ore
+      // ordinarie (presenti × 8). Sabato e domenica non hanno ore ordinarie
+      // proprie, quindi si confrontano con quelle lun-ven della stessa settimana.
+      function applyWeeklyOvertime(map, rows) {
+        rows.forEach((row) => {
+          const date = parseDate(row.date);
+          const day = date.getDay();
+          const weekend = day === 0 || day === 6;
+          const monday = weekend ? mondayOf(date) : null;
+          const rates = [];
+          ['shift1', 'shift2'].forEach((name) => {
+            const shift = row[name];
+            if (!shift) return;
+            const presence = valueOrZero(shift.presence);
+            const hours = isNumber(shift.overtimeH) ? shift.overtimeH
+              : isNumber(shift.overtimePct) ? shift.overtimePct * presence * 8 : null;
+            if (!isNumber(hours)) return;
+            let base = presence * 8;
+            if (weekend) {
+              base = 0;
+              for (let i = 0; i < 5; i++) {
+                const other = map.get(isoDate(addDays(monday, i)));
+                if (other && other[name]) base += valueOrZero(other[name].presence) * 8;
+              }
+            }
+            row[name] = Object.assign({}, shift, { overtimeH: hours, overtimePct: base ? hours / base : (hours ? null : 0) });
+            if (isNumber(row[name].overtimePct)) rates.push(row[name].overtimePct);
+          });
+          if (rates.length) row.overtimePct = rates.reduce((a, b) => a + b, 0) / rates.length;
+        });
+        return rows;
       }
 
       function hasOperationalData(row) {
