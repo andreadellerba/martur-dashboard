@@ -1787,6 +1787,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
    leader nel colore d'accento. */
 :root.martur-officina #martur-operations-dashboard .mod-shift-lead { color: var(--bg-ink, #8a7550); font-weight: 700; }
 :root.martur-officina #martur-operations-dashboard .mod-shift-crew { color: var(--gold); }
+/* Logo senza angoli arrotondati: tagliavano gli spigoli della M (e della Y). */
+#martur-operations-dashboard .mod-brand-logo { border-radius: 0 !important; overflow: visible; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
