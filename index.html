@@ -1786,7 +1786,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 /* Nomi nelle testate dei turni: shift leader nel colore dello sfondo, team
    leader nel colore d'accento. */
 :root.martur-officina #martur-operations-dashboard .mod-shift-lead { color: var(--bg-ink, #8a7550); font-weight: 700; }
-:root.martur-officina #martur-operations-dashboard .mod-shift-crew { color: var(--gold); }
+:root.martur-officina #martur-operations-dashboard .mod-shift-crew { color: var(--gold); font-weight: 700; }
+/* tutta la riga del turno in grassetto (data, turno, orario e nomi) */
+:root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name, :root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name * { font-weight: 700 !important; }
 /* Logo senza angoli arrotondati: tagliavano gli spigoli della M (e della Y). */
 #martur-operations-dashboard .mod-brand-logo { border-radius: 0 !important; overflow: visible; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
