@@ -1800,6 +1800,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     margin-top: 0 !important;
   }
 }
+/* Barra in alto: angoli meno tondi (con 28 px, essendo bassa, diventava una pillola). */
+:root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster { border-radius: 18px !important; }
 /* Barra in alto (PC) piu' leggibile senza allungarla: ora e gradi in un
    carattere stretto ma piu' alto e pieno, icone piu' marcate, voci del menu
    piu' piene; un'ombra leggerissima stacca tutto dal bianco. */
@@ -1820,8 +1822,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   :root.martur-officina #martur-operations-dashboard .mod-world-flag { box-shadow: 0 0 0 1px rgb(0 0 0 / 15%), 0 2px 4px rgb(0 0 0 / 22%) !important; }
   :root.martur-officina #martur-operations-dashboard .mod-pillnav .mod-nav-tab,
   :root.martur-officina #martur-operations-dashboard .mod-datenav .mod-period-overlay {
-    font-weight: 600 !important;
-    text-shadow: 0 1px 1px rgb(0 0 0 / 12%);
+    font-family: 'Barlow Semi Condensed', 'Barlow', sans-serif !important;
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 14%);
   }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster :is(.mod-pillnav, .mod-datenav) svg {
     stroke-width: 2.3;
