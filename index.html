@@ -11370,12 +11370,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           shift1: {
             front: 0, rear: 0, presence: 0, absent: 0, rework: 0, dummy: null, coda: null,
             stellantisCars: 0, overtimePct: null, efficiency: null,
-            _otSum: 0, _otWeight: 0, _effSum: 0, _effCount: 0
+            otHours: 0, otBase: 0, _effSum: 0, _effCount: 0
           },
           shift2: {
             front: 0, rear: 0, presence: 0, absent: 0, rework: 0, dummy: null, coda: null,
             stellantisCars: 0, overtimePct: null, efficiency: null,
-            _otSum: 0, _otWeight: 0, _effSum: 0, _effCount: 0
+            otHours: 0, otBase: 0, _effSum: 0, _effCount: 0
           },
           overtimeHours: 0,
           _hasOvertimeHours: false,
@@ -11389,16 +11389,23 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         };
       }
 
-      function addShift(target, source) {
+      function addShift(target, source, isWeekday) {
         ['front', 'rear', 'presence', 'absent', 'rework', 'stellantisCars'].forEach((key) => {
           target[key] += valueOrZero(source[key]);
         });
         if (isNumber(source.dummy)) target.dummy = source.dummy;
         if (isNumber(source.coda)) target.coda = source.coda;
-        if (isNumber(source.overtimePct)) {
-          const weight = valueOrZero(source.presence) + valueOrZero(source.absent) || 1;
-          target._otSum += source.overtimePct * weight;
-          target._otWeight += weight;
+        // Straordinario su base settimanale: si sommano le ore di straordinario
+        // (sabato compreso) e si dividono per le ore ordinarie dei soli giorni
+        // lun-ven (presenti × 8). Il sabato quindi non fa una % a sé.
+        if (isNumber(source.otHours)) {
+          target.otHours += source.otHours;
+          target.otBase += valueOrZero(source.otBase);
+          target._otRefBase = Math.max(valueOrZero(target._otRefBase), valueOrZero(source.otRefBase));
+        } else {
+          const presence = valueOrZero(source.presence);
+          if (isNumber(source.overtimePct)) target.otHours += source.overtimePct * presence * 8;
+          if (isWeekday) target.otBase += presence * 8;
         }
         if (shiftHasOperationalData(source) && isNumber(source.efficiency)) {
           target._effSum += source.efficiency;
@@ -11407,8 +11414,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       }
 
       function addRow(bucket, row) {
-        addShift(bucket.shift1, row.shift1);
-        addShift(bucket.shift2, row.shift2);
+        const day = row.date && /^\d{4}-\d{2}-\d{2}$/.test(row.date) ? parseDate(row.date).getDay() : 1;
+        const isWeekday = day >= 1 && day <= 5;
+        addShift(bucket.shift1, row.shift1, isWeekday);
+        addShift(bucket.shift2, row.shift2, isWeekday);
         if (isNumber(row.overtimeHours)) {
           bucket.overtimeHours += row.overtimeHours;
           bucket._hasOvertimeHours = true;
@@ -11429,10 +11438,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       function finalizeBucket(bucket) {
         ['shift1', 'shift2'].forEach((name) => {
           const shift = bucket[name];
-          shift.overtimePct = shift._otWeight ? shift._otSum / shift._otWeight : null;
+          // Sabato/domenica: base = ore ordinarie lun-ven della stessa settimana.
+          const otBase = shift.otBase || valueOrZero(shift._otRefBase);
+          shift.overtimePct = otBase ? shift.otHours / otBase : null;
+          shift.otRefBase = valueOrZero(shift._otRefBase);
+          delete shift._otRefBase;
           shift.efficiency = shift._effCount ? shift._effSum / shift._effCount : null;
-          delete shift._otSum;
-          delete shift._otWeight;
           delete shift._effSum;
           delete shift._effCount;
         });
@@ -11580,11 +11591,29 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         el.viewSubselect.value = value;
       }
 
+      // Per sabato/domenica lo straordinario % si riferisce alle ore ordinarie
+      // (presenti × 8) dei giorni lun-ven della stessa settimana.
+      function applyWeekendOtBase(bucket, map, key) {
+        const date = parseDate(key);
+        const day = date.getDay();
+        if (day !== 0 && day !== 6) return bucket;
+        const monday = mondayOf(date);
+        ['shift1', 'shift2'].forEach((name) => {
+          let base = 0;
+          for (let i = 0; i < 5; i++) {
+            const row = map.get(isoDate(addDays(monday, i)));
+            if (row && row[name]) base += valueOrZero(row[name].presence) * 8;
+          }
+          bucket[name]._otRefBase = base;
+        });
+        return bucket;
+      }
+
       function getDailyPeriods(rows, selectedDate) {
         const map = new Map(rows.map((row) => [row.date, row]));
         const bucket = createBucket(selectedDate, formatDate(selectedDate), weekdayShort(selectedDate) + ' ' + formatDate(selectedDate, true));
         if (map.has(selectedDate)) addRow(bucket, map.get(selectedDate));
-        return [finalizeBucket(bucket)];
+        return [finalizeBucket(applyWeekendOtBase(bucket, map, selectedDate))];
       }
 
       function mondayOf(date) {
@@ -11600,7 +11629,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           const key = isoDate(addDays(firstDay, i));
           const bucket = createBucket(key, formatDate(key), weekdayShort(key) + ' ' + formatDate(key, true));
           if (map.has(key)) addRow(bucket, map.get(key));
-          periods.push(finalizeBucket(bucket));
+          periods.push(finalizeBucket(applyWeekendOtBase(bucket, map, key)));
         }
         return periods;
       }
@@ -11614,7 +11643,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           const key = isoDate(cursor);
           const bucket = createBucket(key, formatDate(key), weekdayShort(key) + ' ' + formatDate(key, true));
           if (map.has(key)) addRow(bucket, map.get(key));
-          periods.push(finalizeBucket(bucket));
+          periods.push(finalizeBucket(applyWeekendOtBase(bucket, map, key)));
         }
         return periods;
       }
