@@ -1813,6 +1813,12 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     letter-spacing: 0.01em;
     text-shadow: 0 1px 1px rgb(0 0 0 / 14%);
   }
+  /* Tutto alla stessa altezza: il testo si centra sull'altezza delle
+     maiuscole/cifre (non sullo spazio vuoto sopra e sotto le lettere), cosi'
+     cifre, icone e bandiere stanno sulla stessa riga a occhio. */
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster :is(.mod-world-text, .mod-world-time, .mod-world-weather span, .mod-nav-tab, .mod-period-overlay) {
+    text-box: trim-both cap alphabetic;
+  }
   :root.martur-officina #martur-operations-dashboard .mod-world-weather svg {
     width: 21px !important;
     height: 21px !important;
@@ -1834,6 +1840,25 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   }
   :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster .mod-brand-logo { filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 22%)); }
 }
+/* Stesso stile della barra in alto in tutta la dashboard: carattere stretto
+   e pieno, ombra leggera sotto testi e numeri. Il carattere stretto occupa
+   meno spazio, quindi nessuna card cambia larghezza. */
+:root.martur-officina {
+  --font-sans: 'Barlow Semi Condensed', 'Barlow', -apple-system, system-ui, "Segoe UI", sans-serif;
+}
+:root.martur-officina #martur-operations-dashboard,
+:root.martur-officina #martur-operations-dashboard :is(button, input, select, textarea, .btn, .form-control, .form-select) {
+  font-family: var(--font-sans);
+}
+:root.martur-officina #martur-operations-dashboard :is(.mod-shift-metric .text-small, .mod-kpi-tile > .text-muted, .mod-section-label, .mod-rework-shift-head, .mod-rework-ranking li, .mod-shift-card-name, .mod-shift-note-text, .mod-sec-duo-title, .mod-kpi-duo-label, .mod-task-people, .mod-task-desc, .mod-anomaly-table th, .mod-edi-table th, .mod-summary-head, .mod-edi-head, .mod-loss-kpi-label, .mod-period-note-label) {
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgb(0 0 0 / 10%);
+}
+:root.martur-officina #martur-operations-dashboard :is(.viz-stat-value, .mod-shift-metric strong, .mod-oee-gauge-value, .mod-sec-hero-value, .mod-loss-kpi-val, .mod-rework-rank-badge, .mod-period-note-value) {
+  text-shadow: 0 1px 1.5px rgb(0 0 0 / 16%);
+}
+/* nell'immagine per Outlook niente ombre sotto il testo (html2canvas le sporca) */
+:root.martur-officina #martur-operations-dashboard .mod-capture * { text-shadow: none !important; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
