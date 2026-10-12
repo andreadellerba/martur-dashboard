@@ -1775,6 +1775,14 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
   :root.martur-officina #martur-operations-dashboard .mod-pillnav > #mod-back-btn { order: 5; }
   :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-daily-admin-actions { order: 6; }
   :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-appmenu-wrap { order: 7; }
+  /* Lo spazio che avanza va fra i gruppi (logo, menu, calendario, icone,
+     Turchia), non fra le tre icone, che restano vicine. */
+  :root.martur-officina body #martur-operations-dashboard .mod-topbar-cluster { justify-content: flex-start; }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-main-nav,
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > #mod-context-bar,
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > .mod-pill-sep,
+  :root.martur-officina #martur-operations-dashboard .mod-topbar-cluster > .mod-world-clock-tr { margin-left: auto; }
+  :root.martur-officina #martur-operations-dashboard .mod-pillnav > :is(#mod-back-btn, .mod-daily-admin-actions, .mod-appmenu-wrap) { margin-left: -6px; }
 }
 /* Nomi nelle testate dei turni: shift leader nel colore dello sfondo, team
    leader nel colore d'accento. */
