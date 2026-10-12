@@ -12330,6 +12330,15 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             dummyCls = shift.dummy <= 30 ? 'mod-metric-bad' : shift.dummy <= 50 ? 'mod-metric-yellow' : 'mod-metric-good';
           }
           const goldCls = 'mod-metric-gold';
+          // Sabato/domenica non ci sono target: produzione, delta, DMC,
+          // efficienza e rework nel colore dell'accento. Restano a soglia solo
+          // dummy, coda, straordinario, assenti e assenteismo.
+          const weekendDay = row.date ? [0, 6].includes(parseDate(row.date).getDay()) : false;
+          if (weekendDay) {
+            frontCls = rearCls = stellCls = gapCls = effCls = reworkCls = goldCls;
+          }
+          let dmcCls = targetCls(sectionGetFor(row.date, 'dmc.' + shiftKey), dmcShiftTargetFor(row.date));
+          if (weekendDay) dmcCls = goldCls;
           // Ogni casella ha una chiave: l'ordine si puo' cambiare trascinandole
           // (modalita' Modifica) ed e' uguale per tutti.
           const metric = (label, value, cls, key) => '<div class="mod-shift-metric" data-mkey="' + key + '"' + (root.classList.contains('mod-text-editing') ? ' draggable="true"' : '') + '><span class="text-small text-muted">' + label + '</span><strong' + (cls ? ' class="' + cls + '"' : '') + '>' + value + '</strong></div>';
@@ -12349,7 +12358,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
               // DMC e Abarth del turno: dai dati della pagina DMC / Abarth.
               // DMC colorato rispetto al target DMC del turno; Abarth neutro.
               metric(t('secDmc'), formatOptionalNumber(sectionGetFor(row.date, 'dmc.' + shiftKey)),
-                targetCls(sectionGetFor(row.date, 'dmc.' + shiftKey), dmcShiftTargetFor(row.date)), 'dmc'),
+                dmcCls, 'dmc'),
               metric(t('cardAbarthSch'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.schienali')), goldCls, 'absch'),
               metric(t('cardAbarthKit'), formatOptionalNumber(sectionGetFor(row.date, 'abarth.' + shiftKey + '.kit')), goldCls, 'abkit'),
               metric(t('efficiency'), isNumber(shift.efficiency) ? formatPercent(shift.efficiency) : '—', effCls, 'eff'),
