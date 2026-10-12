@@ -1791,6 +1791,15 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 :root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name, :root.martur-officina #martur-operations-dashboard .mod-shift-card-head .mod-shift-card-name * { font-weight: 700 !important; }
 /* Logo senza angoli arrotondati: tagliavano gli spigoli della M (e della Y). */
 #martur-operations-dashboard .mod-brand-logo { border-radius: 0 !important; overflow: visible; }
+/* PC: fra la barra in alto e le prime card lo stesso spazio che c'e' fra le
+   card (8 px), e tutte le pagine larghe esattamente quanto la barra. */
+@media not ((max-width: 720px) or ((max-width: 950px) and (pointer: coarse))) {
+  :root.martur-officina #martur-operations-dashboard > .mod-topbar { padding-bottom: 8px; margin-bottom: -12px; }
+  :root.martur-officina #martur-operations-dashboard > :is(#mod-dashboard-screen, #mod-entry-screen, #mod-abarth-screen, #mod-dmc-screen, #mod-edi-screen, #mod-summary-screen) {
+    padding: 0 !important;
+    margin-top: 0 !important;
+  }
+}
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
