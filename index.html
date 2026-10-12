@@ -15956,7 +15956,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         }
 
         if (other) {
-          // A sinistra l'EDI aperto, a destra quello scelto per il confronto.
+          // A sinistra l'EDI scelto per il confronto, a destra quello aperto.
           // Le variazioni stanno sempre sul piu' recente, rispetto al piu' vecchio.
           const otherOlder = ediSortKey(other) <= ediSortKey(saved);
           const newer = otherOlder ? saved : other;
@@ -15965,7 +15965,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             '</div>' + ediTableHtml(d, mode, base) + '</div>';
           ['qty', 'pct'].forEach((mode) => {
             (mode === 'qty' ? el.ediQtyBox : el.ediPctBox).innerHTML = '<div class="mod-edi-compare-grid">' +
-              panel(saved, mode, saved === newer ? older : null) + panel(other, mode, other === newer ? older : null) + '</div>';
+              panel(other, mode, other === newer ? older : null) + panel(saved, mode, saved === newer ? older : null) + '</div>';
           });
           renderEdiChart(newer, older, ediMode);
           el.ediStatus.textContent = '';
