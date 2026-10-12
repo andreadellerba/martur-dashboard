@@ -1863,6 +1863,20 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 @media (min-width: 951px) { :root.martur-officina #martur-operations-dashboard .mod-daily-shift-card .mod-shift-metric > .text-small { white-space: nowrap; font-size: clamp(13px, 1.12vw, 17px); } }
 /* nell'immagine per Outlook niente ombre sotto il testo (html2canvas le sporca) */
 :root.martur-officina #martur-operations-dashboard .mod-capture * { text-shadow: none !important; }
+/* Variazioni (▲ +7 / ▼ -42) centrate in altezza con il numero accanto: si
+   centra sull'altezza delle cifre, non sulla riga di base del testo. */
+:root.martur-officina #martur-operations-dashboard :is(.mod-kpi-value-row, .mod-period-note) { align-items: center; }
+:root.martur-officina #martur-operations-dashboard :is(.mod-kpi-value-row .viz-stat-value, .mod-period-note-value) {
+  text-box: trim-both cap alphabetic;
+}
+:root.martur-officina #martur-operations-dashboard :is(.mod-kpi-trend, .mod-period-note-delta) {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px !important;
+  line-height: 1;
+  text-box: trim-both cap alphabetic;
+}
+:root.martur-officina #martur-operations-dashboard .mod-kpi-trend:empty { display: none; }
 /* Modalita' Modifica: le caselle delle card turno si trascinano. */
 #martur-operations-dashboard.mod-text-editing .mod-shift-metric[data-mkey] {
   cursor: grab;
@@ -10311,14 +10325,16 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         if (!isNumber(value)) return '—';
         return new Intl.NumberFormat(locale(), { style: 'percent', maximumFractionDigits: 1 }).format(value);
       };
-      const formatDate = (value, short = false) => new Intl.DateTimeFormat(locale(), short ? {
+      // Mese con l'iniziale maiuscola: "05 Ottobre 2026", "05 Ott".
+      const capMonth = (text) => String(text).replace(/(^|[\s.])(\p{Ll})/gu, (m, sep, ch) => sep + ch.toUpperCase());
+      const formatDate = (value, short = false) => capMonth(new Intl.DateTimeFormat(locale(), short ? {
         day: '2-digit',
         month: 'short'
       } : {
         day: '2-digit',
         month: 'short',
         year: 'numeric'
-      }).format(parseDate(value));
+      }).format(parseDate(value)));
       const formatMonth = (value, short = false) => {
         const text = new Intl.DateTimeFormat(locale(), {
           month: short ? 'short' : 'long',
@@ -11762,7 +11778,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const mode = periodMode();
         if (mode === 'weekly') return weekLabel(state.selectedDate);
         if (mode === 'monthly') return formatMonth(state.selectedMonth + '-01');
-        return new Intl.DateTimeFormat(locale(), { day: '2-digit', month: 'long', year: 'numeric' }).format(parseDate(state.selectedDate));
+        return capMonth(new Intl.DateTimeFormat(locale(), { day: '2-digit', month: 'long', year: 'numeric' }).format(parseDate(state.selectedDate)));
       }
 
       function fitReportTitle() {
@@ -12466,8 +12482,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         // giornata, non la media delle due percentuali di turno.
         setKpiText(el.kpiAbsenteeism, formatPercent(summary.absenteeismPct));
         el.kpiAbsenteeismContext.textContent = (valueOrZero(summary.presence) + valueOrZero(summary.absent))
-          ? formatNumber(valueOrZero(summary.absent)) + ' ' + t('absent').toLowerCase() + ' / ' +
-            formatNumber(valueOrZero(summary.presence) + valueOrZero(summary.absent)) + ' ' + t('convocati').toLowerCase()
+          ? formatNumber(valueOrZero(summary.absent)) + ' ' + t('absent') + ' / ' +
+            formatNumber(valueOrZero(summary.presence) + valueOrZero(summary.absent)) + ' ' + t('convocati')
           : subtitle;
         setKpiText(el.kpiEfficiency, formatPercent(summary.efficiency));
         el.kpiEfficiencyContext.textContent = t(state.view === 'weekly' ? 'efficiencyFormulaWeekly' : state.view === 'monthly' ? 'efficiencyFormulaMonthly' : 'efficiencyFormula');
