@@ -6516,13 +6516,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           <button type="button" class="btn btn-ghost mod-pill-icon mod-theme" data-theme-choice="dark" aria-pressed="false" title="Tema scuro"><i data-lucide="moon" aria-hidden="true"></i></button>
         </div>
       </div>
-      <div class="mod-app-menu-sec">
-        <span class="mod-app-menu-label" data-i18n="density">Spaziatura</span>
-        <div class="mod-app-menu-choices">
-          <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="comfort" aria-pressed="false" title="Normale" data-i18n-title="densityComfort"><i data-lucide="rows-2" aria-hidden="true"></i></button>
-          <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="compact" aria-pressed="true" title="Compatta" data-i18n-title="densityCompact"><i data-lucide="rows-4" aria-hidden="true"></i></button>
-        </div>
-      </div>
       <div class="mod-app-menu-sec mod-bg-sec">
         <span class="mod-app-menu-label" data-i18n="bgLabel">Sfondo</span>
         <div class="mod-bg-pick">
@@ -9758,7 +9751,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         themeChoice: savedTheme === 'dark' ? 'dark' : 'light',
         // Compatta di default per tutti: chi preferisce l'altra la sceglie
         // dal menu impostazioni e resta memorizzata sul suo dispositivo.
-        density: savedDensity === 'comfort' ? 'comfort' : 'compact',
+        density: 'compact', // spaziatura fissa: la piu' stretta (la scelta non c'e' piu')
         view: 'daily',
         summaryBusy: false,
         oeeConfig: Object.assign({}, OEE_DEFAULTS),
