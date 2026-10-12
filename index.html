@@ -24,8 +24,8 @@
     }
     var saved = window.localStorage.getItem('martur-dashboard-theme');
     document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
-    // Stile grafico: Officina salvo scelta diversa (Impostazioni > Stile).
-    if (window.localStorage.getItem('martur-dashboard-style') !== 'classic') document.documentElement.classList.add('martur-officina');
+    // Stile Officina fisso per tutti (la scelta Classico/Officina non c'e' piu').
+    document.documentElement.classList.add('martur-officina');
     // Colore dello sfondo (Impostazioni > Sfondo) e tono dei testi sopra.
     // [id, nome, colore per il tema chiaro, colore per il tema scuro (se manca:
     // lo stesso scurito)]. "sabbia" e' lo sfondo normale dello stile.
@@ -6521,13 +6521,6 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         <div class="mod-app-menu-choices">
           <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="comfort" aria-pressed="false" title="Normale" data-i18n-title="densityComfort"><i data-lucide="rows-2" aria-hidden="true"></i></button>
           <button type="button" class="btn btn-ghost mod-pill-icon mod-density" data-density="compact" aria-pressed="true" title="Compatta" data-i18n-title="densityCompact"><i data-lucide="rows-4" aria-hidden="true"></i></button>
-        </div>
-      </div>
-      <div class="mod-app-menu-sec">
-        <span class="mod-app-menu-label" data-i18n="styleLabel">Stile</span>
-        <div class="mod-app-menu-choices">
-          <button type="button" class="btn btn-ghost mod-style-choice" data-style="classic" aria-pressed="false" data-i18n="styleClassic">Classico</button>
-          <button type="button" class="btn btn-ghost mod-style-choice" data-style="officina" aria-pressed="true" data-i18n="styleOfficina">Officina</button>
         </div>
       </div>
       <div class="mod-app-menu-sec mod-bg-sec">
@@ -17255,7 +17248,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       root.querySelectorAll('.mod-style-choice').forEach((button) => {
         button.addEventListener('click', () => { applyStyle(button.dataset.style); renderAll(); if (state.authUser) logAudit('pref.style', button.dataset.style === 'classic' ? 'Classico' : 'Officina'); });
       });
-      applyStyle(document.documentElement.classList.contains('martur-officina') ? 'officina' : 'classic');
+      applyStyle('officina'); // stile fisso: Officina per tutti
       // ---- Note dei turni a elenco: 1) 2) 3) ... ----
       // Nel campo ci sono gia' le voci da 1) a 5) con lo spazio dopo la
       // parentesi; il "+" sotto aggiunge la 6), la 7)... Invio porta alla voce
