@@ -16460,6 +16460,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         node.title = t('vsPrev');
       }
 
+      function isWeekdayIso(iso) { const d = parseDate(iso).getDay(); return d >= 1 && d <= 5; }
       function kpiTrendSeries() {
         const rows = getDailyRows();
         if (state.view === 'weekly') {
@@ -16468,7 +16469,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           for (let i = 9; i >= 0; i--) {
             const wkStart = addDays(currentMonday, -7 * i);
             const start = isoDate(wkStart), end = isoDate(addDays(wkStart, 6));
-            const wkRows = rows.filter((r) => r.date >= start && r.date <= end && hasOperationalData(r));
+            // la settimana per il confronto va da lunedi' a venerdi'
+            const wkRows = rows.filter((r) => r.date >= start && r.date <= end && hasOperationalData(r) && isWeekdayIso(r.date));
             if (wkRows.length) series.push(aggregatePeriods(wkRows));
           }
           return series;
@@ -16484,7 +16486,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           }
           return series;
         }
-        return rows.filter((r) => hasOperationalData(r) && r.date <= state.selectedDate).slice(-8);
+        // Giornaliero: il confronto e l'andamento si fanno solo sui giorni lun-ven
+        // (il lunedi' si confronta col venerdi', non col sabato).
+        return rows.filter((r) => hasOperationalData(r) && r.date <= state.selectedDate && (isWeekdayIso(r.date) || r.date === state.selectedDate)).slice(-8);
       }
 
       // ---- Card KPI DMC / Abarth kit ----
@@ -16514,7 +16518,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           return out;
         }
         // giornaliero: gli ultimi 8 giorni con dati, fino a quello scelto
-        const days = getDailyRows().filter((r) => hasOperationalData(r) && r.date <= state.selectedDate).slice(-8).map((r) => r.date);
+        const days = getDailyRows().filter((r) => hasOperationalData(r) && r.date <= state.selectedDate && isWeekdayIso(r.date)).slice(-8).map((r) => r.date);
         if (days[days.length - 1] !== state.selectedDate) days.push(state.selectedDate);
         return days.slice(-8).map((d) => [d, d]);
       }
@@ -16526,16 +16530,18 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         const to = windows[windows.length - 1][1];
         const key = from + '_' + to;
         const draw = (rows) => {
-          const sum = (w, pick) => {
-            const vals = rows.filter((r) => r.date >= w[0] && r.date <= w[1]).map(pick).filter(isNumber);
+          // Per il confronto settimanale contano solo lun-ven; il totale mostrato
+          // del periodo scelto resta quello completo.
+          const sum = (w, pick, weekdaysOnly) => {
+            const vals = rows.filter((r) => r.date >= w[0] && r.date <= w[1] && (!weekdaysOnly || isWeekdayIso(r.date))).map(pick).filter(isNumber);
             return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
           };
           const both = (a, b) => (isNumber(a) || isNumber(b)) ? valueOrZero(a) + valueOrZero(b) : null;
           const dmcOf = (r) => both(summaryPick(r, 'dmc.shift1'), summaryPick(r, 'dmc.shift2'));
           const kitOf = (r) => both(summaryPick(r, 'abarth.shift1.kit'), summaryPick(r, 'abarth.shift2.kit'));
           [['mod-kpi-dmc', dmcOf], ['mod-kpi-abkit', kitOf]].forEach(([id, pick]) => {
-            const series = windows.map((w) => sum(w, pick));
-            const cur = series[series.length - 1];
+            const cur = sum(windows[windows.length - 1], pick);
+            const series = windows.map((w) => sum(w, pick, state.view === 'weekly'));
             const valueNode = root.querySelector('#' + id);
             const trendNode = root.querySelector('#' + id + '-trend');
             valueNode.textContent = isNumber(cur) ? formatNumber(cur) : '—';
@@ -16549,7 +16555,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             // la larghezza invece di restare schiacciata a destra.
             root.querySelector('#' + id + '-spark').innerHTML = sparklineSvg(valid, dir);
             const prev = series[series.length - 2];
-            if (isNumber(cur) && isNumber(prev)) renderTrendBadge(trendNode, cur, prev, 'int', false);
+            const curT = series[series.length - 1];
+            if (isNumber(curT) && isNumber(prev)) renderTrendBadge(trendNode, curT, prev, 'int', false);
             else { trendNode.textContent = ''; trendNode.className = 'mod-kpi-trend'; }
           });
         };
@@ -16576,7 +16583,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
           { trend: el.kpiSetsTrend, spark: el.kpiSetsSpark, get: (r) => r.completeKits, kind: 'int' },
           { trend: el.kpiCarsTrend, spark: el.kpiCarsSpark, get: (r) => r.stellantisCars, kind: 'int' },
           { trend: el.kpiGapTrend, spark: el.kpiGapSpark, get: (r) => r.supplyGap, kind: 'int' },
-          { trend: el.kpiAbsenteeismTrend, spark: el.kpiAbsenteeismSpark, get: (r) => r.absenteeismPct, kind: 'pct', lowerIsBetter: true, skipMonday: true },
+          { trend: el.kpiAbsenteeismTrend, spark: el.kpiAbsenteeismSpark, get: (r) => r.absenteeismPct, kind: 'pct', lowerIsBetter: true },
           { trend: el.kpiEfficiencyTrend, spark: el.kpiEfficiencySpark, get: (r) => r.efficiency, kind: 'pct' }
         ];
         const series = kpiTrendSeries();
