@@ -3655,7 +3655,9 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
     #martur-operations-dashboard .mod-edi-panel-title { text-align: center; font-weight: 800; }
     #martur-operations-dashboard .mod-edi-comparing .mod-edi-title,
     #martur-operations-dashboard .mod-edi-comparing .mod-edi-status { display: none; }
-    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table { min-width: 0; }
+    /* Confronto: ogni tabella occupa la sua meta' di schermo, fino ai bordi come le altre pagine */
+    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-wrap { width: 100%; margin-inline: 0; }
+    #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table { min-width: 0; width: 100%; }
     #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table th,
     #martur-operations-dashboard .mod-edi-compare-grid .mod-edi-table td { padding: 7px 8px; }
     #martur-operations-dashboard .mod-edi-table td.mod-edi-up { background: light-dark(rgb(22 163 74 / 0.16), rgb(74 222 128 / 0.18)) !important; }
