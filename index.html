@@ -1897,6 +1897,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 }
 /* (26) Fascia dietro il giorno di oggi nei grafici; (27) valore sopra le barre. */
 #martur-operations-dashboard .mod-today-band { fill: color-mix(in srgb, var(--gold) 14%, transparent); }
+/* numeri scritti sopra barre e punti dei grafici */
+#martur-operations-dashboard .mod-point-value { fill: var(--off-ink, var(--foreground)); font-family: var(--off-num, inherit); font-weight: 700; font-size: 11px; pointer-events: none; }
 #martur-operations-dashboard .mod-bar-value {
   fill: var(--off-ink, var(--foreground));
   font-family: var(--off-num, inherit);
@@ -12018,7 +12020,8 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
 
       function renderPercentageChart(periods, config) {
         const axisWidth = 52;
-        const margin = { top: 14, right: 12, bottom: 35, left: 16 };
+        // in alto spazio per il valore scritto sopra ogni punto
+        const margin = { top: 26, right: 12, bottom: 35, left: 16 };
         const wrapWidth = Math.max(300, Math.round(config.wrap.getBoundingClientRect().width || 640));
         const width = Math.max(wrapWidth, margin.left + margin.right + periods.length * 92);
         config.chart.style.width = width > wrapWidth ? width + 'px' : '';
@@ -12062,6 +12065,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             const x = margin.left + item.index * step + step / 2;
             const tooltip = item.period.label + ' · ' + config.label + ': ' + formatPercent(item.value);
             parts.push('<circle class="' + config.dotClass + '" cx="' + x + '" cy="' + y(item.value) + '" r="3" data-tooltip="' + escapeHtml(tooltip) + '"></circle>');
+            parts.push('<text class="mod-point-value" x="' + x + '" y="' + (y(item.value) - 8) + '" text-anchor="middle">' + formatPercent(item.value) + '</text>');
           });
         }
 
@@ -15796,7 +15800,7 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         // loro misura anche sul telefono (niente rimpicciolimento).
         const W = Math.max(320, Math.round((el.ediChart.clientWidth || 1000) - 20));
         const narrow = W < 600;
-        const H = narrow ? 240 : 300, L = narrow ? 42 : 56, R = narrow ? 64 : 120, T = 14, B = 34;
+        const H = narrow ? 240 : 300, L = narrow ? 42 : 56, R = narrow ? 64 : 120, T = 26, B = 34;
         const x = (i) => L + (weeks.length === 1 ? (W - L - R) / 2 : i * (W - L - R) / (weeks.length - 1));
         const y = (v) => T + (1 - v / max) * (H - T - B);
         const fmt = (v) => Number.isFinite(v) ? formatNumber(Math.round(v)) + (pctMode ? '%' : '') : '—';
@@ -15829,7 +15833,10 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
             (s.dashed ? ' stroke-dasharray="6 5" opacity="0.75"' : '') + ' stroke-linecap="round" stroke-linejoin="round"></path>';
           if (!s.dashed) {
             s.values.forEach((v, i) => {
-              if (Number.isFinite(v)) svg += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="4" fill="' + s.color + '" class="mod-edi-dot"></circle>';
+              if (!Number.isFinite(v)) return;
+              svg += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="4" fill="' + s.color + '" class="mod-edi-dot"></circle>';
+              // valore scritto sopra il punto, nel colore della linea
+              svg += '<text x="' + x(i) + '" y="' + (y(v) - 9) + '" text-anchor="middle" class="mod-point-value" style="fill:' + s.color + '">' + fmt(v) + '</text>';
             });
           }
         });
