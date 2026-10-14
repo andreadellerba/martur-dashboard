@@ -15626,9 +15626,11 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
         ediDraft = null;
       }
 
+      // Negli EDI si mostrano solo le prime 5 settimane (+ il totale di quelle 5).
+      const EDI_SHOW_WEEKS = 5;
       function ediWeekHead(data, extra) {
         return '<thead><tr><th class="mod-edi-opt-head">' + escapeHtml(t('ediOptions')) + '</th>' +
-          data.weeks.map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
+          data.weeks.slice(0, EDI_SHOW_WEEKS).map((w) => '<th>' + escapeHtml(w) + '</th>').join('') +
           (extra ? '<th class="mod-edi-total">' + escapeHtml(extra) + '</th>' : '') + '</tr></thead>';
       }
       // Tendina della voce EDI nel menu in alto: "Nuovo" (pagina vuota, per
@@ -15670,20 +15672,21 @@ html::-webkit-scrollbar, html *::-webkit-scrollbar { width: 0; height: 0; displa
       // e da confrontare con un altro EDI.
       function ediMatrix(data, mode) {
         const lines = ediRowsOf(data).slice().sort((a, b) => ediRowOrder(a.group, a.code) - ediRowOrder(b.group, b.code));
-        const total = ediTotalOf(data);
-        const n = data.weeks.length;
+        const total = ediTotalOf(data).slice(0, EDI_SHOW_WEEKS);
+        const weeks = data.weeks.slice(0, EDI_SHOW_WEEKS);
+        const n = weeks.length;
         const sum = (arr) => (arr || []).reduce((s, v) => s + (Number(v) || 0), 0);
         const rows = lines.map((row) => {
           const cells = mode === 'pct'
-            ? data.weeks.map((w, i) => ediPct(lines, row, total, i))
-            : row.values.map((v) => Number(v) || 0);
+            ? weeks.map((w, i) => ediPct(lines, row, total, i))
+            : row.values.slice(0, EDI_SHOW_WEEKS).map((v) => Number(v) || 0);
           // Totale: somma nei Numeri, media delle settimane nelle %.
           const tot = mode === 'pct'
             ? cells.reduce((s, v) => s + (Number.isFinite(v) ? v : 0), 0) / n
-            : sum(row.values);
+            : sum(row.values.slice(0, EDI_SHOW_WEEKS));
           return { key: row.group + ':' + row.code, label: ediRowLabel(row.group, row.code), cells, total: tot };
         });
-        return { weeks: data.weeks, rows, foot: total.map((v) => Number(v) || 0), footTotal: sum(total) };
+        return { weeks, rows, foot: total.map((v) => Number(v) || 0), footTotal: sum(total) };
       }
 
       // Tabella HTML. Con "base" ogni cella si confronta con la stessa riga e
